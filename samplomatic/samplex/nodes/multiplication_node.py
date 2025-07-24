@@ -40,6 +40,13 @@ class MultiplicationNode(EvaluationNode):
                 f"{self._operand.num_samples}."
             )
 
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "6",
+            "operand": self._operand.to_json(),
+            "register_name": self._register_name,
+        }
+
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self._operand.TYPE

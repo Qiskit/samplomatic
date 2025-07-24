@@ -12,6 +12,7 @@
 
 """CombineRegistersNode"""
 
+import json
 from collections.abc import Sequence
 
 import numpy as np
@@ -85,6 +86,25 @@ class CombineRegistersNode(EvaluationNode):
 
         if not self._operands:
             raise SamplexConstructionError(f"{self} requires at least one input register.")
+
+    def _to_json_dict(self) -> dict[str, str]:
+        operands_dict = {}
+        for key, values in self._operands.items():
+            value_list = []
+            for v in values:
+                if isinstance(v, np.ndarray):
+                    value_list.append(v.tolist())
+                else:
+                    value_list.append(str(v))
+            operands_dict[key] = value_list
+
+        return {
+            "node_type": "3",
+            "output_type": self._output_type,
+            "output_register_name": self._output_register_name,
+            "num_output_subsystems": str(self._num_output_subsystems),
+            "operands": json.dumps(operands_dict)
+        }
 
     @property
     def outgoing_register_type(self) -> VirtualType:

@@ -56,6 +56,17 @@ class ConversionNode(EvaluationNode):
                 "remove_existing was not set to true."
             )
 
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": 4,
+            "existing_name": self.existing_name,
+            "existing_type": self.existing_type,
+            "new_name": self.new_name,
+            "new_type": self.new_type,
+            "num_subsystems": self.num_subsystems,
+            "remove_existing": self.remove_existing,
+        }
+
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self.new_type

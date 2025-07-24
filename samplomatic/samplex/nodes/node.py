@@ -155,6 +155,9 @@ class Node:
             style.append_dict_data("outputs_to", _reg_style(outputs), bullet="• ")
         return style.append_divider()
 
+    def _to_json_dict(self) -> dict[str, str]:
+        pass
+
 
 def _reg_style(register_manifest):
     # helper to format node style

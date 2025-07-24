@@ -42,6 +42,15 @@ class CollectZ2ToOutputNode(CollectionNode):
         self._subsystem_idxs = subsystem_idxs
         self._output_idxs = output_idxs
 
+    def to_json_dict(self) -> str:
+        return {
+            "node_type": 2,
+            "register_name": self._register_name,
+            "output_name": self._output_name,
+            "subsystem_indices": self._subsystem_idxs,
+            "output_indices": self._output_idxs,
+        }
+
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}
 

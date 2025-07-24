@@ -139,3 +139,10 @@ class BasisTransformNode(SamplingNode):
                 f"'{self._basis_ref}' when it requires {self._num_subsystems}."
             )
         registers[self._register_name] = self._basis_change.get_transform(basis)
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+                "node_type": "0",
+                "alphabet": self._alphabet,
+                "action": self._action.to_json()
+            }

@@ -59,6 +59,14 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         self._param_idxs = param_idxs
         self._register_name = register_name
 
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": 10,
+            "operand": self._operand,
+            "param_indices": self._param_idxs,
+            "register_name": self._register_name,
+        }
+
     def get_style(self):
         return (
             super()

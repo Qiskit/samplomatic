@@ -13,6 +13,7 @@
 """VirtualRegister"""
 
 import abc
+import json
 from typing import TypeVar
 
 import numpy as np
@@ -92,6 +93,19 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
                 "to account for the shape of each virtual gate element, but found total shape "
                 f"{self._array.shape}."
             )
+
+    def to_json(self) -> str:
+        if isinstance(self.DTYPE, np.uint8):
+            dtype = "uint8"
+        else:
+            dtype = "complex128"
+        return json.dumps({
+            "type": self.TYPE,
+            "gate_shape": self.GATE_SHAPE,
+            "subsystem_size": self.SUBSYSTEM_SIZE,
+            "dtype": dtype,
+            "convertable_types": list(self.CONVERTABLE_TYPES),
+        })
 
     @staticmethod
     def select(register_type: VirtualType) -> type["VirtualRegister"]:

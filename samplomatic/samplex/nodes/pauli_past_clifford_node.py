@@ -12,6 +12,7 @@
 
 """PauliPastCliffordNode"""
 
+import json
 from collections.abc import Sequence
 
 import numpy as np
@@ -91,6 +92,14 @@ class PauliPastCliffordNode(EvaluationNode):
         self.op_name = op_name
         self.subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
         self.register_name = register_name
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "7",
+            "op_name": self.op_name,
+            "subsystem_idxs": json.dumps(self.subsystem_idxs.tolist()),
+            "register_name": self.register_name,
+        }
 
     @property
     def outgoing_register_type(self) -> VirtualType:

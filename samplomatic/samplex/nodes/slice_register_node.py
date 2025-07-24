@@ -12,6 +12,7 @@
 
 """SliceRegisterNode"""
 
+import json
 from collections.abc import Sequence
 
 import numpy as np
@@ -62,6 +63,16 @@ class SliceRegisterNode(EvaluationNode):
                 f"'slice_idxs' for '{input_register_name}' has a shape {self._slice_idxs.shape}, "
                 "but a shape with a single axes is required."
             )
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "8",
+            "input_type": self._input_type,
+            "output_type": self._output_type,
+            "input_register_name": self._input_register_name,
+            "output_register_name": self._output_register_name,
+            "slice_idxs": json.dumps(self._slice_idxs.tolist()),
+        }
 
     @property
     def outgoing_register_type(self) -> VirtualType:

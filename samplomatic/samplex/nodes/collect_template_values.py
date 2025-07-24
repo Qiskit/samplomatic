@@ -12,6 +12,7 @@
 
 """CollectTemplateValues"""
 
+
 import numpy as np
 
 from ...aliases import OutputName, ParamIndices, RegisterName, SubsystemIndices
@@ -75,6 +76,17 @@ class CollectTemplateValues(CollectionNode):
                 f"Expected to reference {num_subsys} subsystems of '{register_name}', but "
                 f"received shape {self._subsystem_idxs.shape} instead."
             )
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "1",
+            "template_param_names": self._template_params_name,
+            "template_idxs": str(self._template_idxs.tolist()),
+            "register_type": self._register_type,
+            "register_name": self._register_name,
+            "subsystem_idxs": str(self._template_idxs.tolist()),
+            "synth": str(self._synth),
+        }
 
     @property
     def num_subsystems(self):
