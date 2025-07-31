@@ -47,3 +47,6 @@ class TemplateBuildError(BuildError):
 
 class VirtualGateError(Exception):
     """Error raised when there is a problem interacting with virtual gates."""
+
+class DeserializationError(Exception):
+    """Error raised when there is a problem during deserialization."""

@@ -17,6 +17,7 @@ import json
 from typing import TypeVar
 
 import numpy as np
+import pybase64
 
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
@@ -95,16 +96,9 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
             )
 
     def to_json(self) -> str:
-        if isinstance(self.DTYPE, np.uint8):
-            dtype = "uint8"
-        else:
-            dtype = "complex128"
         return json.dumps({
             "type": self.TYPE,
-            "gate_shape": self.GATE_SHAPE,
-            "subsystem_size": self.SUBSYSTEM_SIZE,
-            "dtype": dtype,
-            "convertable_types": list(self.CONVERTABLE_TYPES),
+            "array": pybase64.encode(np.save(self._array))
         })
 
     @staticmethod
