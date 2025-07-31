@@ -1,15 +1,21 @@
-# This code is part of the Samplomatic project.
-#
-# This is proprietary IBM software for internal use only, do not distribute outside of IBM
-# Unauthorized copying of this file is strictly prohibited
+# This code is a Qiskit project.
 #
 # (C) Copyright IBM 2025.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 
-from qiskit.circuit import Parameter, QuantumCircuit
 
-from samplomatic.annotations import Twirl
+from qiskit.circuit import QuantumCircuit
+
 from samplomatic import build
-from samplomatic.samplex.samplex_serialization import samplex_to_json, samplex_from_json
+from samplomatic.annotations import Twirl
+from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
 
 
 class TestSamplexSerialization:
