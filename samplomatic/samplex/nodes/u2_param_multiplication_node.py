@@ -62,14 +62,6 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         self._param_idxs = param_idxs
         self._register_name = register_name
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": 10,
-            "operand": self._operand,
-            "param_indices": json.dumps(self._param_idxs),
-            "register_name": self._register_name,
-        }
-
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> Self:
         return cls(
@@ -137,6 +129,14 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         SamplexConstructionError: if `param_idxs` is empty.
     """
 
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "10",
+            "operand": self._operand,
+            "param_indices": json.dumps(self._param_idxs),
+            "register_name": self._register_name,
+        }
+
     def evaluate(
         self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray
     ):
@@ -179,6 +179,14 @@ class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
     Raises:
         SamplexConstructionError: if `param_idxs` is empty.
     """
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "12",
+            "operand": self._operand,
+            "param_indices": json.dumps(self._param_idxs),
+            "register_name": self._register_name,
+        }
 
     def evaluate(
         self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray

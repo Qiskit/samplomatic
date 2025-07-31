@@ -15,6 +15,7 @@
 
 import io
 import json
+import uuid
 
 import pybase64
 from qiskit.circuit import Parameter, ParameterExpression
@@ -26,6 +27,7 @@ from qiskit.qpy.binary_io.value import (
 )
 from rustworkx import PyDiGraph, from_node_link_json_file, node_link_json, parse_node_link_json
 
+from ..exceptions import DeserializationError
 from .nodes import Node
 from .nodes.basis_transform_node import BasisTransformNode
 from .nodes.collect_template_values import CollectTemplateValues
@@ -37,7 +39,10 @@ from .nodes.multiplication_node import LeftMultiplicationNode, RightMultiplicati
 from .nodes.pauli_past_clifford_node import PauliPastCliffordNode
 from .nodes.slice_register_node import SliceRegisterNode
 from .nodes.twirl_sampling_node import TwirlSamplingNode
-from .nodes.u2_param_multiplication_node import U2ParametricMultiplicationNode
+from .nodes.u2_param_multiplication_node import (
+    LeftU2ParametricMultiplicationNode,
+    RightU2ParametricMultiplicationNode,
+)
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
 
@@ -52,15 +57,16 @@ NODE_TYPE_MAP = [
     PauliPastCliffordNode,
     SliceRegisterNode,
     TwirlSamplingNode,
-    U2ParametricMultiplicationNode,
+    LeftU2ParametricMultiplicationNode,
     RightMultiplicationNode,
+    RightU2ParametricMultiplicationNode,
 ]
 
 
 def _serialize_expressions(expr: ParameterExpression):
     with io.BytesIO() as buf:
         _write_parameter_expression_v13(buf, expr, 15)
-        return pybase64.b64encode_as_string(buf.getvalue()).decode("utf-8")
+        return pybase64.b64encode_as_string(buf.getvalue())
 
 
 def _deserialize_expression(expr: str, parameters: dict[str, Parameter]):
@@ -69,13 +75,25 @@ def _deserialize_expression(expr: str, parameters: dict[str, Parameter]):
 
 
 def _serialize_expression_table(table: ParameterExpressionTable) -> str:
-    return json.dumps([_serialize_expressions(x) for x in table._expressions])  # noqa: SLF001
+    expressions = []
+    for x in table._expressions:
+        if isinstance(x, Parameter):
+            expressions.append({"param": (x.uuid.hex, x.name)})
+        else:
+            expressions.append({"expression": _serialize_expressions(x)})
+
+    return json.dumps(expressions)  # noqa: SLF001
 
 
 def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
     param_table = ParameterExpressionTable()
-    for expression in map(_deserialize_expression, json_data):
-        param_table.append(expression)
+    for expression in json_data:
+        if param := expression.get("param"):
+            param_table.append(Parameter(param[1], uuid=uuid.UUID(param[0])))
+        elif expr_data := expression.get("expression"):
+            param_table.append(_deserialize_expression(expr_data, {}))
+        else:
+            raise DeserializationError("Invalid parameter in expression table")
     return param_table
 
 

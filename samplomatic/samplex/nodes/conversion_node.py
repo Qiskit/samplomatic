@@ -60,7 +60,7 @@ class ConversionNode(EvaluationNode):
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
-            "node_type": 4,
+            "node_type": "4",
             "existing_name": self.existing_name,
             "existing_type": self.existing_type,
             "new_name": self.new_name,

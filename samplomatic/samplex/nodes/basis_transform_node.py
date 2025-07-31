@@ -163,5 +163,5 @@ class BasisTransformNode(SamplingNode):
                 basis_change_dict["alphabet"],
                 virtual_register_from_json(basis_change_dict["action"])
             ),
-            data["num_subsystems"]
+            int(data["num_subsystems"])
         )

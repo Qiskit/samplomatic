@@ -62,16 +62,16 @@ class InjectNoiseNode(SamplingNode):
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
-            "node_type": 5,
+            "node_type": "5",
             "register_name": self.register_name,
             "sign_register_name": self.sign_register_name,
             "noise_ref": self._noise_ref,
-            "modifier_ref": self.modifier_ref,
-            "num_subsystems": str(self.num_subsystems),
+            "modifier_ref": self._modifier_ref,
+            "num_subsystems": str(self._num_subsystems),
         }
 
     @classmethod
-    def _from_json_dict(self, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
         return cls(
             data["register_name"],
             data["sign_register_name"],

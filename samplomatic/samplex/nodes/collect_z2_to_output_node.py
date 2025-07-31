@@ -14,8 +14,11 @@
 
 from __future__ import annotations
 
-import json
+import io
 from collections.abc import Sequence
+
+import numpy as np
+import pybase64
 
 from ...aliases import OutputIndex, OutputName, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -46,21 +49,33 @@ class CollectZ2ToOutputNode(CollectionNode):
         self._output_idxs = output_idxs
 
     def _to_json_dict(self) -> dict[str, str]:
+        with io.BytesIO() as buf:
+            np.save(buf, self._subsystem_idxs, allow_pickle=False)
+            subsystem_idxs = buf.getvalue()
+
+        with io.BytesIO() as buf:
+            np.save(buf, self._output_idxs, allow_pickle=False)
+            output_idxs = buf.getvalue()
         return {
-            "node_type": 2,
+            "node_type": "2",
             "register_name": self._register_name,
             "output_name": self._output_name,
-            "subsystem_indices": json.dumps(list(self._subsystem_idxs)),
-            "output_indices": json.dumps(list(self._output_idxs)),
+            "subsystem_indices": pybase64.b64encode_as_string(subsystem_idxs),
+            "output_indices": pybase64.b64encode_as_string(output_idxs),
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        with io.BytesIO(pybase64.b64decode(data["subsystem_indices"])) as buf:
+            subsystem_idxs = np.load(buf)
+        with io.BytesIO(pybase64.b64decode(data["output_indices"])) as buf:
+            output_idxs = np.load(buf)
+
         cls(
             data["register_name"],
-            json.loads(data["subsystem_indices"]),
+            subsystem_idxs,
             data["output_name"],
-            json.loads(data["subsystem_indices"])
+            output_idxs,
         )
 
 
