@@ -12,13 +12,17 @@
 
 """CollectTemplateValues"""
 
+from __future__ import annotations
+
+import io
 
 import numpy as np
+import pybase64
 
 from ...aliases import OutputName, ParamIndices, RegisterName, SubsystemIndices
 from ...annotations import VirtualType
-from ...exceptions import SamplexConstructionError
-from ...synths import Synth
+from ...exceptions import DeserializationError, SamplexConstructionError
+from ...synths import RzRxSynth, RzSxSynth, Synth
 from .collection_node import CollectionNode
 
 
@@ -78,15 +82,46 @@ class CollectTemplateValues(CollectionNode):
             )
 
     def _to_json_dict(self) -> dict[str, str]:
+        with io.BytesIO() as buf:
+            np.save(buf, self._template_idxs, allow_pickle=False)
+            template_idxs = pybase64.b64encode_as_string(buf.getvalue())
+
+        with io.BytesIO() as buf:
+            np.save(buf, self._subsystem_idxs, allow_pickle=False)
+            subsystem_idxs = pybase64.b64encode_as_string(buf.getvalue())
         return {
             "node_type": "1",
             "template_param_names": self._template_params_name,
-            "template_idxs": str(self._template_idxs.tolist()),
+            "template_idxs": template_idxs,
             "register_type": self._register_type,
             "register_name": self._register_name,
-            "subsystem_idxs": str(self._template_idxs.tolist()),
-            "synth": str(self._synth),
+            "subsystem_idxs": subsystem_idxs,
+            "synth": type(self._synth).__name__,
         }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        with io.BytesIO(pybase64.b64decode(data["template_idxs"])) as buf:
+            template_idxs = np.load(buf)
+
+        with io.BytesIO(pybase64.b64decode(data["subsystem_idxs"])) as buf:
+            subsystem_idxs = np.load(buf)
+        synth_class_name = data["synth"]
+        if synth_class_name == "RzRxSynth":            
+            synth = RzRxSynth()
+        elif synth_class_name == "RzSxSynth":
+            synth = RzSxSynth()
+        else:
+            raise DeserializationError(f"Invalid Synth class: {synth_class_name}")
+
+        return cls(
+            data["template_param_names"],
+            template_idxs,
+            data["register_name"],
+            VirtualType(data["register_type"]),
+            subsystem_idxs,
+            synth
+        )
 
     @property
     def num_subsystems(self):

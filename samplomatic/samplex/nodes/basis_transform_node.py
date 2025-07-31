@@ -12,6 +12,9 @@
 
 """BasisTransformNode"""
 
+from __future__ import annotations
+
+import json
 from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
 
@@ -21,7 +24,7 @@ from qiskit.circuit.library import HGate, IGate, RYGate
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
 from ...exceptions import SamplexRuntimeError
-from ...virtual_registers import U2Register, VirtualRegister
+from ...virtual_registers import U2Register, VirtualRegister, virtual_register_from_json
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")
@@ -142,7 +145,23 @@ class BasisTransformNode(SamplingNode):
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
-                "node_type": "0",
-                "alphabet": self._alphabet,
-                "action": self._action.to_json()
-            }
+            "node_type": "0",
+            "register_name": self._register_name,
+            "basis_change": json.dumps({
+                "alphabet": self._basis_change.alphabet,
+                "action": action.to_json()
+            }),
+            "num_subsystems": str(self._num_subsystems)
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        basis_change_dict = json.loads(data["basis_change"])
+        return cls(
+            data["register_name"],
+            BasisChange(
+                basis_change_dict["alphabet"],
+                virtual_register_from_json(basis_change_dict["action"])
+            ),
+            data["num_subsystems"]
+        )

@@ -11,11 +11,13 @@
 # that they have been altered from the originals.
 
 """SliceRegisterNode"""
+from __future__ import annotations
 
-import json
+import io
 from collections.abc import Sequence
 
 import numpy as np
+import pybase64
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -65,14 +67,29 @@ class SliceRegisterNode(EvaluationNode):
             )
 
     def _to_json_dict(self) -> dict[str, str]:
+        with io.BytesIO() as buf:
+            np.save(buf, self._slice_idxs, allow_pickle=False)
+            slice_idxs = buf.getvalue()
         return {
             "node_type": "8",
             "input_type": self._input_type,
             "output_type": self._output_type,
             "input_register_name": self._input_register_name,
             "output_register_name": self._output_register_name,
-            "slice_idxs": json.dumps(self._slice_idxs.tolist()),
+            "slice_idxs": pybase64.b64encode_as_string(slice_idxs),
         }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        with io.BytesIO(pybase64.b64decode(data["slice_idxs"])) as buf:
+            slice_idxs = np.load(buf)
+        return cls(
+            VirtualType(data["input_type"]),
+            VirtualType(data["output_type"]),
+            data["input_register_name"],
+            data["output_register_name"],
+            slice_idxs,
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:

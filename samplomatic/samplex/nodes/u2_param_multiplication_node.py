@@ -12,6 +12,9 @@
 
 """U2ParametricMultiplicationNode"""
 
+from __future__ import annotations
+
+import json
 from typing import Literal
 
 import numpy as np
@@ -63,9 +66,17 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         return {
             "node_type": 10,
             "operand": self._operand,
-            "param_indices": self._param_idxs,
+            "param_indices": json.dumps(self._param_idxs),
             "register_name": self._register_name,
         }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        return cls(
+            data["operand"],
+            data["register_name"],
+            json.loads(data["param_indices"]),
+        )
 
     def get_style(self):
         return (

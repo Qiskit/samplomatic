@@ -12,6 +12,8 @@
 
 """InjectNoiseNode"""
 
+from __future__ import annotations
+
 import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
@@ -65,8 +67,20 @@ class InjectNoiseNode(SamplingNode):
             "sign_register_name": self.sign_register_name,
             "noise_ref": self._noise_ref,
             "modifier_ref": self.modifier_ref,
-            "num_subsystems": self.num_subsystems,
+            "num_subsystems": str(self.num_subsystems),
         }
+
+    @classmethod
+    def _from_json_dict(self, data: dict[str, str]) -> Self:
+        return cls(
+            data["register_name"],
+            data["sign_register_name"],
+            data["noise_ref"],
+            int(data["num_subsystems"]),
+            data["modifier_ref"],
+        )
+
+
 
     @property
     def outgoing_register_type(self) -> VirtualType:

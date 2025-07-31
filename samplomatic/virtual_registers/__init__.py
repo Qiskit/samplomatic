@@ -10,6 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+import io
+
 import numpy as np
 import pybase64
 
@@ -22,15 +24,16 @@ from .virtual_register import VirtualRegister
 from .z2_register import Z2Register
 
 
-def from_json(data: dict[str, str]) -> VirtualRegister:
-    register_type = VirtualType[data["type"]]
-    array = np.load(pybase64.decode(data["array"]))
+def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
+    register_type = VirtualType(data["type"])
+    with io.BytesIO(pybase64.b64decode(data["array"])) as buf:
+        array = np.load(buf)
     if register_type == VirtualType.U2:
-        U2Register(array)
+        return U2Register(array)
     elif register_type == VirtualType.Z2:
-        Z2Register(array)
+        return Z2Register(array)
     elif register_type == VirtualType.PAULI:
-        PauliRegister(array)
+        return PauliRegister(array)
     else:
         raise DeserializationError(f"Invalid register type: {register_type}")
             

@@ -12,6 +12,8 @@
 
 """ConversionNode"""
 
+from __future__ import annotations
+
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
@@ -64,8 +66,19 @@ class ConversionNode(EvaluationNode):
             "new_name": self.new_name,
             "new_type": self.new_type,
             "num_subsystems": self.num_subsystems,
-            "remove_existing": self.remove_existing,
+            "remove_existing": str(self.remove_existing),
         }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        return cls(
+            data["existing_name"],
+            VirtualType(data["existing_type"]),
+            data["new_name"],
+            VirtualType(data["new_type"]),
+            int(data["num_subsystems"]),
+            data["remove_existing"] == "True",
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:

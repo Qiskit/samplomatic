@@ -12,11 +12,13 @@
 
 """TwirlSamplingNode"""
 
+from __future__ import annotations
+
 import json
 
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType
-from ...distributions import Distribution, HaarU2
+from ...distributions import Distribution, HaarU2, UniformPauli
 from .sampling_node import SamplingNode
 
 
@@ -54,6 +56,19 @@ class TwirlSamplingNode(SamplingNode):
             "rhs_register_name": self.rhs_register_name,
             "distribution": json.dumps(distribution),
         }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        distribution_dict = json.loads(data["distribution"])
+        if distribution_dict["type"] == "haar_u2":
+            distribution = HaarU2(distribution_dict["num_subsystems"])
+        else:
+            distribution = UniformPauli(distribution_dict["num_subsystems"])
+        return cls(
+            data["lhs_register_name"],
+            data["rhs_register_name"],
+            distribution
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:

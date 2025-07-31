@@ -12,6 +12,9 @@
 
 """CollectZ2ToOutputNode"""
 
+from __future__ import annotations
+
+import json
 from collections.abc import Sequence
 
 from ...aliases import OutputIndex, OutputName, RegisterName, SubsystemIndex
@@ -42,14 +45,24 @@ class CollectZ2ToOutputNode(CollectionNode):
         self._subsystem_idxs = subsystem_idxs
         self._output_idxs = output_idxs
 
-    def to_json_dict(self) -> str:
+    def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": 2,
             "register_name": self._register_name,
             "output_name": self._output_name,
-            "subsystem_indices": self._subsystem_idxs,
-            "output_indices": self._output_idxs,
+            "subsystem_indices": json.dumps(list(self._subsystem_idxs)),
+            "output_indices": json.dumps(list(self._output_idxs)),
         }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        cls(
+            data["register_name"],
+            json.loads(data["subsystem_indices"]),
+            data["output_name"],
+            json.loads(data["subsystem_indices"])
+        )
+
 
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}

@@ -13,7 +13,6 @@
 """Synth"""
 
 import abc
-import json
 from collections.abc import Iterable
 from typing import Any, Generic, TypeVar
 

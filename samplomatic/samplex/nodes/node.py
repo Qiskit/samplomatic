@@ -12,6 +12,8 @@
 
 """Node"""
 
+from __future__ import annotations
+
 from numbers import Number
 from typing import Literal
 
@@ -156,7 +158,11 @@ class Node:
         return style.append_divider()
 
     def _to_json_dict(self) -> dict[str, str]:
-        pass
+        raise NotImplementedError
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        raise NotImplementedError
 
 
 def _reg_style(register_manifest):
