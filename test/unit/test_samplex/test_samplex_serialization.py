@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 
+import numpy as np
 from qiskit.circuit import QuantumCircuit
 
 from samplomatic import build
@@ -21,7 +22,7 @@ from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex
 class TestSamplexSerialization:
     """Test serialization of samplex objects."""
 
-    def test_general_5q_static_circuit(self):
+    def test_general_5q_static_circuit(self, rng):
         """Test with a general static circuit of 5 qubits"""
 
         circuit = QuantumCircuit(5)
@@ -48,9 +49,22 @@ class TestSamplexSerialization:
 
         circuit.measure_all()
 
-        _template_state, samplex = build(circuit)
+        template_state, samplex = build(circuit)
         json_data = samplex_to_json(samplex)
-        print(json_data)
+        assert isinstance(json_data, str)
+
         samplex_new = samplex_from_json(json_data)
-        print(samplex_new)
-        assert samplex == samplex_new
+
+        samplex.finalize()
+        samplex_new.finalize()
+
+        seed = rng.spawn(1)
+        rng1 = np.random.default_rng(seed[0])
+        rng2 = np.random.default_rng(seed[0])
+        print(samplex._output_specifications)
+        print(samplex_new._output_specifications)
+        samplex_output = samplex.sample(rng=rng1)
+        samplex_new_output = samplex_new.sample(rng=rng2)
+        np.testing.assert_allclose(
+            samplex_output["parameter_values"], samplex_new_output["parameter_values"]
+        )
