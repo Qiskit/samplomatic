@@ -12,9 +12,12 @@
 
 """SamplexOutput"""
 
+from __future__ import annotations
+
 import abc
+import json
 from collections.abc import Iterable, Mapping
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 import numpy as np
 
@@ -49,6 +52,15 @@ class OutputSpecification(abc.ABC, Generic[OutputT]):
             An empty output according to this specification.
         """
 
+    @abc.abstractmethod
+    def _to_json(self) -> str:
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def _from_json(cls, data: dict[str, Any]) -> Self:
+        pass
+
 
 class ArrayOutput(OutputSpecification[np.ndarray]):
     """Specification of a single output array from a samplex.
@@ -76,6 +88,23 @@ class ArrayOutput(OutputSpecification[np.ndarray]):
     def create_empty(self, num_samples: int) -> np.ndarray:
         return np.empty((num_samples,) + self.shape, dtype=self.dtype)
 
+    def _to_json(self) -> str:
+        return json.dumps({
+            "name": self.name,
+            "description": self.description,
+            "dtype": self.dtype.__name__,
+            "shape": tuple(int(x) for x in self.shape),
+        })
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> Self:
+        return cls(
+            data["name"],
+            tuple(data["shape"]),
+            getattr(np, data["dtype"]),
+            data["description"]
+        )
+
 
 class Z2ArrayOutput(ArrayOutput):
     """Specification of a zero-initialized z2 output array from a samplex.
@@ -92,6 +121,17 @@ class Z2ArrayOutput(ArrayOutput):
     def create_empty(self, num_samples: int) -> np.ndarray:
         return np.zeros((num_samples,) + self.shape, dtype=self.dtype)
 
+    def _to_json(self) -> str:
+        return json.dumps({
+            "name": self.name,
+            "description": self.description,
+            "shape": self.shape,
+        })
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> Self:
+        return cls(data["name"], tuple(data["shape"]), data["description"])
+
 
 class MetadataOutput(OutputSpecification[dict]):
     """Specification of a free-form dict output.
@@ -103,6 +143,16 @@ class MetadataOutput(OutputSpecification[dict]):
 
     def create_empty(self, num_samples: int) -> dict:
         return {}
+
+    def _to_json(self) -> str:
+        return json.dumps({
+            "name": self.name,
+            "description": self.description,
+        })
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> Self:
+        return cls(**data)
 
 
 class SamplexOutput(Mapping):

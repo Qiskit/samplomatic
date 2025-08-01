@@ -27,7 +27,9 @@ from qiskit.qpy.binary_io.value import (
 )
 from rustworkx import PyDiGraph, from_node_link_json_file, node_link_json, parse_node_link_json
 
+from ..aliases import OutputName
 from ..exceptions import DeserializationError
+from . import samplex_output
 from .nodes import Node
 from .nodes.basis_transform_node import BasisTransformNode
 from .nodes.collect_template_values import CollectTemplateValues
@@ -45,6 +47,7 @@ from .nodes.u2_param_multiplication_node import (
 )
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
+from .samplex_output import OutputSpecification
 
 NODE_TYPE_MAP = [
     BasisTransformNode,
@@ -96,18 +99,33 @@ def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
             raise DeserializationError("Invalid parameter in expression table")
     return param_table
 
+def _serialize_output_specifications(data: dict[OutputName, OutputSpecification]) -> str:
+    out_dict = {}
+    for name, spec in data.items():
+        out_dict[name] = {spec.__class__.__name__: spec._to_json()}
+    return json.dumps(out_dict)
+
+def _deserialize_output_specifications(data: str) -> dict[OutputName, OutputSpecification]:
+    outputs_raw = json.loads(data)
+    outputs = {}
+    for name, output in outputs_raw.items():
+        for cls_name, output_dict in output.items():
+            outputs[name] = getattr(samplex_output, cls_name)._from_json(json.loads(output_dict))
+    return outputs
 
 def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
     return {
         "finalized": str(samplex._finalized),  # noqa: SLF001
         "param_table": _serialize_expression_table(samplex._param_table),  # noqa: SLF001
+        "output_specification": _serialize_output_specifications(samplex._output_specifications)
     }
 
 
-def _process_graph_header(data: dict[str, str]) -> tuple[ParameterExpressionTable, bool]:
+def _process_graph_header(data: dict[str, str]) -> tuple[ParameterExpressionTable, bool, dict[OutputName, OutputSpecification]]:
     raw_param_table_dict = json.loads(data["param_table"])
     param_table = _deserialize_expression_table(raw_param_table_dict)
-    return (param_table, data["finalized"] == "true")
+    outputs = _deserialize_output_specifications(data["output_specification"])
+    return (param_table, data["finalized"] == "true", outputs)
 
 
 def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
@@ -134,6 +152,7 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex.graph = samplex_graph
     samplex._param_table = graph_attrs[0]  # noqa: SLF001
     samplex._finalized = graph_attrs[1]  # noqa: SLF001
+    samplex._output_specifications = graph_attrs[2]
     return samplex
 
 
