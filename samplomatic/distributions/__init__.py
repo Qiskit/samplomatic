@@ -10,9 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Distributions"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .distribution import Distribution
+from .haar_u2 import HaarU2
+from .uniform_pauli import UniformPauli

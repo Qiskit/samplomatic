@@ -10,9 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Synths"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .get_synth import get_synth
+from .rzrx_synth import RzRxSynth
+from .rzsx_synth import RzSxSynth
+from .synth import Synth

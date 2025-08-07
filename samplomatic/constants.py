@@ -10,9 +10,30 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Constants"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from enum import IntEnum
+
+
+class Direction(IntEnum):
+    """The direction that a virtual gate is traveling."""
+
+    LEFT = 0
+    RIGHT = 1
+    BOTH = 2
+
+
+SYMMETRIC_2Q_GATES: tuple[str] = (
+    "cz",
+    "swap",
+    "rxx",
+    "ryy",
+    "rzz",
+    "xx_minus_yy",
+    "iswap",
+    "cs",
+    "csdg",
+)
+"""
+The names of all the Qiskit built-in two-qubit gates that are invariant under qubit permutation.
+"""

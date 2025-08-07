@@ -10,9 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Twirling strategy passes"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .add_noops import AddNoops
+from .add_noops_active_accum import AddNoopsActiveAccum
+from .add_noops_active_circuit import AddNoopsActiveCircuit
+from .add_noops_all import AddNoopsAll

@@ -10,9 +10,19 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Optionals"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from qiskit.utils import LazyImportTester, LazySubprocessTester
+
+HAS_PLOTLY = LazyImportTester("plotly")
+
+HAS_NBFORMAT = LazyImportTester("nbformat")
+
+HAS_GRAPHVIZ = LazySubprocessTester(
+    ("dot", "-V"),
+    name="Graphviz",
+    msg=(
+        "To install, follow the OS-dependent instructions at https://graphviz.org/download/. "
+        "This is not a pip-installable dependency."
+    ),
+)

@@ -10,9 +10,14 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Samplex"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .parameter_expression_table import ParameterExpressionTable
+from .samplex import Samplex
+from .samplex_output import (
+    ArrayOutput,
+    MetadataOutput,
+    OutputSpecification,
+    SamplexOutput,
+    Z2ArrayOutput,
+)

@@ -10,9 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
-
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from ..annotations import VirtualType as _VirtualType
+from .group_register import GroupRegister
+from .pauli_register import PauliRegister
+from .u2_register import U2Register
+from .virtual_register import VirtualRegister
+from .z2_register import Z2Register

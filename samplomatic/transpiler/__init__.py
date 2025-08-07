@@ -10,9 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Transpiler"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .generate_boxing_pass_manager import generate_boxing_pass_manager
