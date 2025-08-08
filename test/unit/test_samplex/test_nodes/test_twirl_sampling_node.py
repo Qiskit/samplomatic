@@ -14,6 +14,7 @@
 
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import UniformPauli
+from samplomatic.samplex import SamplexInput
 from samplomatic.samplex.nodes import TwirlSamplingNode
 from samplomatic.virtual_registers import PauliRegister
 
@@ -31,5 +32,5 @@ def test_sample(rng):
     registers = {}
     node = TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
 
-    node.sample(registers, 5, rng)
+    node.sample(registers, 5, rng, SamplexInput([]))
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)

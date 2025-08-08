@@ -10,33 +10,27 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""SamplexOutput"""
+"""InterfaceSpecification"""
 
 import abc
-from collections.abc import Iterable, Mapping
-from typing import Generic, TypeVar
+from collections.abc import Iterable
+from typing import TypeVar
 
 import numpy as np
 
-from ..aliases import OutputName
+from ...aliases import InterfaceName
+from .samplex_interface import InterfaceSpecification, SamplexInterface
 
 OutputT = TypeVar("OutputT")
 
 
-class OutputSpecification(abc.ABC, Generic[OutputT]):
+class OutputSpecification(InterfaceSpecification[OutputT]):
     """Specification of a single named output from a samplex.
 
     Args:
         name: The name of the output.
         description: A description of what the output represents.
     """
-
-    def __init__(self, name: OutputName, description: str = ""):
-        self.name: OutputName = name
-        self.description: str = description
-
-    def __repr__(self):
-        return f"{type(self).__name__}({repr(self.name)}, {repr(self.description)})"
 
     @abc.abstractmethod
     def create_empty(self, num_samples: int) -> OutputT:
@@ -61,7 +55,7 @@ class ArrayOutput(OutputSpecification[np.ndarray]):
     """
 
     def __init__(
-        self, name: OutputName, shape: tuple[int, ...], dtype: type, description: str = ""
+        self, name: InterfaceName, shape: tuple[int, ...], dtype: type, description: str = ""
     ):
         super().__init__(name, description=description)
         self.dtype: type = dtype
@@ -86,7 +80,7 @@ class Z2ArrayOutput(ArrayOutput):
         description: A description of what the output represents.
     """
 
-    def __init__(self, name: OutputName, shape: tuple[int, ...], description: str = ""):
+    def __init__(self, name: InterfaceName, shape: tuple[int, ...], description: str = ""):
         super().__init__(name, shape, np.bool_, description=description)
 
     def create_empty(self, num_samples: int) -> np.ndarray:
@@ -105,7 +99,7 @@ class MetadataOutput(OutputSpecification[dict]):
         return {}
 
 
-class SamplexOutput(Mapping):
+class SamplexOutput(SamplexInterface):
     """The output of a single call to :meth:`~Samplex.sample`.
 
     Args:
@@ -129,15 +123,3 @@ class SamplexOutput(Mapping):
         lines.extend(f"    {specifier}," for specifier in self.specifiers)
         lines.append(f"  ],\n  num_samples={self.num_samples},\n)")
         return "\n".join(lines)
-
-    def __contains__(self, key):
-        return key in self._data
-
-    def __getitem__(self, key):
-        return self._data[key]
-
-    def __iter__(self):
-        return iter(self._data)
-
-    def __len__(self):
-        return len(self._data)

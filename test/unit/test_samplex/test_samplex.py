@@ -18,14 +18,14 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import ArrayOutput, MetadataOutput, Samplex
+from samplomatic.samplex import ArrayInput, ArrayOutput, MetadataOutput, Samplex
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, DummySamplingNode
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, size, rng, **kwargs):
+    def sample(self, registers, size, rng, inputs, **kwargs):
         raise SamplexRuntimeError("This node cannot sample.")
 
 
@@ -252,7 +252,8 @@ class TestSample:
         )
 
         samplex.append_parameter_expression(a + b)
-        samplex.append_parameter_expression(b + a + (c := Parameter("c")))
+        samplex.append_parameter_expression(b + a + Parameter("c"))
+        samplex.add_input(ArrayInput("parameter_values", (3,), float))
         k = samplex.add_node(
             DummyEvaluationNode(
                 writes_to={"y": ({2, 4, 6, 7}, PauliRegister)}, parameter_idxs=[3, 2, 0]
@@ -264,7 +265,9 @@ class TestSample:
 
         samplex.finalize()
 
-        registers = samplex.sample({a: 1, b: 2, c: 4}, size=13, keep_registers=True)["registers"]
+        registers = samplex.sample(
+            parameter_values=np.array([1, 2, 4], float), size=13, keep_registers=True
+        )["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)

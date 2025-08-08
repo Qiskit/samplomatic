@@ -18,8 +18,8 @@ from qiskit.quantum_info import Operator, average_gate_fidelity
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError
+from samplomatic.samplex.interfaces import ArrayOutput, SamplexOutput
 from samplomatic.samplex.nodes import CollectTemplateValues
-from samplomatic.samplex.samplex_output import ArrayOutput, SamplexOutput
 from samplomatic.synths import RzSxSynth
 
 

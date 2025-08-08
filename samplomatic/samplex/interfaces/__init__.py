@@ -10,17 +10,13 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplex"""
+"""Samplex interfaces"""
 
-from .interfaces import (
-    ArrayInput,
+from .samplex_input import ArrayInput, InputSpecification, SamplexInput
+from .samplex_output import (
     ArrayOutput,
-    InputSpecification,
     MetadataOutput,
     OutputSpecification,
-    SamplexInput,
     SamplexOutput,
     Z2ArrayOutput,
 )
-from .parameter_expression_table import ParameterExpressionTable
-from .samplex import Samplex

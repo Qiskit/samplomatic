@@ -50,7 +50,7 @@ from ..graph_utils import (
     replace_nodes_with_one_node,
 )
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
-from ..samplex import ArrayOutput, Samplex, Z2ArrayOutput
+from ..samplex import ArrayInput, ArrayOutput, Samplex, Z2ArrayOutput
 from ..samplex.nodes import (
     BasisTransformNode,
     CollectTemplateValues,
@@ -922,6 +922,9 @@ class PreSamplex:
                 else max_passthrough_param_idx
             )
 
+        for basis_ref, length in self._basis_transforms.items():
+            samplex.add_input(ArrayInput(basis_ref, (length,), np.uint8, "Basis changing gates."))
+
         if max_param_idx is not None:
             samplex.add_output(
                 ArrayOutput(
@@ -997,6 +1000,16 @@ class PreSamplex:
                 )
             else:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
+
+        if num_params := samplex.num_parameters:
+            samplex.add_input(
+                ArrayInput(
+                    "parameter_values",
+                    (num_params,),
+                    np.float64,
+                    "Input parameter values to use during sampling.",
+                )
+            )
 
         return samplex
 

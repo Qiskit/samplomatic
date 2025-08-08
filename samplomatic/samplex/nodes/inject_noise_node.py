@@ -68,7 +68,7 @@ class InjectNoiseNode(SamplingNode):
             self.sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, size, rng, **kwargs):
+    def sample(self, registers, size, rng, inputs, **kwargs):
         if (noise_map := kwargs.get("noise_maps", {}).get(self._noise_ref)) is None:
             raise SamplexRuntimeError(f"A noise map for '{self._noise_ref}' was not specified.")
         if (num_qubits := noise_map.num_qubits) != self._num_subsystems:

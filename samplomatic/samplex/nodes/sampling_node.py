@@ -18,6 +18,7 @@ from numpy.random import Generator
 
 from ...aliases import RegisterName
 from ...virtual_registers import VirtualRegister
+from ..interfaces import SamplexInput
 from .node import Node
 
 
@@ -30,6 +31,7 @@ class SamplingNode(abc.ABC, Node):
         registers: dict[RegisterName, VirtualRegister],
         size: int,
         rng: Generator,
+        inputs: SamplexInput,
         **kwargs,
     ):
         """Sample this node.
