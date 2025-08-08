@@ -59,9 +59,10 @@ jobs:
           name: release-dists
           path: dist/
 
-      - name: Publish release distributions to PyPI
-        # This is an alternative to twine, it uses OIDC publishing utilizing PyPi's trusted publising implementation.
-        # With this we do not need API keys stored in the repository.
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: dist/
+      # TODO: For now skip the actual push to pypi
+      # - name: Publish release distributions to PyPI
+      #   # This is an alternative to twine, it uses OIDC publishing utilizing PyPi's trusted publising implementation.
+      #   # With this we do not need API keys stored in the repository.
+      #   uses: pypa/gh-action-pypi-publish@release/v1
+      #   with:
+      #     packages-dir: dist/
