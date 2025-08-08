@@ -28,6 +28,8 @@ class Twirl(Annotation):
         decomposition: How to decompose single-qubit gates.
     """
 
+    namespace = "samplomatic.twirl"
+
     __slots__ = ("group", "dressing", "decomposition")
 
     def __init__(
