@@ -324,7 +324,7 @@ class TestFinalize:
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
         pre_samplex.add_emit_twirl(subsystems1, VirtualType.PAULI)
 
-        with pytest.raises(SamplexBuildError, match="unterminated .* on qubit indices \[2, 3\]"):
+        with pytest.raises(SamplexBuildError, match=r"unterminated .* on qubit indices \[2, 3\]"):
             pre_samplex.finalize()
 
     def test_finalize_prunes_unreachable_nodes(self):

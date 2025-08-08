@@ -54,7 +54,7 @@ def test_construction_fails():
             "template_values", [[0, 1], [2, 4]], "x", VirtualType.U2, [3, 2], RzSxSynth()
         )
 
-    with pytest.raises(SamplexConstructionError, match="Expected .* 2 subsystems .* shape \(3,\)"):
+    with pytest.raises(SamplexConstructionError, match=r"Expected .* 2 subsystems .* shape \(3,\)"):
         CollectTemplateValues(
             "template_values",
             [[0, 1, 3], [2, 4, 5]],
