@@ -10,9 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Transpiler passes"""
 
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .add_inject_noise import AddInjectNoise
+from .add_terminal_right_dressed_boxes import AddTerminalRightDressedBoxes
+from .group_gates_into_boxes import GroupGatesIntoBoxes
+from .group_meas_into_boxes import GroupMeasIntoBoxes

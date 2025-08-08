@@ -26,6 +26,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
 ]
+dependencies = [
+    "qiskit>=2.1.1",
+    "numpy>=1.26",
+    "rustworkx>=0.16.0",
+]
 
 [tool.setuptools_scm]
 version_file = "samplomatic/_version.py"
@@ -39,8 +44,19 @@ BugTracker = "https://github.com/Qiskit/samplomatic/issues"
 [project.optional-dependencies]
 dev = [
     "pytest",                 # For running tests
+    "pytest-benchmark",       # For running performance tests
+    "kaleido",                # For visualizing performance tests
     "ruff",                   # Formatter and linter
     "pre-commit",             # Pre-commit hooks
+    "towncrier",              # Changelog management
+    "qiskit-aer",             # For running tests
+    "sphinx"                  # For building documentation
+]
+vis = [
+    "nbformat>=4.2.0",
+    "plotly",
+    "matplotlib",
+    "pylatexenc",
 ]
 
 [tool.ruff]
@@ -59,3 +75,7 @@ target-version = "py311"
     "E402",   # module-import-not-at-top-of-file
     "F401",   # unused-import
 ]
+
+[tool.pytest.ini_options]
+addopts = "--ignore=test/performance"
+pythonpath = ["."]

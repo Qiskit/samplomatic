@@ -10,9 +10,4 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
-
-from . import builders
-from ._version import __version__
-from .annotations import Twirl
-from .builders import build
+from .layered_circuits import make_layered_circuit, make_noise_maps
