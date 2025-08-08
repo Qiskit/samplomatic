@@ -119,6 +119,5 @@ class ParameterExpressionTable:
             parameter_values = dict(zip(self.parameters, parameter_values))
 
         return np.array(
-            [expression.bind_all(parameter_values) for expression in self._expressions],
-            dtype=float,
+            [expression.bind_all(parameter_values) for expression in self._expressions], dtype=float
         )
