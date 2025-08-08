@@ -25,21 +25,6 @@ def _sort_key(parameter: Parameter):
     return (parameter.name,)
 
 
-def _eval(expression: ParameterExpression, parameter_values: dict[Parameter, float]) -> float:
-    try:
-        relevant_parameter_values = {
-            param: parameter_values[param] for param in expression.parameters
-        }
-    except KeyError as exc:
-        supplied = sorted(set(expression.parameters).intersection(parameter_values), key=_sort_key)
-        supplied = ", ".join(param.name for param in supplied)
-        raise ParameterError(
-            f"{expression} only received values for parameters [{supplied}]."
-        ) from exc
-    bound = expression.bind(relevant_parameter_values, allow_unknown_parameters=False)
-    return bound.numeric()
-
-
 class ParameterExpressionTable:
     """Evaluates a list of parameter expressions given a list of parameter values.
 
@@ -133,6 +118,7 @@ class ParameterExpressionTable:
         if not isinstance(parameter_values, dict):
             parameter_values = dict(zip(self.parameters, parameter_values))
 
-        return np.fromiter(
-            (_eval(expression, parameter_values) for expression in self._expressions), dtype=float
+        return np.array(
+            [expression.bind_all(parameter_values) for expression in self._expressions],
+            dtype=float,
         )
