@@ -21,6 +21,7 @@ from .passes import (
     AddTerminalRightDressedBoxes,
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
+    MergeBoxes,
 )
 from .passes.insert_noops import (
     AddNoopsActiveAccum,
@@ -73,6 +74,7 @@ def generate_boxing_pass_manager(
         )
 
     passes.append(AddTerminalRightDressedBoxes())
+    passes.append(MergeBoxes())
     passes.append(AddInjectNoise(inject_noise_strategy))
 
     return PassManager(passes)
