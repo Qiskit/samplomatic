@@ -12,11 +12,10 @@
 
 """MergeBoxes"""
 
-from qiskit.circuit import BoxOp, QuantumCircuit, Qubit
+from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
 
-from ...annotations import Twirl
 from .utils import asap_topological_nodes
 
 
@@ -31,29 +30,23 @@ class MergeBoxes(TransformationPass):
     def __init__(self):
         TransformationPass.__init__(self)
 
-    def _mergeable(
-        left_box: DAGOpNode,
-        right_box: DAGOpNode):
-        """
-        """
+    def _mergeable(self, left_box: DAGOpNode, right_box: DAGOpNode):
+        """ """
         # empty cache should be mergeable with any box
         if not left_box:
             return True
         return set(left_box.op.annotations) == set(right_box.op.annotations)
 
-    def _merge_boxes(
-        dag: DAGCircuit,
-        left_box: DAGOpNode,
-        right_box: DAGOpNode):
-        
+    def _merge_boxes(self, dag: DAGCircuit, left_box: DAGOpNode, right_box: DAGOpNode):
         # if the cache is empty, merging just sets the cache equal to `right_box`
         if not left_box:
             return right_box
-        
+
         combined_qargs = set(left_box.qargs).union(set(right_box.qargs))
         new_content = QuantumCircuit(list(combined_qargs), list(right_box.cargs))
 
-        # prepending the left box's operations is for when there are 1q gates on qubits that both boxes have in common
+        # prepending the left box's operations is for when there are 1q gates on qubits that both
+        # boxes have in common
         for op in left_box.op.body:
             new_content.append(op)
         for op in right_box.op.body:
@@ -63,17 +56,14 @@ class MergeBoxes(TransformationPass):
         return dag.apply_operation_back(box, new_content.qubits, new_content.clbits)
 
     def _conditional_clear_cache(
-        dag: DAGCircuit,
-        left_box: DAGOpNode,
-        right_box: DAGOpNode,
-        mergeable: bool):
-
-        # checks whether the right box is 
-        is_1q_gate_box = (
-            right_box.op.name == "box" and 
-            all((len(operation.qubits) == 1 and len(operation.clbits) == 0) for operation in right_box.op.body.data)
+        self, dag: DAGCircuit, left_box: DAGOpNode, right_box: DAGOpNode, mergeable: bool
+    ):
+        # checks whether the right box is
+        is_1q_gate_box = right_box.op.name == "box" and all(
+            (len(operation.qubits) == 1 and len(operation.clbits) == 0)
+            for operation in right_box.op.body.data
         )
-        
+
         if not mergeable or not is_1q_gate_box:
             dag.apply_operation_back(left_box.op, left_box.qargs, left_box.cargs)
             return None
@@ -86,20 +76,27 @@ class MergeBoxes(TransformationPass):
         # A dag where all operations are added except boxes that get merged into others
         new_dag: DAGCircuit = dag.copy_empty_like()
 
-        # A cache storing the most recently merged boxes (that could potentially be merged with the current node)
+        # A cache storing the most recently merged boxes (that could potentially be merged with the
+        # current node)
         merged_box_cache: DAGOpNode = None
 
         for node in asap_topological_nodes(dag):
             if node.op.name == "box":
                 if self._mergeable(merged_box_cache, node):
                     merged_box_cache = self._merge_boxes(new_dag, merged_box_cache, node)
-                    merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, True)
+                    merged_box_cache = self._conditional_clear_cache(
+                        new_dag, merged_box_cache, node, True
+                    )
                 else:
-                    merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, False)
+                    merged_box_cache = self._conditional_clear_cache(
+                        new_dag, merged_box_cache, node, False
+                    )
                     merged_box_cache = self._merge_boxes(new_dag, merged_box_cache, node)
             else:
                 if any(qarg in merged_box_cache.qargs for qarg in node.qargs):
-                    merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, False)
+                    merged_box_cache = self._conditional_clear_cache(
+                        new_dag, merged_box_cache, node, False
+                    )
                 new_dag.apply_operation_back(node)
 
         merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, False)
