@@ -28,7 +28,7 @@ class AddInjectNoise(TransformationPass):
     """Inserts :class:`~.InjectNoise` annotations to all the unique boxes with twirling annotation.
 
     This pass finds all the twirled-annotated boxes in the given circuit that contain one or more
-    entanglers and adds inject noise annotations.
+    entanglers or measurements and adds inject noise annotations.
 
     Args:
         strategy: The noise injection strategy.
