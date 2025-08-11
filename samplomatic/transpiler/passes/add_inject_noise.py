@@ -73,8 +73,8 @@ class AddInjectNoise(TransformationPass):
             if node.op.name == "box" and (twirl := get_annotation(node.op, Twirl)):
                 undressed_box = undress_box(node.op)
                 undressed_box.annotations = [twirl]
-                if undressed_box.body.num_nonlocal_gates() == 0:
-                    # Skip boxes that do not contain entanglers
+                if undressed_box.body.num_nonlocal_gates() == 0 and not undressed_box.body.clbits:
+                    # Skip boxes that do not contain entanglers or measurements
                     continue
 
                 instr_qubits = undressed_box.body.qubits

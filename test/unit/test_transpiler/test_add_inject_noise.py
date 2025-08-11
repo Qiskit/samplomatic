@@ -33,6 +33,8 @@ def test_none_strategy():
     with circuit.box([Twirl()]):
         circuit.rz(th := Parameter("theta"), 0)
         circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
 
     pm = PassManager([AddInjectNoise("none")])
     transpiled_circuit = pm.run(circuit)
@@ -47,6 +49,8 @@ def test_none_strategy():
     with expected_circuit.box([Twirl()]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
 
@@ -63,15 +67,19 @@ def test_no_modification_strategy():
     with circuit.box([Twirl()]):
         circuit.rz(th := Parameter("theta"), 0)
         circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
 
     pm = PassManager([AddInjectNoise("no_modification")])
     transpiled_circuit = pm.run(circuit)
 
     ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref
     ref2 = get_annotation(transpiled_circuit.data[1].operation, InjectNoise).ref
+    ref3 = get_annotation(transpiled_circuit.data[3].operation, InjectNoise).ref
 
     assert get_annotation(transpiled_circuit.data[0].operation, InjectNoise).modifier_ref == ""
     assert get_annotation(transpiled_circuit.data[1].operation, InjectNoise).modifier_ref == ""
+    assert get_annotation(transpiled_circuit.data[3].operation, InjectNoise).modifier_ref == ""
 
     expected_circuit = QuantumCircuit(2)
     with expected_circuit.box([Twirl(), InjectNoise(ref1, "")]):
@@ -83,6 +91,8 @@ def test_no_modification_strategy():
     with expected_circuit.box([Twirl(), InjectNoise(ref1, "")]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl(), InjectNoise(ref3, "")]):
+        expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
 
@@ -99,15 +109,19 @@ def test_uniform_modification_strategy():
     with circuit.box([Twirl()]):
         circuit.rz(th := Parameter("theta"), 0)
         circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
 
     pm = PassManager([AddInjectNoise("uniform_modification")])
     transpiled_circuit = pm.run(circuit)
 
     ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref
     ref2 = get_annotation(transpiled_circuit.data[1].operation, InjectNoise).ref
+    ref3 = get_annotation(transpiled_circuit.data[3].operation, InjectNoise).ref
 
     assert get_annotation(transpiled_circuit.data[0].operation, InjectNoise).modifier_ref == ref1
     assert get_annotation(transpiled_circuit.data[1].operation, InjectNoise).modifier_ref == ref2
+    assert get_annotation(transpiled_circuit.data[3].operation, InjectNoise).modifier_ref == ref3
 
     expected_circuit = QuantumCircuit(2)
     with expected_circuit.box([Twirl(), InjectNoise(ref1, ref1)]):
@@ -119,6 +133,8 @@ def test_uniform_modification_strategy():
     with expected_circuit.box([Twirl(), InjectNoise(ref1, ref1)]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl(), InjectNoise(ref3, ref3)]):
+        expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
 
@@ -135,6 +151,8 @@ def test_individual_modification_strategy():
     with circuit.box([Twirl()]):
         circuit.rz(th := Parameter("theta"), 0)
         circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
 
     pm = PassManager([AddInjectNoise("individual_modification")])
     transpiled_circuit = pm.run(circuit)
@@ -142,13 +160,15 @@ def test_individual_modification_strategy():
     ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref
     ref2 = get_annotation(transpiled_circuit.data[1].operation, InjectNoise).ref
     ref3 = get_annotation(transpiled_circuit.data[2].operation, InjectNoise).ref
+    ref4 = get_annotation(transpiled_circuit.data[3].operation, InjectNoise).ref
 
     modifier_ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).modifier_ref
     modifier_ref2 = get_annotation(transpiled_circuit.data[1].operation, InjectNoise).modifier_ref
     modifier_ref3 = get_annotation(transpiled_circuit.data[2].operation, InjectNoise).modifier_ref
+    modifier_ref4 = get_annotation(transpiled_circuit.data[3].operation, InjectNoise).modifier_ref
 
-    assert len(refs := {ref1, ref2, ref3}) == 2
-    assert len(modifier_ref := {modifier_ref1, modifier_ref2, modifier_ref3}) == 3
+    assert len(refs := {ref1, ref2, ref3, ref4}) == 3
+    assert len(modifier_ref := {modifier_ref1, modifier_ref2, modifier_ref3, modifier_ref4}) == 4
     assert refs.isdisjoint(modifier_ref)
 
     expected_circuit = QuantumCircuit(2)
@@ -161,6 +181,8 @@ def test_individual_modification_strategy():
     with expected_circuit.box([Twirl(), InjectNoise(ref3, modifier_ref3)]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl(), InjectNoise(ref4, modifier_ref4)]):
+        expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
 
@@ -175,6 +197,8 @@ def test_overwrite(overwrite):
     with circuit.box([Twirl(), InjectNoise("my_ref")]):
         circuit.z(0)
         circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
 
     pm = PassManager([AddInjectNoise("no_modification", overwrite)])
     transpiled_circuit = pm.run(circuit)
