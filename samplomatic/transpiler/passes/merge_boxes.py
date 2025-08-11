@@ -17,7 +17,7 @@ from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
 
 from ...annotations import Twirl
-from .utils import asap_topological_nodes, validate_op_is_supported
+from .utils import asap_topological_nodes
 
 
 class MergeBoxes(TransformationPass):
@@ -31,97 +31,76 @@ class MergeBoxes(TransformationPass):
     def __init__(self):
         TransformationPass.__init__(self)
 
+    def _mergeable(
+        left_box: DAGOpNode,
+        right_box: DAGOpNode):
+        """
+        """
+        # empty cache should be mergeable with any box
+        if not left_box:
+            return True
+        return set(left_box.op.annotations) == set(right_box.op.annotations)
+
     def _merge_boxes(
-        self,
         dag: DAGCircuit,
-        boxes_to_merge: list[DAGOpNode],
-        box_so_far_qargs: set[Qubit],
-        right_box: DAGOpNode = None,
-    ):
-        """
-        Adds contents of inputted boxes into a single box.
+        left_box: DAGOpNode,
+        right_box: DAGOpNode):
+        
+        # if the cache is empty, merging just sets the cache equal to `right_box`
+        if not left_box:
+            return right_box
+        
+        combined_qargs = set(left_box.qargs).union(set(right_box.qargs))
+        new_content = QuantumCircuit(list(combined_qargs), list(right_box.cargs))
 
-        Combines a batch of single-qubit-gate-containing boxes with a final box that cannot be
-        combined with boxes to its right. If no final box is passed, the batch of boxes is merged
-        on its own.
-        """
-        # this case actually occurs quite commonly, the way the ``run`` function is set up.
-        if not boxes_to_merge:
-            return
+        # prepending the left box's operations is for when there are 1q gates on qubits that both boxes have in common
+        for op in left_box.op.body:
+            new_content.append(op)
+        for op in right_box.op.body:
+            new_content.append(op)
 
-        # set up the circuit containing all the boxes' operations
-        new_content = QuantumCircuit(list(box_so_far_qargs))
-        if right_box:
-            # this union operation exists for the case that the right box contains qubits that are
-            # not already in any of the boxes to the left
-            new_qargs = box_so_far_qargs.union(right_box.op.body.qubits)
-            new_content = QuantumCircuit(list(new_qargs), right_box.op.body.clbits)
+        box = BoxOp(new_content, annotations=left_box.op.annotations)
+        return dag.apply_operation_back(box, new_content.qubits, new_content.clbits)
 
-        # add the boxed operations to the circuit
-        contains_right_dressed_box = False
-        for left_box in boxes_to_merge:
-            for op in left_box.op.body:
-                new_content.append(op)
-        if right_box:
-            contains_right_dressed_box = right_box.op.annotations[0].dressing == "right"
-            for op in right_box.op.body:
-                new_content.append(op)
+    def _conditional_clear_cache(
+        dag: DAGCircuit,
+        left_box: DAGOpNode,
+        right_box: DAGOpNode,
+        mergeable: bool):
 
-        # create a right-dressed box if the last box is right-dressed and apply to the dag
-        dressing_direction = "right" if contains_right_dressed_box else "left"
-        box = BoxOp(new_content, annotations=[Twirl(dressing=dressing_direction)])
-        dag.apply_operation_back(box, new_content.qubits, new_content.clbits)
+        # checks whether the right box is 
+        is_1q_gate_box = (
+            right_box.op.name == "box" and 
+            all((len(operation.qubits) == 1 and len(operation.clbits) == 0) for operation in right_box.op.body.data)
+        )
+        
+        if not mergeable or not is_1q_gate_box:
+            dag.apply_operation_back(left_box.op, left_box.qargs, left_box.cargs)
+            return None
+        return left_box
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """
         Finds boxes containing single-qubit gates and merges them when possible.
         """
+        # A dag where all operations are added except boxes that get merged into others
         new_dag: DAGCircuit = dag.copy_empty_like()
 
-        # collects batches of left-dressed single-qubit-gate-containing boxes and only merges them
-        # when a node is found to terminate the batch:
-        #
-        boxes_to_merge: list[DAGOpNode] = []
+        # A cache storing the most recently merged boxes (that could potentially be merged with the current node)
+        merged_box_cache: DAGOpNode = None
 
-        # the qubits covered by any box in the batch ``boxes_to_merge``
-        box_so_far_qargs: set[Qubit] = set()
-
-        for left_node in asap_topological_nodes(dag):
-            validate_op_is_supported(left_node)
-
-            # non-box operations are treated normally, but if they are in the way of a batch of
-            # boxes, that batch is first merged and added to the dag before the non-box op
-            if left_node.op.name != "box":
-                if any(qarg in left_node.qargs for qarg in box_so_far_qargs):
-                    self._merge_boxes(new_dag, boxes_to_merge, box_so_far_qargs, None)
-                    boxes_to_merge = []
-                    box_so_far_qargs = set()
-                new_dag.apply_operation_back(left_node.op, left_node.qargs, left_node.cargs)
-                continue
-
-            is_1q_gate_box = all(
-                (len(operation.qubits) == 1 and len(operation.clbits) == 0)
-                for operation in left_node.op.body.data
-            )
-            is_last_box = not [node for node in dag.op_successors(left_node)]
-
-            # another conditional that leads to a batch of boxes ending
-            if not is_1q_gate_box or is_last_box or left_node.op.annotations[0].dressing == "right":
-                if any(qarg in left_node.qargs for qarg in box_so_far_qargs):
-                    self._merge_boxes(new_dag, boxes_to_merge, box_so_far_qargs, left_node)
-                    boxes_to_merge = []
-                    box_so_far_qargs = set()
+        for node in asap_topological_nodes(dag):
+            if node.op.name == "box":
+                if self._mergeable(merged_box_cache, node):
+                    merged_box_cache = self._merge_boxes(new_dag, merged_box_cache, node)
+                    merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, True)
                 else:
-                    self._merge_boxes(new_dag, boxes_to_merge, box_so_far_qargs, None)
-                    new_dag.apply_operation_back(left_node.op, left_node.qargs, left_node.cargs)
-                    boxes_to_merge = []
-                    box_so_far_qargs = set()
-                continue
+                    merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, False)
+                    merged_box_cache = self._merge_boxes(new_dag, merged_box_cache, node)
+            else:
+                if any(qarg in merged_box_cache.qargs for qarg in node.qargs):
+                    merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, False)
+                new_dag.apply_operation_back(node)
 
-            # adds boxes to the batch
-            if is_1q_gate_box:
-                boxes_to_merge.append(left_node)
-                for qarg in left_node.qargs:
-                    box_so_far_qargs.add(qarg)
-
+        merged_box_cache = self._conditional_clear_cache(new_dag, merged_box_cache, node, False)
         return new_dag
