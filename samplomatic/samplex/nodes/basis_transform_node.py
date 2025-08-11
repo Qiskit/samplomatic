@@ -149,7 +149,7 @@ class BasisTransformNode(SamplingNode):
             "register_name": self._register_name,
             "basis_change": json.dumps({
                 "alphabet": self._basis_change.alphabet,
-                "action": action.to_json()
+                "action": self._basis_change.action.to_json()
             }),
             "num_subsystems": str(self._num_subsystems)
         }
