@@ -25,6 +25,8 @@ class InjectNoise(Annotation):
         modifier_ref: A unique identifer for modifiers to apply to the noise map before injection.
     """
 
+    namespace = "samplomatic.inject_noise"
+
     __slots__ = ("ref", "modifier_ref")
 
     def __init__(self, ref: StrRef, modifier_ref: StrRef = ""):

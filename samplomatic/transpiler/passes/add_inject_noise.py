@@ -70,8 +70,9 @@ class AddInjectNoise(TransformationPass):
         )
 
         for node in dag.op_nodes():
-            if node.op.name == "box" and get_annotation(node.op, Twirl):
-                undressed_box = undress_box(node.op, Twirl)
+            if node.op.name == "box" and (twirl := get_annotation(node.op, Twirl)):
+                undressed_box = undress_box(node.op)
+                undressed_box.annotations = [twirl]
                 if undressed_box.body.num_nonlocal_gates() == 0:
                     # Skip boxes that do not contain entanglers
                     continue
