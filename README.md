@@ -82,16 +82,6 @@ ruff check .
 
 More conveniently, set up ruff in your IDE to run-on-save.
 
-### Adding to the changelog
-
-We use [Towncrier](https://towncrier.readthedocs.io/) for changelog management.
-All PRs that make a changelog-worthy change should add a changelog entry.
-To do this, supposing your PR is `#42`, create a [new fragment](https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments) file in the `changelog.d/` directory:
-
-```bash
-towncrier create -c "Added a cool feature!" 42.added.md
-```
-
 ### Pre-commit Hooks
 
 It is required that all contributers install and use `pre-commit` to ensure code quality and consistency in this library.
