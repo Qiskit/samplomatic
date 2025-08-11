@@ -39,23 +39,23 @@ def test_sample(rng):
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("III", 0)])}
-    node.sample(registers, 5, rng, SamplexInput([]), noise_maps=noise_maps)
+    node.sample(registers, rng, SamplexInput([], 5), noise_maps=noise_maps)
     assert registers["injection"] == PauliRegister(np.zeros(15, dtype=np.uint8).reshape(3, 5))
     assert registers["the_sign"] == Z2Register(np.ones((1, 5), dtype=np.uint8))
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("XXX", -100)])}
-    node.sample(registers, 100, rng, SamplexInput([]), noise_maps=noise_maps)
+    node.sample(registers, rng, SamplexInput([], 100), noise_maps=noise_maps)
     assert (~registers["the_sign"].virtual_gates).any()
 
     noise_scales = {"my_modifier": 0}
     node.sample(
-        registers, 100, rng, SamplexInput([]), noise_maps=noise_maps, noise_scales=noise_scales
+        registers, rng, SamplexInput([], 100), noise_maps=noise_maps, noise_scales=noise_scales
     )
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
     local_scales = {"my_modifier": [0]}
     node.sample(
-        registers, 100, rng, SamplexInput([]), noise_maps=noise_maps, local_scales=local_scales
+        registers, rng, SamplexInput([], 100), noise_maps=noise_maps, local_scales=local_scales
     )
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
@@ -67,15 +67,14 @@ def test_sample_raises(rng):
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("II", 0)])}
     with pytest.raises(SamplexRuntimeError, match="Received a noise map acting on `2`"):
-        node.sample(registers, 5, rng, SamplexInput([]), noise_maps=noise_maps)
+        node.sample(registers, rng, SamplexInput([], 5), noise_maps=noise_maps)
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("III", 0)])}
     with pytest.raises(SamplexRuntimeError, match="a local scale from reference 'my_modifier'"):
         node.sample(
             registers,
-            5,
             rng,
-            SamplexInput([]),
+            SamplexInput([], 5),
             noise_maps=noise_maps,
             local_scales={"my_modifier": [0, 1]},
         )

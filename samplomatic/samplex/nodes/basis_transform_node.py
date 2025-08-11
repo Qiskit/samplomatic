@@ -127,6 +127,6 @@ class BasisTransformNode(SamplingNode):
     def instantiates(self):
         return {self._register_name: (self._num_subsystems, self._basis_change.action.TYPE)}
 
-    def sample(self, registers, size, rng, inputs, **kwargs):
+    def sample(self, registers, rng, inputs, **kwargs):
         basis = inputs[self._basis_ref]
         registers[self._register_name] = self._basis_change.get_transform(basis)

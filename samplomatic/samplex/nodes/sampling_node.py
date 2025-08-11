@@ -29,7 +29,6 @@ class SamplingNode(abc.ABC, Node):
     def sample(
         self,
         registers: dict[RegisterName, VirtualRegister],
-        size: int,
         rng: Generator,
         inputs: SamplexInput,
         **kwargs,
@@ -38,7 +37,6 @@ class SamplingNode(abc.ABC, Node):
 
         Args:
             registers: Where to sample into.
-            size: How many randomizations to sample.
             rng: A randomness generator.
             kwargs: Optional keyword arguments to be used at sample time.
         """

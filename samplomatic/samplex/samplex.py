@@ -14,7 +14,6 @@
 
 from collections.abc import Iterable, Sequence
 from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait
-from itertools import chain
 from typing import TYPE_CHECKING
 
 from numpy.random import Generator, SeedSequence, default_rng
@@ -39,11 +38,10 @@ from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import (
-    InputSpecification,
     MetadataOutput,
-    OutputSpecification,
     SamplexInput,
     SamplexOutput,
+    TensorSpecification,
 )
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
@@ -74,8 +72,8 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
-        self._input_specifications: dict[InterfaceName, InputSpecification] = {}
-        self._output_specifications: dict[InterfaceName, OutputSpecification] = {}
+        self._input_specifications: dict[InterfaceName, TensorSpecification] = {}
+        self._output_specifications: dict[InterfaceName, TensorSpecification] = {}
 
     @property
     def parameters(self) -> list[Parameter]:
@@ -121,7 +119,7 @@ class Samplex:
         self._passthrough_params = (param_idxs, param_exp_idxs)
         return max(param_idxs)
 
-    def add_input(self, specification: InputSpecification):
+    def add_input(self, specification: TensorSpecification):
         """Add a sampling input to this samplex.
 
         Args:
@@ -135,7 +133,7 @@ class Samplex:
             raise SamplexConstructionError(f"An input with name '{name}' already exists.")
         self._input_specifications[name] = specification
 
-    def add_output(self, specification: OutputSpecification):
+    def add_output(self, specification: TensorSpecification):
         """Add a sampling output to this samplex.
 
         Args:
@@ -258,13 +256,13 @@ class Samplex:
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
-        inputs = SamplexInput(chain(self._input_specifications.values()))
+        inputs = SamplexInput(self._input_specifications.values(), size)
         inputs.validate_and_update(**kwargs)
 
         extra_outputs = []
         if keep_registers:
             extra_outputs.append(MetadataOutput("registers", "Final state of internal registers."))
-        outputs = SamplexOutput(chain(self._output_specifications.values(), extra_outputs), size)
+        outputs = SamplexOutput(self._output_specifications.values(), extra_outputs, size)
 
         parameter_values = inputs.get("parameter_values", [])
         evaluated_values = self._param_table.evaluate(parameter_values)
@@ -273,19 +271,21 @@ class Samplex:
                 self._passthrough_params[1]
             ]
 
+        if (measurement_flips := outputs.get("measurement_flips")) is not None:
+            measurement_flips[:] = 0
+
         noise_maps = {} if noise_maps is None else noise_maps
         noise_scales = {} if noise_scales is None else noise_scales
         local_scales = {} if local_scales is None else local_scales
         rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
 
-        registers: dict[RegisterName, VirtualRegister] = outputs.get("registers", {})
+        registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
         with ThreadPoolExecutor(max_workers) as pool:
             wait_with_raise(
                 pool.submit(
                     node.sample,
                     registers,
-                    size,
                     rng,
                     inputs,
                     noise_maps=noise_maps,
