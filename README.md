@@ -68,10 +68,6 @@ pytest-benchmark list
 pytest-benchmark compare PATH --histogram --group-by=name
 ```
 
-### Performance tests automation
-
-The performance tests are run automatically with every push to `main`. The benchmarks are pushed to the [samplomatic-benchmarks](https://github.ibm.com/ibm-q-research/samplomatic-benchmarks) repo and collected in [this folder](https://github.ibm.com/ibm-q-research/samplomatic-benchmarks/tree/main/samplomatic-benchmarks/benchmarks).
-
 ### Linting and Formatting
 
 `ruff` is used for linting and formatting. Run the following to manually apply checks:
@@ -84,7 +80,7 @@ More conveniently, set up ruff in your IDE to run-on-save.
 
 ### Pre-commit Hooks
 
-It is required that all contributers install and use `pre-commit` to ensure code quality and consistency in this library.
+It is recommended that contributers install and use `pre-commit` to ensure code quality and consistency in this library.
 It automatically runs linters and formatters on staged files during `git commit`.
 
 1. Install the hooks defined in the .pre-commit-config.yaml file:
