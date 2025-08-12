@@ -12,7 +12,13 @@
 
 import numpy as np
 
-from samplomatic.aliases import NumSubsystems, OutputName, ParamIndex, RegisterName, SubsystemIndex
+from samplomatic.aliases import (
+    InterfaceName,
+    NumSubsystems,
+    ParamIndex,
+    RegisterName,
+    SubsystemIndex,
+)
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformPauli
 from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
@@ -38,7 +44,7 @@ class DummyNode(Node):
         instantiates: dict[RegisterName, tuple[NumSubsystems, VirtualType]] | None = None,
         removes: set[RegisterName] | None = None,
         parameter_idxs: list[ParamIndex] | None = None,
-        outputs_to: set[OutputName] | None = None,
+        outputs_to: set[InterfaceName] | None = None,
     ):
         self._reads_from = reads_from or {}
         self._writes_to = writes_to or {}
@@ -97,8 +103,8 @@ class DummyCollectionNode(CollectionNode, DummyNode):
 class DummySamplingNode(SamplingNode, DummyNode):
     """Dummy child sampling node for testing."""
 
-    def sample(self, registers, size, rng, **_):
-        self._update(registers, rng, size)
+    def sample(self, registers, rng, inputs, **_):
+        self._update(registers, rng, inputs.num_samples)
 
 
 class DummyEvaluationNode(EvaluationNode, DummyNode):

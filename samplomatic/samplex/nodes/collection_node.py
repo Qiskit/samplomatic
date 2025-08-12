@@ -18,7 +18,7 @@ from numpy.random import Generator
 
 from ...aliases import RegisterName
 from ...virtual_registers import VirtualRegister
-from ..samplex_output import SamplexOutput
+from ..interfaces import SamplexOutput
 from .node import Node
 
 

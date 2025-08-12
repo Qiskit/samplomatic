@@ -19,7 +19,7 @@ import io
 import numpy as np
 import pybase64
 
-from ...aliases import OutputName, ParamIndices, RegisterName, SubsystemIndices
+from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
 from ...annotations import VirtualType
 from ...exceptions import DeserializationError, SamplexConstructionError
 from ...synths import RzRxSynth, RzSxSynth, Synth
@@ -48,7 +48,7 @@ class CollectTemplateValues(CollectionNode):
 
     def __init__(
         self,
-        template_params_name: OutputName,
+        template_params_name: InterfaceName,
         template_idxs: ParamIndices,
         register_name: RegisterName,
         register_type: VirtualType,
@@ -100,14 +100,14 @@ class CollectTemplateValues(CollectionNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> CollectTemplateValues:
         with io.BytesIO(pybase64.b64decode(data["template_idxs"])) as buf:
             template_idxs = np.load(buf)
 
         with io.BytesIO(pybase64.b64decode(data["subsystem_idxs"])) as buf:
             subsystem_idxs = np.load(buf)
         synth_class_name = data["synth"]
-        if synth_class_name == "RzRxSynth":            
+        if synth_class_name == "RzRxSynth":
             synth = RzRxSynth()
         elif synth_class_name == "RzSxSynth":
             synth = RzSxSynth()
@@ -120,7 +120,7 @@ class CollectTemplateValues(CollectionNode):
             data["register_name"],
             VirtualType(data["register_type"]),
             subsystem_idxs,
-            synth
+            synth,
         )
 
     @property

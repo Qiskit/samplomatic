@@ -108,42 +108,11 @@ def test_sampling(rng, circuit, save_plot):
     save_plot(lambda: pre_samplex.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    circuit_params_dic = {
-        param: value
-        for param, value in zip(circuit.parameters, rng.random(len(circuit.parameters)))
-    }
+    circuit_params = rng.random(len(circuit.parameters))
 
-    expected_op = Operator(remove_boxes(circuit).assign_parameters(circuit_params_dic))
+    expected_op = Operator(remove_boxes(circuit).assign_parameters(circuit_params))
 
-    samplex_output = samplex.sample(circuit_params_dic, size=10)
-    parameter_values = samplex_output["parameter_values"]
-    for row in parameter_values:
-        op = Operator(template.template.assign_parameters(row))
-        assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f
-
-
-def test_param_list_input(rng):
-    """Similar to test_sampling, but with a parameter list input to the sample method"""
-    a = Parameter("a")
-    circuit = QuantumCircuit(1)
-    circuit.rz(Parameter("e") + a, 0)
-    with circuit.box([Twirl()]):
-        circuit.rz(a + Parameter("b"), 0)
-    with circuit.box([Twirl(dressing="right")]):
-        circuit.noop(0)
-    circuit.rz(2 * Parameter("c"), 0)
-    circuit.rz(a, 0)
-
-    template, pre_samplex = pre_build(circuit)
-
-    samplex = pre_samplex.finalize()
-    samplex.finalize()
-
-    circuit_params_list = rng.random(len(circuit.parameters))
-
-    expected_op = Operator(remove_boxes(circuit).assign_parameters(circuit_params_list))
-
-    samplex_output = samplex.sample(circuit_params_list, size=5)
+    samplex_output = samplex.sample(parameter_values=circuit_params, size=10)
     parameter_values = samplex_output["parameter_values"]
     for row in parameter_values:
         op = Operator(template.template.assign_parameters(row))

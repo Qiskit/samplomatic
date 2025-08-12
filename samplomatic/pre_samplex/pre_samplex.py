@@ -17,11 +17,16 @@ from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from enum import Enum, auto
 from itertools import count
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from qiskit.circuit import Qubit
-from rustworkx.rustworkx import PyDiGraph, topological_sort, weakly_connected_components
+from rustworkx.rustworkx import (
+    PyDiGraph,
+    topological_generations,
+    topological_sort,
+    weakly_connected_components,
+)
 
 from ..aliases import (
     CircuitInstruction,
@@ -44,13 +49,13 @@ from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
-    cluster_compatible_nodes,
     find_unreachable_nodes,
     replace_edges_with_one_edge,
     replace_nodes_with_one_node,
 )
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
-from ..samplex import ArrayOutput, Samplex, Z2ArrayOutput
+from ..samplex import Samplex
+from ..samplex.interfaces import TensorSpecification
 from ..samplex.nodes import (
     BasisTransformNode,
     CollectTemplateValues,
@@ -81,9 +86,10 @@ from .graph_data import (
     PreInjectNoise,
     PreNode,
     PrePropagate,
+    PrePropagateKey,
     PreZ2Collect,
 )
-from .utils import merge_pre_edges, pre_propagate_nodes_are_mergeable
+from .utils import merge_pre_edges
 
 if TYPE_CHECKING:
     from plotly.graph_objects import Figure
@@ -764,44 +770,87 @@ class PreSamplex:
             are part of the same generation, and have identical directions and operation names, and
             have predecessors in common.
         """
-        for node_idxs in cluster_compatible_nodes(self.graph, pre_propagate_nodes_are_mergeable):
-            if len(node_idxs) == 1:
-                # Nothing to merge
-                continue
+        for generation in topological_generations(self.graph):
+            for node_idxs in self._cluster_pre_propagate_nodes(generation):
+                if len(node_idxs) == 1:
+                    # Nothing to merge
+                    continue
 
-            nodes = [self.graph[node_idx] for node_idx in node_idxs]
+                nodes = [self.graph[node_idx] for node_idx in node_idxs]
 
-            combined_subsystems = QubitIndicesPartition.union(*(node.subsystems for node in nodes))
+                combined_subsystems = QubitIndicesPartition.union(
+                    *(node.subsystems for node in nodes)
+                )
 
-            num_elements = nodes[0].partition.num_elements_per_part
-            num_parts = len(combined_subsystems) // num_elements
-            combined_partition = SubsystemIndicesPartition(
-                num_elements,
-                [tuple(range(i * num_elements, (i + 1) * num_elements)) for i in range(num_parts)],
-            )
+                num_elements = nodes[0].partition.num_elements_per_part
+                num_parts = len(combined_subsystems) // num_elements
+                combined_partition = SubsystemIndicesPartition(
+                    num_elements,
+                    [
+                        tuple(range(i * num_elements, (i + 1) * num_elements))
+                        for i in range(num_parts)
+                    ],
+                )
 
-            params = [param for node in nodes for param in node.spec.params]
+                params = [param for node in nodes for param in node.spec.params]
 
-            # This merges the node but not the edges
-            new_node_idx = replace_nodes_with_one_node(
-                self.graph,
-                node_idxs,
-                PrePropagate(
-                    combined_subsystems,
-                    self.graph[node_idxs[0]].direction,  # all nodes have same direction
-                    self.graph[node_idxs[0]].operation,  # all nodes have same operation
-                    combined_partition,
-                    InstructionSpec(params=params, mode=nodes[0].spec.mode),
-                ),
-            )
+                # This merges the node but not the edges
+                new_node_idx = replace_nodes_with_one_node(
+                    self.graph,
+                    node_idxs,
+                    PrePropagate(
+                        combined_subsystems,
+                        self.graph[node_idxs[0]].direction,  # all nodes have same direction
+                        self.graph[node_idxs[0]].operation,  # all nodes have same operation
+                        combined_partition,
+                        InstructionSpec(params=params, mode=nodes[0].spec.mode),
+                    ),
+                )
 
-            for successor_idx in set(self.graph.successor_indices(new_node_idx)):
-                new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
-                replace_edges_with_one_edge(self.graph, new_node_idx, successor_idx, new_edge)
+                for successor_idx in set(self.graph.successor_indices(new_node_idx)):
+                    new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
+                    replace_edges_with_one_edge(self.graph, new_node_idx, successor_idx, new_edge)
 
-            for predecessor_idx in set(self.graph.predecessor_indices(new_node_idx)):
-                new_edge = merge_pre_edges(self.graph, predecessor_idx, new_node_idx)
-                replace_edges_with_one_edge(self.graph, predecessor_idx, new_node_idx, new_edge)
+                for predecessor_idx in set(self.graph.predecessor_indices(new_node_idx)):
+                    new_edge = merge_pre_edges(self.graph, predecessor_idx, new_node_idx)
+                    replace_edges_with_one_edge(self.graph, predecessor_idx, new_node_idx, new_edge)
+
+    def _cluster_pre_propagate_nodes(self, generation: list[NodeIndex]) -> list[list[NodeIndex]]:
+        """A helper function to cluster ``PrePropagate`` nodes within a topological generation."""
+        clusters: dict[PrePropagateKey, list[dict[str, Any]]] = defaultdict(list)
+
+        for node_idx in generation:
+            node = self.graph[node_idx]
+            if isinstance(node, PrePropagate):
+                cluster_type_key = PrePropagateKey(
+                    mode=node.spec.mode,
+                    operation_name=node.operation.name,
+                    direction=node.direction,
+                )
+                for cluster in clusters[cluster_type_key]:
+                    if not cluster["subsystems"].overlaps_with(
+                        node.subsystems.all_elements
+                    ) and not cluster["predecessors"].isdisjoint(
+                        self.graph.predecessor_indices(node_idx)
+                    ):
+                        # Add to existing cluster
+                        cluster["nodes"].append(node_idx)
+                        for subsystem in node.subsystems:
+                            cluster["subsystems"].add(subsystem)
+                        cluster["predecessors"].update(self.graph.predecessor_indices(node_idx))
+                        break
+                else:
+                    clusters[cluster_type_key].append(
+                        {
+                            "nodes": [node_idx],
+                            "subsystems": QubitIndicesPartition.from_elements(
+                                node.subsystems.all_elements
+                            ),
+                            "predecessors": set(self.graph.predecessor_indices(node_idx)),
+                        }
+                    )
+
+        return [cluster["nodes"] for cluster_type in clusters.values() for cluster in cluster_type]
 
     def sorted_predecessor_idxs(
         self, pre_node_idx: NodeIndex, order: dict[NodeIndex, int]
@@ -922,9 +971,14 @@ class PreSamplex:
                 else max_passthrough_param_idx
             )
 
+        for basis_ref, length in self._basis_transforms.items():
+            samplex.add_input(
+                TensorSpecification(basis_ref, (length,), np.uint8, "Basis changing gates.")
+            )
+
         if max_param_idx is not None:
             samplex.add_output(
-                ArrayOutput(
+                TensorSpecification(
                     "parameter_values",
                     (max_param_idx + 1,),
                     np.float64,
@@ -934,9 +988,10 @@ class PreSamplex:
 
         if self._twirled_clbits:
             samplex.add_output(
-                Z2ArrayOutput(
+                TensorSpecification(
                     "measurement_flips",
                     (self.num_clbits,),
+                    np.bool_,
                     "Bit-flip corrections for measurement twirling, XOR your data against this"
                     " value. The ordering matches template.clbits.",
                 )
@@ -944,9 +999,10 @@ class PreSamplex:
 
         if (num_signs := next(self._noise_map_count)) > 0:
             samplex.add_output(
-                Z2ArrayOutput(
+                TensorSpecification(
                     "pauli_signs",
                     (num_signs,),
+                    np.bool_,
                     "Signs from sampled noise maps. The order matches the iteration order of "
                     "injected noise in the circuit.",
                 )
@@ -997,6 +1053,16 @@ class PreSamplex:
                 )
             else:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
+
+        if num_params := samplex.num_parameters:
+            samplex.add_input(
+                TensorSpecification(
+                    "parameter_values",
+                    (num_params,),
+                    np.float64,
+                    "Input parameter values to use during sampling.",
+                )
+            )
 
         return samplex
 

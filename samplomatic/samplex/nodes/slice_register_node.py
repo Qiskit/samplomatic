@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """SliceRegisterNode"""
+
 from __future__ import annotations
 
 import io
@@ -80,7 +81,7 @@ class SliceRegisterNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> SliceRegisterNode:
         with io.BytesIO(pybase64.b64decode(data["slice_idxs"])) as buf:
             slice_idxs = np.load(buf)
         return cls(

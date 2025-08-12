@@ -71,7 +71,7 @@ class InjectNoiseNode(SamplingNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> InjectNoiseNode:
         return cls(
             data["register_name"],
             data["sign_register_name"],
@@ -79,8 +79,6 @@ class InjectNoiseNode(SamplingNode):
             int(data["num_subsystems"]),
             data["modifier_ref"],
         )
-
-
 
     @property
     def outgoing_register_type(self) -> VirtualType:
@@ -92,7 +90,7 @@ class InjectNoiseNode(SamplingNode):
             self.sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, size, rng, **kwargs):
+    def sample(self, registers, rng, inputs, **kwargs):
         if (noise_map := kwargs.get("noise_maps", {}).get(self._noise_ref)) is None:
             raise SamplexRuntimeError(f"A noise map for '{self._noise_ref}' was not specified.")
         if (num_qubits := noise_map.num_qubits) != self._num_subsystems:
@@ -122,7 +120,7 @@ class InjectNoiseNode(SamplingNode):
                 ],
                 noise_map.num_qubits,
             )
-        signs, samples = noise_map.signed_sample(size, rng.bit_generator.random_raw())
+        signs, samples = noise_map.signed_sample(inputs.num_samples, rng.bit_generator.random_raw())
         registers[self.register_name] = PauliRegister.from_paulis(samples)
         registers[self.sign_register_name] = Z2Register(signs.reshape(1, -1))
 

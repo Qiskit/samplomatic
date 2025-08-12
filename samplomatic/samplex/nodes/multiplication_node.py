@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import json
+from typing import Self
 
 from ...aliases import RegisterName
 from ...annotations import VirtualType
@@ -50,7 +51,7 @@ class MultiplicationNode(EvaluationNode):
         return cls(
             operand,
             data["register_name"],
-        )          
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:

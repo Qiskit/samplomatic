@@ -70,7 +70,7 @@ class ConversionNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> ConversionNode:
         return cls(
             data["existing_name"],
             VirtualType(data["existing_type"]),

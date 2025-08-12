@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 
-"""Samplex"""
+"""Samplex serialization"""
 
 import io
 import json
@@ -27,9 +27,9 @@ from qiskit.qpy.binary_io.value import (
 )
 from rustworkx import PyDiGraph, from_node_link_json_file, node_link_json, parse_node_link_json
 
-from ..aliases import OutputName
+from ..aliases import InterfaceName
 from ..exceptions import DeserializationError
-from . import samplex_output
+from .interfaces import TensorSpecification
 from .nodes import Node
 from .nodes.basis_transform_node import BasisTransformNode
 from .nodes.collect_template_values import CollectTemplateValues
@@ -47,7 +47,6 @@ from .nodes.u2_param_multiplication_node import (
 )
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
-from .samplex_output import OutputSpecification
 
 NODE_TYPE_MAP = [
     BasisTransformNode,
@@ -79,7 +78,7 @@ def _deserialize_expression(expr: str, parameters: dict[str, Parameter]):
 
 def _serialize_expression_table(table: ParameterExpressionTable) -> str:
     expressions = []
-    for x in table._expressions:
+    for x in table._expressions:  # noqa: SLF001
         if isinstance(x, Parameter):
             expressions.append({"param": (x.uuid.hex, x.name)})
         else:
@@ -99,33 +98,44 @@ def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
             raise DeserializationError("Invalid parameter in expression table")
     return param_table
 
-def _serialize_output_specifications(data: dict[OutputName, OutputSpecification]) -> str:
+
+def _serialize_tensor_specifications(data: dict[InterfaceName, TensorSpecification]) -> str:
     out_dict = {}
     for name, spec in data.items():
-        out_dict[name] = {spec.__class__.__name__: spec._to_json()}
+        out_dict[name] = spec._to_json()  # noqa: SLF001
     return json.dumps(out_dict)
 
-def _deserialize_output_specifications(data: str) -> dict[OutputName, OutputSpecification]:
+
+def _deserialize_tensor_specifications(data: str) -> dict[InterfaceName, TensorSpecification]:
     outputs_raw = json.loads(data)
     outputs = {}
     for name, output in outputs_raw.items():
-        for cls_name, output_dict in output.items():
-            outputs[name] = getattr(samplex_output, cls_name)._from_json(json.loads(output_dict))
+        outputs[name] = TensorSpecification._from_json(json.loads(output))  # noqa: SLF001
     return outputs
+
 
 def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
     return {
         "finalized": str(samplex._finalized),  # noqa: SLF001
         "param_table": _serialize_expression_table(samplex._param_table),  # noqa: SLF001
-        "output_specification": _serialize_output_specifications(samplex._output_specifications)
+        "input_specification": _serialize_tensor_specifications(samplex._input_specifications),  # noqa: SLF001
+        "output_specification": _serialize_tensor_specifications(samplex._output_specifications),  # noqa: SLF001
     }
 
 
-def _process_graph_header(data: dict[str, str]) -> tuple[ParameterExpressionTable, bool, dict[OutputName, OutputSpecification]]:
+def _process_graph_header(
+    data: dict[str, str],
+) -> tuple[
+    ParameterExpressionTable,
+    bool,
+    dict[InterfaceName, TensorSpecification],
+    dict[InterfaceName, TensorSpecification],
+]:
     raw_param_table_dict = json.loads(data["param_table"])
     param_table = _deserialize_expression_table(raw_param_table_dict)
-    outputs = _deserialize_output_specifications(data["output_specification"])
-    return (param_table, data["finalized"] == "true", outputs)
+    inputs = _deserialize_tensor_specifications(data["input_specification"])
+    outputs = _deserialize_tensor_specifications(data["output_specification"])
+    return (param_table, data["finalized"] == "true", inputs, outputs)
 
 
 def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
@@ -142,7 +152,7 @@ def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None
 
 def parse_node(node_data: dict[str, str]) -> Node:
     node_type_index = int(node_data["node_type"])
-    return NODE_TYPE_MAP[node_type_index]._from_json_dict(node_data)
+    return NODE_TYPE_MAP[node_type_index]._from_json_dict(node_data)  # noqa: SLF001
 
 
 def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
@@ -152,7 +162,8 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex.graph = samplex_graph
     samplex._param_table = graph_attrs[0]  # noqa: SLF001
     samplex._finalized = graph_attrs[1]  # noqa: SLF001
-    samplex._output_specifications = graph_attrs[2]
+    samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
+    samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
     return samplex
 
 

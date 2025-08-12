@@ -23,7 +23,6 @@ from qiskit.circuit.library import HGate, IGate, RYGate
 
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
-from ...exceptions import SamplexRuntimeError
 from ...virtual_registers import U2Register, VirtualRegister, virtual_register_from_json
 from .sampling_node import SamplingNode
 
@@ -131,37 +130,31 @@ class BasisTransformNode(SamplingNode):
     def instantiates(self):
         return {self._register_name: (self._num_subsystems, self._basis_change.action.TYPE)}
 
-    def sample(self, registers, size, rng, **kwargs):
-        if (basis := kwargs.get("basis_transforms", {}).get(self._basis_ref)) is None:
-            raise SamplexRuntimeError(
-                f"A basis transform for '{self._basis_ref}' was not specified."
-            )
-        if basis.shape != (self._num_subsystems,):
-            raise SamplexRuntimeError(
-                f"Received {basis.shape} observables for basis transform "
-                f"'{self._basis_ref}' when it requires {self._num_subsystems}."
-            )
+    def sample(self, registers, rng, inputs, **kwargs):
+        basis = inputs[self._basis_ref]
         registers[self._register_name] = self._basis_change.get_transform(basis)
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "0",
             "register_name": self._register_name,
-            "basis_change": json.dumps({
-                "alphabet": self._basis_change.alphabet,
-                "action": self._basis_change.action.to_json()
-            }),
-            "num_subsystems": str(self._num_subsystems)
+            "basis_change": json.dumps(
+                {
+                    "alphabet": self._basis_change.alphabet,
+                    "action": self._basis_change.action.to_json(),
+                }
+            ),
+            "num_subsystems": str(self._num_subsystems),
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> BasisTransformNode:
         basis_change_dict = json.loads(data["basis_change"])
         return cls(
             data["register_name"],
             BasisChange(
                 basis_change_dict["alphabet"],
-                virtual_register_from_json(basis_change_dict["action"])
+                virtual_register_from_json(basis_change_dict["action"]),
             ),
-            int(data["num_subsystems"])
+            int(data["num_subsystems"]),
         )

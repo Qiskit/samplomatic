@@ -109,11 +109,11 @@ class CombineRegistersNode(EvaluationNode):
             "output_type": self._output_type,
             "output_register_name": self._output_register_name,
             "num_output_subsystems": str(self._num_output_subsystems),
-            "operands": json.dumps(operands_dict)
+            "operands": json.dumps(operands_dict),
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> CombineRegistersNode:
         raw_operands_dict = json.loads(data["operands"])
         operands = {}
         for name, values in raw_operands_dict.items():
@@ -134,7 +134,6 @@ class CombineRegistersNode(EvaluationNode):
             int(data["num_output_subsystems"]),
             operands,
         )
-
 
     @property
     def outgoing_register_type(self) -> VirtualType:

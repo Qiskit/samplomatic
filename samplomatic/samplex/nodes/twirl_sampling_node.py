@@ -48,7 +48,7 @@ class TwirlSamplingNode(SamplingNode):
             distribution_type = "pauli_uniform"
         distribution = {
             "type": distribution_type,
-            "num_subsystems": self.distribution.num_subsystems
+            "num_subsystems": self.distribution.num_subsystems,
         }
         return {
             "node_type": "9",
@@ -58,17 +58,13 @@ class TwirlSamplingNode(SamplingNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> TwirlSamplingNode:
         distribution_dict = json.loads(data["distribution"])
         if distribution_dict["type"] == "haar_u2":
             distribution = HaarU2(distribution_dict["num_subsystems"])
         else:
             distribution = UniformPauli(distribution_dict["num_subsystems"])
-        return cls(
-            data["lhs_register_name"],
-            data["rhs_register_name"],
-            distribution
-        )
+        return cls(data["lhs_register_name"], data["rhs_register_name"], distribution)
 
     @property
     def outgoing_register_type(self) -> VirtualType:
@@ -81,8 +77,8 @@ class TwirlSamplingNode(SamplingNode):
             self.rhs_register_name: distribution_info,
         }
 
-    def sample(self, registers, size, rng, **_):
-        samples = self.distribution.sample(size, rng)
+    def sample(self, registers, rng, inputs, **_):
+        samples = self.distribution.sample(inputs.num_samples, rng)
         registers[self.lhs_register_name] = samples
         registers[self.rhs_register_name] = samples.invert()
 

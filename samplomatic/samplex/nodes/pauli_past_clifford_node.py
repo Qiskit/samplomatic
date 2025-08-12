@@ -109,7 +109,7 @@ class PauliPastCliffordNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> PauliPastCliffordNode:
         with io.BytesIO(pybase64.b64decode(data["subsystem_idxs"])) as buf:
             subsystem_idxs = np.load(buf)
         return cls(

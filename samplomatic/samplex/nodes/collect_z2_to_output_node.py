@@ -20,7 +20,7 @@ from collections.abc import Sequence
 import numpy as np
 import pybase64
 
-from ...aliases import OutputIndex, OutputName, RegisterName, SubsystemIndex
+from ...aliases import InterfaceName, OutputIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from .collection_node import CollectionNode
@@ -40,7 +40,7 @@ class CollectZ2ToOutputNode(CollectionNode):
         self,
         register_name: RegisterName,
         subsystem_idxs: Sequence[SubsystemIndex],
-        output_name: OutputName,
+        output_name: InterfaceName,
         output_idxs: Sequence[OutputIndex],
     ):
         self._register_name = register_name
@@ -65,7 +65,7 @@ class CollectZ2ToOutputNode(CollectionNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+    def _from_json_dict(cls, data: dict[str, str]) -> CollectZ2ToOutputNode:
         with io.BytesIO(pybase64.b64decode(data["subsystem_indices"])) as buf:
             subsystem_idxs = np.load(buf)
         with io.BytesIO(pybase64.b64decode(data["output_indices"])) as buf:
@@ -77,7 +77,6 @@ class CollectZ2ToOutputNode(CollectionNode):
             data["output_name"],
             output_idxs,
         )
-
 
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}
