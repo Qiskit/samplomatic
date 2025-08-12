@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
+from copy import deepcopy
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
@@ -49,7 +49,7 @@ class TestSamplexSerialization:
 
         circuit.measure_all()
 
-        template_state, samplex = build(circuit)
+        _, samplex = build(circuit)
         json_data = samplex_to_json(samplex)
         assert isinstance(json_data, str)
 
@@ -58,13 +58,9 @@ class TestSamplexSerialization:
         samplex.finalize()
         samplex_new.finalize()
 
-        seed = rng.spawn(1)
-        rng1 = np.random.default_rng(seed[0])
-        rng2 = np.random.default_rng(seed[0])
-        print(samplex._output_specifications)
-        print(samplex_new._output_specifications)
-        samplex_output = samplex.sample(rng=rng1)
-        samplex_new_output = samplex_new.sample(rng=rng2)
+        copy_rng = deepcopy(rng)
+        samplex_output = samplex.sample(rng=rng)
+        samplex_new_output = samplex_new.sample(rng=copy_rng)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
