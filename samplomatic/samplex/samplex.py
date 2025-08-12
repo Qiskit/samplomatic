@@ -37,12 +37,7 @@ from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
-from .interfaces import (
-    MetadataOutput,
-    SamplexInput,
-    SamplexOutput,
-    TensorSpecification,
-)
+from .interfaces import MetadataOutput, SamplexInput, SamplexOutput, TensorSpecification
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
 
@@ -279,17 +274,20 @@ class Samplex:
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
         with ThreadPoolExecutor(max_workers) as pool:
+            # use rng.spawn() to ensure determinism of PRNG even when there is a thread pool
             wait_with_raise(
                 pool.submit(
                     node.sample,
                     registers,
-                    rng,
+                    child_rng,
                     inputs,
                     noise_maps=noise_maps,
                     noise_scales=noise_scales,
                     local_scales=local_scales,
                 )
-                for node in self._sampling_nodes
+                for child_rng, node in zip(
+                    rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
+                )
             )
 
             for stream in self._evaluation_streams:
@@ -299,8 +297,10 @@ class Samplex:
                 )
 
             wait_with_raise(
-                pool.submit(node.collect, registers, outputs, rng)
-                for node in self._collection_nodes
+                pool.submit(node.collect, registers, outputs, child_rng)
+                for child_rng, node in zip(
+                    rng.spawn(len(self._collection_nodes)), self._collection_nodes
+                )
             )
 
         return outputs
