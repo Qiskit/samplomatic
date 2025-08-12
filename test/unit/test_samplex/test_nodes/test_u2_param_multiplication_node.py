@@ -22,6 +22,8 @@ from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.samplex.nodes import (
     LeftU2ParametricMultiplicationNode,
     RightU2ParametricMultiplicationNode,
+    LeftU2ParametricConjugationNode,
+    RightU2ParametricConjugationNode,
 )
 
 X_MATRIX = np.array([[0, 1], [1, 0]])
@@ -112,4 +114,86 @@ class TestRightU2ParamMultiplicationNode:
         )
         assert np.allclose(
             registers["a"].virtual_gates, np.matmul(register.virtual_gates, operation)
+        )
+
+class TestLeftU2ParamConjugationNode:
+    def test_instantiation_errors(self):
+        """Test that errors are properly raised during instantiation"""
+        with pytest.raises(
+            SamplexConstructionError,
+            match="Expected at least one element in param_idxs",
+        ):
+            LeftU2ParametricConjugationNode("rz", "a", [])
+
+    def test_evaluation_errors(self):
+        """Test that errors are properly raised during evaluation"""
+        node = LeftU2ParametricConjugationNode("rz", "a", [0, 1, 2])
+        registers = {}
+        with pytest.raises(
+            SamplexRuntimeError, match=re.escape("Expected 3 parameter values instead got 1")
+        ):
+            node.evaluate(registers, [1])
+
+    @pytest.mark.parametrize("gate", ["rx", "rz"])
+    def test_left_conjugation(self, gate, rng):
+        """Test left conjugation"""
+        register_shape = [5, 2]
+
+        params = rng.random(register_shape[0]) * 2 * np.pi
+        haar_dist = HaarU2(register_shape[0])
+        node = LeftU2ParametricConjugationNode(gate, "a", [i for i in range(register_shape[0])])
+        register = haar_dist.sample(register_shape[1], rng)
+        registers = {"a": register.copy()}
+        node.evaluate(registers, params)
+
+        # g*reg*(g^dagger)
+        expected_registers = {"a": register.copy()}
+        node = LeftU2ParametricMultiplicationNode(gate, "a", [i for i in range(register_shape[0])])
+        node.evaluate(expected_registers, params)
+        node = RightU2ParametricMultiplicationNode(gate, "a", [i for i in range(register_shape[0])])
+        node.evaluate(expected_registers, -params)
+
+        assert np.allclose(
+            registers["a"].virtual_gates, expected_registers["a"].virtual_gates
+        )
+
+class TestRightU2ParamConjugationNode:
+    def test_instantiation_errors(self):
+        """Test that errors are properly raised during instantiation"""
+        with pytest.raises(
+            SamplexConstructionError,
+            match="Expected at least one element in param_idxs",
+        ):
+            RightU2ParametricConjugationNode("rz", "a", [])
+
+    def test_evaluation_errors(self):
+        """Test that errors are properly raised during evaluation"""
+        node = RightU2ParametricConjugationNode("rz", "a", [0, 1, 2])
+        registers = {}
+        with pytest.raises(
+            SamplexRuntimeError, match=re.escape("Expected 3 parameter values instead got 1")
+        ):
+            node.evaluate(registers, [1])
+
+    @pytest.mark.parametrize("gate", ["rx", "rz"])
+    def test_right_conjugation(self, gate, rng):
+        """Test right conjugation"""
+        register_shape = [5, 2]
+
+        params = rng.random(register_shape[0]) * 2 * np.pi
+        haar_dist = HaarU2(register_shape[0])
+        node = RightU2ParametricConjugationNode(gate, "a", [i for i in range(register_shape[0])])
+        register = haar_dist.sample(register_shape[1], rng)
+        registers = {"a": register.copy()}
+        node.evaluate(registers, params)
+
+        # (g^dagger)*reg*g
+        expected_registers = {"a": register.copy()}
+        node = LeftU2ParametricMultiplicationNode(gate, "a", [i for i in range(register_shape[0])])
+        node.evaluate(expected_registers, -params)
+        node = RightU2ParametricMultiplicationNode(gate, "a", [i for i in range(register_shape[0])])
+        node.evaluate(expected_registers, params)
+
+        assert np.allclose(
+            registers["a"].virtual_gates, expected_registers["a"].virtual_gates
         )

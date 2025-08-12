@@ -64,6 +64,8 @@ from ..samplex.nodes import (
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
     TwirlSamplingNode,
+    RightU2ParametricConjugationNode,
+    LeftU2ParametricConjugationNode,
 )
 from ..samplex.nodes.basis_transform_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
 from ..samplex.nodes.pauli_past_clifford_node import (
@@ -1258,6 +1260,23 @@ class PreSamplex:
                 combined_register_name,
                 np.array(list(pre_propagate.partition), dtype=np.intp),
             )
+        elif mode is InstructionMode.PROPAGATE:
+            combined_register_type = VirtualType.U2
+            if pre_propagate.operation.is_parameterized():
+                param_idxs = [
+                    samplex.append_parameter_expression(param)
+                    for _, param in pre_propagate.spec.params
+                ]
+                if pre_propagate.direction is Direction.LEFT:
+                    propagate_node = RightU2ParametricConjugationNode(
+                        op_name, combined_register_name, param_idxs
+                    )
+                else:
+                    propagate_node = LeftU2ParametricConjugationNode(
+                        op_name, combined_register_name, param_idxs
+                    )
+            else:
+                raise NotImplementedError()
         else:
             raise SamplexBuildError(
                 f"Encountered unsupported {op_name} propragation with mode {mode} and "
@@ -1278,8 +1297,6 @@ class PreSamplex:
             node_idx = samplex.add_node(propagate_node)
             samplex.add_edge(combine_node_idx, node_idx)
         else:
-            # TODO: It should be possible to not add a slice node in this case, if there is
-            # a single predecessor.
             node_idx = combine_node_idx
 
         pre_nodes_to_nodes[pre_propagate_idx] = node_idx

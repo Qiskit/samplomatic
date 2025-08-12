@@ -27,5 +27,7 @@ from .twirl_sampling_node import TwirlSamplingNode
 from .u2_param_multiplication_node import (
     LeftU2ParametricMultiplicationNode,
     RightU2ParametricMultiplicationNode,
-    U2ParametricMultiplicationNode,
+    U2ParametricTransformationNode,
+    RightU2ParametricConjugationNode,
+    LeftU2ParametricConjugationNode,
 )
