@@ -238,7 +238,19 @@ def make_circuits():
         circuit.sx(0)
         circuit.rz(1.5, 0)
 
-    yield circuit, "nonclifford_between_boxes"
+    yield circuit, "nonclifford_between_left_right_boxes"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.rz(1.2, 0)
+        circuit.cx(0, 1)
+    circuit.rx(1.2, 0)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.cx(1, 0)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "nonclifford_between_left_left_boxes"
 
 
 def pytest_generate_tests(metafunc):
