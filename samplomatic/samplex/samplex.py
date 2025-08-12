@@ -62,7 +62,7 @@ class Samplex:
     """
 
     _RESERVED_INPUTS: frozenset[InterfaceName] = frozenset()
-    _RESERVED_OUTPUTS: frozenset[InterfaceName] = frozenset({"registers"})
+    _RESERVED_OUTPUTS: frozenset[InterfaceName] = frozenset()
 
     def __init__(self):
         self.graph = PyDiGraph[Node, None]()
@@ -234,9 +234,6 @@ class Samplex:
         """Sample.
 
         Args:
-            parameter_values: The input parameter values to use during sampling.
-            basis_transforms: A dictionary from unique identifiers of basis transforms to symbols
-                representing the basis.
             noise_maps: A dictionary from unique identifiers of noise maps to the noise maps
                 themselves.
             noise_scales: A dictionary from unique identifier of noise modifiers to values by which

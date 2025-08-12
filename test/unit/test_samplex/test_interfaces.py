@@ -18,6 +18,8 @@ from samplomatic.samplex import MetadataOutput, SamplexInput, SamplexOutput, Ten
 
 
 class TestSamplexInput:
+    """Test ``SamplexInput``."""
+
     def test_empty(self):
         """Test an empty output."""
         output = SamplexInput([], 5)
@@ -72,6 +74,8 @@ class TestSamplexInput:
 
 
 class TestSamplexOutput:
+    """Test ``SamplexOutput``."""
+
     def test_empty(self):
         """Test an empty output."""
         output = SamplexOutput([], [], 10)
