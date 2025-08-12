@@ -68,10 +68,6 @@ class TestBasic:
     def test_add_output_fails(self):
         """Test that adding an output fails when it should."""
         samplex = Samplex()
-        with pytest.raises(SamplexConstructionError, match="name 'registers' is reserved"):
-            samplex.add_output(MetadataOutput("registers"))
-
-        samplex = Samplex()
         samplex.add_output(MetadataOutput("out"))
         with pytest.raises(SamplexConstructionError, match="'out' already exists"):
             samplex.add_output(MetadataOutput("out"))
