@@ -14,7 +14,6 @@
 
 from collections.abc import Iterable, Sequence
 from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait
-from itertools import chain
 from typing import TYPE_CHECKING
 
 from numpy.random import Generator, SeedSequence, default_rng
@@ -24,15 +23,13 @@ from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
     EdgeIndex,
+    InterfaceName,
     LayoutMethod,
     LayoutPresets,
     NodeIndex,
     NumSubsystems,
-    OutputName,
     ParamIndex,
     ParamSpec,
-    ParamValues,
-    PauliBasisChange,
     RegisterName,
     StrRef,
 )
@@ -40,9 +37,14 @@ from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
+from .interfaces import (
+    MetadataOutput,
+    SamplexInput,
+    SamplexOutput,
+    TensorSpecification,
+)
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
-from .samplex_output import MetadataOutput, OutputSpecification, SamplexOutput
 
 if TYPE_CHECKING:
     from plotly.graph_objects import Figure
@@ -59,7 +61,8 @@ class Samplex:
     composing single-qubit gate operations, and so on.
     """
 
-    _RESERVED_OUTPUTS: frozenset[OutputName] = frozenset({"registers"})
+    _RESERVED_INPUTS: frozenset[InterfaceName] = frozenset()
+    _RESERVED_OUTPUTS: frozenset[InterfaceName] = frozenset()
 
     def __init__(self):
         self.graph = PyDiGraph[Node, None]()
@@ -69,7 +72,8 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
-        self._output_specifications: dict[OutputName, OutputSpecification] = {}
+        self._input_specifications: dict[InterfaceName, TensorSpecification] = {}
+        self._output_specifications: dict[InterfaceName, TensorSpecification] = {}
 
     @property
     def parameters(self) -> list[Parameter]:
@@ -115,7 +119,21 @@ class Samplex:
         self._passthrough_params = (param_idxs, param_exp_idxs)
         return max(param_idxs)
 
-    def add_output(self, specification: OutputSpecification):
+    def add_input(self, specification: TensorSpecification):
+        """Add a sampling input to this samplex.
+
+        Args:
+            specification: A specification of the input name and type.
+        """
+        if specification.name in self._RESERVED_INPUTS:
+            raise SamplexConstructionError(
+                f"Input name '{specification.name}' is reserved and cannot be used."
+            )
+        if (name := specification.name) in self._input_specifications:
+            raise SamplexConstructionError(f"An input with name '{name}' already exists.")
+        self._input_specifications[name] = specification
+
+    def add_output(self, specification: TensorSpecification):
         """Add a sampling output to this samplex.
 
         Args:
@@ -204,23 +222,18 @@ class Samplex:
 
     def sample(
         self,
-        parameter_values: ParamValues | None = None,
-        basis_transforms: dict[StrRef, PauliBasisChange] | None = None,
         noise_maps: dict[StrRef, PauliLindbladMap] | None = None,
         noise_scales: dict[StrRef, float] | None = None,
         local_scales: dict[StrRef, Sequence[float]] | None = None,
-        *,
         size: int = 1,
         keep_registers: bool = False,
         rng: int | SeedSequence | Generator | None = None,
         max_workers: int | None = None,
+        **kwargs,
     ) -> SamplexOutput:
         """Sample.
 
         Args:
-            parameter_values: The input parameter values to use during sampling.
-            basis_transforms: A dictionary from unique identifiers of basis transforms to symbols
-                representing the basis.
             noise_maps: A dictionary from unique identifiers of noise maps to the noise maps
                 themselves.
             noise_scales: A dictionary from unique identifier of noise modifiers to values by which
@@ -240,34 +253,38 @@ class Samplex:
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
-        parameter_values = {} if parameter_values is None else parameter_values
+        inputs = SamplexInput(self._input_specifications.values(), size)
+        inputs.validate_and_update(**kwargs)
+
+        extra_outputs = []
+        if keep_registers:
+            extra_outputs.append(MetadataOutput("registers", "Final state of internal registers."))
+        outputs = SamplexOutput(self._output_specifications.values(), extra_outputs, size)
+
+        parameter_values = inputs.get("parameter_values", [])
         evaluated_values = self._param_table.evaluate(parameter_values)
-        basis_transforms = {} if basis_transforms is None else basis_transforms
+        if self._passthrough_params:
+            outputs["parameter_values"][:, self._passthrough_params[0]] = evaluated_values[
+                self._passthrough_params[1]
+            ]
+
+        if (measurement_flips := outputs.get("measurement_flips")) is not None:
+            measurement_flips[:] = 0
+
         noise_maps = {} if noise_maps is None else noise_maps
         noise_scales = {} if noise_scales is None else noise_scales
         local_scales = {} if local_scales is None else local_scales
         rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
 
-        extra_outputs = []
-        if keep_registers:
-            extra_outputs.append(MetadataOutput("registers", "Final state of internal registers."))
-        outputs = SamplexOutput(chain(self._output_specifications.values(), extra_outputs), size)
-
-        registers: dict[RegisterName, VirtualRegister] = outputs.get("registers", {})
-
-        if self._passthrough_params:
-            outputs["parameter_values"][:, self._passthrough_params[0]] = evaluated_values[
-                self._passthrough_params[1]
-            ]
+        registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
         with ThreadPoolExecutor(max_workers) as pool:
             wait_with_raise(
                 pool.submit(
                     node.sample,
                     registers,
-                    size,
                     rng,
-                    basis_transforms=basis_transforms,
+                    inputs,
                     noise_maps=noise_maps,
                     noise_scales=noise_scales,
                     local_scales=local_scales,

@@ -50,7 +50,8 @@ from ..graph_utils import (
     replace_nodes_with_one_node,
 )
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
-from ..samplex import ArrayOutput, Samplex, Z2ArrayOutput
+from ..samplex import Samplex
+from ..samplex.interfaces import TensorSpecification
 from ..samplex.nodes import (
     BasisTransformNode,
     CollectTemplateValues,
@@ -922,9 +923,14 @@ class PreSamplex:
                 else max_passthrough_param_idx
             )
 
+        for basis_ref, length in self._basis_transforms.items():
+            samplex.add_input(
+                TensorSpecification(basis_ref, (length,), np.uint8, "Basis changing gates.")
+            )
+
         if max_param_idx is not None:
             samplex.add_output(
-                ArrayOutput(
+                TensorSpecification(
                     "parameter_values",
                     (max_param_idx + 1,),
                     np.float64,
@@ -934,9 +940,10 @@ class PreSamplex:
 
         if self._twirled_clbits:
             samplex.add_output(
-                Z2ArrayOutput(
+                TensorSpecification(
                     "measurement_flips",
                     (self.num_clbits,),
+                    np.bool_,
                     "Bit-flip corrections for measurement twirling, XOR your data against this"
                     " value. The ordering matches template.clbits.",
                 )
@@ -944,9 +951,10 @@ class PreSamplex:
 
         if (num_signs := next(self._noise_map_count)) > 0:
             samplex.add_output(
-                Z2ArrayOutput(
+                TensorSpecification(
                     "pauli_signs",
                     (num_signs,),
+                    np.bool_,
                     "Signs from sampled noise maps. The order matches the iteration order of "
                     "injected noise in the circuit.",
                 )
@@ -997,6 +1005,16 @@ class PreSamplex:
                 )
             else:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
+
+        if num_params := samplex.num_parameters:
+            samplex.add_input(
+                TensorSpecification(
+                    "parameter_values",
+                    (num_params,),
+                    np.float64,
+                    "Input parameter values to use during sampling.",
+                )
+            )
 
         return samplex
 

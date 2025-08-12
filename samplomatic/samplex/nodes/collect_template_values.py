@@ -14,7 +14,7 @@
 
 import numpy as np
 
-from ...aliases import OutputName, ParamIndices, RegisterName, SubsystemIndices
+from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...synths import Synth
@@ -43,7 +43,7 @@ class CollectTemplateValues(CollectionNode):
 
     def __init__(
         self,
-        template_params_name: OutputName,
+        template_params_name: InterfaceName,
         template_idxs: ParamIndices,
         register_name: RegisterName,
         register_type: VirtualType,

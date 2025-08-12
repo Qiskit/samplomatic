@@ -14,7 +14,7 @@
 
 from collections.abc import Sequence
 
-from ...aliases import OutputIndex, OutputName, RegisterName, SubsystemIndex
+from ...aliases import InterfaceName, OutputIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from .collection_node import CollectionNode
@@ -34,7 +34,7 @@ class CollectZ2ToOutputNode(CollectionNode):
         self,
         register_name: RegisterName,
         subsystem_idxs: Sequence[SubsystemIndex],
-        output_name: OutputName,
+        output_name: InterfaceName,
         output_idxs: Sequence[OutputIndex],
     ):
         self._register_name = register_name

@@ -18,14 +18,14 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import ArrayOutput, MetadataOutput, Samplex
+from samplomatic.samplex import MetadataOutput, Samplex, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, DummySamplingNode
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, size, rng, **kwargs):
+    def sample(self, registers, rng, inputs, **kwargs):
         raise SamplexRuntimeError("This node cannot sample.")
 
 
@@ -59,20 +59,14 @@ class TestBasic:
     def test_add_output(self):
         """Test that we can add an output."""
         samplex = Samplex()
-        samplex.add_output(ArrayOutput("out", (5, 6), float))
-        samplex.add_output(MetadataOutput("meta"))
+        samplex.add_output(TensorSpecification("out", (5, 6), float))
         samplex.finalize()
         output = samplex.sample(size=11)
-        assert set(output) == {"out", "meta"}
+        assert set(output) == {"out"}
         assert output["out"].shape == (11, 5, 6)
-        assert isinstance(output["meta"], dict)
 
     def test_add_output_fails(self):
         """Test that adding an output fails when it should."""
-        samplex = Samplex()
-        with pytest.raises(SamplexConstructionError, match="name 'registers' is reserved"):
-            samplex.add_output(MetadataOutput("registers"))
-
         samplex = Samplex()
         samplex.add_output(MetadataOutput("out"))
         with pytest.raises(SamplexConstructionError, match="'out' already exists"):
@@ -164,14 +158,14 @@ class TestSample:
         samplex = Samplex()
         samplex.finalize()
         output = samplex.sample(keep_registers=True)
-        assert "registers" in output
+        assert "registers" in output.metadata
 
     def test_single_component(self):
         """Basic test with a simple linear graph and one component."""
 
         samplex = Samplex()
 
-        samplex.add_output(ArrayOutput("out", (9,), float, "desc"))
+        samplex.add_output(TensorSpecification("out", (9,), float, "desc"))
 
         a = samplex.add_node(DummySamplingNode(instantiates={"x": (10, PauliRegister)}))
         b = samplex.add_node(DummyEvaluationNode(reads_from={"x": ({6}, PauliRegister)}))
@@ -195,9 +189,10 @@ class TestSample:
         samplex.finalize()
 
         outputs = samplex.sample(size=13, keep_registers=True)
-        assert set(outputs) == {"out", "registers"}
+        assert set(outputs) == {"out"}
+        assert set(outputs.metadata) == {"registers"}
 
-        registers = outputs["registers"]
+        registers = outputs.metadata["registers"]
         assert set(registers) == {"x", "z"}
 
         assert isinstance(registers["x"], PauliRegister)
@@ -228,7 +223,7 @@ class TestSample:
 
         samplex.finalize()
 
-        registers = samplex.sample(size=13, keep_registers=True)["registers"]
+        registers = samplex.sample(size=13, keep_registers=True).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
@@ -252,7 +247,8 @@ class TestSample:
         )
 
         samplex.append_parameter_expression(a + b)
-        samplex.append_parameter_expression(b + a + (c := Parameter("c")))
+        samplex.append_parameter_expression(b + a + Parameter("c"))
+        samplex.add_input(TensorSpecification("parameter_values", (3,), float))
         k = samplex.add_node(
             DummyEvaluationNode(
                 writes_to={"y": ({2, 4, 6, 7}, PauliRegister)}, parameter_idxs=[3, 2, 0]
@@ -264,7 +260,9 @@ class TestSample:
 
         samplex.finalize()
 
-        registers = samplex.sample({a: 1, b: 2, c: 4}, size=13, keep_registers=True)["registers"]
+        registers = samplex.sample(
+            parameter_values=np.array([1, 2, 4], float), size=13, keep_registers=True
+        ).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
