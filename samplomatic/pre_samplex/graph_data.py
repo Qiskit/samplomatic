@@ -20,7 +20,7 @@ from qiskit.circuit.gate import Gate
 
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef
 from ..annotations import VirtualType
-from ..builders.specs import InstructionSpec
+from ..builders.specs import InstructionMode, InstructionSpec
 from ..constants import Direction
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
@@ -192,6 +192,37 @@ class PrePropagate(PreNode):
             and self.operation == other.operation
             and self.direction == other.direction
         )
+
+
+@dataclass
+class PrePropagateKey:
+    """A key used to identify the "type" of ``PrePropagate`` nodes for clustering purposes.
+
+    The key includes only properties of the node for which a difference between two nodes
+    would make the nodes unmergeable. This, however, doesn't automatically mean that a matching key
+    makes nodes mergable. Other considerations in determining the mergeability include the
+    subsystems and predecessor nodes.
+    """
+
+    mode: InstructionMode
+    """The mode of the ``PrePropagate`` node."""
+
+    operation_name: str
+    """The name of the operation of the ``PrePropagate`` node."""
+
+    direction: Direction
+    """The direction of the ``PrePropagate`` node."""
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            isinstance(other, PrePropagateKey)
+            and self.mode == other.mode
+            and self.operation_name == other.operation_name
+            and self.direction == other.direction
+        )
+
+    def __hash__(self):
+        return hash((self.mode, self.operation_name, self.direction))
 
 
 @dataclass

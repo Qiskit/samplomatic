@@ -351,6 +351,100 @@ class TestFinalize:
         assert len(pre_samplex.graph.edges()) == 2
 
 
+class TestPrePropagateClustering:
+    """Test the `_cluster_pre_propagate_nodes` function."""
+
+    def test_nodes_clustered(self):
+        """Test that nodes are clustered"""
+        circ = QuantumCircuit(6)
+        circ.cx(0, 1)
+        circ.cx(2, 3)
+        circ.sx(4)
+        circ.sx(5)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3, 4, 5])  # noqa: SLF001
+        assert clusters == [[1, 2], [3, 4]]
+
+    def test_nodes_different_modes(self):
+        """Test that nodes are not clustered if the mode is different"""
+        circ = QuantumCircuit(4)
+        circ.cx(0, 1)
+        circ.cx(2, 3)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.add_propagate(circ[0], InstructionSpec(mode=InstructionMode.MULTIPLY))
+        pre_samplex.add_propagate(circ[1], InstructionSpec(mode=InstructionMode.PROPAGATE))
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[1], [2]]
+
+    def test_nodes_different_predecessors(self):
+        """Test that nodes are not clustered if they don't share predecessors."""
+        circ = QuantumCircuit(4)
+        circ.cx(0, 1)
+        circ.cx(2, 3)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.add_collect(
+            QubitPartition(1, ((circ.qubits[2],), (circ.qubits[3],))), RzSxSynth(), []
+        )
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(
+            QubitPartition(1, ((circ.qubits[0],), (circ.qubits[1],))), PauliRegister
+        )
+        pre_samplex.add_emit_twirl(
+            QubitPartition(1, ((circ.qubits[2],), (circ.qubits[3],))), PauliRegister
+        )
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[2], [3]]
+
+    def test_nodes_different_operation(self):
+        """Test that nodes are not clustered if they don't share operation."""
+        circ = QuantumCircuit(4)
+        circ.cx(0, 1)
+        circ.cz(2, 3)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[1], [2]]
+
+    def test_nodes_overlaping_qubits(self):
+        """Test that nodes are not clustered if they share qubits."""
+        circ = QuantumCircuit(3)
+        circ.cx(0, 1)
+        circ.cx(1, 2)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[1], [2]]
+
+
 class TestMergeParallelPrePropagateNodes:
     """Test the `merge_parallel_pre_propagate_nodes` function."""
 
