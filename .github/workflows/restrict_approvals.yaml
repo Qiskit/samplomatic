@@ -2,22 +2,22 @@ name: Require Team Review
 
 on:
   pull_request:
-    types: [opened, edited, ready_for_review, review_requested, review_request_removed, synchronize]
+    types: [opened, synchronize, ready_for_review, review_requested, review_request_removed, edited]
 
 jobs:
   check-review:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read   # allow reading PR reviews
     steps:
-      - name: Verify review from team
+      - name: Check for approval from allowed reviewers
         uses: actions/github-script@v7
         with:
           script: |
-            const teamName = "qiskit-primitives";
-            const { data: teamMembers } = await github.rest.teams.listMembersInOrg({
-              org: context.repo.owner,
-              team_slug: teamName
-            });
-            const memberLogins = new Set(teamMembers.map(m => m.login.toLowerCase()));
+            const allowedReviewers = [
+              "ihincks",
+              "joshuasn"
+            ].map(u => u.toLowerCase());
 
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
@@ -25,11 +25,20 @@ jobs:
               pull_number: context.payload.pull_request.number
             });
 
-            const approvedFromTeam = reviews.some(r =>
-              r.state === "APPROVED" &&
-              memberLogins.has(r.user.login.toLowerCase())
+            const latestReviews = {};
+            for (const r of reviews) {
+              latestReviews[r.user.login.toLowerCase()] = r.state;
+            }
+
+            const approvedFromAllowed = Object.entries(latestReviews).some(
+              ([user, state]) =>
+                allowedReviewers.includes(user) && state === "APPROVED"
             );
 
-            if (!approvedFromTeam) {
-              core.setFailed(`No approval from a member of @${context.repo.owner}/${teamName}`);
+            if (!approvedFromAllowed) {
+              core.setFailed(
+                `No approval from an allowed reviewer`
+              );
+            } else {
+              core.info("Approval from allowed reviewer found");
             }
