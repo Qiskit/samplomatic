@@ -14,7 +14,7 @@ from .basis_transform_node import BasisTransformNode
 from .collect_template_values import CollectTemplateValues
 from .collect_z2_to_output_node import CollectZ2ToOutputNode
 from .collection_node import CollectionNode
-from .combine_registers_node import CombineRegistersNode
+from .combine_registers_node import CombineRegistersNode, CopyRegistersNode
 from .conversion_node import ConversionNode
 from .evaluation_node import EvaluationNode
 from .inject_noise_node import InjectNoiseNode

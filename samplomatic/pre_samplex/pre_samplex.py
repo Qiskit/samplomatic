@@ -61,6 +61,7 @@ from ..samplex.nodes import (
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
+    CopyRegistersNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
@@ -1270,6 +1271,19 @@ class PreSamplex:
                 output_register_name=combined_register_name,
                 slice_idxs=slice_idxs,
                 force_copy=pre_edge.force_register_copy,
+            )
+        elif np.all(
+            np.unique(
+                np.concatenate([operand[1] for operand in operands.values()]), return_counts=True
+            )[1]
+            == 1
+        ):
+            # If there are no repeated indices, we can just copy the registers and not multiply them
+            combine_node = CopyRegistersNode(
+                output_type=combined_register_type,
+                output_register_name=combined_register_name,
+                num_output_subsystems=len(subsystems),
+                operands=operands,
             )
         else:
             combine_node = CombineRegistersNode(
