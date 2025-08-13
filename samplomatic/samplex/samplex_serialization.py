@@ -139,6 +139,15 @@ def _process_graph_header(
 
 
 def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
+    """Dump a samplex to json.
+
+    Args:
+        filename: An optional path to write the json to.
+
+    Returns:
+        Either the json as a string or ``None`` if ``filename`` is specified.
+    """
+
     def node_attr(x: Node):
         return x._to_json_dict()  # noqa: SLF001
 
@@ -150,7 +159,7 @@ def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None
     )
 
 
-def parse_node(node_data: dict[str, str]) -> Node:
+def _parse_node(node_data: dict[str, str]) -> Node:
     node_type_index = int(node_data["node_type"])
     return NODE_TYPE_MAP[node_type_index]._from_json_dict(node_data)  # noqa: SLF001
 
@@ -168,10 +177,24 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
 
 
 def samplex_from_json_file(filename: str) -> Samplex:
-    samplex_graph = from_node_link_json_file(filename, node_attrs=parse_node)
+    """Load a samplex from a json file.
+
+    Args:
+        filename: The path to the json file.
+
+    Returns:
+        The loaded samplex."""
+    samplex_graph = from_node_link_json_file(filename, node_attrs=_parse_node)
     return _samplex_from_graph(samplex_graph)
 
 
 def samplex_from_json(json_data: str) -> Samplex:
-    samplex_graph = parse_node_link_json(json_data, node_attrs=parse_node)
+    """Load a samplex from a json string.
+
+    Args:
+        filename: The json string.
+
+    Returns:
+        The loaded samplex."""
+    samplex_graph = parse_node_link_json(json_data, node_attrs=_parse_node)
     return _samplex_from_graph(samplex_graph)

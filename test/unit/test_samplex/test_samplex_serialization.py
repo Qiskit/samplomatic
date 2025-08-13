@@ -12,10 +12,11 @@
 from copy import deepcopy
 
 import numpy as np
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import ParameterVector, QuantumCircuit
+from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic import build
-from samplomatic.annotations import Twirl
+from samplomatic.annotations import BasisTransform, InjectNoise, Twirl
 from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
 
 
@@ -23,7 +24,7 @@ class TestSamplexSerialization:
     """Test serialization of samplex objects."""
 
     def test_general_5q_static_circuit(self, rng):
-        """Test with a general static circuit of 5 qubits"""
+        """Test with a general static circuit of 5 qubits."""
 
         circuit = QuantumCircuit(5)
         with circuit.box([Twirl()]):
@@ -61,6 +62,91 @@ class TestSamplexSerialization:
         copy_rng = deepcopy(rng)
         samplex_output = samplex.sample(rng=rng)
         samplex_new_output = samplex_new.sample(rng=copy_rng)
+        np.testing.assert_allclose(
+            samplex_output["parameter_values"], samplex_new_output["parameter_values"]
+        )
+
+    def test_noise_injection_circuit(self, rng):
+        """Test a circuit with inject noise annotations."""
+        circuit = QuantumCircuit(2)
+        with circuit.box([Twirl(), InjectNoise("my_noise")]):
+            circuit.noop(range(2))
+
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(range(2))
+
+        noise_map = PauliLindbladMap.from_list([("XX", 0.5)])
+
+        _, samplex = build(circuit)
+        samplex_new = samplex_from_json(samplex_to_json(samplex))
+
+        samplex.finalize()
+        samplex_new.finalize()
+
+        copy_rng = deepcopy(rng)
+        samplex_output = samplex.sample(rng=rng, noise_maps={"my_noise": noise_map})
+        samplex_new_output = samplex_new.sample(rng=copy_rng, noise_maps={"my_noise": noise_map})
+        np.testing.assert_allclose(
+            samplex_output["parameter_values"], samplex_new_output["parameter_values"]
+        )
+        np.testing.assert_allclose(samplex_output["pauli_signs"], samplex_new_output["pauli_signs"])
+
+    def test_basis_transform_circuit(self, rng):
+        """Test a circuit with basis transform annotations."""
+        circuit = QuantumCircuit(2)
+        with circuit.box([BasisTransform()]):
+            circuit.noop(range(2))
+
+        with circuit.box([Twirl()]):
+            circuit.measure_all()
+
+        basis = np.array([2, 1], dtype=np.uint8)
+
+        _, samplex = build(circuit)
+        samplex_new = samplex_from_json(samplex_to_json(samplex))
+
+        samplex.finalize()
+        samplex_new.finalize()
+
+        copy_rng = deepcopy(rng)
+        samplex_output = samplex.sample(rng=rng, measure=basis)
+        samplex_new_output = samplex_new.sample(rng=copy_rng, measure=basis)
+        np.testing.assert_allclose(
+            samplex_output["parameter_values"], samplex_new_output["parameter_values"]
+        )
+        np.testing.assert_allclose(
+            samplex_output["measurement_flips"], samplex_new_output["measurement_flips"]
+        )
+
+    def test_parametric_circuit(self, rng):
+        """Test a circuit with parametric gates."""
+        p = ParameterVector("params", 5)
+        circuit = QuantumCircuit(3)
+        with circuit.box([Twirl()]):
+            circuit.rx(p[0], 0)
+            circuit.rx(p[1], 1)
+            circuit.rx(p[2], 2)
+            circuit.cx(0, 1)
+
+        with circuit.box([Twirl()]):
+            circuit.rx(p[3], 0)
+            circuit.rx(p[4], 1)
+            circuit.cx(0, 1)
+
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(range(3))
+
+        circuit_params = rng.random(len(circuit.parameters))
+
+        _, samplex = build(circuit)
+        samplex_new = samplex_from_json(samplex_to_json(samplex))
+
+        samplex.finalize()
+        samplex_new.finalize()
+
+        copy_rng = deepcopy(rng)
+        samplex_output = samplex.sample(rng=rng, parameter_values=circuit_params)
+        samplex_new_output = samplex_new.sample(rng=copy_rng, parameter_values=circuit_params)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )

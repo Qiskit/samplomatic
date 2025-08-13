@@ -89,13 +89,13 @@ class BasisChange(Generic[T]):
 
 
 MEAS_PAULI_BASIS = BasisChange[np.uint8](
-    [np.uint8(0), np.uint8(1), np.uint8(2), np.uint8(3)],
+    [0, 1, 2, 3],
     U2Register(np.array([IGate(), HGate(), IGate(), RYGate(-np.pi / 2)]).reshape(4, 1, 2, 2)),
 )
 """A basis change from Pauli eigenstates into the computational basis."""
 
 PREP_PAULI_BASIS = BasisChange[np.uint8](
-    [np.uint8(0), np.uint8(1), np.uint8(2), np.uint8(3)],
+    [0, 1, 2, 3],
     U2Register(np.array([IGate(), HGate(), IGate(), RYGate(np.pi / 2)]).reshape(4, 1, 2, 2)),
 )
 """A basis change from the computational basis into Pauli eigenstates."""
@@ -144,6 +144,7 @@ class BasisTransformNode(SamplingNode):
                     "action": self._basis_change.action.to_json(),
                 }
             ),
+            "basis_ref": self._basis_ref,
             "num_subsystems": str(self._num_subsystems),
         }
 
@@ -156,5 +157,6 @@ class BasisTransformNode(SamplingNode):
                 basis_change_dict["alphabet"],
                 virtual_register_from_json(basis_change_dict["action"]),
             ),
+            data["basis_ref"],
             int(data["num_subsystems"]),
         )

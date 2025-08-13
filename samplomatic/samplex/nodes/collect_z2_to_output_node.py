@@ -71,7 +71,7 @@ class CollectZ2ToOutputNode(CollectionNode):
         with io.BytesIO(pybase64.b64decode(data["output_indices"])) as buf:
             output_idxs = np.load(buf)
 
-        cls(
+        return cls(
             data["register_name"],
             subsystem_idxs,
             data["output_name"],
