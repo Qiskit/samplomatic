@@ -13,15 +13,14 @@
 """VirtualRegister"""
 
 import abc
-import io
 import json
 from typing import TypeVar
 
 import numpy as np
-import pybase64
 
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
+from ..utils.serialization import array_to_json
 
 T = TypeVar("T")
 
@@ -97,9 +96,7 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
             )
 
     def to_json(self) -> str:
-        with io.BytesIO() as buf:
-            np.save(buf, self._array, allow_pickle=False)
-            array_data = pybase64.b64encode_as_string(buf.getvalue())
+        array_data = array_to_json(self._array)
         return json.dumps({"type": self.TYPE, "array": array_data})
 
     @staticmethod

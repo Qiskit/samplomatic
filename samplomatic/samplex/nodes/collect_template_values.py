@@ -14,15 +14,15 @@
 
 from __future__ import annotations
 
-import io
+import json
 
 import numpy as np
-import pybase64
 
 from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
 from ...annotations import VirtualType
 from ...exceptions import DeserializationError, SamplexConstructionError
 from ...synths import RzRxSynth, RzSxSynth, Synth
+from ...utils.serialization import array_from_json, array_to_json
 from .collection_node import CollectionNode
 
 
@@ -82,30 +82,18 @@ class CollectTemplateValues(CollectionNode):
             )
 
     def _to_json_dict(self) -> dict[str, str]:
-        with io.BytesIO() as buf:
-            np.save(buf, self._template_idxs, allow_pickle=False)
-            template_idxs = pybase64.b64encode_as_string(buf.getvalue())
-
-        with io.BytesIO() as buf:
-            np.save(buf, self._subsystem_idxs, allow_pickle=False)
-            subsystem_idxs = pybase64.b64encode_as_string(buf.getvalue())
         return {
             "node_type": "1",
             "template_param_names": self._template_params_name,
-            "template_idxs": template_idxs,
+            "template_idxs": array_to_json(self._template_idxs),
             "register_type": self._register_type,
             "register_name": self._register_name,
-            "subsystem_idxs": subsystem_idxs,
+            "subsystem_idxs": array_to_json(self._subsystem_idxs),
             "synth": type(self._synth).__name__,
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> CollectTemplateValues:
-        with io.BytesIO(pybase64.b64decode(data["template_idxs"])) as buf:
-            template_idxs = np.load(buf)
-
-        with io.BytesIO(pybase64.b64decode(data["subsystem_idxs"])) as buf:
-            subsystem_idxs = np.load(buf)
         synth_class_name = data["synth"]
         if synth_class_name == "RzRxSynth":
             synth = RzRxSynth()
@@ -116,10 +104,10 @@ class CollectTemplateValues(CollectionNode):
 
         return cls(
             data["template_param_names"],
-            template_idxs,
+            array_from_json(json.loads(data["template_idxs"])),
             data["register_name"],
             VirtualType(data["register_type"]),
-            subsystem_idxs,
+            array_from_json(json.loads(data["subsystem_idxs"])),
             synth,
         )
 

@@ -10,14 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import io
 import json
-
-import numpy as np
-import pybase64
 
 from ..annotations import VirtualType as VirtualType
 from ..exceptions import DeserializationError
+from ..utils.serialization import array_from_json
 from .group_register import GroupRegister
 from .pauli_register import PauliRegister
 from .u2_register import U2Register
@@ -25,11 +22,9 @@ from .virtual_register import VirtualRegister
 from .z2_register import Z2Register
 
 
-def virtual_register_from_json(data: str) -> VirtualRegister:
-    data = json.loads(data)
+def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
     register_type = VirtualType(data["type"])
-    with io.BytesIO(pybase64.b64decode(data["array"])) as buf:
-        array = np.load(buf)
+    array = array_from_json(json.loads(data["array"]))
     if register_type == VirtualType.U2:
         return U2Register(array)
     elif register_type == VirtualType.Z2:
