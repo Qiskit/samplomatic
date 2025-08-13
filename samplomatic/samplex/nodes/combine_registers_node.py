@@ -14,16 +14,15 @@
 
 from __future__ import annotations
 
-import io
 import json
 from collections.abc import Sequence
 
 import numpy as np
-import pybase64
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import DeserializationError, SamplexConstructionError
+from ...utils.serialization import array_from_json, array_to_json
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
 
@@ -99,9 +98,7 @@ class CombineRegistersNode(EvaluationNode):
                 if isinstance(v, VirtualType):
                     value_list.append({"type": str(v)})
                 else:
-                    with io.BytesIO() as buf:
-                        np.save(buf, v, allow_pickle=False)
-                        value_list.append({"array": pybase64.b64encode_as_string(buf.getvalue())})
+                    value_list.append({"array": array_to_json(v)})
             operands_dict[key] = value_list
 
         return {
@@ -120,8 +117,7 @@ class CombineRegistersNode(EvaluationNode):
             tuple_value = []
             for value in values:
                 if array_str := value.get("array"):
-                    with io.BytesIO(pybase64.b64decode(array_str)) as buf:
-                        tuple_value.append(np.load(buf))
+                    tuple_value.append(array_from_json(array_str))
                 elif type_str := value.get("type"):
                     tuple_value.append(VirtualType(type_str))
                 else:

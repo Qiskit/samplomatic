@@ -14,15 +14,14 @@
 
 from __future__ import annotations
 
-import io
 from collections.abc import Sequence
 
 import numpy as np
-import pybase64
 
 from ...aliases import InterfaceName, OutputIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
+from ...utils.serialization import array_from_json, array_to_json
 from .collection_node import CollectionNode
 
 
@@ -45,37 +44,25 @@ class CollectZ2ToOutputNode(CollectionNode):
     ):
         self._register_name = register_name
         self._output_name = output_name
-        self._subsystem_idxs = subsystem_idxs
-        self._output_idxs = output_idxs
+        self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.uint32)
+        self._output_idxs = np.asarray(output_idxs, dtype=np.uint32)
 
     def _to_json_dict(self) -> dict[str, str]:
-        with io.BytesIO() as buf:
-            np.save(buf, self._subsystem_idxs, allow_pickle=False)
-            subsystem_idxs = buf.getvalue()
-
-        with io.BytesIO() as buf:
-            np.save(buf, self._output_idxs, allow_pickle=False)
-            output_idxs = buf.getvalue()
         return {
             "node_type": "2",
             "register_name": self._register_name,
             "output_name": self._output_name,
-            "subsystem_indices": pybase64.b64encode_as_string(subsystem_idxs),
-            "output_indices": pybase64.b64encode_as_string(output_idxs),
+            "subsystem_indices": array_to_json(self._subsystem_idxs),
+            "output_indices": array_to_json(self._output_idxs),
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> CollectZ2ToOutputNode:
-        with io.BytesIO(pybase64.b64decode(data["subsystem_indices"])) as buf:
-            subsystem_idxs = np.load(buf)
-        with io.BytesIO(pybase64.b64decode(data["output_indices"])) as buf:
-            output_idxs = np.load(buf)
-
         return cls(
             data["register_name"],
-            subsystem_idxs,
+            array_from_json(data["subsystem_indices"]),
             data["output_name"],
-            output_idxs,
+            array_from_json(data["output_indices"]),
         )
 
     def reads_from(self):

@@ -14,15 +14,14 @@
 
 from __future__ import annotations
 
-import io
 from collections.abc import Sequence
 
 import numpy as np
-import pybase64
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
+from ...utils.serialization import array_from_json, array_to_json
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
 
@@ -76,28 +75,23 @@ class SliceRegisterNode(EvaluationNode):
             self._slice_idxs = slice_idxs
 
     def _to_json_dict(self) -> dict[str, str]:
-        with io.BytesIO() as buf:
-            np.save(buf, self._slice_idxs, allow_pickle=False)
-            slice_idxs = buf.getvalue()
         return {
             "node_type": "8",
             "input_type": self._input_type,
             "output_type": self._output_type,
             "input_register_name": self._input_register_name,
             "output_register_name": self._output_register_name,
-            "slice_idxs": pybase64.b64encode_as_string(slice_idxs),
+            "slice_idxs": array_to_json(self._slice_idxs),
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> SliceRegisterNode:
-        with io.BytesIO(pybase64.b64decode(data["slice_idxs"])) as buf:
-            slice_idxs = np.load(buf)
         return cls(
             VirtualType(data["input_type"]),
             VirtualType(data["output_type"]),
             data["input_register_name"],
             data["output_register_name"],
-            slice_idxs,
+            array_from_json(data["slice_idxs"]),
         )
 
     @property

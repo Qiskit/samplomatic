@@ -24,7 +24,7 @@ from .z2_register import Z2Register
 
 def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
     register_type = VirtualType(data["type"])
-    array = array_from_json(json.loads(data["array"]))
+    array = array_from_json(data["array"])
     if register_type == VirtualType.U2:
         return U2Register(array)
     elif register_type == VirtualType.Z2:

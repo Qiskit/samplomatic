@@ -14,15 +14,14 @@
 
 from __future__ import annotations
 
-import io
 from collections.abc import Sequence
 
 import numpy as np
-import pybase64
 
 from ...aliases import OperationName, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexBuildError
+from ...utils.serialization import array_from_json, array_to_json
 from .evaluation_node import EvaluationNode
 
 PAULI_PAST_CLIFFORD_LOOKUP_TABLES = {
@@ -97,25 +96,19 @@ class PauliPastCliffordNode(EvaluationNode):
         self.register_name = register_name
 
     def _to_json_dict(self) -> dict[str, str]:
-        with io.BytesIO() as buf:
-            np.save(buf, self.subsystem_idxs, allow_pickle=False)
-            subsystem_idxs = buf.getvalue()
-
         return {
             "node_type": "7",
             "op_name": self.op_name,
-            "subsystem_idxs": pybase64.b64encode_as_string(subsystem_idxs),
+            "subsystem_idxs": array_to_json(self.subsystem_idxs),
             "register_name": self.register_name,
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> PauliPastCliffordNode:
-        with io.BytesIO(pybase64.b64decode(data["subsystem_idxs"])) as buf:
-            subsystem_idxs = np.load(buf)
         return cls(
             data["op_name"],
             data["register_name"],
-            subsystem_idxs,
+            array_from_json(data["subsystem_idxs"]),
         )
 
     @property

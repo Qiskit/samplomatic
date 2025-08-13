@@ -14,8 +14,6 @@
 
 from __future__ import annotations
 
-import json
-
 import numpy as np
 
 from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
@@ -104,10 +102,10 @@ class CollectTemplateValues(CollectionNode):
 
         return cls(
             data["template_param_names"],
-            array_from_json(json.loads(data["template_idxs"])),
+            array_from_json(data["template_idxs"]),
             data["register_name"],
             VirtualType(data["register_type"]),
-            array_from_json(json.loads(data["subsystem_idxs"])),
+            array_from_json(data["subsystem_idxs"]),
             synth,
         )
 
