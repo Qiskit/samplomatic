@@ -25,7 +25,7 @@ from .evaluation_node import EvaluationNode
 
 
 class CombineType(Enum):
-    """A helper class to indicate how a given register combines into the output register."""
+    """A helper Enum to indicate how a given register combines into the output register."""
 
     SET = auto()
     MULTIPLY = auto()
@@ -89,6 +89,8 @@ class CombineRegistersNode(EvaluationNode):
                     f"Output subsystem indices for '{register_name}' reference a subsystem out "
                     f"of the bounds [0, {num_output_subsystems - 1}]."
                 )
+            # Check against the destination idxs we already set to see if we need
+            # to multiply or just set the values.
             combine_type = (
                 CombineType.SET
                 if already_set_destination_idxs.isdisjoint(destination_idxs)
