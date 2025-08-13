@@ -57,15 +57,17 @@ from ..samplex.nodes import (
     CollectZ2ToOutputNode,
     CombineRegistersNode,
     InjectNoiseNode,
+    LeftConjugationNode,
     LeftMultiplicationNode,
+    LeftU2ParametricConjugationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
+    RightConjugationNode,
     RightMultiplicationNode,
+    RightU2ParametricConjugationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
     TwirlSamplingNode,
-    RightU2ParametricConjugationNode,
-    LeftU2ParametricConjugationNode,
 )
 from ..samplex.nodes.basis_transform_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
 from ..samplex.nodes.pauli_past_clifford_node import (
@@ -1276,7 +1278,11 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                raise NotImplementedError()
+                operand = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
+                if pre_propagate.direction is Direction.LEFT:
+                    propagate_node = RightConjugationNode(operand, combined_register_name)
+                else:
+                    propagate_node = LeftConjugationNode(operand, combined_register_name)
         else:
             raise SamplexBuildError(
                 f"Encountered unsupported {op_name} propragation with mode {mode} and "

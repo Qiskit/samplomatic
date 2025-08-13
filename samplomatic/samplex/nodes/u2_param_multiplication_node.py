@@ -188,7 +188,7 @@ class LeftU2ParametricConjugationNode(U2ParametricTransformationNode):
     """Perform parametric left conjugation on a :class:`~.U2Register`.
 
     The node stores a parametric representation :math:`g` of a one-qubit gate or gates from the
-    original circuit and performs a :math:`g*reg*g^{\dagger}` conjugation, where :math:`reg` is 
+    original circuit and performs a :math:`g*reg*g^{\dagger}` conjugation, where :math:`reg` is
     the existing ``U2Register``. This is consistent with a traveling virtual gate going from
     right to left.
 
@@ -233,8 +233,8 @@ class RightU2ParametricConjugationNode(U2ParametricTransformationNode):
     """Perform parametric right conjugation on a :class:`~.U2Register`.
 
     The node stores a parametric representation :math:`g` of a one-qubit gate or gates from the
-    original circuit and performs a :math:`g^{\dagger}*reg*g` conjugation, where :math:`reg` is 
-    the existing ``U2Register``. This is consistent with a traveling virtual going going from
+    original circuit and performs a :math:`g^{\dagger}*reg*g` conjugation, where :math:`reg` is
+    the existing ``U2Register``. This is consistent with a traveling virtual gate going from
     left to right.
 
     :math:`g` is limited to the gates ``rz`` or ``rx``, and all gates within the node are of the
@@ -269,6 +269,6 @@ class RightU2ParametricConjugationNode(U2ParametricTransformationNode):
                 f"Expected {self.num_parameters} parameter values instead got "
                 f"{len(parameter_values)}"
             )
-        
+
         registers[self._register_name].left_inplace_multiply(self._get_operation(-parameter_values))
         registers[self._register_name].inplace_multiply(self._get_operation(parameter_values))

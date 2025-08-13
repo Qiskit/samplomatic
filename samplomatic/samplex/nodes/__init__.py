@@ -18,16 +18,21 @@ from .combine_registers_node import CombineRegistersNode
 from .conversion_node import ConversionNode
 from .evaluation_node import EvaluationNode
 from .inject_noise_node import InjectNoiseNode
-from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
+from .multiplication_node import (
+    LeftConjugationNode,
+    LeftMultiplicationNode,
+    RightConjugationNode,
+    RightMultiplicationNode,
+)
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
 from .sampling_node import SamplingNode
 from .slice_register_node import SliceRegisterNode
 from .twirl_sampling_node import TwirlSamplingNode
 from .u2_param_multiplication_node import (
+    LeftU2ParametricConjugationNode,
     LeftU2ParametricMultiplicationNode,
+    RightU2ParametricConjugationNode,
     RightU2ParametricMultiplicationNode,
     U2ParametricTransformationNode,
-    RightU2ParametricConjugationNode,
-    LeftU2ParametricConjugationNode,
 )

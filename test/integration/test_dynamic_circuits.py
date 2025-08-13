@@ -233,6 +233,7 @@ class TestWithSimulation:
         circuit.measure(0, 0)
         with circuit.if_test((circuit.clbits[0], 1)) as _else:
             circuit.sx(1)
+            circuit.rz(1.2, 1)
         with _else:
             circuit.x(1)
         circuit.measure_all()

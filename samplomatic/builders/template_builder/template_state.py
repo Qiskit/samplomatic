@@ -96,9 +96,13 @@ class TemplateState:
 
         new_params = []
         param_mapping = []
-        for param in instr.operation.params:
-            param_mapping.append([self.param_iter.idx, param])
-            new_params.append(next(self.param_iter))
+        if instr.operation.is_parameterized():
+            # Note: It is assumed here that if is_parameterized() is true, then all parameters
+            # are ParameterExpressions. This is true for now because all of our parametrized
+            # gates have a single parameter.
+            for param in instr.operation.params:
+                param_mapping.append([self.param_iter.idx, param])
+                new_params.append(next(self.param_iter))
 
         new_qubits = [self.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
         new_operation = type(instr.operation)(*new_params) if new_params else instr.operation
@@ -122,9 +126,13 @@ class TemplateState:
             ]
             new_params = []
             instr_param_mapping = []
-            for param in instr.operation.params:
-                instr_param_mapping.append([self.param_iter.idx, param])
-                new_params.append(next(self.param_iter))
+            if instr.operation.is_parameterized():
+                # Note: It is assumed here that if is_parameterized() is true, then all parameters
+                # are ParameterExpressions. This is true for now because all of our parametrized
+                # gates have a single parameter.
+                for param in instr.operation.params:
+                    instr_param_mapping.append([self.param_iter.idx, param])
+                    new_params.append(next(self.param_iter))
 
             new_operation = type(instr.operation)(*new_params) if new_params else instr.operation
             remapped_circuit.append(CircuitInstruction(new_operation, new_qubits, instr.clbits))

@@ -19,12 +19,12 @@ from ...virtual_registers import GroupRegister, VirtualRegister
 from .evaluation_node import EvaluationNode
 
 
-class MultiplicationNode(EvaluationNode):
-    """Abstract parent for nodes that perform multiplication against a fixed register.
+class TransformationNode(EvaluationNode):
+    """Abstract parent for nodes that perform transformation against a fixed register.
 
     Args:
-        operand: The fixed group elements by which to multiply.
-        register_name: The name of the register to multiply with.
+        operand: The fixed group elements by which to transform.
+        register_name: The name of the register to transform with.
 
     Raises:
         SamplexConstructionError: If ``operand`` has more than one sample.
@@ -56,7 +56,7 @@ class MultiplicationNode(EvaluationNode):
         return super().get_style().append_data("Fixed Operand", repr(self._operand))
 
 
-class LeftMultiplicationNode(MultiplicationNode):
+class LeftMultiplicationNode(TransformationNode):
     """Perform left multiplication of a fixed register against a given register.
 
     Args:
@@ -71,7 +71,7 @@ class LeftMultiplicationNode(MultiplicationNode):
         registers[self._register_name].left_inplace_multiply(self._operand)
 
 
-class RightMultiplicationNode(MultiplicationNode):
+class RightMultiplicationNode(TransformationNode):
     """Perform right multiplication of a fixed register against a given register.
 
     Args:
@@ -83,4 +83,40 @@ class RightMultiplicationNode(MultiplicationNode):
     """
 
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
+        registers[self._register_name].inplace_multiply(self._operand)
+
+
+class LeftConjugationNode(TransformationNode):
+    """Perform left conjugation of a fixed register against a given register.
+
+    Performs operand*reg*(operand^{\dagger}).
+
+    Args:
+        operand: The fixed group elements by which to conjugate.
+        register_name: The name of the register to conjugate with.
+
+    Raises:
+        SamplexConstructionError: If ``operand`` has more than one sample.
+    """
+
+    def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
+        registers[self._register_name].left_inplace_multiply(self._operand)
+        registers[self._register_name].inplace_multiply(self._operand.invert())
+
+
+class RightConjugationNode(TransformationNode):
+    """Perform right conjugation of a fixed register against a given register.
+
+    Performs (operand^{\dagger})*reg*operand.
+
+    Args:
+        operand: The fixed group elements by which to conjugate.
+        register_name: The name of the register to conjugate with.
+
+    Raises:
+        SamplexConstructionError: If ``operand`` has more than one sample.
+    """
+
+    def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
+        registers[self._register_name].left_inplace_multiply(self._operand.invert())
         registers[self._register_name].inplace_multiply(self._operand)
