@@ -36,4 +36,3 @@ def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
         return PauliRegister(array)
     else:
         raise DeserializationError(f"Invalid register type: {register_type}")
-            

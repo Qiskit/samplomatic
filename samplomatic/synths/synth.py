@@ -13,6 +13,7 @@
 """Synth"""
 
 import abc
+import json
 from collections.abc import Iterable
 from typing import Any, Generic, TypeVar
 
@@ -34,11 +35,13 @@ class Synth(Generic[QubitT, ParameterT, InstructionT]):
     compatible_register_types: frozenset[VirtualType] = frozenset()
 
     def _to_json(self) -> str:
-        return json.dumps({
-            "num_qubits": self.num_qubits,
-            "num_params": self.num_params,
-            "compatible_register_types": [x.to_json() for x in self.compatible_register_types],
-        })
+        return json.dumps(
+            {
+                "num_qubits": self.num_qubits,
+                "num_params": self.num_params,
+                "compatible_register_types": [x.to_json() for x in self.compatible_register_types],
+            }
+        )
 
     def __eq__(self, other: Any):
         return type(self) is type(other)

@@ -100,10 +100,7 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
         with io.BytesIO() as buf:
             np.save(buf, self._array, allow_pickle=False)
             array_data = pybase64.b64encode_as_string(buf.getvalue())
-        return json.dumps({
-            "type": self.TYPE,
-            "array": array_data
-        })
+        return json.dumps({"type": self.TYPE, "array": array_data})
 
     @staticmethod
     def select(register_type: VirtualType) -> type["VirtualRegister"]:
