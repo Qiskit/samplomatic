@@ -38,6 +38,8 @@ class SliceRegisterNode(EvaluationNode):
         input_register_name: The name of the input register.
         output_register_name: The name of the output register.
         slice_idxs: The indices used to slice the register.
+        force_copy: Whether or not to force output register to be a copy instead of a view of
+            the input register.
 
     Raises:
         SamplexConstructionError: If ``slice_idxs`` has the wrong shape.
@@ -50,28 +52,54 @@ class SliceRegisterNode(EvaluationNode):
         input_register_name: RegisterName,
         output_register_name: RegisterName,
         slice_idxs: Sequence[SubsystemIndex],
+        force_copy: bool = False,
     ):
         self._input_type = input_type
         self._output_type = output_type
         self._input_register_name = input_register_name
         self._output_register_name = output_register_name
-        self._slice_idxs = np.asarray(slice_idxs, dtype=np.intp)
 
-        if self._slice_idxs.ndim != 1:
+        slice_idxs = np.asarray(slice_idxs, dtype=np.intp)
+        if slice_idxs.ndim != 1:
             raise SamplexConstructionError(
-                f"'slice_idxs' for '{input_register_name}' has a shape {self._slice_idxs.shape}, "
+                f"'slice_idxs' for '{input_register_name}' has a shape {slice_idxs.shape}, "
                 "but a shape with a single axes is required."
             )
+        # Check if indices could be converted to a slice
+        if not force_copy:
+            self._slice_idxs = get_slice_from_idxs(slice_idxs)
+        else:
+            self._slice_idxs = slice_idxs
 
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self._output_type
 
     def instantiates(self):
-        return {self._output_register_name: (len(self._slice_idxs), self._output_type)}
+        if isinstance(self._slice_idxs, slice):
+            length = len(
+                range(
+                    self._slice_idxs.start,
+                    self._slice_idxs.stop if self._slice_idxs.stop is not None else -1,
+                    self._slice_idxs.step,
+                )
+            )
+        else:
+            length = len(self._slice_idxs)
+        return {self._output_register_name: (length, self._output_type)}
 
     def reads_from(self):
-        return {self._input_register_name: (set(self._slice_idxs), self._input_type)}
+        if isinstance(self._slice_idxs, slice):
+            idxs_set = set(
+                range(
+                    self._slice_idxs.start,
+                    self._slice_idxs.stop if self._slice_idxs.stop is not None else -1,
+                    self._slice_idxs.step,
+                )
+            )
+        else:
+            idxs_set = set(self._slice_idxs)
+        return {self._input_register_name: (idxs_set, self._input_type)}
 
     def validate_and_update(self, register_descriptions):
         super().validate_and_update(register_descriptions)
@@ -85,8 +113,21 @@ class SliceRegisterNode(EvaluationNode):
 
     def evaluate(self, registers, *_):
         converted_register = registers[self._input_register_name].convert_to(self._output_type)
-        if np.array_equal(self._slice_idxs, np.arange(converted_register.num_subsystems)):
-            # No slicing required
-            registers[self._output_register_name] = converted_register
-        else:
-            registers[self._output_register_name] = converted_register[self._slice_idxs]
+        registers[self._output_register_name] = converted_register[self._slice_idxs]
+
+
+def get_slice_from_idxs(slice_idxs: np.typing.ArrayLike) -> np.typing.ArrayLike | slice:
+    """A helper function that returns a slice object, if indices permit."""
+    if len(slice_idxs) == 1:
+        return slice(slice_idxs[0], slice_idxs[0] + 1, 1)
+    else:
+        step = slice_idxs[1] - slice_idxs[0]
+        expected = slice_idxs[0] + step * np.arange(len(slice_idxs))
+
+        if np.array_equal(slice_idxs, expected):
+            return slice(
+                slice_idxs[0],
+                slice_idxs[-1] + step if slice_idxs[-1] + step >= 0 else None,
+                step,
+            )
+    return slice_idxs
