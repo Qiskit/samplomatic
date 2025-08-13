@@ -15,7 +15,7 @@
 from numbers import Number
 from typing import Literal
 
-from ...aliases import NumSubsystems, OutputName, ParamIndex, RegisterName, SubsystemIndex
+from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...visualization.hover_style import NodeStyle
@@ -46,7 +46,7 @@ class Node:
         """The virtual gate type of outgoing registers."""
         return None
 
-    def outputs_to(self) -> set[OutputName]:
+    def outputs_to(self) -> set[InterfaceName]:
         """Set of names of outputs this node mutates."""
         return set()
 

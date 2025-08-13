@@ -94,7 +94,9 @@ def test_sampling(circuit, expected, noise_maps, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = np.random.random(len(circuit.parameters)).tolist()
-    samplex_output = samplex.sample(circuit_params, noise_maps=noise_maps, size=1000)
+    samplex_output = samplex.sample(
+        parameter_values=circuit_params, noise_maps=noise_maps, size=1000
+    )
     parameter_values = samplex_output["parameter_values"]
 
     superops = []
