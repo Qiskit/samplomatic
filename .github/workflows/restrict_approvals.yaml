@@ -1,5 +1,9 @@
 name: Require Team Review
 
+# Normally, a workflow item like this one shouldn't be necessary, because CODEOWNERS suffices.
+# However, CODEOWNERS is unmutably noisy: https://github.com/orgs/community/discussions/35673
+# Therefore, this workflow restricts sanctioned PR approvals to a hard-coded list of devs.
+
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, review_requested, review_request_removed, edited]
@@ -8,7 +12,7 @@ jobs:
   check-review:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read   # allow reading PR reviews
+      pull-requests: read
     steps:
       - name: Check for approval from allowed reviewers
         uses: actions/github-script@v7
@@ -16,7 +20,8 @@ jobs:
           script: |
             const allowedReviewers = [
               "ihincks",
-              "joshuasn"
+              "joshuasn",
+              "rainerschoe"
             ].map(u => u.toLowerCase());
 
             const { data: reviews } = await github.rest.pulls.listReviews({
@@ -36,9 +41,7 @@ jobs:
             );
 
             if (!approvedFromAllowed) {
-              core.setFailed(
-                `No approval from an allowed reviewer`
-              );
+              core.setFailed("No approval from an allowed reviewer");
             } else {
               core.info("Approval from allowed reviewer found");
             }
