@@ -25,7 +25,7 @@ from qiskit.qpy.binary_io.value import (
     _read_parameter_expr_v13,
     _write_parameter_expression_v13,
 )
-from rustworkx import PyDiGraph, from_node_link_json_file, node_link_json, parse_node_link_json
+from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from ..aliases import InterfaceName
 from ..exceptions import DeserializationError
@@ -174,18 +174,6 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
     samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
     return samplex
-
-
-def samplex_from_json_file(filename: str) -> Samplex:
-    """Load a samplex from a json file.
-
-    Args:
-        filename: The path to the json file.
-
-    Returns:
-        The loaded samplex."""
-    samplex_graph = from_node_link_json_file(filename, node_attrs=_parse_node)
-    return _samplex_from_graph(samplex_graph)
 
 
 def samplex_from_json(json_data: str) -> Samplex:
