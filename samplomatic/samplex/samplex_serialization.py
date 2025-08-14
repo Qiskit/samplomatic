@@ -14,17 +14,14 @@
 """Samplex serialization"""
 
 import io
-import json
 import uuid
 
+import orjson
 import pybase64
 from qiskit.circuit import Parameter, ParameterExpression
 
 # This is super private in Qiskit and on every upgrade should be checked for changes
-from qiskit.qpy.binary_io.value import (
-    _read_parameter_expr_v13,
-    _write_parameter_expression_v13,
-)
+from qiskit.qpy.binary_io.value import _read_parameter_expr_v13, _write_parameter_expression_v13
 from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from ..aliases import InterfaceName
@@ -84,7 +81,7 @@ def _serialize_expression_table(table: ParameterExpressionTable) -> str:
         else:
             expressions.append({"expression": _serialize_expressions(x)})
 
-    return json.dumps(expressions)  # noqa: SLF001
+    return orjson.dumps(expressions).decode("utf-8")
 
 
 def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
@@ -102,15 +99,15 @@ def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
 def _serialize_tensor_specifications(data: dict[InterfaceName, TensorSpecification]) -> str:
     out_dict = {}
     for name, spec in data.items():
-        out_dict[name] = json.dumps(spec._to_json_dict())  # noqa: SLF001
-    return json.dumps(out_dict)
+        out_dict[name] = orjson.dumps(spec._to_json_dict()).decode("utf-8")  # noqa: SLF001
+    return orjson.dumps(out_dict).decode("utf-8")
 
 
 def _deserialize_tensor_specifications(data: str) -> dict[InterfaceName, TensorSpecification]:
-    outputs_raw = json.loads(data)
+    outputs_raw = orjson.loads(data)
     outputs = {}
     for name, output in outputs_raw.items():
-        outputs[name] = TensorSpecification._from_json(json.loads(output))  # noqa: SLF001
+        outputs[name] = TensorSpecification._from_json(orjson.loads(output))  # noqa: SLF001
     return outputs
 
 
@@ -131,7 +128,7 @@ def _process_graph_header(
     dict[InterfaceName, TensorSpecification],
     dict[InterfaceName, TensorSpecification],
 ]:
-    raw_param_table_dict = json.loads(data["param_table"])
+    raw_param_table_dict = orjson.loads(data["param_table"])
     param_table = _deserialize_expression_table(raw_param_table_dict)
     inputs = _deserialize_tensor_specifications(data["input_specification"])
     outputs = _deserialize_tensor_specifications(data["output_specification"])

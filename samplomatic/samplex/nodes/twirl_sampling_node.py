@@ -12,7 +12,7 @@
 
 """TwirlSamplingNode"""
 
-import json
+import orjson
 
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType
@@ -52,12 +52,12 @@ class TwirlSamplingNode(SamplingNode):
             "node_type": "9",
             "lhs_register_name": self.lhs_register_name,
             "rhs_register_name": self.rhs_register_name,
-            "distribution": json.dumps(distribution),
+            "distribution": orjson.dumps(distribution).decode("utf-8"),
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> "TwirlSamplingNode":
-        distribution_dict = json.loads(data["distribution"])
+        distribution_dict = orjson.loads(data["distribution"])
         if distribution_dict["type"] == "haar_u2":
             distribution = HaarU2(distribution_dict["num_subsystems"])
         else:
