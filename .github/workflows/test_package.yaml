@@ -37,7 +37,6 @@ jobs:
         python -m pytest
 
   docs:
-
     runs-on: ubuntu-latest
 
     steps:
