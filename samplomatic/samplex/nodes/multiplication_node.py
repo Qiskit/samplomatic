@@ -12,8 +12,9 @@
 
 """MultiplicationNode"""
 
-import json
 from typing import Self
+
+import orjson
 
 from ...aliases import RegisterName
 from ...annotations import VirtualType
@@ -45,7 +46,7 @@ class MultiplicationNode(EvaluationNode):
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> Self:
-        operand = virtual_register_from_json(json.loads(data["operand"]))
+        operand = virtual_register_from_json(orjson.loads(data["operand"]))
         return cls(
             operand,
             data["register_name"],
@@ -81,7 +82,7 @@ class LeftMultiplicationNode(MultiplicationNode):
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "6",
-            "operand": json.dumps(self._operand.to_json_dict()),
+            "operand": orjson.dumps(self._operand.to_json_dict()).decode("utf-8"),
             "register_name": self._register_name,
         }
 
@@ -103,7 +104,7 @@ class RightMultiplicationNode(MultiplicationNode):
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "11",
-            "operand": json.dumps(self._operand.to_json_dict()),
+            "operand": orjson.dumps(self._operand.to_json_dict()).decode("utf-8"),
             "register_name": self._register_name,
         }
 

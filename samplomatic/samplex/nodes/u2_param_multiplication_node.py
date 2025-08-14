@@ -12,10 +12,10 @@
 
 """U2ParametricMultiplicationNode"""
 
-import json
 from typing import Literal, Self
 
 import numpy as np
+import orjson
 
 from ...aliases import ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -65,7 +65,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         return cls(
             data["operand"],
             data["register_name"],
-            json.loads(data["param_indices"]),
+            orjson.loads(data["param_indices"]),
         )
 
     def get_style(self):
@@ -73,7 +73,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
             super()
             .get_style()
             .append_data("Operand", repr(self._operand))
-            .append_data("Parameter idxs", repr(self._param_idxs))
+            .append_data("Parameter Indices", repr(self._param_idxs))
         )
 
     @property
@@ -131,7 +131,7 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         return {
             "node_type": "10",
             "operand": self._operand,
-            "param_indices": json.dumps(self._param_idxs),
+            "param_indices": orjson.dumps(self._param_idxs).decode("utf-8"),
             "register_name": self._register_name,
         }
 
@@ -182,7 +182,7 @@ class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         return {
             "node_type": "12",
             "operand": self._operand,
-            "param_indices": json.dumps(self._param_idxs),
+            "param_indices": orjson.dumps(self._param_idxs).decode("utf-8"),
             "register_name": self._register_name,
         }
 
