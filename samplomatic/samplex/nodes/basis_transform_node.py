@@ -162,3 +162,12 @@ class BasisTransformNode(SamplingNode):
             data["basis_ref"],
             int(data["num_subsystems"]),
         )
+
+    def get_style(self):
+        return (
+            super()
+            .get_style()
+            .append_data("Register Name", repr(self._register_name))
+            .append_data("Subsystems", repr(self._num_subsystems))
+            .append_data("Basis Reference", repr(self._basis_ref))
+        )
