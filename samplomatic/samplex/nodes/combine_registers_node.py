@@ -118,6 +118,8 @@ class CombineRegistersNode(EvaluationNode):
             for v in values:
                 if isinstance(v, VirtualType):
                     value_list.append({"type": str(v)})
+                elif isinstance(v, CombineType):
+                    continue
                 else:
                     value_list.append({"array": array_to_json(v)})
             operands_dict[key] = value_list
