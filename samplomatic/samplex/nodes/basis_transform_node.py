@@ -12,11 +12,11 @@
 
 """BasisTransformNode"""
 
-import json
 from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
 
 import numpy as np
+import orjson
 from qiskit.circuit.library import HGate, IGate, RYGate
 
 from ...aliases import RegisterName, StrRef
@@ -56,14 +56,14 @@ class BasisChange(Generic[T]):
     def to_json_dict(self) -> dict[str, str]:
         return {
             "alphabet": self.alphabet,
-            "action": json.dumps(self.action.to_json_dict()),
+            "action": orjson.dumps(self.action.to_json_dict()).decode("utf-8"),
         }
 
     @classmethod
     def from_json_dict(cls, data: dict[str, str]) -> "BasisChange":
         return cls(
             data["alphabet"],
-            virtual_register_from_json(json.loads(data["action"])),
+            virtual_register_from_json(orjson.loads(data["action"])),
         )
 
     @property
@@ -149,7 +149,7 @@ class BasisTransformNode(SamplingNode):
         return {
             "node_type": "0",
             "register_name": self._register_name,
-            "basis_change": json.dumps(self._basis_change.to_json_dict()),
+            "basis_change": orjson.dumps(self._basis_change.to_json_dict()).decode("utf-8"),
             "basis_ref": self._basis_ref,
             "num_subsystems": str(self._num_subsystems),
         }
@@ -158,7 +158,7 @@ class BasisTransformNode(SamplingNode):
     def _from_json_dict(cls, data: dict[str, str]) -> "BasisTransformNode":
         return cls(
             data["register_name"],
-            BasisChange.from_json_dict(json.loads(data["basis_change"])),
+            BasisChange.from_json_dict(orjson.loads(data["basis_change"])),
             data["basis_ref"],
             int(data["num_subsystems"]),
         )

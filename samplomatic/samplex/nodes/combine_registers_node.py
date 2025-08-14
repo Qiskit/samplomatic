@@ -12,11 +12,11 @@
 
 """CombineRegistersNode"""
 
-import json
 from collections.abc import Sequence
 from enum import Enum, auto
 
 import numpy as np
+import orjson
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -127,12 +127,12 @@ class CombineRegistersNode(EvaluationNode):
             "output_type": self._output_type,
             "output_register_name": self._output_register_name,
             "num_output_subsystems": str(self._num_output_subsystems),
-            "operands": json.dumps(operands_dict),
+            "operands": orjson.dumps(operands_dict).decode("utf-8"),
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> "CombineRegistersNode":
-        raw_operands_dict = json.loads(data["operands"])
+        raw_operands_dict = orjson.loads(data["operands"])
         operands = {}
         for name, values in raw_operands_dict.items():
             tuple_value = []

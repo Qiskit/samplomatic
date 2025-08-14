@@ -12,9 +12,8 @@
 
 """Serialization utils"""
 
-import json
-
 import numpy as np
+import orjson
 import pybase64
 
 from samplomatic.exceptions import DeserializationError
@@ -43,7 +42,7 @@ def array_to_json(array: np.ndarray) -> str:
     else:
         raise ValueError(f"Unexpected NumPy dtype {array.dtype}.")
 
-    return json.dumps({"data": data, "shape": array.shape, "dtype": dtype})
+    return orjson.dumps({"data": data, "shape": array.shape, "dtype": dtype}).decode("utf-8")
 
 
 def array_from_json(data: str) -> np.ndarray:
@@ -58,7 +57,7 @@ def array_from_json(data: str) -> np.ndarray:
     Raises:
         DeserializationError: If the type of the array is unsupported.
     """
-    data = json.loads(data)
+    data = orjson.loads(data)
     dtype = data["dtype"]
     shape = tuple(data["shape"])
     raw = pybase64.b64decode(data["data"])
@@ -84,7 +83,7 @@ def slice_to_json(slc: slice) -> str:
     """
     step = None if slc.step is None else int(slc.step)
     stop = None if slc.stop is None else int(slc.stop)
-    return json.dumps((int(slc.start), stop, step))
+    return orjson.dumps((int(slc.start), stop, step)).decode("utf-8")
 
 
 def slice_from_json(data: str) -> slice:
@@ -96,5 +95,5 @@ def slice_from_json(data: str) -> slice:
     Returns:
         A slice.
     """
-    data = json.loads(data)
+    data = orjson.loads(data)
     return slice(*data)
