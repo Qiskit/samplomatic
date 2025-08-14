@@ -73,7 +73,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
             super()
             .get_style()
             .append_data("Operand", repr(self._operand))
-            .append_data("Parameter idxs", repr(self._param_idxs))
+            .append_data("Parameter Indices", repr(self._param_idxs))
         )
 
     @property

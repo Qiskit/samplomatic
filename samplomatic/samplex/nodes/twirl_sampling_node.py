@@ -35,23 +35,23 @@ class TwirlSamplingNode(SamplingNode):
         rhs_register_name: RegisterName,
         distribution: Distribution,
     ):
-        self.lhs_register_name = lhs_register_name
-        self.rhs_register_name = rhs_register_name
-        self.distribution = distribution
+        self._lhs_register_name = lhs_register_name
+        self._rhs_register_name = rhs_register_name
+        self._distribution = distribution
 
     def _to_json_dict(self) -> dict[str, str]:
-        if isinstance(self.distribution, HaarU2):
+        if isinstance(self._distribution, HaarU2):
             distribution_type = "haar_u2"
         else:
             distribution_type = "pauli_uniform"
         distribution = {
             "type": distribution_type,
-            "num_subsystems": self.distribution.num_subsystems,
+            "num_subsystems": self._distribution.num_subsystems,
         }
         return {
             "node_type": "9",
-            "lhs_register_name": self.lhs_register_name,
-            "rhs_register_name": self.rhs_register_name,
+            "lhs_register_name": self._lhs_register_name,
+            "rhs_register_name": self._rhs_register_name,
             "distribution": json.dumps(distribution),
         }
 
@@ -66,25 +66,25 @@ class TwirlSamplingNode(SamplingNode):
 
     @property
     def outgoing_register_type(self) -> VirtualType:
-        return self.distribution.register_type
+        return self._distribution.register_type
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
-        distribution_info = (self.distribution.num_subsystems, self.distribution.register_type)
+        distribution_info = (self._distribution.num_subsystems, self._distribution.register_type)
         return {
-            self.lhs_register_name: distribution_info,
-            self.rhs_register_name: distribution_info,
+            self._lhs_register_name: distribution_info,
+            self._rhs_register_name: distribution_info,
         }
 
     def sample(self, registers, rng, inputs, **_):
-        samples = self.distribution.sample(inputs.num_samples, rng)
-        registers[self.lhs_register_name] = samples
-        registers[self.rhs_register_name] = samples.invert()
+        samples = self._distribution.sample(inputs.num_samples, rng)
+        registers[self._lhs_register_name] = samples
+        registers[self._rhs_register_name] = samples.invert()
 
     def get_style(self):
         return (
             super()
             .get_style()
-            .append_data("LHS Register", repr(self.lhs_register_name))
-            .append_data("RHS Register", repr(self.rhs_register_name))
-            .append_data("Distribution", repr(self.distribution))
+            .append_data("LHS Register", repr(self._lhs_register_name))
+            .append_data("RHS Register", repr(self._rhs_register_name))
+            .append_data("Distribution", repr(self._distribution))
         )
