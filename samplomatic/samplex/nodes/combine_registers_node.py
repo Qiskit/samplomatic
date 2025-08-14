@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Sequence
+from enum import Enum, auto
 
 import numpy as np
 
@@ -25,6 +26,13 @@ from ...exceptions import DeserializationError, SamplexConstructionError
 from ...utils.serialization import array_from_json, array_to_json
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
+
+
+class CombineType(Enum):
+    """A helper Enum to indicate how a given register combines into the output register."""
+
+    SET = auto()
+    MULTIPLY = auto()
 
 
 class CombineRegistersNode(EvaluationNode):
@@ -67,7 +75,7 @@ class CombineRegistersNode(EvaluationNode):
         self._output_register_name = output_register_name
         self._num_output_subsystems = num_output_subsystems
         self._operands = {}
-
+        already_set_destination_idxs = set()
         for register_name, (source_idxs, destination_idxs, input_type) in list(operands.items()):
             source_idxs = np.asarray(source_idxs, dtype=np.intp)
             destination_idxs = np.asarray(destination_idxs, dtype=np.intp)
@@ -85,7 +93,20 @@ class CombineRegistersNode(EvaluationNode):
                     f"Output subsystem indices for '{register_name}' reference a subsystem out "
                     f"of the bounds [0, {num_output_subsystems - 1}]."
                 )
-            self._operands[register_name] = (source_idxs, destination_idxs, input_type)
+            # Check against the destination idxs we already set to see if we need
+            # to multiply or just set the values.
+            combine_type = (
+                CombineType.SET
+                if already_set_destination_idxs.isdisjoint(destination_idxs)
+                else CombineType.MULTIPLY
+            )
+            already_set_destination_idxs.update(destination_idxs)
+            self._operands[register_name] = (
+                source_idxs,
+                destination_idxs,
+                input_type,
+                combine_type,
+            )
 
         if not self._operands:
             raise SamplexConstructionError(f"{self} requires at least one input register.")
@@ -141,7 +162,7 @@ class CombineRegistersNode(EvaluationNode):
     def reads_from(self):
         return {
             register_name: (set(source_idxs), input_type)
-            for register_name, (source_idxs, _, input_type) in self._operands.items()
+            for register_name, (source_idxs, _, input_type, _) in self._operands.items()
         }
 
     def validate_and_update(self, register_descriptions):
@@ -161,16 +182,29 @@ class CombineRegistersNode(EvaluationNode):
         output_register = register_cls.identity(self._num_output_subsystems, num_samples)
 
         # multiply together all registers, in order
-        for register_name, (source_idxs, destination_idxs, _) in self._operands.items():
+        for register_name, (
+            source_idxs,
+            destination_idxs,
+            _,
+            combine_type,
+        ) in self._operands.items():
             operand = registers[register_name].convert_to(self._output_type)[source_idxs]
-            output_register.inplace_multiply(operand, destination_idxs)
+            if combine_type is CombineType.MULTIPLY:
+                output_register.inplace_multiply(operand, destination_idxs)
+            else:
+                output_register[destination_idxs] = operand
 
         registers[self._output_register_name] = output_register
 
     def get_style(self):
         operands = {
             register_name: (source_idxs.tolist(), destination_idxs.tolist(), str(input_type))
-            for register_name, (source_idxs, destination_idxs, input_type) in self._operands.items()
+            for register_name, (
+                source_idxs,
+                destination_idxs,
+                input_type,
+                _,
+            ) in self._operands.items()
         }
         return (
             super()
