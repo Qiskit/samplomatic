@@ -71,3 +71,30 @@ def array_from_json(data: str) -> np.ndarray:
         return np.frombuffer(raw, dtype="<u8").reshape(shape)
 
     raise DeserializationError(f"Unexpected NumPy dtype {dtype}.")
+
+
+def slice_to_json(slc: slice) -> str:
+    """Convert a slice to json format.
+
+    Args:
+        slc: The slice to convert.
+
+    Returns:
+        The json string.
+    """
+    step = None if slc.step is None else int(slc.step)
+    stop = None if slc.stop is None else int(slc.stop)
+    return json.dumps((int(slc.start), stop, step))
+
+
+def slice_from_json(data: str) -> slice:
+    """Convert a json string to a slice.
+
+    Args:
+        data: The json string.
+
+    Returns:
+        A slice.
+    """
+    data = json.loads(data)
+    return slice(*data)

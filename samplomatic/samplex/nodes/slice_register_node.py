@@ -21,7 +21,7 @@ import numpy as np
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...utils.serialization import array_from_json, array_to_json
+from ...utils.serialization import array_from_json, array_to_json, slice_from_json, slice_to_json
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
 
@@ -54,7 +54,7 @@ class SliceRegisterNode(EvaluationNode):
         output_type: VirtualType,
         input_register_name: RegisterName,
         output_register_name: RegisterName,
-        slice_idxs: Sequence[SubsystemIndex],
+        slice_idxs: slice | Sequence[SubsystemIndex],
         force_copy: bool = False,
     ):
         self._input_type = input_type
@@ -62,36 +62,51 @@ class SliceRegisterNode(EvaluationNode):
         self._input_register_name = input_register_name
         self._output_register_name = output_register_name
 
-        slice_idxs = np.asarray(slice_idxs, dtype=np.intp)
-        if slice_idxs.ndim != 1:
-            raise SamplexConstructionError(
-                f"'slice_idxs' for '{input_register_name}' has a shape {slice_idxs.shape}, "
-                "but a shape with a single axes is required."
-            )
-        # Check if indices could be converted to a slice
-        if not force_copy:
-            self._slice_idxs = get_slice_from_idxs(slice_idxs)
-        else:
+        if isinstance(slice_idxs, slice):
             self._slice_idxs = slice_idxs
+        else:
+            slice_idxs = np.asarray(slice_idxs, dtype=np.intp)
+            if slice_idxs.ndim != 1:
+                raise SamplexConstructionError(
+                    f"'slice_idxs' for '{input_register_name}' has a shape {slice_idxs.shape}, "
+                    "but a shape with a single axes is required."
+                )
+            # Check if indices could be converted to a slice
+            elif not force_copy:
+                self._slice_idxs = get_slice_from_idxs(slice_idxs)
+            else:
+                self._slice_idxs = slice_idxs
 
     def _to_json_dict(self) -> dict[str, str]:
+        if isinstance(self._slice_idxs, slice):
+            is_slice = "true"
+            slice_idxs = slice_to_json(self._slice_idxs)
+        else:
+            is_slice = "false"
+            slice_idxs = array_to_json(self._slice_idxs)
         return {
             "node_type": "8",
             "input_type": self._input_type,
             "output_type": self._output_type,
             "input_register_name": self._input_register_name,
             "output_register_name": self._output_register_name,
-            "slice_idxs": array_to_json(self._slice_idxs),
+            "slice_idxs": slice_idxs,
+            "is_slice": is_slice,
         }
 
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> SliceRegisterNode:
+        slice_idxs = (
+            slice_from_json(data["slice_idxs"])
+            if data["is_slice"] == "true"
+            else array_from_json(data["slice_idxs"])
+        )
         return cls(
             VirtualType(data["input_type"]),
             VirtualType(data["output_type"]),
             data["input_register_name"],
             data["output_register_name"],
-            array_from_json(data["slice_idxs"]),
+            slice_idxs,
         )
 
     @property
@@ -149,8 +164,8 @@ def get_slice_from_idxs(slice_idxs: np.typing.ArrayLike) -> np.typing.ArrayLike 
 
         if np.array_equal(slice_idxs, expected):
             return slice(
-                slice_idxs[0],
-                slice_idxs[-1] + step if slice_idxs[-1] + step >= 0 else None,
-                step,
+                int(slice_idxs[0]),
+                int(slice_idxs[-1] + step) if slice_idxs[-1] + step >= 0 else None,
+                int(step),
             )
     return slice_idxs
