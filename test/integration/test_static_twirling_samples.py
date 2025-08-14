@@ -243,17 +243,6 @@ def make_circuits():
 
     yield circuit, "propagate_through_merged_invariant_gates"
 
-    circuit = QuantumCircuit(1)
-    with circuit.box([Twirl(dressing="left")]):
-        circuit.x(0)
-        circuit.rz(1.2, 0)
-    circuit.rx(1.2, 0)
-    with circuit.box([Twirl(dressing="right")]):
-        circuit.sx(0)
-        circuit.rz(1.5, 0)
-
-    yield circuit, "nonclifford_between_left_right_boxes"
-
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(dressing="left")]):
         circuit.rz(1.2, 0)

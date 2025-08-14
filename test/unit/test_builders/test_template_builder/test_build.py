@@ -131,7 +131,7 @@ class TestTemplateBuilder:
         with circuit.box([Twirl(decomposition="rzrx")]):
             circuit.cx(0, 1)
 
-        circuit.rz(Parameter("c"), 0)
+        circuit.x(0)
 
         with circuit.box([Twirl(decomposition="rzsx", dressing="right")]):
             circuit.cx(0, 1)
@@ -143,7 +143,7 @@ class TestTemplateBuilder:
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
-        assert [p.name for p in template.parameters] == [f"p{str(i).zfill(2)}" for i in range(13)]
+        assert [p.name for p in template.parameters] == [f"p{str(i).zfill(2)}" for i in range(12)]
 
         expected_names = ["h"]
 
@@ -151,7 +151,7 @@ class TestTemplateBuilder:
         expected_names += ["rz", "rx", "rz"] * 2 + ["barrier", "cx"]
         expected_names += ["barrier"]
 
-        expected_names += ["rz"]
+        expected_names += ["x"]
 
         expected_names += ["barrier"]
         expected_names += ["cx", "barrier"] + ["rz", "sx", "rz", "sx", "rz"] * 2

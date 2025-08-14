@@ -1362,6 +1362,7 @@ class PreSamplex:
                 np.array(list(pre_propagate.partition), dtype=np.intp),
             )
         elif mode is InstructionMode.PROPAGATE:
+            # What's left are the supported non-clifford gates rz\rx
             combined_register_type = VirtualType.U2
             if pre_propagate.operation.is_parameterized():
                 param_idxs = [

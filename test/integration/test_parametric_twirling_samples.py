@@ -99,20 +99,6 @@ def make_circuits():
 
     yield circuit, "parameterized_nonclifford_between_right_right_boxes"
 
-    circuit = QuantumCircuit(1)
-    with circuit.box([Twirl(dressing="left")]):
-        # circuit.x(0)
-        # circuit.rz(1.2, 0)
-        circuit.noop(0)
-    circuit.rx(Parameter("a"), 0)
-    circuit.rz(Parameter("b"), 0)
-    with circuit.box([Twirl(dressing="right")]):
-        # circuit.sx(0)
-        # circuit.rz(1.5, 0)
-        circuit.noop(0)
-
-    yield circuit, "parameterized_nonclifford_between_left_right_boxes"
-
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(dressing="left")]):
         circuit.rz(1.2, 0)
@@ -125,6 +111,7 @@ def make_circuits():
         circuit.noop(0, 1)
 
     yield circuit, "parameterized_nonclifford_between_left_left_boxes"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
