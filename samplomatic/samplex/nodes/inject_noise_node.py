@@ -58,6 +58,26 @@ class InjectNoiseNode(SamplingNode):
         self._modifier_ref = modifier_ref
         self._num_subsystems = num_subsystems
 
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "5",
+            "register_name": self.register_name,
+            "sign_register_name": self.sign_register_name,
+            "noise_ref": self._noise_ref,
+            "modifier_ref": self._modifier_ref,
+            "num_subsystems": str(self._num_subsystems),
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "InjectNoiseNode":
+        return cls(
+            data["register_name"],
+            data["sign_register_name"],
+            data["noise_ref"],
+            int(data["num_subsystems"]),
+            data["modifier_ref"],
+        )
+
     @property
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI

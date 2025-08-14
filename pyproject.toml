@@ -30,6 +30,7 @@ dependencies = [
     "qiskit>=2.1.1",
     "numpy>=1.26",
     "rustworkx>=0.16.0",
+    "pybase64>=1.4.0",
 ]
 
 [tool.setuptools_scm]
