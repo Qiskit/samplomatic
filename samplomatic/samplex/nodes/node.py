@@ -12,6 +12,8 @@
 
 """Node"""
 
+import abc
+import inspect
 from numbers import Number
 from typing import Literal, Self
 
@@ -21,8 +23,24 @@ from ...exceptions import SamplexConstructionError
 from ...visualization.hover_style import NodeStyle
 
 
-class Node:
+class NodeType(abc.ABCMeta):
+    """Metaclass used for registering all non-abstract subclasses.
+
+    This is done so that we can automate testing coverage of Node serialization: there is a test
+    that demands each node type does a round-trip.
+    """
+
+    def __new__(mcls, name, bases, namespace):
+        cls = super().__new__(mcls, name, bases, namespace)
+        if cls.__name__ != "Node" and not inspect.isabstract(cls):
+            cls.NODE_REGISTRY.add(cls)
+        return cls
+
+
+class Node(metaclass=NodeType):
     """Parent class for samplex node operations."""
+
+    NODE_REGISTRY: set[type["Node"]] = set()
 
     def __repr__(self):
         register_names = sorted(f"{register_name}(r)" for register_name in self.reads_from())
