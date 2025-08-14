@@ -20,10 +20,10 @@ from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.samplex.nodes import (
-    LeftU2ParametricMultiplicationNode,
-    RightU2ParametricMultiplicationNode,
     LeftU2ParametricConjugationNode,
+    LeftU2ParametricMultiplicationNode,
     RightU2ParametricConjugationNode,
+    RightU2ParametricMultiplicationNode,
 )
 
 X_MATRIX = np.array([[0, 1], [1, 0]])
@@ -116,6 +116,7 @@ class TestRightU2ParamMultiplicationNode:
             registers["a"].virtual_gates, np.matmul(register.virtual_gates, operation)
         )
 
+
 class TestLeftU2ParamConjugationNode:
     def test_instantiation_errors(self):
         """Test that errors are properly raised during instantiation"""
@@ -153,9 +154,8 @@ class TestLeftU2ParamConjugationNode:
         node = RightU2ParametricMultiplicationNode(gate, "a", [i for i in range(register_shape[0])])
         node.evaluate(expected_registers, -params)
 
-        assert np.allclose(
-            registers["a"].virtual_gates, expected_registers["a"].virtual_gates
-        )
+        assert np.allclose(registers["a"].virtual_gates, expected_registers["a"].virtual_gates)
+
 
 class TestRightU2ParamConjugationNode:
     def test_instantiation_errors(self):
@@ -194,6 +194,4 @@ class TestRightU2ParamConjugationNode:
         node = RightU2ParametricMultiplicationNode(gate, "a", [i for i in range(register_shape[0])])
         node.evaluate(expected_registers, params)
 
-        assert np.allclose(
-            registers["a"].virtual_gates, expected_registers["a"].virtual_gates
-        )
+        assert np.allclose(registers["a"].virtual_gates, expected_registers["a"].virtual_gates)
