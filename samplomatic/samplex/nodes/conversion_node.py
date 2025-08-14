@@ -12,8 +12,6 @@
 
 """ConversionNode"""
 
-from __future__ import annotations
-
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
@@ -70,7 +68,7 @@ class ConversionNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> ConversionNode:
+    def _from_json_dict(cls, data: dict[str, str]) -> "ConversionNode":
         return cls(
             data["existing_name"],
             VirtualType(data["existing_type"]),

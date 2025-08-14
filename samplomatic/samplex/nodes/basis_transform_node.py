@@ -12,8 +12,6 @@
 
 """BasisTransformNode"""
 
-from __future__ import annotations
-
 import json
 from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
@@ -54,6 +52,19 @@ class BasisChange(Generic[T]):
             character: transform[0]
             for character, transform in zip(self._alphabet, self._action.virtual_gates)
         }
+
+    def to_json_dict(self) -> dict[str, str]:
+        return {
+            "alphabet": self.alphabet,
+            "action": json.dumps(self.action.to_json_dict()),
+        }
+
+    @classmethod
+    def from_json_dict(cls, data: dict[str, str]) -> "BasisChange":
+        return cls(
+            data["alphabet"],
+            virtual_register_from_json(json.loads(data["action"])),
+        )
 
     @property
     def num_elements(self) -> int:
@@ -138,25 +149,16 @@ class BasisTransformNode(SamplingNode):
         return {
             "node_type": "0",
             "register_name": self._register_name,
-            "basis_change": json.dumps(
-                {
-                    "alphabet": self._basis_change.alphabet,
-                    "action": self._basis_change.action.to_json(),
-                }
-            ),
+            "basis_change": json.dumps(self._basis_change.to_json_dict()),
             "basis_ref": self._basis_ref,
             "num_subsystems": str(self._num_subsystems),
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> BasisTransformNode:
-        basis_change_dict = json.loads(data["basis_change"])
+    def _from_json_dict(cls, data: dict[str, str]) -> "BasisTransformNode":
         return cls(
             data["register_name"],
-            BasisChange(
-                basis_change_dict["alphabet"],
-                virtual_register_from_json(json.loads(basis_change_dict["action"])),
-            ),
+            BasisChange.from_json_dict(json.loads(data["basis_change"])),
             data["basis_ref"],
             int(data["num_subsystems"]),
         )

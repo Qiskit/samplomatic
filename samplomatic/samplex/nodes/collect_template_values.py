@@ -12,8 +12,6 @@
 
 """CollectTemplateValues"""
 
-from __future__ import annotations
-
 import numpy as np
 
 from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
@@ -91,7 +89,7 @@ class CollectTemplateValues(CollectionNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> CollectTemplateValues:
+    def _from_json_dict(cls, data: dict[str, str]) -> "CollectTemplateValues":
         synth_class_name = data["synth"]
         if synth_class_name == "RzRxSynth":
             synth = RzRxSynth()

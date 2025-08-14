@@ -13,7 +13,6 @@
 
 """SamplexInterface"""
 
-import json
 from collections.abc import Iterable, Mapping
 from typing import Any
 
@@ -35,13 +34,11 @@ class MetadataOutput:
         self.name: InterfaceName = name
         self.description: str = description
 
-    def _to_json(self) -> str:
-        return json.dumps(
-            {
-                "name": self.name,
-                "description": self.description,
-            }
-        )
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "name": self.name,
+            "description": self.description,
+        }
 
     @classmethod
     def _from_json(cls, data: dict[str, Any]) -> "MetadataOutput":
@@ -66,15 +63,13 @@ class TensorSpecification:
         self.dtype = dtype
         self.description: str = description
 
-    def _to_json(self) -> str:
-        return json.dumps(
-            {
-                "name": self.name,
-                "description": self.description,
-                "dtype": self.dtype.__name__,
-                "shape": tuple(int(x) for x in self.shape),
-            }
-        )
+    def _to_json_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "dtype": self.dtype.__name__,
+            "shape": tuple(int(x) for x in self.shape),
+        }
 
     @classmethod
     def _from_json(cls, data: dict[str, Any]) -> "TensorSpecification":

@@ -102,7 +102,7 @@ def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
 def _serialize_tensor_specifications(data: dict[InterfaceName, TensorSpecification]) -> str:
     out_dict = {}
     for name, spec in data.items():
-        out_dict[name] = spec._to_json()  # noqa: SLF001
+        out_dict[name] = json.dumps(spec._to_json_dict())  # noqa: SLF001
     return json.dumps(out_dict)
 
 

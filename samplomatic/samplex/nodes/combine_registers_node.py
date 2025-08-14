@@ -12,8 +12,6 @@
 
 """CombineRegistersNode"""
 
-from __future__ import annotations
-
 import json
 from collections.abc import Sequence
 from enum import Enum, auto
@@ -133,7 +131,7 @@ class CombineRegistersNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> CombineRegistersNode:
+    def _from_json_dict(cls, data: dict[str, str]) -> "CombineRegistersNode":
         raw_operands_dict = json.loads(data["operands"])
         operands = {}
         for name, values in raw_operands_dict.items():

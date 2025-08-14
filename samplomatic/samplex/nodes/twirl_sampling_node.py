@@ -12,8 +12,6 @@
 
 """TwirlSamplingNode"""
 
-from __future__ import annotations
-
 import json
 
 from ...aliases import NumSubsystems, RegisterName
@@ -58,7 +56,7 @@ class TwirlSamplingNode(SamplingNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> TwirlSamplingNode:
+    def _from_json_dict(cls, data: dict[str, str]) -> "TwirlSamplingNode":
         distribution_dict = json.loads(data["distribution"])
         if distribution_dict["type"] == "haar_u2":
             distribution = HaarU2(distribution_dict["num_subsystems"])

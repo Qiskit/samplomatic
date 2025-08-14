@@ -13,7 +13,6 @@
 """VirtualRegister"""
 
 import abc
-import json
 from typing import TypeVar
 
 import numpy as np
@@ -95,9 +94,9 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
                 f"{self._array.shape}."
             )
 
-    def to_json(self) -> str:
+    def to_json_dict(self) -> dict[str, str]:
         array_data = array_to_json(self._array)
-        return json.dumps({"type": self.TYPE, "array": array_data})
+        return {"type": self.TYPE, "array": array_data}
 
     @staticmethod
     def select(register_type: VirtualType) -> type["VirtualRegister"]:

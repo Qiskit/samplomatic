@@ -12,8 +12,6 @@
 
 """MultiplicationNode"""
 
-from __future__ import annotations
-
 import json
 from typing import Self
 
@@ -83,7 +81,7 @@ class LeftMultiplicationNode(MultiplicationNode):
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "6",
-            "operand": self._operand.to_json(),
+            "operand": json.dumps(self._operand.to_json_dict()),
             "register_name": self._register_name,
         }
 
@@ -105,7 +103,7 @@ class RightMultiplicationNode(MultiplicationNode):
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "11",
-            "operand": self._operand.to_json(),
+            "operand": json.dumps(self._operand.to_json_dict()),
             "register_name": self._register_name,
         }
 

@@ -12,8 +12,6 @@
 
 """CollectZ2ToOutputNode"""
 
-from __future__ import annotations
-
 from collections.abc import Sequence
 
 import numpy as np
@@ -57,7 +55,7 @@ class CollectZ2ToOutputNode(CollectionNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> CollectZ2ToOutputNode:
+    def _from_json_dict(cls, data: dict[str, str]) -> "CollectZ2ToOutputNode":
         return cls(
             data["register_name"],
             array_from_json(data["subsystem_indices"]),

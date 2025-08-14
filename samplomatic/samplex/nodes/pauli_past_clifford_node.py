@@ -12,8 +12,6 @@
 
 """PauliPastCliffordNode"""
 
-from __future__ import annotations
-
 from collections.abc import Sequence
 
 import numpy as np
@@ -104,7 +102,7 @@ class PauliPastCliffordNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> PauliPastCliffordNode:
+    def _from_json_dict(cls, data: dict[str, str]) -> "PauliPastCliffordNode":
         return cls(
             data["op_name"],
             data["register_name"],

@@ -12,8 +12,6 @@
 
 """SliceRegisterNode"""
 
-from __future__ import annotations
-
 from collections.abc import Sequence
 
 import numpy as np
@@ -95,7 +93,7 @@ class SliceRegisterNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> SliceRegisterNode:
+    def _from_json_dict(cls, data: dict[str, str]) -> "SliceRegisterNode":
         slice_idxs = (
             slice_from_json(data["slice_idxs"])
             if data["is_slice"] == "true"
