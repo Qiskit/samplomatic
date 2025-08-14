@@ -10,9 +10,26 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from ..annotations import VirtualType as _VirtualType
+import json
+
+from ..annotations import VirtualType as VirtualType
+from ..exceptions import DeserializationError
+from ..utils.serialization import array_from_json
 from .group_register import GroupRegister
 from .pauli_register import PauliRegister
 from .u2_register import U2Register
 from .virtual_register import VirtualRegister
 from .z2_register import Z2Register
+
+
+def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
+    register_type = VirtualType(data["type"])
+    array = array_from_json(data["array"])
+    if register_type == VirtualType.U2:
+        return U2Register(array)
+    elif register_type == VirtualType.Z2:
+        return Z2Register(array)
+    elif register_type == VirtualType.PAULI:
+        return PauliRegister(array)
+    else:
+        raise DeserializationError(f"Invalid register type: {register_type}")

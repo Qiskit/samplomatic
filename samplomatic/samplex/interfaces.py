@@ -14,6 +14,7 @@
 """SamplexInterface"""
 
 from collections.abc import Iterable, Mapping
+from typing import Any
 
 import numpy as np
 
@@ -33,6 +34,16 @@ class MetadataOutput:
         self.name: InterfaceName = name
         self.description: str = description
 
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "name": self.name,
+            "description": self.description,
+        }
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> "MetadataOutput":
+        return cls(**data)
+
 
 class TensorSpecification:
     """Specification of a single named tensor interface.
@@ -51,6 +62,20 @@ class TensorSpecification:
         self.shape = shape
         self.dtype = dtype
         self.description: str = description
+
+    def _to_json_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "dtype": self.dtype.__name__,
+            "shape": tuple(int(x) for x in self.shape),
+        }
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> "TensorSpecification":
+        return cls(
+            data["name"], tuple(data["shape"]), getattr(np, data["dtype"]), data["description"]
+        )
 
     def empty(self, num_samples: int) -> np.ndarray:
         """Create an empty output according to this specification.

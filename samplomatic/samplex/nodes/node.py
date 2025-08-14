@@ -15,7 +15,7 @@
 import abc
 import inspect
 from numbers import Number
-from typing import Literal
+from typing import Literal, Self
 
 from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -172,6 +172,13 @@ class Node(metaclass=NodeType):
         if isinstance(outputs := self.outputs_to(), dict):
             style.append_dict_data("outputs_to", _reg_style(outputs), bullet="• ")
         return style.append_divider()
+
+    def _to_json_dict(self) -> dict[str, str]:
+        raise NotImplementedError
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        raise NotImplementedError
 
 
 def _reg_style(register_manifest):
