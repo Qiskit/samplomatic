@@ -12,9 +12,11 @@
 
 """TwirlSamplingNode"""
 
+import orjson
+
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType
-from ...distributions import Distribution
+from ...distributions import Distribution, HaarU2, UniformPauli
 from .sampling_node import SamplingNode
 
 
@@ -33,31 +35,56 @@ class TwirlSamplingNode(SamplingNode):
         rhs_register_name: RegisterName,
         distribution: Distribution,
     ):
-        self.lhs_register_name = lhs_register_name
-        self.rhs_register_name = rhs_register_name
-        self.distribution = distribution
+        self._lhs_register_name = lhs_register_name
+        self._rhs_register_name = rhs_register_name
+        self._distribution = distribution
+
+    def _to_json_dict(self) -> dict[str, str]:
+        if isinstance(self._distribution, HaarU2):
+            distribution_type = "haar_u2"
+        else:
+            distribution_type = "pauli_uniform"
+        distribution = {
+            "type": distribution_type,
+            "num_subsystems": self._distribution.num_subsystems,
+        }
+        return {
+            "node_type": "9",
+            "lhs_register_name": self._lhs_register_name,
+            "rhs_register_name": self._rhs_register_name,
+            "distribution": orjson.dumps(distribution).decode("utf-8"),
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "TwirlSamplingNode":
+        distribution_dict = orjson.loads(data["distribution"])
+        if distribution_dict["type"] == "haar_u2":
+            distribution = HaarU2(distribution_dict["num_subsystems"])
+        else:
+            distribution = UniformPauli(distribution_dict["num_subsystems"])
+        return cls(data["lhs_register_name"], data["rhs_register_name"], distribution)
 
     @property
     def outgoing_register_type(self) -> VirtualType:
-        return self.distribution.register_type
+        return self._distribution.register_type
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
-        distribution_info = (self.distribution.num_subsystems, self.distribution.register_type)
+        distribution_info = (self._distribution.num_subsystems, self._distribution.register_type)
         return {
-            self.lhs_register_name: distribution_info,
-            self.rhs_register_name: distribution_info,
+            self._lhs_register_name: distribution_info,
+            self._rhs_register_name: distribution_info,
         }
 
     def sample(self, registers, rng, inputs, **_):
-        samples = self.distribution.sample(inputs.num_samples, rng)
-        registers[self.lhs_register_name] = samples
-        registers[self.rhs_register_name] = samples.invert()
+        samples = self._distribution.sample(inputs.num_samples, rng)
+        registers[self._lhs_register_name] = samples
+        registers[self._rhs_register_name] = samples.invert()
 
     def get_style(self):
         return (
             super()
             .get_style()
-            .append_data("LHS Register", repr(self.lhs_register_name))
-            .append_data("RHS Register", repr(self.rhs_register_name))
-            .append_data("Distribution", repr(self.distribution))
+            .append_data("LHS Register", repr(self._lhs_register_name))
+            .append_data("RHS Register", repr(self._rhs_register_name))
+            .append_data("Distribution", repr(self._distribution))
         )

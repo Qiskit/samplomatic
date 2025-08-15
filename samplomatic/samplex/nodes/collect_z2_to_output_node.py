@@ -14,9 +14,12 @@
 
 from collections.abc import Sequence
 
+import numpy as np
+
 from ...aliases import InterfaceName, OutputIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
+from ...utils.serialization import array_from_json, array_to_json
 from .collection_node import CollectionNode
 
 
@@ -39,8 +42,26 @@ class CollectZ2ToOutputNode(CollectionNode):
     ):
         self._register_name = register_name
         self._output_name = output_name
-        self._subsystem_idxs = subsystem_idxs
-        self._output_idxs = output_idxs
+        self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.uint32)
+        self._output_idxs = np.asarray(output_idxs, dtype=np.uint32)
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "2",
+            "register_name": self._register_name,
+            "output_name": self._output_name,
+            "subsystem_indices": array_to_json(self._subsystem_idxs),
+            "output_indices": array_to_json(self._output_idxs),
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "CollectZ2ToOutputNode":
+        return cls(
+            data["register_name"],
+            array_from_json(data["subsystem_indices"]),
+            data["output_name"],
+            array_from_json(data["output_indices"]),
+        )
 
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}
