@@ -10,7 +10,7 @@ VERSION="$1"
 
 # Have to be on the main branch
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [ "$CURRENT_BRANCH" != "release" ]; then
+if [ "$CURRENT_BRANCH" != "main" ]; then
     echo "Error: you must be on the 'main' branch (currently on '$CURRENT_BRANCH')."
     exit 1
 fi
