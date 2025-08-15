@@ -167,4 +167,5 @@ To release a new version `1.2.3`:
 git push origin release-1.2.3
 ```
 
-Now go to the GitHub UI and create a new release. This will trigger a job to publish to PyPI.
+Merge the PR into `main` and then use the GitHub UI to create a new release, copying the new changelog section into the body.
+This will trigger a job to publish to PyPI.
