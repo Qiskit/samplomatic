@@ -165,6 +165,6 @@ To release a new version `1.2.3`:
                            #  - commits this change in a new commit
 
 git push origin release-1.2.3
- ```
+```
 
 Now go to the GitHub UI and create a new release. This will trigger a job to publish to PyPI.
