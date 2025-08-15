@@ -18,7 +18,9 @@ from qiskit.circuit import CircuitInstruction, ClassicalRegister, QuantumCircuit
 from qiskit.circuit.library import CXGate, Measure, XGate
 from rustworkx import topological_sort
 
+from samplomatic import Twirl
 from samplomatic.annotations import VirtualType
+from samplomatic.builders import pre_build
 from samplomatic.builders.specs import InstructionMode, InstructionSpec
 from samplomatic.constants import Direction
 from samplomatic.exceptions import SamplexBuildError
@@ -351,6 +353,100 @@ class TestFinalize:
         assert len(pre_samplex.graph.edges()) == 2
 
 
+class TestPrePropagateClustering:
+    """Test the `_cluster_pre_propagate_nodes` function."""
+
+    def test_nodes_clustered(self):
+        """Test that nodes are clustered"""
+        circ = QuantumCircuit(6)
+        circ.cx(0, 1)
+        circ.cx(2, 3)
+        circ.sx(4)
+        circ.sx(5)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3, 4, 5])  # noqa: SLF001
+        assert clusters == [[1, 2], [3, 4]]
+
+    def test_nodes_different_modes(self):
+        """Test that nodes are not clustered if the mode is different"""
+        circ = QuantumCircuit(4)
+        circ.cx(0, 1)
+        circ.cx(2, 3)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.add_propagate(circ[0], InstructionSpec(mode=InstructionMode.MULTIPLY))
+        pre_samplex.add_propagate(circ[1], InstructionSpec(mode=InstructionMode.PROPAGATE))
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[1], [2]]
+
+    def test_nodes_different_predecessors(self):
+        """Test that nodes are not clustered if they don't share predecessors."""
+        circ = QuantumCircuit(4)
+        circ.cx(0, 1)
+        circ.cx(2, 3)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.add_collect(
+            QubitPartition(1, ((circ.qubits[2],), (circ.qubits[3],))), RzSxSynth(), []
+        )
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(
+            QubitPartition(1, ((circ.qubits[0],), (circ.qubits[1],))), PauliRegister
+        )
+        pre_samplex.add_emit_twirl(
+            QubitPartition(1, ((circ.qubits[2],), (circ.qubits[3],))), PauliRegister
+        )
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[2], [3]]
+
+    def test_nodes_different_operation(self):
+        """Test that nodes are not clustered if they don't share operation."""
+        circ = QuantumCircuit(4)
+        circ.cx(0, 1)
+        circ.cz(2, 3)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[1], [2]]
+
+    def test_nodes_overlaping_qubits(self):
+        """Test that nodes are not clustered if they share qubits."""
+        circ = QuantumCircuit(3)
+        circ.cx(0, 1)
+        circ.cx(1, 2)
+        subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in circ:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+
+        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        assert clusters == [[1], [2]]
+
+
 class TestMergeParallelPrePropagateNodes:
     """Test the `merge_parallel_pre_propagate_nodes` function."""
 
@@ -515,6 +611,33 @@ class TestMergeParallelPrePropagateNodes:
             match="Encountered unsupported cx propragation with mode InstructionMode.MULTIPLY.",
         ):
             pre_samplex.finalize()
+
+    def test_if_else_with_mergable_preedges(self):
+        """Test that merging of PreEdges maintains their force_register_copy property.
+
+        Because it is a bit difficult to do by hand, we use the full pre_build.
+        """
+        circuit = QuantumCircuit(2, 1)
+        circuit.measure(0, 0)
+        with circuit.box([Twirl(dressing="left")]):
+            with circuit.if_test((circuit.clbits[0], 1)) as _else:
+                circuit.x(0)
+                circuit.x(1)
+            with _else:
+                circuit.sx(0)
+                circuit.sx(1)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1)
+
+        _, pre_samplex = pre_build(circuit)
+        pre_samplex.merge_parallel_pre_propagate_nodes()
+        graph = pre_samplex.graph
+        for emit_node in [6, 7]:
+            assert not graph.get_edge_data(emit_node, 4).force_register_copy
+            assert graph.get_edge_data(emit_node, 9).force_register_copy
+        assert graph[4].operation.name == "x"
+        assert graph[9].operation.name == "sx"
+        assert graph[9].subsystems.all_elements == {0, 1}
 
 
 class TestDraw:

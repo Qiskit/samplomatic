@@ -14,10 +14,12 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import CircuitInstruction, QuantumRegister
+from qiskit.circuit import CircuitInstruction, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import Measure, XGate
 
+from samplomatic import Twirl
 from samplomatic.annotations import VirtualType
+from samplomatic.builders import pre_build
 from samplomatic.builders.samplex_builder.box_samplex_builder import LeftBoxSamplexBuilder
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec, InstructionSpec
 from samplomatic.constants import Direction
@@ -130,3 +132,26 @@ class TestLeftBoxBuilder:
             SamplexBuildError, match="Cannot measure the same qubit twice in a twirling box"
         ):
             builder.parse(CircuitInstruction(Measure(), qreg), InstructionSpec())
+
+    def test_if_else(self):
+        """Test the build result of if-else.
+
+        Because it is a bit difficult to do by hand, we use the full pre_build.
+        """
+        circuit = QuantumCircuit(1, 1)
+        circuit.measure(0, 0)
+        with circuit.box([Twirl(dressing="left")]):
+            with circuit.if_test((circuit.clbits[0], 1)) as _else:
+                circuit.x(0)
+            with _else:
+                circuit.sx(0)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0)
+
+        _, pre_samplex = pre_build(circuit)
+        graph = pre_samplex.graph
+        for emit_node in [4, 5]:
+            assert not graph.get_edge_data(emit_node, 1).force_register_copy
+            assert graph.get_edge_data(emit_node, 3).force_register_copy
+        assert graph[1].operation.name == "x"
+        assert graph[3].operation.name == "sx"

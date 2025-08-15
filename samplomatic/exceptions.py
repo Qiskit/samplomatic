@@ -33,6 +33,10 @@ class SamplexConstructionError(SamplexError):
     """A samplex error raised during samplex finalization and validation."""
 
 
+class SamplexInputError(SamplexError):
+    """A samplex error raised for invalid input."""
+
+
 class SamplexRuntimeError(SamplexError):
     """A samplex error raised during sampling."""
 
@@ -47,3 +51,7 @@ class TemplateBuildError(BuildError):
 
 class VirtualGateError(Exception):
     """Error raised when there is a problem interacting with virtual gates."""
+
+
+class DeserializationError(Exception):
+    """Error raised when there is a problem during deserialization."""

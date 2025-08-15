@@ -12,12 +12,6 @@
 
 """Samplex"""
 
+from .interfaces import MetadataOutput, SamplexInput, SamplexOutput, TensorSpecification
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
-from .samplex_output import (
-    ArrayOutput,
-    MetadataOutput,
-    OutputSpecification,
-    SamplexOutput,
-    Z2ArrayOutput,
-)

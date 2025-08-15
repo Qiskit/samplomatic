@@ -12,10 +12,9 @@
 
 """Tests for `undress_box`"""
 
-import pytest
 from qiskit.circuit import BoxOp, ClassicalRegister, Parameter, QuantumCircuit, QuantumRegister
 
-from samplomatic.annotations import BasisTransform, Twirl
+from samplomatic.annotations import Twirl
 from samplomatic.utils import undress_box
 
 
@@ -25,10 +24,10 @@ def test_empty_box():
     assert undress_box(box) == box
 
     box = BoxOp(QuantumCircuit(2), annotations=[Twirl(dressing="left")])
-    assert undress_box(box, Twirl) == box
+    assert undress_box(box) == box
 
     box = BoxOp(QuantumCircuit(2), annotations=[Twirl(dressing="right")])
-    assert undress_box(box, Twirl) == box
+    assert undress_box(box) == box
 
 
 def test_undressed_box():
@@ -61,7 +60,7 @@ def test_left_dressed_box():
     body_expected.rz(ph, 1)
     box_expected = BoxOp(body_expected, annotations=[Twirl(dressing="left")])
 
-    assert undress_box(box, Twirl) == box_expected
+    assert undress_box(box) == box_expected
 
 
 def test_right_dressed_box():
@@ -82,25 +81,4 @@ def test_right_dressed_box():
     body_expected.cx(0, 1)
     box_expected = BoxOp(body_expected, annotations=[Twirl(dressing="right")])
 
-    assert undress_box(box, Twirl) == box_expected
-
-
-@pytest.mark.parametrize(
-    "annotations",
-    [
-        [],
-        [Twirl(dressing="right")],
-        [Twirl(decomposition="rzrx"), BasisTransform(ref="ref")],
-    ],
-)
-def test_annotations_are_removed(annotations):
-    """
-    Test that `undress_box` keeps or removes the annotations depending on ``keep_annotations``.
-    """
-    body = QuantumCircuit(3)
-
-    assert (
-        undress_box(BoxOp(body, annotations=annotations), (Twirl, BasisTransform)).annotations
-        == annotations
-    )
-    assert undress_box(BoxOp(body, annotations=annotations)).annotations == []
+    assert undress_box(box) == box_expected

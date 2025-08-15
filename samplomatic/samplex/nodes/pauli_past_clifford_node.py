@@ -19,6 +19,7 @@ import numpy as np
 from ...aliases import OperationName, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexBuildError
+from ...utils.serialization import array_from_json, array_to_json
 from .evaluation_node import EvaluationNode
 
 PAULI_PAST_CLIFFORD_LOOKUP_TABLES = {
@@ -88,17 +89,33 @@ class PauliPastCliffordNode(EvaluationNode):
             supported_gates = list(PAULI_PAST_CLIFFORD_LOOKUP_TABLES)
             raise SamplexBuildError(f"Expected one of {supported_gates}, found {op_name}.")
 
-        self.op_name = op_name
-        self.subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
-        self.register_name = register_name
+        self._op_name = op_name
+        self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
+        self._register_name = register_name
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "7",
+            "op_name": self._op_name,
+            "subsystem_idxs": array_to_json(self._subsystem_idxs),
+            "register_name": self._register_name,
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "PauliPastCliffordNode":
+        return cls(
+            data["op_name"],
+            data["register_name"],
+            array_from_json(data["subsystem_idxs"]),
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI
 
     def evaluate(self, registers, *_):
-        reg = registers[self.register_name]
-        subsys = self.subsystem_idxs
+        reg = registers[self._register_name]
+        subsys = self._subsystem_idxs
 
         paulis_in = reg.virtual_gates[subsys]
         paulis_out = self._lookup_table[*(paulis_in[:, i] for i in range(subsys.shape[-1]))]
@@ -106,16 +123,16 @@ class PauliPastCliffordNode(EvaluationNode):
 
     def reads_from(self):
         return {
-            self.register_name: (
-                set(s for tup in self.subsystem_idxs for s in tup),
+            self._register_name: (
+                set(s for tup in self._subsystem_idxs for s in tup),
                 VirtualType.PAULI,
             )
         }
 
     def writes_to(self):
         return {
-            self.register_name: (
-                set(s for tup in self.subsystem_idxs for s in tup),
+            self._register_name: (
+                set(s for tup in self._subsystem_idxs for s in tup),
                 VirtualType.PAULI,
             )
         }
@@ -124,7 +141,7 @@ class PauliPastCliffordNode(EvaluationNode):
         return (
             super()
             .get_style()
-            .append_data("Operation", repr(self.op_name))
-            .append_data("Register Name", repr(self.register_name))
-            .append_data("Subsystem Indices", self.subsystem_idxs.tolist())
+            .append_data("Operation", repr(self._op_name))
+            .append_data("Register Name", repr(self._register_name))
+            .append_data("Subsystem Indices", self._subsystem_idxs.tolist())
         )

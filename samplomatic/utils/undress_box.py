@@ -13,49 +13,47 @@
 """undress_box"""
 
 from collections import defaultdict
+from copy import deepcopy
 
-from qiskit.circuit import Annotation, BoxOp, Instruction, QuantumCircuit, Qubit
+from qiskit.circuit import BoxOp, Instruction, QuantumCircuit, Qubit
 from qiskit.converters import circuit_to_dag
 
 from ..annotations import Twirl
 from .get_annotation import get_annotation
 
 
-def undress_box(
-    box: BoxOp,
-    included_annotation_types: Annotation | tuple[type[Annotation]] = tuple(),
-) -> BoxOp:
-    """Return a box equivalent to ``box``, stripped of the single-qubit gates on the dressing side.
+def undress_box(box: BoxOp) -> BoxOp:
+    """
+    Return a box equivalent to ``box``, stripped of the single-qubit gates on the dressing side.
 
     This function removes all the single-qubit gates that can be pushed to the side indicated by its
     dressing (left or right) without encountering any other operation. If the input box contains no
     ``Twirl`` annotation, it is simply returned as is.
 
+    The returned box owns a copy of all the annotations present in the given ``box``.
+
     Args:
         box: The box to remove the single-qubit gates from.
-        included_annotation_types: The annotation types that are included in the returned box.
     """
     if not (twirl_annotation := get_annotation(box, Twirl)):
         return box
 
     return (
-        undress_left_dressed_box(box, included_annotation_types)
+        undress_left_dressed_box(box)
         if twirl_annotation.dressing == "left"
-        else undress_right_dressed_box(box, included_annotation_types)
+        else undress_right_dressed_box(box)
     )
 
 
-def undress_left_dressed_box(
-    box: BoxOp, included_annotation_types: Annotation | tuple[type[Annotation]]
-) -> BoxOp:
-    """Return a box equivalent to ``box``, stripped of the single-qubit gates on the left side.
+def undress_left_dressed_box(box: BoxOp) -> BoxOp:
+    """
+    Return a box equivalent to ``box``, stripped of the single-qubit gates on the left side.
 
     This function removes all the single-qubit gates that can be pushed to the left-hand side of
     the given box without encountering any other operation.
 
     Args:
         box: The box to remove the single-qubit gates from.
-        included_annotation_types: The annotation types that are included in the returned box.
     """
     dag = circuit_to_dag(box.body)
     new_content = QuantumCircuit(box.body.qubits + box.body.clbits)
@@ -68,23 +66,19 @@ def undress_left_dressed_box(
         active_qubits = active_qubits.union(node.qargs)
         new_content.append(node.op, node.qargs, node.cargs)
 
-    annotations = [
-        annot for annot in box.annotations if isinstance(annot, included_annotation_types)
-    ]
+    annotations = deepcopy(box.annotations)
     return BoxOp(body=new_content, annotations=annotations)
 
 
-def undress_right_dressed_box(
-    box: BoxOp, included_annotation_types: Annotation | tuple[type[Annotation]]
-) -> BoxOp:
-    """Return a box equivalent to ``box``, stripped of the single-qubit gates on the right side.
+def undress_right_dressed_box(box: BoxOp) -> BoxOp:
+    """
+    Return a box equivalent to ``box``, stripped of the single-qubit gates on the right side.
 
     This function removes all the single-qubit gates that can be pushed to the right-hand side of
     the given box without encountering any other operation.
 
     Args:
         box: The box to remove the single-qubit gates from.
-        included_annotation_types: The annotation types that are included in the returned box.
     """
     # A map to temporarily store single-qubit gates before inserting them into a box
     cached_gates_1q: dict[Qubit, list[Instruction]] = defaultdict(list)
@@ -103,7 +97,5 @@ def undress_right_dressed_box(
                     new_content.append(node_gate_1q.op, node_gate_1q.qargs)
             new_content.append(node.op, node.qargs, node.cargs)
 
-    annotations = [
-        annot for annot in box.annotations if isinstance(annot, included_annotation_types)
-    ]
+    annotations = deepcopy(box.annotations)
     return BoxOp(body=new_content, annotations=annotations)

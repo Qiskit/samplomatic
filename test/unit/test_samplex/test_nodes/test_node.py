@@ -14,6 +14,7 @@ import pytest
 
 from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
+from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 
 from .dummy_nodes import DummyNode
 
@@ -132,3 +133,16 @@ def test_validate_redefines():
     )
 
     assert register_descriptions == {"a": (10, VirtualType.U2)}
+
+
+def test_dummy_is_registered():
+    """Test that the dummy node is in the node registry."""
+    assert DummyNode in Node.NODE_REGISTRY
+
+
+def test_no_abstract_registrations():
+    """Test that the registry mechanism doesn't contain any abstract parents."""
+    assert Node not in Node.NODE_REGISTRY
+    assert SamplingNode not in Node.NODE_REGISTRY
+    assert EvaluationNode not in Node.NODE_REGISTRY
+    assert CollectionNode not in Node.NODE_REGISTRY
