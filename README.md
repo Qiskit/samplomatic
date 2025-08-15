@@ -156,17 +156,15 @@ towncrier create -c "Added a cool feature!" 42.added.md
 
 ### Releasing a version
 
-Versions are created with annotated git tags.
-We also want to include the changelog in the annotation message.
-The script `assets/release.sh` helps automate this.
 To release a new version `1.2.3`:
 
 ```bash
-git checkout main          # make sure you're on main
 ./assets/release.sh 1.2.3  # use the new version as an argument. this:
-                           #  - calls towncrier to update CHANGELOG.md and remove changelog files
-                           #  - commits this changes in a new commit
-                           #  - uses github CLI to push a new release note
+                           #  - checks out a new branch release-1.2.3
+                           #  - calls towncrier to prepend to CHANGELOG
+                           #  - commits this change in a new commit
+
+git push origin release-1.2.3
  ```
 
- The creation of the tag (as part of the `assets/release.sh` script) will trigger a CI job that will publish the `wheel` to PyPI.
+Now go to the GitHub UI and create a new release. This will trigger a job to publish to PyPI.
