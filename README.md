@@ -143,3 +143,28 @@ documentation:
 
 The `.html` documentation will be rendered at `docs/_build` (with the index being available at
 `docs/_build/html/index.html`).
+
+### Adding to the changelog
+
+We use [Towncrier](https://towncrier.readthedocs.io/) for changelog management.
+All PRs that make a changelog-worthy change should add a changelog entry.
+To do this, supposing your PR is `#42`, create a [new fragment](https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments) file in the `changelog.d/` directory:
+
+```bash
+towncrier create -c "Added a cool feature!" 42.added.md
+```
+
+### Releasing a version
+
+To release a new version `1.2.3`:
+
+```bash
+./assets/release.sh 1.2.3  # use the new version as an argument. this:
+                           #  - checks out a new branch release-1.2.3
+                           #  - calls towncrier to prepend to CHANGELOG
+                           #  - commits this change in a new commit
+
+git push origin release-1.2.3
+```
+
+Now go to the GitHub UI and create a new release. This will trigger a job to publish to PyPI.
