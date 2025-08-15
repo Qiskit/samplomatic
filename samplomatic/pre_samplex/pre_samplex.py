@@ -160,10 +160,10 @@ class PreSamplex:
             subsystems in that basis transform.
         twirled_clbits: A set of all classical bit indices which were previously twirled in the
             circuit.
-        passthrough_params: List of `ParamSpec` for parameters which exist in the template but
-            are not generated in the collectors.
+        passthrough_params: List of :class:`~.ParamSpec` for parameters which exist in the template
+            but are not generated in the collectors.
         forced_copy_node_idxs: List of node indices for which copying of registers will be forced.
-            The nodes behave differently for edges with left\right direction. For left direction,
+            The nodes behave differently for edges with left/right direction. For left direction,
             the incoming node is checked against `forced_copy_node_idxs`, while for right direction,
             the outgoing node is.
     """

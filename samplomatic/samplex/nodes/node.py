@@ -12,8 +12,10 @@
 
 """Node"""
 
+import abc
+import inspect
 from numbers import Number
-from typing import Literal
+from typing import Literal, Self
 
 from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -21,8 +23,24 @@ from ...exceptions import SamplexConstructionError
 from ...visualization.hover_style import NodeStyle
 
 
-class Node:
+class NodeType(abc.ABCMeta):
+    """Metaclass used for registering all non-abstract subclasses.
+
+    This is done so that we can automate testing coverage of Node serialization: there is a test
+    that demands each node type does a round-trip.
+    """
+
+    def __new__(mcls, name, bases, namespace):
+        cls = super().__new__(mcls, name, bases, namespace)
+        if cls.__name__ != "Node" and not inspect.isabstract(cls):
+            cls.NODE_REGISTRY.add(cls)
+        return cls
+
+
+class Node(metaclass=NodeType):
     """Parent class for samplex node operations."""
+
+    NODE_REGISTRY: set[type["Node"]] = set()
 
     def __repr__(self):
         register_names = sorted(f"{register_name}(r)" for register_name in self.reads_from())
@@ -154,6 +172,13 @@ class Node:
         if isinstance(outputs := self.outputs_to(), dict):
             style.append_dict_data("outputs_to", _reg_style(outputs), bullet="• ")
         return style.append_divider()
+
+    def _to_json_dict(self) -> dict[str, str]:
+        raise NotImplementedError
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> Self:
+        raise NotImplementedError
 
 
 def _reg_style(register_manifest):
