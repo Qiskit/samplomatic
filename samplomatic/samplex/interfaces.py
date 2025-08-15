@@ -22,27 +22,31 @@ from ..aliases import InterfaceName
 from ..exceptions import SamplexInputError
 
 
-class MetadataOutput:
-    """Specification of a free-form dict output.
+class MetadataSpecification:
+    """Specification of a free-form dict interface.
 
     Args:
-        name: The name of the output.
-        description: A description of what the output represents.
+        name: The name of the interface.
+        description: A description of what the interface represents.
+        optional: Whether the interface is required.
     """
 
-    def __init__(self, name: InterfaceName, description: str = ""):
+    def __init__(self, name: InterfaceName, description: str = "", optional=False):
         self.name: InterfaceName = name
         self.description: str = description
+        self.optional = optional
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "name": self.name,
             "description": self.description,
+            "optional": "true" if self.optional else "false",
         }
 
     @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "MetadataOutput":
-        return cls(**data)
+    def _from_json(cls, data: dict[str, Any]) -> "MetadataSpecification":
+        optional = True if data["optional"] == "true" else "false"
+        return cls(data["name"], description=data["description"], optional=optional)
 
 
 class TensorSpecification:
@@ -149,18 +153,24 @@ class SamplexInput(TensorInterface):
 
     Args:
         specifiers: A specification of what is present in the input.
+        metadata: Metadata required by this input.
         num_samples: The number of samples.
     """
 
     def __init__(
         self,
         specifiers: Iterable[TensorSpecification],
+        metadata: Iterable[MetadataSpecification],
         num_samples: int,
     ):
         super().__init__(specifiers, num_samples)
         self._data.update({specifier.name: None for specifier in self.specifiers})
+        self.metadata_specs: list[MetadataSpecification] = sorted(
+            metadata, key=lambda specifier: specifier.name
+        )
+        self.metadata = {metadata_spec.name: None for metadata_spec in metadata}
 
-    def validate_and_update(self, **inputs: dict[InterfaceName, np.ndarray]):
+    def validate_and_update(self, **inputs: dict[InterfaceName, np.ndarray | dict]):
         """Validate and update input data.
 
         Args:
@@ -168,12 +178,19 @@ class SamplexInput(TensorInterface):
 
         Raises:
             SamplexInputError: If any of the input interfaces are missing from ``inputs``.
+            SamplexInputError: If any of the required metadata inputs are missing from ``inputs``.
         """
         for specifier in self.specifiers:
             if (input := inputs.get(interface := specifier.name)) is None:
                 raise SamplexInputError(f"Samplex requires an input named {interface}.")
             specifier.validate(input)
             self._data[interface] = input
+        for metadatum in self.metadata_specs:
+            if (
+                input := inputs.get(interface := metadatum.name)
+            ) is None and not metadatum.optional:
+                raise SamplexInputError(f"Samplex requires a metadata input named {interface}.")
+            self.metadata[interface] = {} if input is None else input
 
 
 class SamplexOutput(TensorInterface):
@@ -188,7 +205,7 @@ class SamplexOutput(TensorInterface):
     def __init__(
         self,
         specifiers: Iterable[TensorSpecification],
-        metadata: Iterable[MetadataOutput],
+        metadata: Iterable[MetadataSpecification],
         num_samples: int,
     ):
         super().__init__(specifiers, num_samples)

@@ -18,14 +18,14 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import MetadataOutput, Samplex, TensorSpecification
+from samplomatic.samplex import MetadataSpecification, Samplex, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, DummySamplingNode
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, rng, inputs, **kwargs):
+    def sample(self, registers, rng, inputs):
         raise SamplexRuntimeError("This node cannot sample.")
 
 
@@ -68,9 +68,9 @@ class TestBasic:
     def test_add_output_fails(self):
         """Test that adding an output fails when it should."""
         samplex = Samplex()
-        samplex.add_output(MetadataOutput("out"))
+        samplex.add_output(MetadataSpecification("out"))
         with pytest.raises(SamplexConstructionError, match="'out' already exists"):
-            samplex.add_output(MetadataOutput("out"))
+            samplex.add_output(MetadataSpecification("out"))
 
     def test_add_node_fails(self):
         """Test that adding a node fails when expected."""

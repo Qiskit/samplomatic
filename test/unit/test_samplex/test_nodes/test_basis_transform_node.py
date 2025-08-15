@@ -62,7 +62,7 @@ class TestBasisTransformNode:
     def test_sample(self):
         """Test evaluation of the node."""
         basis_change = BasisTransformNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
-        samplex_input = SamplexInput([TensorSpecification("measure", (3,), np.uint8)], None)
+        samplex_input = SamplexInput([TensorSpecification("measure", (3,), np.uint8)], [], None)
         registers = {}
 
         samplex_input.validate_and_update(measure=np.array([1, 1, 2], dtype=np.uint8))

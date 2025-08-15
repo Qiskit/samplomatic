@@ -18,7 +18,6 @@ from typing import TYPE_CHECKING
 
 from numpy.random import Generator, SeedSequence, default_rng
 from qiskit.circuit import Parameter, ParameterExpression
-from qiskit.quantum_info import PauliLindbladMap
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -31,13 +30,12 @@ from ..aliases import (
     ParamIndex,
     ParamSpec,
     RegisterName,
-    StrRef,
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
-from .interfaces import MetadataOutput, SamplexInput, SamplexOutput, TensorSpecification
+from .interfaces import MetadataSpecification, SamplexInput, SamplexOutput, TensorSpecification
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
 
@@ -68,6 +66,7 @@ class Samplex:
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
         self._input_specifications: dict[InterfaceName, TensorSpecification] = {}
+        self._input_metadata: dict[InterfaceName, MetadataSpecification] = {}
         self._output_specifications: dict[InterfaceName, TensorSpecification] = {}
 
     @property
@@ -114,7 +113,7 @@ class Samplex:
         self._passthrough_params = (param_idxs, param_exp_idxs)
         return max(param_idxs)
 
-    def add_input(self, specification: TensorSpecification):
+    def add_input(self, specification: TensorSpecification | MetadataSpecification):
         """Add a sampling input to this samplex.
 
         Args:
@@ -126,7 +125,13 @@ class Samplex:
             )
         if (name := specification.name) in self._input_specifications:
             raise SamplexConstructionError(f"An input with name '{name}' already exists.")
-        self._input_specifications[name] = specification
+        if name in self._input_metadata:
+            raise SamplexConstructionError(f"A metadata input with name '{name}' already exists.")
+
+        if isinstance(specification, TensorSpecification):
+            self._input_specifications[name] = specification
+        else:
+            self._input_metadata[name] = specification
 
     def add_output(self, specification: TensorSpecification):
         """Add a sampling output to this samplex.
@@ -217,9 +222,6 @@ class Samplex:
 
     def sample(
         self,
-        noise_maps: dict[StrRef, PauliLindbladMap] | None = None,
-        noise_scales: dict[StrRef, float] | None = None,
-        local_scales: dict[StrRef, Sequence[float]] | None = None,
         size: int = 1,
         keep_registers: bool = False,
         rng: int | SeedSequence | Generator | None = None,
@@ -229,12 +231,6 @@ class Samplex:
         """Sample.
 
         Args:
-            noise_maps: A dictionary from unique identifiers of noise maps to the noise maps
-                themselves.
-            noise_scales: A dictionary from unique identifier of noise modifiers to values by which
-                to scale the noise.
-            local_scales: A dictionary from unique identifiers of noise modifiers to lists of values
-                by which to scale the terms of the noise.
             size: How many randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
@@ -248,12 +244,16 @@ class Samplex:
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
-        inputs = SamplexInput(self._input_specifications.values(), size)
+        inputs = SamplexInput(
+            self._input_specifications.values(), self._input_metadata.values(), size
+        )
         inputs.validate_and_update(**kwargs)
 
         extra_outputs = []
         if keep_registers:
-            extra_outputs.append(MetadataOutput("registers", "Final state of internal registers."))
+            extra_outputs.append(
+                MetadataSpecification("registers", "Final state of internal registers.")
+            )
         outputs = SamplexOutput(self._output_specifications.values(), extra_outputs, size)
 
         parameter_values = inputs.get("parameter_values", [])
@@ -266,9 +266,6 @@ class Samplex:
         if (measurement_flips := outputs.get("measurement_flips")) is not None:
             measurement_flips[:] = 0
 
-        noise_maps = {} if noise_maps is None else noise_maps
-        noise_scales = {} if noise_scales is None else noise_scales
-        local_scales = {} if local_scales is None else local_scales
         rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
@@ -276,15 +273,7 @@ class Samplex:
         with ThreadPoolExecutor(max_workers) as pool:
             # use rng.spawn() to ensure determinism of PRNG even when there is a thread pool
             wait_with_raise(
-                pool.submit(
-                    node.sample,
-                    registers,
-                    child_rng,
-                    inputs,
-                    noise_maps=noise_maps,
-                    noise_scales=noise_scales,
-                    local_scales=local_scales,
-                )
+                pool.submit(node.sample, registers, child_rng, inputs)
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
                 )

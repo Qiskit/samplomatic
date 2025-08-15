@@ -18,7 +18,7 @@ from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexRuntimeError
-from samplomatic.samplex import SamplexInput
+from samplomatic.samplex import MetadataSpecification, SamplexInput
 from samplomatic.samplex.nodes import InjectNoiseNode
 from samplomatic.virtual_registers import PauliRegister, Z2Register
 
@@ -37,26 +37,32 @@ def test_sample(rng):
     """Test the sample method."""
     registers = {}
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
+    maps = MetadataSpecification("noise_maps")
+    scale = MetadataSpecification("noise_scales", optional=True)
+    local_scale = MetadataSpecification("local_scales", optional=True)
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("III", 0)])}
-    node.sample(registers, rng, SamplexInput([], 5), noise_maps=noise_maps)
-    assert registers["injection"] == PauliRegister(np.zeros(15, dtype=np.uint8).reshape(3, 5))
-    assert registers["the_sign"] == Z2Register(np.ones((1, 5), dtype=np.uint8))
+    samplex_input = SamplexInput([], [maps, scale, local_scale], 100)
+    samplex_input.validate_and_update(noise_maps=noise_maps)
+    node.sample(registers, rng, samplex_input)
+    assert registers["injection"] == PauliRegister(np.zeros(300, dtype=np.uint8).reshape(3, 100))
+    assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("XXX", -100)])}
-    node.sample(registers, rng, SamplexInput([], 100), noise_maps=noise_maps)
+    samplex_input.validate_and_update(noise_maps=noise_maps)
+    node.sample(registers, rng, samplex_input)
     assert (~registers["the_sign"].virtual_gates).any()
 
     noise_scales = {"my_modifier": 0}
-    node.sample(
-        registers, rng, SamplexInput([], 100), noise_maps=noise_maps, noise_scales=noise_scales
-    )
+    samplex_input.validate_and_update(noise_maps=noise_maps, noise_scales=noise_scales)
+    node.sample(registers, rng, samplex_input)
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
     local_scales = {"my_modifier": [0]}
-    node.sample(
-        registers, rng, SamplexInput([], 100), noise_maps=noise_maps, local_scales=local_scales
+    samplex_input.validate_and_update(
+        noise_maps=noise_maps, noise_scales=noise_scales, local_scales=local_scales
     )
+    node.sample(registers, rng, samplex_input)
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
 
@@ -64,17 +70,18 @@ def test_sample_raises(rng):
     """Test the raises for the sampe method."""
     registers = {}
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
+    maps = MetadataSpecification("noise_maps")
+    scale = MetadataSpecification("noise_scales", optional=True)
+    local_scale = MetadataSpecification("local_scales", optional=True)
+    samplex_input = SamplexInput([], [maps, scale, local_scale], 10)
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("II", 0)])}
+    samplex_input.validate_and_update(noise_maps=noise_maps)
     with pytest.raises(SamplexRuntimeError, match="Received a noise map acting on `2`"):
-        node.sample(registers, rng, SamplexInput([], 5), noise_maps=noise_maps)
+        node.sample(registers, rng, samplex_input)
 
     noise_maps = {"my_noise": PauliLindbladMap.from_list([("III", 0)])}
+    scale = {"my_modifier": [0, 0]}
+    samplex_input.validate_and_update(noise_maps=noise_maps, local_scales={"my_modifier": [0, 0]})
     with pytest.raises(SamplexRuntimeError, match="a local scale from reference 'my_modifier'"):
-        node.sample(
-            registers,
-            rng,
-            SamplexInput([], 5),
-            noise_maps=noise_maps,
-            local_scales={"my_modifier": [0, 1]},
-        )
+        node.sample(registers, rng, samplex_input)

@@ -55,7 +55,7 @@ from ..graph_utils import (
 )
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from ..samplex import Samplex
-from ..samplex.interfaces import TensorSpecification
+from ..samplex.interfaces import MetadataSpecification, TensorSpecification
 from ..samplex.nodes import (
     BasisTransformNode,
     CollectTemplateValues,
@@ -993,52 +993,6 @@ class PreSamplex:
         self.merge_parallel_pre_propagate_nodes()
 
         samplex = Samplex()
-        max_param_idx = self.max_param_idx
-
-        if self.passthrough_params:
-            max_passthrough_param_idx = samplex.set_passthrough_params(self.passthrough_params)
-            max_param_idx = (
-                max(max_param_idx, max_passthrough_param_idx)
-                if max_param_idx is not None
-                else max_passthrough_param_idx
-            )
-
-        for basis_ref, length in self._basis_transforms.items():
-            samplex.add_input(
-                TensorSpecification(basis_ref, (length,), np.uint8, "Basis changing gates.")
-            )
-
-        if max_param_idx is not None:
-            samplex.add_output(
-                TensorSpecification(
-                    "parameter_values",
-                    (max_param_idx + 1,),
-                    np.float64,
-                    "Parameter values for the template circuit.",
-                )
-            )
-
-        if self._twirled_clbits:
-            samplex.add_output(
-                TensorSpecification(
-                    "measurement_flips",
-                    (self.num_clbits,),
-                    np.bool_,
-                    "Bit-flip corrections for measurement twirling, XOR your data against this"
-                    " value. The ordering matches template.clbits.",
-                )
-            )
-
-        if (num_signs := next(self._noise_map_count)) > 0:
-            samplex.add_output(
-                TensorSpecification(
-                    "pauli_signs",
-                    (num_signs,),
-                    np.bool_,
-                    "Signs from sampled noise maps. The order matches the iteration order of "
-                    "injected noise in the circuit.",
-                )
-            )
 
         # This is needed because we need to know the parent/child relationships between
         # prenodes to figure out the parent/child relationship between nodes
@@ -1086,6 +1040,15 @@ class PreSamplex:
             else:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
 
+        max_param_idx = self.max_param_idx
+        if self.passthrough_params:
+            max_passthrough_param_idx = samplex.set_passthrough_params(self.passthrough_params)
+            max_param_idx = (
+                max(max_param_idx, max_passthrough_param_idx)
+                if max_param_idx is not None
+                else max_passthrough_param_idx
+            )
+
         if num_params := samplex.num_parameters:
             samplex.add_input(
                 TensorSpecification(
@@ -1093,6 +1056,67 @@ class PreSamplex:
                     (num_params,),
                     np.float64,
                     "Input parameter values to use during sampling.",
+                )
+            )
+
+        for basis_ref, length in self._basis_transforms.items():
+            samplex.add_input(
+                TensorSpecification(basis_ref, (length,), np.uint8, "Basis changing gates.")
+            )
+
+        if self._noise_maps:
+            samplex.add_input(
+                MetadataSpecification(
+                    "noise_maps",
+                    "A dictionary from references to noise maps from which to inject noise.",
+                )
+            )
+            samplex.add_input(
+                MetadataSpecification(
+                    "noise_scales",
+                    "A dictionary from unique identifier of noise modifiers to values by whichto "
+                    "scale the noise",
+                    optional=True,
+                )
+            )
+            samplex.add_input(
+                MetadataSpecification(
+                    "local_scales",
+                    "A dictionary from unique identifiers of noise modifiers to lists of values by "
+                    "which to scale the terms of the noise.",
+                    optional=True,
+                )
+            )
+
+        if max_param_idx is not None:
+            samplex.add_output(
+                TensorSpecification(
+                    "parameter_values",
+                    (max_param_idx + 1,),
+                    np.float64,
+                    "Parameter values for the template circuit.",
+                )
+            )
+
+        if self._twirled_clbits:
+            samplex.add_output(
+                TensorSpecification(
+                    "measurement_flips",
+                    (self.num_clbits,),
+                    np.bool_,
+                    "Bit-flip corrections for measurement twirling, XOR your data against this"
+                    " value. The ordering matches template.clbits.",
+                )
+            )
+
+        if (num_signs := next(self._noise_map_count)) > 0:
+            samplex.add_output(
+                TensorSpecification(
+                    "pauli_signs",
+                    (num_signs,),
+                    np.bool_,
+                    "Signs from sampled noise maps. The order matches the iteration order of "
+                    "injected noise in the circuit.",
                 )
             )
 

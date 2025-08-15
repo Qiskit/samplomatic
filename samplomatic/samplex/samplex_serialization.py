@@ -26,7 +26,7 @@ from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from ..aliases import InterfaceName
 from ..exceptions import DeserializationError
-from .interfaces import TensorSpecification
+from .interfaces import MetadataSpecification, TensorSpecification
 from .nodes import Node
 from .nodes.basis_transform_node import BasisTransformNode
 from .nodes.collect_template_values import CollectTemplateValues
@@ -111,11 +111,27 @@ def _deserialize_tensor_specifications(data: str) -> dict[InterfaceName, TensorS
     return outputs
 
 
+def _serialize_metadata_specifications(data: dict[InterfaceName, MetadataSpecification]) -> str:
+    out_dict = {}
+    for name, spec in data.items():
+        out_dict[name] = orjson.dumps(spec._to_json_dict()).decode("utf-8")  # noqa: SLF001
+    return orjson.dumps(out_dict).decode("utf-8")
+
+
+def _deserialize_metadata_specifications(data: str) -> dict[InterfaceName, MetadataSpecification]:
+    outputs_raw = orjson.loads(data)
+    outputs = {}
+    for name, output in outputs_raw.items():
+        outputs[name] = MetadataSpecification._from_json(orjson.loads(output))  # noqa: SLF001
+    return outputs
+
+
 def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
     return {
         "finalized": str(samplex._finalized),  # noqa: SLF001
         "param_table": _serialize_expression_table(samplex._param_table),  # noqa: SLF001
         "input_specification": _serialize_tensor_specifications(samplex._input_specifications),  # noqa: SLF001
+        "input_metadata": _serialize_metadata_specifications(samplex._input_metadata),  # noqa: SLF001
         "output_specification": _serialize_tensor_specifications(samplex._output_specifications),  # noqa: SLF001
     }
 
@@ -131,8 +147,9 @@ def _process_graph_header(
     raw_param_table_dict = orjson.loads(data["param_table"])
     param_table = _deserialize_expression_table(raw_param_table_dict)
     inputs = _deserialize_tensor_specifications(data["input_specification"])
+    metadata = _deserialize_metadata_specifications(data["input_metadata"])
     outputs = _deserialize_tensor_specifications(data["output_specification"])
-    return (param_table, data["finalized"] == "true", inputs, outputs)
+    return (param_table, data["finalized"] == "true", inputs, metadata, outputs)
 
 
 def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
@@ -169,7 +186,8 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex._param_table = graph_attrs[0]  # noqa: SLF001
     samplex._finalized = graph_attrs[1]  # noqa: SLF001
     samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
-    samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
+    samplex._input_metadata = graph_attrs[3]  # noqa: SLF001
+    samplex._output_specifications = graph_attrs[4]  # noqa: SLF001
     return samplex
 
 

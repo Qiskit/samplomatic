@@ -75,7 +75,7 @@ class TwirlSamplingNode(SamplingNode):
             self._rhs_register_name: distribution_info,
         }
 
-    def sample(self, registers, rng, inputs, **_):
+    def sample(self, registers, rng, inputs):
         samples = self._distribution.sample(inputs.num_samples, rng)
         registers[self._lhs_register_name] = samples
         registers[self._rhs_register_name] = samples.invert()

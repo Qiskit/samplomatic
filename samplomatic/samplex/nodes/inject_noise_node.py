@@ -89,7 +89,7 @@ class InjectNoiseNode(SamplingNode):
         }
 
     def sample(self, registers, rng, inputs, **kwargs):
-        if (noise_map := kwargs.get("noise_maps", {}).get(self._noise_ref)) is None:
+        if (noise_map := inputs.metadata["noise_maps"].get(self._noise_ref)) is None:
             raise SamplexRuntimeError(f"A noise map for '{self._noise_ref}' was not specified.")
         if (num_qubits := noise_map.num_qubits) != self._num_subsystems:
             raise SamplexRuntimeError(
@@ -97,8 +97,8 @@ class InjectNoiseNode(SamplingNode):
                 f"'{self._noise_ref}' when it requires `{self._num_subsystems}`."
             )
         if self._modifier_ref:
-            scale = kwargs.get("noise_scales", {}).get(self._modifier_ref, 1.0)
-            local_scale = kwargs.get("local_scales", {}).get(
+            scale = inputs.metadata["noise_scales"].get(self._modifier_ref, 1.0)
+            local_scale = inputs.metadata["local_scales"].get(
                 self._modifier_ref, np.ones(noise_map.num_terms)
             )
 

@@ -14,7 +14,12 @@ import numpy as np
 import pytest
 
 from samplomatic.exceptions import SamplexInputError
-from samplomatic.samplex import MetadataOutput, SamplexInput, SamplexOutput, TensorSpecification
+from samplomatic.samplex import (
+    MetadataSpecification,
+    SamplexInput,
+    SamplexOutput,
+    TensorSpecification,
+)
 
 
 class TestSamplexInput:
@@ -22,11 +27,12 @@ class TestSamplexInput:
 
     def test_empty(self):
         """Test an empty output."""
-        output = SamplexInput([], 5)
-        assert len(output) == 0
-        assert not list(output)
+        input = SamplexInput([], [], 5)
+        assert len(input) == 0
+        assert not list(input)
+        assert input.metadata == {}
 
-        output.validate_and_update()
+        input.validate_and_update()
 
     def test_construction(self):
         """Test construction and simple attributes."""
@@ -36,12 +42,14 @@ class TestSamplexInput:
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),
                 TensorSpecification("b", (3, 7), np.float32, "desc_b"),
             ],
+            [],
             5,
         )
 
         assert len(input) == 2
         assert list(input) == ["a", "b"]
         assert "a" in input and "b" in input
+        assert input.metadata == {}
 
         assert input["a"] is None
         assert input["b"] is None
@@ -59,6 +67,7 @@ class TestSamplexInput:
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),
                 TensorSpecification("b", (3, 7), np.float32, "desc_b"),
             ],
+            [MetadataSpecification("c")],
             5,
         )
         b = np.zeros((3, 7), np.float32)
@@ -71,6 +80,9 @@ class TestSamplexInput:
 
         with pytest.raises(SamplexInputError, match="expects an array"):
             input.validate_and_update(a=np.zeros((7,), np.uint8), b=b)
+
+        with pytest.raises(SamplexInputError, match="metadata input"):
+            input.validate_and_update(a=np.zeros((5,), np.uint8), b=b)
 
 
 class TestSamplexOutput:
@@ -90,7 +102,7 @@ class TestSamplexOutput:
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),
                 TensorSpecification("c", (3, 7), np.float32, "desc_c"),
             ],
-            [MetadataOutput("b", "desc_b")],
+            [MetadataSpecification("b", "desc_b")],
             15,
         )
 
