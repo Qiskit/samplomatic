@@ -25,7 +25,7 @@ from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, Du
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, rng, inputs, **kwargs):
+    def sample(self, registers, rng, inputs):
         raise SamplexRuntimeError("This node cannot sample.")
 
 

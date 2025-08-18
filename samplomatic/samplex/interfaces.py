@@ -14,12 +14,21 @@
 """SamplexInterface"""
 
 from collections.abc import Iterable, Mapping
-from typing import Any
+from enum import StrEnum
+from typing import Any, Literal, Self, overload
 
 import numpy as np
+from qiskit.quantum_info import PauliLindbladMap
 
 from ..aliases import InterfaceName
 from ..exceptions import SamplexInputError
+
+
+class ValueType(StrEnum):
+    BOOL = "bool"
+    INT = "int"
+    LINDBLAD = "lindblad"
+    NUMPY_ARRAY = "numpy_array"
 
 
 class MetadataOutput:
@@ -45,7 +54,63 @@ class MetadataOutput:
         return cls(**data)
 
 
-class TensorSpecification:
+class Specification:
+    """Free-form specification.
+
+    Args:
+        name: The name of the specification.
+        description: A description of what the specification represents.
+    """
+
+    def __init__(self, name: InterfaceName, value_type: ValueType, description: str = ""):
+        self.name: InterfaceName = name
+        self.value_type = value_type
+        self.description: str = description
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "name": self.name,
+            "value_type": self.value_type.value,
+            "description": self.description,
+        }
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> "Specification":
+        data["value_type"] = ValueType(data["value_type"])
+        return cls(**data)
+
+    @overload
+    def validate_and_coerce(self: Literal[ValueType.BOOL], value: Any) -> bool: ...
+
+    @overload
+    def validate_and_coerce(self: Literal[ValueType.INT], value: Any) -> int: ...
+
+    @overload
+    def validate_and_coerce(self: Literal[ValueType.LINDBLAD], value: Any) -> PauliLindbladMap: ...
+
+    @overload
+    def validate_and_coerce(self: Literal[ValueType.NUMPY_ARRAY], value: Any) -> np.ndarray: ...
+
+    def validate_and_coerce(self, value):
+        if self.value_type is ValueType.BOOL:
+            return bool(value)
+        if self.value_type is ValueType.INT:
+            return int(value)
+        if self.value_type is ValueType.LINDBLAD:
+            if isinstance(value, PauliLindbladMap):
+                return value
+        if self.value_type is ValueType.NUMPY_ARRAY:
+            return np.array(value)
+        raise TypeError(f"Object is type {type(value)} but expected {self.value_type}.")
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}, "
+            f"{repr(self.description)}"
+        )
+
+
+class TensorSpecification(Specification):
     """Specification of a single named tensor interface.
 
     Args:
@@ -58,10 +123,9 @@ class TensorSpecification:
     def __init__(
         self, name: InterfaceName, shape: tuple[int, ...], dtype: type, description: str = ""
     ):
-        self.name: InterfaceName = name
+        super().__init__(name, ValueType.NUMPY_ARRAY, description)
         self.shape = shape
         self.dtype = dtype
-        self.description: str = description
 
     def _to_json_dict(self) -> dict[str, Any]:
         return {
@@ -77,7 +141,7 @@ class TensorSpecification:
             data["name"], tuple(data["shape"]), getattr(np, data["dtype"]), data["description"]
         )
 
-    def empty(self, num_samples: int) -> np.ndarray:
+    def empty(self) -> np.ndarray:
         """Create an empty output according to this specification.
 
         Args:
@@ -86,50 +150,57 @@ class TensorSpecification:
         Returns:
             An empty output according to this specification.
         """
-        return np.empty((num_samples,) + self.shape, dtype=self.dtype)
+        return np.empty(self.shape, dtype=self.dtype)
 
-    def validate(self, array: np.ndarray):
-        """Validate an array input against the specification.
-
-        Args:
-            array: The input to validate.
-
-        Raises:
-            SamplexInputError: If the input is not valid.
-        """
-        if array.dtype != self.dtype or array.shape != self.shape:
+    def validate_and_coerce(self, value):
+        value = super().validate_and_coerce(value)
+        if value.dtype != self.dtype or value.shape != self.shape:
             raise SamplexInputError(
                 f"Input ``{self.name}`` expects an array of shape `{self.shape}` and type "
-                f"`{self.dtype}` but received {array}."
+                f"`{self.dtype}` but received {value}."
             )
+        return value
 
     def __repr__(self):
-        return f"{type(self).__name__}({repr(self.name)}, {repr(self.description)})"
+        return (
+            f"{type(self).__name__}({repr(self.name)}, {repr(self.shape)}, {repr(self.dtype)}, "
+            f"{repr(self.description)}"
+        )
 
 
-class TensorInterface(Mapping):
-    """An interface with tensor specifications.
+class Interface(Mapping):
+    """An interface.
 
     Args:
-        specifiers: Specifications of the interface.
-        num_samples: The number of samples.
+       specs: An iterable of specificaitons.
     """
 
-    def __init__(self, specifiers: Iterable[TensorSpecification], num_samples: int):
-        self.num_samples: int = num_samples
-        self.specifiers: list[TensorSpecification] = sorted(
-            specifiers, key=lambda specifier: specifier.name
-        )
-        self._data: dict[InterfaceName, np.ndarray] = {}
+    def __init__(self, specs: Iterable[Specification]):
+        self.specs = {spec.name: spec for spec in specs}
+        self._data: dict[InterfaceName, Any] = {}
+
+    @property
+    def fully_bound(self) -> bool:
+        return self.specs.keys() == self._data.keys()
+
+    @property
+    def non_tensor_specs(self) -> list[Specification]:
+        return [spec for spec in self.specs if not isinstance(spec, TensorSpecification)]
+
+    @property
+    def tensor_specs(self) -> list[TensorSpecification]:
+        return [spec for spec in self.specs if isinstance(spec, TensorSpecification)]
+
+    def bind(self, **kwargs) -> Self:
+        for interface_name, value in kwargs.items():
+            if (spec := self.specs.get(interface_name)) is None:
+                raise ValueError(f"No specification named {interface_name}.")
+            self._data[interface_name] = spec.validate_and_coerce(value)
+
+        return self
 
     def __repr__(self):
-        return f"{type(self).__name__}({repr(self.specifiers)}, {self.num_samples})"
-
-    def __str__(self):
-        lines = [f"{type(self).__name__}(\n  ["]
-        lines.extend(f"    {specifier}," for specifier in self.specifiers)
-        lines.append(f"  ],\n  num_samples={self.num_samples},\n)")
-        return "\n".join(lines)
+        return f"{type(self).__name__}({repr(self.specs)})"
 
     def __contains__(self, key):
         return key in self._data
@@ -144,55 +215,42 @@ class TensorInterface(Mapping):
         return len(self._data)
 
 
-class SamplexInput(TensorInterface):
+class SamplexInput(Interface):
     """The input of a single call to :meth:`~Samplex.sample`.
 
     Args:
         specifiers: A specification of what is present in the input.
-        num_samples: The number of samples.
+        defaults: A map from input names to their default values.
     """
 
-    def __init__(
-        self,
-        specifiers: Iterable[TensorSpecification],
-        num_samples: int,
-    ):
-        super().__init__(specifiers, num_samples)
-        self._data.update({specifier.name: None for specifier in self.specifiers})
+    def __init__(self, specs: Iterable[Specification], defaults: dict[InterfaceName, Any] | None):
+        super().__init__(specs)
+        defaults = {} if defaults is None else defaults
+        self.defaults = defaults
 
-    def validate_and_update(self, **inputs: dict[InterfaceName, np.ndarray]):
-        """Validate and update input data.
+    @property
+    def fully_bound(self) -> bool:
+        values = set(self._data).union(self.defaults)
+        return set(self.specs.keys()) == values
 
-        Args:
-            inputs: The inputs to validate.
-
-        Raises:
-            SamplexInputError: If any of the input interfaces are missing from ``inputs``.
-        """
-        for specifier in self.specifiers:
-            if (input := inputs.get(interface := specifier.name)) is None:
-                raise SamplexInputError(f"Samplex requires an input named {interface}.")
-            specifier.validate(input)
-            self._data[interface] = input
+    def __getitem__(self, key):
+        try:
+            return self._data[key]
+        except KeyError:
+            return self.defaults[key]
 
 
-class SamplexOutput(TensorInterface):
+class SamplexOutput(Interface):
     """The output of a single call to :meth:`~Samplex.sample`.
 
     Args:
-        specifiers: A specification of what tensor interfaces are present in the output.
-        metadata: Metadata present in this output.
-        num_samples: The number of samples.
+        specifiers: A specification of what interfaces are present in the output.
+        metadata: Information relating to the process of sampling.
     """
 
     def __init__(
-        self,
-        specifiers: Iterable[TensorSpecification],
-        metadata: Iterable[MetadataOutput],
-        num_samples: int,
+        self, specs: Iterable[TensorSpecification], metadata: dict[str, Any] | None = None
     ):
-        super().__init__(specifiers, num_samples)
-        self._data.update(
-            {specifier.name: specifier.empty(self.num_samples) for specifier in self.specifiers}
-        )
-        self.metadata = {metadata_spec.name: {} for metadata_spec in metadata}
+        super().__init__(specs)
+        self._data = {spec.name: spec.empty() for spec in specs}
+        self.metadata: dict[str, Any] = {} if metadata is None else metadata

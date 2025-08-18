@@ -103,7 +103,7 @@ class DummyCollectionNode(CollectionNode, DummyNode):
 class DummySamplingNode(SamplingNode, DummyNode):
     """Dummy child sampling node for testing."""
 
-    def sample(self, registers, rng, inputs, **_):
+    def sample(self, registers, rng, inputs):
         self._update(registers, rng, inputs.num_samples)
 
 
