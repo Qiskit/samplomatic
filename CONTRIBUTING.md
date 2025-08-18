@@ -1,3 +1,4 @@
+<!--pytest-codeblocks:skipfile-->
 ![Samplomatic](assets/fig/samplomatic.svg)
 
 _Serving all of your circuit sampling needs since 2025._
