@@ -33,7 +33,7 @@ pip install -e ".[dev,vis]"
 ## Hello World
 
 In samplomatic, twirling intent is specified declaratively with annotated box instructions within a Qiskit quantum circuit. Other randomization intent is available via configuring the attributes of annotations, or other annotation types like `InjectNoise`.
-These boxes can be constructed manually, as in the following example, or automatically, using transpiler passes defined in ``samplomatic.transpiler``.
+These boxes can be constructed manually, as in the following example, or automatically, using transpiler passes defined in `samplomatic.transpiler`.
 
 ```python
 from samplomatic import build, Twirl
