@@ -46,7 +46,6 @@ BugTracker = "https://github.com/Qiskit/samplomatic/issues"
 [project.optional-dependencies]
 dev = [
     "pytest",                 # For running tests
-    "pytest-codeblocks",      # For running Python-in-markdown as tests
     "pytest-benchmark",       # For running performance tests
     "kaleido",                # For visualizing performance tests
     "ruff",                   # Formatter and linter
