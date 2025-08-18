@@ -73,6 +73,7 @@ gates to implement any specific randomization.
 The samplex encodes all information about the randomization process itself.
 In other words, it represents a probability distribution over arguments for the parameters
 of the template circuit, and also over other classical quantities required for post-processing results.
+It is represented as a DAG, where each graph node represents a procedure such as sampling from a virtual group, composing virtual group members, commuting gates past each other, converting virtual gates to parameter values, and so forth.
 
 ```python
 template, samplex = build(circuit)
