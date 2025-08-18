@@ -10,16 +10,37 @@ Samplomatic is a library that helps you sample randomizations of your quantum ci
 Pauli twirling a static circuit is the simplest example, but the types of randomization available are extensible by design—we hope that you will contribute your own weird groups!
 Beyond twirling, which is a primary use-case, this library also supports other types of randomization, such as sampling-based noise injection.
 
+## Installation
+
+You can install Samplomatic via pip from PyPI:
+
+```bash
+pip install samplomatic
+```
+
+For visualization support, include the visualization dependencies:
+
+```bash
+pip install samplomatic[vis]
+```
+
+Or, you can clone this repo and install in editable mode, in this example with both visualization and development optional dependencies:
+
+```bash
+pip install -e ".[dev,vis]"
+```
+
 ## Hello World
 
-In samplomatic, twirling intent is specified declaratively with annotated box instructions within a Qiskit quantum circuit. Notice that this circuit can be parametric. Other randomization intent is available via configuring the attributes of annotations, or other annotation types like `InjectNoise`.
+In samplomatic, twirling intent is specified declaratively with annotated box instructions within a Qiskit quantum circuit. Other randomization intent is available via configuring the attributes of annotations, or other annotation types like `InjectNoise`.
+These boxes can be constructed manually, as in the following example, or automatically, using transpiler passes defined in `samplomatic.transpiler`.
 
 ```python
 from samplomatic import build, Twirl
 from qiskit.circuit import QuantumCircuit, Parameter
 import numpy as np
 
-# twirling intent is specified declarativly with annotated box instructions
+
 circuit = QuantumCircuit(5)
 
 with circuit.box([Twirl()]):
@@ -28,6 +49,7 @@ with circuit.box([Twirl()]):
     # that also includes random (in this case) Paulis
     circuit.sx(0)
     circuit.t(0)
+    # notice that twirl-annotated circuits can themselves be parametric
     circuit.rx(Parameter("x"), 3)
     circuit.rx(Parameter("y"), 4)
     circuit.x(2)
@@ -35,7 +57,7 @@ with circuit.box([Twirl()]):
     circuit.cx(1, 0)
     circuit.cz(3, 4)
 
-with circuit.box([Twirl()]):
+with circuit.box([Twirl(decomposition="rzrx")]):
     # this box Pauli-twirls measurement, folding hadamards into the dressing
     circuit.h(range(5))
     circuit.measure_all()
@@ -51,6 +73,7 @@ gates to implement any specific randomization.
 The samplex encodes all information about the randomization process itself.
 In other words, it represents a probability distribution over arguments for the parameters
 of the template circuit, and also over other classical quantities required for post-processing results.
+It is represented as a DAG, where each graph node represents a procedure such as sampling from a virtual group, composing virtual group members, commuting gates past each other, converting virtual gates to parameter values, and so forth.
 
 ```python
 template, samplex = build(circuit)
@@ -76,24 +99,4 @@ samples["measurement_flips"] # boolean array
 
 # one can, for example, bind the template circuit against the 7th randomization.
 template.assign_parameters(samples["parameter_values"][7])
-```
-
-## Installation
-
-You can install Samplomatic via pip:
-
-```bash
-pip install .
-```
-
-For visualization support, include the visualization dependencies:
-
-```bash
-pip install ".[vis]"
-```
-
-Developers should install in editable mode with the development requirements:
-
-```bash
-pip install -e ".[dev,vis]"
 ```

@@ -5,7 +5,7 @@ _Serving all of your circuit sampling needs since 2025._
 
 ## Development
 
-## Installation
+### Installation
 
 Developers should install in editable mode with the development requirements:
 
