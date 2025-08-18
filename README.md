@@ -49,7 +49,7 @@ with circuit.box([Twirl()]):
     # that also includes random (in this case) Paulis
     circuit.sx(0)
     circuit.t(0)
-    # notice that this circuit can be parametric
+    # notice that twirl-annotated circuits can themselves be parametric
     circuit.rx(Parameter("x"), 3)
     circuit.rx(Parameter("y"), 4)
     circuit.x(2)
