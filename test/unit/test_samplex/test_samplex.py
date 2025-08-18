@@ -36,13 +36,13 @@ class TestBasic:
         """Test that an empty samplex doesn't error when sampled."""
         samplex = Samplex()
         samplex.finalize()
-        samplex.sample(size=10)
+        samplex.sample(num_randomizations=10)
 
     def test_requires_finalize(self):
         """Test that we get an error when we try and sample without finalizing first."""
         samplex = Samplex()
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(size=10)
+            samplex.sample(num_randomizations=10)
 
     def test_append_parametric_expression(self):
         """Test the method that appends parametric expressions."""
@@ -61,7 +61,7 @@ class TestBasic:
         samplex = Samplex()
         samplex.add_output(TensorSpecification("out", (5, 6), float))
         samplex.finalize()
-        output = samplex.sample(size=11)
+        output = samplex.sample(num_randomizations=11)
         assert set(output) == {"out"}
         assert output["out"].shape == (11, 5, 6)
 
@@ -84,10 +84,10 @@ class TestBasic:
         """Test that adding a node causes the samplex to not be finalized."""
         samplex = Samplex()
         samplex.finalize()
-        samplex.sample(size=10)
+        samplex.sample(num_randomizations=10)
         samplex.add_node(DummySamplingNode())
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(size=10)
+            samplex.sample(num_randomizations=10)
 
     def test_add_edge_undoes_finalize(self):
         """Test that adding an edge causes the samplex to not be finalized."""
@@ -95,10 +95,10 @@ class TestBasic:
         a = samplex.add_node(DummySamplingNode())
         b = samplex.add_node(DummyCollectionNode())
         samplex.finalize()
-        samplex.sample(size=10)
+        samplex.sample(num_randomizations=10)
         samplex.add_edge(a, b)
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(size=10)
+            samplex.sample(num_randomizations=10)
 
     @pytest.mark.skipif(not HAS_PLOTLY, reason="plotly is not installed")
     def test_draw(self, save_plot):
@@ -188,7 +188,7 @@ class TestSample:
 
         samplex.finalize()
 
-        outputs = samplex.sample(size=13, keep_registers=True)
+        outputs = samplex.sample(num_randomizations=13, keep_registers=True)
         assert set(outputs) == {"out"}
         assert set(outputs.metadata) == {"registers"}
 
@@ -223,7 +223,7 @@ class TestSample:
 
         samplex.finalize()
 
-        registers = samplex.sample(size=13, keep_registers=True).metadata["registers"]
+        registers = samplex.sample(num_randomizations=13, keep_registers=True).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
@@ -261,7 +261,7 @@ class TestSample:
         samplex.finalize()
 
         registers = samplex.sample(
-            parameter_values=np.array([1, 2, 4], float), size=13, keep_registers=True
+            parameter_values=np.array([1, 2, 4], float), num_randomizations=13, keep_registers=True
         ).metadata["registers"]
         assert set(registers) == {"x", "y"}
 

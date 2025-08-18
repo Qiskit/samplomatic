@@ -184,7 +184,9 @@ def test_sampling(circuit, expected, basis_transforms, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = np.random.random(len(circuit.parameters)).tolist()
-    samplex_output = samplex.sample(size=10, parameter_values=circuit_params, **basis_transforms)
+    samplex_output = samplex.sample(
+        num_randomizations=10, parameter_values=circuit_params, **basis_transforms
+    )
     parameter_values = samplex_output["parameter_values"]
 
     expected_op = Operator(expected)

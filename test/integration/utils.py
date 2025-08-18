@@ -49,7 +49,7 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     original_circuit_counts = _simulate(remove_boxes(circuit), circuit_params)
 
     samplex_output = samplex.sample(
-        parameter_values=circuit_params, size=NUM_RANDOMIZATIONS_PER_CIRCUIT
+        parameter_values=circuit_params, num_randomizations=NUM_RANDOMIZATIONS_PER_CIRCUIT
     )
     parameter_values = samplex_output["parameter_values"]
     measurement_flips = samplex_output.get(

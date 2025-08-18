@@ -112,7 +112,7 @@ def test_sampling(rng, circuit, save_plot):
 
     expected_op = Operator(remove_boxes(circuit).assign_parameters(circuit_params))
 
-    samplex_output = samplex.sample(parameter_values=circuit_params, size=10)
+    samplex_output = samplex.sample(parameter_values=circuit_params, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
     for row in parameter_values:
         op = Operator(template.template.assign_parameters(row))
