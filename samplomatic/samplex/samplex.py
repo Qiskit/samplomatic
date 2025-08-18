@@ -220,7 +220,7 @@ class Samplex:
         noise_maps: dict[StrRef, PauliLindbladMap] | None = None,
         noise_scales: dict[StrRef, float] | None = None,
         local_scales: dict[StrRef, Sequence[float]] | None = None,
-        size: int = 1,
+        num_randomizations: int = 1,
         keep_registers: bool = False,
         rng: int | SeedSequence | Generator | None = None,
         max_workers: int | None = None,
@@ -235,7 +235,7 @@ class Samplex:
                 to scale the noise.
             local_scales: A dictionary from unique identifiers of noise modifiers to lists of values
                 by which to scale the terms of the noise.
-            size: How many randomizations to sample.
+            num_randomizations: How many randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
             rng: An integer for seeding a randomness generator, a generator itself, or ``None``
@@ -248,13 +248,15 @@ class Samplex:
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
-        inputs = SamplexInput(self._input_specifications.values(), size)
+        inputs = SamplexInput(self._input_specifications.values(), num_randomizations)
         inputs.validate_and_update(**kwargs)
 
         extra_outputs = []
         if keep_registers:
             extra_outputs.append(MetadataOutput("registers", "Final state of internal registers."))
-        outputs = SamplexOutput(self._output_specifications.values(), extra_outputs, size)
+        outputs = SamplexOutput(
+            self._output_specifications.values(), extra_outputs, num_randomizations
+        )
 
         parameter_values = inputs.get("parameter_values", [])
         evaluated_values = self._param_table.evaluate(parameter_values)
