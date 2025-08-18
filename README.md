@@ -7,12 +7,12 @@ _Serving all of your circuit sampling needs since 2025._
 > While the major version is `0`, please expect breaking changes between minor versions and pin your dependencies accordingly. We do not issue deprecation warnings presently, but we will document breaking changes in the changelog.
 
 Samplomatic is a library that helps you sample randomizations of your quantum circuits in exactly the way that you specify.
-Pauli twirling a static circuit is the simplest example, but the types of randomization available are extensible by design--—we hope that you will contribute your own weird groups!
-This library will also not be specific to twirling, though a primary use-case, it will also support ideas like sample-based noise injection.
+Pauli twirling a static circuit is the simplest example, but the types of randomization available are extensible by design—we hope that you will contribute your own weird groups!
+Beyond twirling, which is a primary use-case, this library also supports other types of randomization, such as sampling-based noise injection.
 
 ## Hello World
 
-In samplomatic, twirling intent is specified declarativly with annotated box instructions within Qiskit quantum circuits. Notice that this circuit can be parametric. Other randomization intent is available via configuring the attributes of annotations, or other annotation types like `InjectNoise`.
+In samplomatic, twirling intent is specified declaratively with annotated box instructions within a Qiskit quantum circuit. Notice that this circuit can be parametric. Other randomization intent is available via configuring the attributes of annotations, or other annotation types like `InjectNoise`.
 
 ```python
 from samplomatic import build, Twirl
@@ -65,7 +65,7 @@ samplex.draw()
 At this point, we are ready to generate randomizations by calling `samplex.sample(...)`.
 Notice we must provide concrete values for the parameters `"x"` and `"y"` of the original circuit.
 This process does not generate new quantum circuits, it instead generates circuit arguments that are valid for the template circuit.
-It additionally generates values required during post-processing, which in this example, are only bitflips for the `meas` classical register because we are Pauli-twirling measurements.
+It additionally generates values required during post-processing, which in this example are bit-flips for the `meas` classical register because we are Pauli-twirling measurements.
 
 ```python
 # sample 15 randomizations valid against the template circuit.
