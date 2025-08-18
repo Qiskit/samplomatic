@@ -113,4 +113,4 @@ def build(circuit: QuantumCircuit) -> tuple[QuantumCircuit, Samplex]:
         The built template circuit and the corresponding samplex.
     """
     template_state, pre_samplex = pre_build(circuit)
-    return template_state.template, pre_samplex.finalize()
+    return template_state.template, pre_samplex.finalize().finalize()
