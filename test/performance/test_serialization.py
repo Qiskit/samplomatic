@@ -29,7 +29,6 @@ def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
-    samplex.finalize()
     benchmark(samplex_to_json, samplex)
 
 
@@ -41,6 +40,5 @@ def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
-    samplex.finalize()
     samplex_json = samplex_to_json(samplex)
     benchmark(samplex_from_json, samplex_json)

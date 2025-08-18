@@ -14,7 +14,7 @@
 
 from collections.abc import Iterable, Sequence
 from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
 from qiskit.circuit import Parameter, ParameterExpression
@@ -185,11 +185,14 @@ class Samplex:
         for collection_node in self._collection_nodes:
             collection_node.validate_and_update(register_descriptions)
 
-    def finalize(self):
+    def finalize(self) -> Self:
         """Signal that all nodes and edges have been added, and determine node traversal order.
 
         Raises:
             SamplexError: If node dependency conflicts are discovered.
+
+        Returns:
+            The same instance, for chaining.
         """
         cut_graph = self.graph.copy()
 
@@ -214,6 +217,8 @@ class Samplex:
         self._validate_evaluation_strategy()
 
         self._finalized = True
+
+        return self
 
     def sample(
         self,
