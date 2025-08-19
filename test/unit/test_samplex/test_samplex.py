@@ -45,6 +45,11 @@ class TestBasic:
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
             samplex.sample(samplex.inputs().bind(num_randomizations=10))
 
+    def test_finalize_chain(self):
+        """Test that we can chain the finalize method because it returns self."""
+        samplex = Samplex()
+        assert samplex.finalize() is samplex
+
     def test_append_parametric_expression(self):
         """Test the method that appends parametric expressions."""
         samplex = Samplex()
