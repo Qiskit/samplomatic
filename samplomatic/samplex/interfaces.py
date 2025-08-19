@@ -187,7 +187,7 @@ class Interface(Mapping):
             This interface."""
         for interface_name, value in kwargs.items():
             if isinstance(value, dict):
-                self.bind(**{".".join([interface_name, k]): v for k, v in value.items()})
+                self.bind(**{f"{interface_name}.{k}"): v for k, v in value.items()})
                 continue
             if (spec := self.specs.get(interface_name)) is None:
                 raise ValueError(f"No specification named {interface_name}.")
