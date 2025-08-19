@@ -1086,7 +1086,7 @@ class PreSamplex:
 
             samplex.add_input(
                 TensorSpecification(
-                    "noise_scales." + noise_modifier,
+                    f"noise_scales.{noise_modifier}",
                     (),
                     np.float64,
                     "A factor by which to scale a noise map.",
