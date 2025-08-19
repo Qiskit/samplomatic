@@ -81,10 +81,7 @@ def test_collect(rng):
         [
             TensorSpecification(
                 "template_values",
-                (
-                    num_samples,
-                    100,
-                ),
+                (num_samples, 100),
                 np.float32,
             )
         ]
