@@ -234,7 +234,10 @@ class SamplexInput(Interface):
         try:
             return self._data[key]
         except KeyError:
-            return self.defaults[key]
+            try:
+                return self.defaults[key]
+            except KeyError as exc:
+                raise KeyError(f"'{key}' has not yet had any data assigned and has no default value.")
 
 
 class SamplexOutput(Interface):
