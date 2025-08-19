@@ -1074,7 +1074,7 @@ class PreSamplex:
         for noise_map, length in self._noise_maps.items():
             samplex.add_input(
                 Specification(
-                    "noise_maps." + noise_map,
+                    f"noise_maps.{noise_map}",
                     ValueType.LINDBLAD,
                     f"A noise map acting on ``{length}`` qubits.",
                 )
