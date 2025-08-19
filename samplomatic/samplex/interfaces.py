@@ -231,6 +231,8 @@ class SamplexInput(Interface):
         return set(self.specs) == values
 
     def __getitem__(self, key):
+        if key not in self._specs:
+            raise KeyError(f"'{key}' does not correspond to a specification present in this interface. Available names are:\n{'\n * '.join(self._specs)}")
         try:
             return self._data[key]
         except KeyError:
