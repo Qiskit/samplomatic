@@ -232,7 +232,7 @@ class SamplexInput(Interface):
     @property
     def fully_bound(self):
         values = set(self._data)
-        values.union_update(self.defaults)
+        values.update(self.defaults)
         return set(self.specs) == values
 
     @property
@@ -242,11 +242,11 @@ class SamplexInput(Interface):
         return values
 
     def __getitem__(self, key):
-        if key not in self._specs:
+        if key not in self.specs:
             newline = "\n * "
             raise KeyError(
                 f"'{key}' does not correspond to a specification present in this "
-                f"interface. Available names are:\n{newline.join(self._specs)}."
+                f"interface. Available names are:\n{newline.join(self.specs)}."
             )
         try:
             return self._data[key]
