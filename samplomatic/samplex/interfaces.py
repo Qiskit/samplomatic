@@ -226,7 +226,8 @@ class SamplexInput(Interface):
 
     @property
     def fully_bound(self) -> bool:
-        values = set(self._data).union(self.defaults)
+        values = set(self._data)
+        values.union_update(self.defaults)
         return set(self.specs.keys()) == values
 
     def __getitem__(self, key):
