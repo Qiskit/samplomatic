@@ -1067,7 +1067,7 @@ class PreSamplex:
         for basis_ref, length in self._basis_transforms.items():
             samplex.add_input(
                 TensorSpecification(
-                    "basis_change." + basis_ref, (length,), np.uint8, "Basis changing gates."
+                    "basis_changes." + basis_ref, (length,), np.uint8, "Basis changing gates."
                 )
             )
 
@@ -1077,6 +1077,26 @@ class PreSamplex:
                     "noise_maps." + noise_map,
                     ValueType.LINDBLAD,
                     f"A noise map acting on ``{length}`` qubits.",
+                )
+            )
+
+        for noise_modifier in self._noise_modifiers:
+            if noise_modifier == "":
+                continue
+
+            samplex.add_input(
+                TensorSpecification(
+                    "noise_scales." + noise_modifier,
+                    (),
+                    np.float64,
+                    "A factor by which to scale a noise map.",
+                )
+            )
+            samplex.add_input(
+                Specification(
+                    "local_scales." + noise_modifier,
+                    ValueType.NUMPY_ARRAY,
+                    "An array of factors by which to scale individual elements of a noise map.",
                 )
             )
 
@@ -1138,7 +1158,7 @@ class PreSamplex:
         node = BasisTransformNode(
             reg_name := f"basis_change_{reg_idx}",
             MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS,
-            "basis_change." + pre_basis.basis_ref,
+            "basis_changes." + pre_basis.basis_ref,
             len(pre_basis.subsystems),
         )
         node_idx = samplex.add_node(node)

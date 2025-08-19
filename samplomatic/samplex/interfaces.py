@@ -31,34 +31,12 @@ class ValueType(StrEnum):
     NUMPY_ARRAY = "numpy_array"
 
 
-class MetadataOutput:
-    """Specification of a free-form dict output.
-
-    Args:
-        name: The name of the output.
-        description: A description of what the output represents.
-    """
-
-    def __init__(self, name: InterfaceName, description: str = ""):
-        self.name: InterfaceName = name
-        self.description: str = description
-
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "name": self.name,
-            "description": self.description,
-        }
-
-    @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "MetadataOutput":
-        return cls(**data)
-
-
 class Specification:
-    """Free-form specification.
+    """A specification.
 
     Args:
         name: The name of the specification.
+        value_type: The type of this specification.
         description: A description of what the specification represents.
     """
 
@@ -76,6 +54,8 @@ class Specification:
 
     @classmethod
     def _from_json(cls, data: dict[str, Any]) -> "Specification":
+        if "shape" in data:
+            return TensorSpecification._from_json(data)  # noqa: SLF001
         data["value_type"] = ValueType(data["value_type"])
         return cls(**data)
 
@@ -193,6 +173,9 @@ class Interface(Mapping):
 
     def bind(self, **kwargs) -> Self:
         for interface_name, value in kwargs.items():
+            if isinstance(value, dict):
+                self.bind(**{".".join([interface_name, k]): v for k, v in value.items()})
+                continue
             if (spec := self.specs.get(interface_name)) is None:
                 raise ValueError(f"No specification named {interface_name}.")
             self._data[interface_name] = spec.validate_and_coerce(value)

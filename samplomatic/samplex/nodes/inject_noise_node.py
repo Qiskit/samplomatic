@@ -12,6 +12,9 @@
 
 """InjectNoiseNode"""
 
+import numpy as np
+from qiskit.quantum_info import PauliLindbladMap
+
 from ...aliases import NumSubsystems, RegisterName, StrRef
 from ...annotations import VirtualType
 from ...exceptions import SamplexRuntimeError
@@ -88,33 +91,33 @@ class InjectNoiseNode(SamplingNode):
     def sample(self, registers, rng, inputs):
         if (noise_map := inputs.get(self._noise_ref)) is None:
             raise SamplexRuntimeError(f"A noise map for '{self._noise_ref}' was not specified.")
-        # if (num_qubits := noise_map.num_qubits) != self._num_subsystems:
-        #     raise SamplexRuntimeError(
-        #         f"Received a noise map acting on `{num_qubits}` qubits for "
-        #         f"'{self._noise_ref}' when it requires `{self._num_subsystems}`."
-        #     )
-        # if self._modifier_ref:
-        #     scale = kwargs.get("noise_scales", {}).get(self._modifier_ref, 1.0)
-        #     local_scale = kwargs.get("local_scales", {}).get(
-        #         self._modifier_ref, np.ones(noise_map.num_terms)
-        #     )
+        if (num_qubits := noise_map.num_qubits) != self._num_subsystems:
+            raise SamplexRuntimeError(
+                f"Received a noise map acting on `{num_qubits}` qubits for "
+                f"'{self._noise_ref}' when it requires `{self._num_subsystems}`."
+            )
+        if self._modifier_ref:
+            scale = inputs.get("noise_scales." + self._modifier_ref, 1.0)
+            local_scale = inputs.get(
+                "local_scales." + self._modifier_ref, np.ones(noise_map.num_terms)
+            )
 
-        #     if len(local_scale) != noise_map.num_terms:
-        #         raise SamplexRuntimeError(
-        #             f"Received a noise map '{self._noise_ref}' with `{noise_map.num_terms}` "
-        #             f"terms but a local scale from reference '{self._modifier_ref}' with "
-        #             f"`{len(local_scale)}` terms."
-        #         )
-        #     scaled_rates = noise_map.rates * scale * local_scale
-        #     noise_map = PauliLindbladMap.from_sparse_list(
-        #         [
-        #             (paulis, qubit_idxs, scaled_rate)
-        #             for (paulis, qubit_idxs, _), scaled_rate in zip(
-        #                 noise_map.to_sparse_list(), scaled_rates
-        #             )
-        #         ],
-        #         noise_map.num_qubits,
-        #     )
+            if len(local_scale) != noise_map.num_terms:
+                raise SamplexRuntimeError(
+                    f"Received a noise map '{self._noise_ref}' with `{noise_map.num_terms}` "
+                    f"terms but a local scale from reference '{self._modifier_ref}' with "
+                    f"`{len(local_scale)}` terms."
+                )
+            scaled_rates = noise_map.rates * scale * local_scale
+            noise_map = PauliLindbladMap.from_sparse_list(
+                [
+                    (paulis, qubit_idxs, scaled_rate)
+                    for (paulis, qubit_idxs, _), scaled_rate in zip(
+                        noise_map.to_sparse_list(), scaled_rates
+                    )
+                ],
+                noise_map.num_qubits,
+            )
         signs, samples = noise_map.signed_sample(
             inputs["num_randomizations"], rng.bit_generator.random_raw()
         )
