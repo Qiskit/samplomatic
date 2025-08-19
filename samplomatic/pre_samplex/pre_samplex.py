@@ -1094,7 +1094,7 @@ class PreSamplex:
             )
             samplex.add_input(
                 Specification(
-                    "local_scales." + noise_modifier,
+                    f"local_scales.{noise_modifier}",
                     ValueType.NUMPY_ARRAY,
                     "An array of factors by which to scale individual elements of a noise map.",
                 )
