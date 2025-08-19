@@ -268,7 +268,8 @@ class Samplex:
         """Sample.
 
         Args:
-            samplex_input: TODO
+            samplex_input: The inputs required to generate samples for this samplex. See
+                :meth:`~inputs`.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
             rng: An integer for seeding a randomness generator, a generator itself, or ``None``
@@ -282,7 +283,11 @@ class Samplex:
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
         if not samplex_input.fully_bound:
-            raise SamplexRuntimeError("The samplex input is not fully specified.")
+            newline = "\n * "
+            raise SamplexRuntimeError(
+                "The samplex input is missing the following inputs:\n"
+                f"{newline.join(samplex_input.unbound_specs)}."
+            )
 
         outputs = self.outputs(samplex_input["num_randomizations"])
         if keep_registers:

@@ -165,14 +165,19 @@ class Interface(Mapping):
         return self.specs.keys() == self._data.keys()
 
     @property
-    def non_tensor_specs(self) -> list[Specification]:
+    def non_tensor_specs(self) -> list[str]:
         """The non-tensor specifications in this interface."""
         return [spec for spec in self.specs if not isinstance(spec, TensorSpecification)]
 
     @property
-    def tensor_specs(self) -> list[TensorSpecification]:
+    def tensor_specs(self) -> list[str]:
         """The tensor specifications in this interface."""
         return [spec for spec in self.specs if isinstance(spec, TensorSpecification)]
+
+    @property
+    def unbound_specs(self) -> list[Specification]:
+        """The specifications that do not have any data."""
+        return [spec for spec in self.specs if spec not in self._data]
 
     def bind(self, **kwargs) -> Self:
         """Bind data to an interface.
@@ -187,7 +192,7 @@ class Interface(Mapping):
             This interface."""
         for interface_name, value in kwargs.items():
             if isinstance(value, dict):
-                self.bind(**{f"{interface_name}.{k}"): v for k, v in value.items()})
+                self.bind(**{f"{interface_name}.{k}": v for k, v in value.items()})
                 continue
             if (spec := self.specs.get(interface_name)) is None:
                 raise ValueError(f"No specification named {interface_name}.")
@@ -225,21 +230,33 @@ class SamplexInput(Interface):
         self.defaults = defaults
 
     @property
-    def fully_bound(self) -> bool:
+    def fully_bound(self):
         values = set(self._data)
         values.union_update(self.defaults)
         return set(self.specs) == values
 
+    @property
+    def unbound_specs(self):
+        values = set(self.specs)
+        values.difference_update(self._data, self.defaults)
+        return values
+
     def __getitem__(self, key):
         if key not in self._specs:
-            raise KeyError(f"'{key}' does not correspond to a specification present in this interface. Available names are:\n{'\n * '.join(self._specs)}")
+            newline = "\n * "
+            raise KeyError(
+                f"'{key}' does not correspond to a specification present in this "
+                f"interface. Available names are:\n{newline.join(self._specs)}."
+            )
         try:
             return self._data[key]
         except KeyError:
             try:
                 return self.defaults[key]
-            except KeyError as exc:
-                raise KeyError(f"'{key}' has not yet had any data assigned and has no default value.")
+            except KeyError:
+                raise KeyError(
+                    f"'{key}' has not yet had any data assigned and has no default value."
+                )
 
 
 class SamplexOutput(Interface):
