@@ -51,10 +51,7 @@ def test_collect(rng):
         [
             TensorSpecification(
                 "out",
-                (
-                    3,
-                    10,
-                ),
+                (3, 10),
                 np.uint8,
                 "A ten-qubit array",
             )
