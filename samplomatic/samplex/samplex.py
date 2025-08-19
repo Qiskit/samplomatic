@@ -226,7 +226,7 @@ class Samplex:
         return self
 
     def inputs(self) -> SamplexInput:
-        """Returns an object that specifies the inputs of ``sample``.
+        """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Returns:
             The input for this samplex.
