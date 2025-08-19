@@ -65,12 +65,12 @@ class TestBasisTransformNode:
         samplex_input = SamplexInput([TensorSpecification("measure", (3,), np.uint8)], None)
         registers = {}
 
-        samplex_input.validate_and_update(measure=np.array([1, 1, 2], dtype=np.uint8))
+        samplex_input.bind(measure=np.array([1, 1, 2], dtype=np.uint8))
         basis_change.sample(registers, None, samplex_input)
         expected_register = U2Register(np.array([[HGate(), HGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
 
-        samplex_input.validate_and_update(measure=np.array([1, 0, 0], dtype=np.uint8))
+        samplex_input.bind(measure=np.array([1, 0, 0], dtype=np.uint8))
         basis_change.sample(registers, None, samplex_input)
         expected_register = U2Register(np.array([[HGate(), IGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register

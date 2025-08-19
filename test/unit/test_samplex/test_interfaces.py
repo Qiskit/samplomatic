@@ -14,7 +14,7 @@ import numpy as np
 import pytest
 
 from samplomatic.exceptions import SamplexInputError
-from samplomatic.samplex import MetadataOutput, SamplexInput, SamplexOutput, TensorSpecification
+from samplomatic.samplex import SamplexInput, SamplexOutput, TensorSpecification
 
 
 class TestSamplexInput:
@@ -22,34 +22,39 @@ class TestSamplexInput:
 
     def test_empty(self):
         """Test an empty output."""
-        output = SamplexInput([], 5)
-        assert len(output) == 0
-        assert not list(output)
+        samplex_input = SamplexInput([], {})
+        assert len(samplex_input) == 0
+        assert not list(samplex_input)
+        assert samplex_input.fully_bound
 
-        output.validate_and_update()
+    def test_bind(self):
+        """Test the bind method."""
 
-    def test_construction(self):
-        """Test construction and simple attributes."""
-
-        input = SamplexInput(
+        samplex_input = SamplexInput(
             [
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),
                 TensorSpecification("b", (3, 7), np.float32, "desc_b"),
+                TensorSpecification("c.d", (), np.float64, "desc_c_d"),
+                TensorSpecification("e", (), np.float64, "has_a_default"),
             ],
-            5,
+            {"e": np.float64(0.2)},
         )
 
-        assert len(input) == 2
-        assert list(input) == ["a", "b"]
-        assert "a" in input and "b" in input
+        assert not samplex_input.fully_bound
+        assert len(samplex_input) == 0
+        assert list(samplex_input) == []
+        assert samplex_input["e"] == np.float64(0.2)
 
-        assert input["a"] is None
-        assert input["b"] is None
+        samplex_input.bind(a=np.arange(5, dtype=np.uint8), b=np.zeros((3, 7), np.float32))
 
-        input.validate_and_update(a=np.arange(5, dtype=np.uint8), b=np.zeros((3, 7), np.float32))
+        assert not samplex_input.fully_bound
+        assert np.array_equal(samplex_input["a"], np.arange(5, dtype=np.uint8))
+        assert np.array_equal(samplex_input["b"], np.zeros((3, 7), np.float32))
 
-        assert np.array_equal(input["a"], np.arange(5, dtype=np.uint8))
-        assert np.array_equal(input["b"], np.zeros((3, 7), np.float32))
+        samplex_input.bind(c={"d": np.float64(0.5)})
+
+        assert samplex_input.fully_bound
+        assert samplex_input["c.d"] == np.float64(0.5)
 
     def test_exceptions(self):
         """Test exceptions."""
@@ -59,18 +64,18 @@ class TestSamplexInput:
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),
                 TensorSpecification("b", (3, 7), np.float32, "desc_b"),
             ],
-            5,
+            {},
         )
         b = np.zeros((3, 7), np.float32)
 
-        with pytest.raises(SamplexInputError, match="requires an input named"):
-            input.validate_and_update(b=b)
+        with pytest.raises(ValueError, match="No specification named"):
+            input.bind(no_input=b)
 
         with pytest.raises(SamplexInputError, match="expects an array"):
-            input.validate_and_update(a=np.zeros((5,), np.float32), b=b)
+            input.bind(a=np.zeros((5,), np.float32), b=b)
 
         with pytest.raises(SamplexInputError, match="expects an array"):
-            input.validate_and_update(a=np.zeros((7,), np.uint8), b=b)
+            input.bind(a=np.zeros((7,), np.uint8), b=b)
 
 
 class TestSamplexOutput:
@@ -78,9 +83,10 @@ class TestSamplexOutput:
 
     def test_empty(self):
         """Test an empty output."""
-        output = SamplexOutput([], [], 10)
+        output = SamplexOutput([])
         assert len(output) == 0
         assert not list(output)
+        assert not output.metadata
 
     def test_construction(self):
         """Test construction and simple attributes."""
@@ -89,26 +95,18 @@ class TestSamplexOutput:
             [
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),
                 TensorSpecification("c", (3, 7), np.float32, "desc_c"),
-            ],
-            [MetadataOutput("b", "desc_b")],
-            15,
+            ]
         )
 
-        assert output.num_samples == 15
         assert len(output) == 2
         assert list(output) == ["a", "c"]
         assert "a" in output and "c" in output
-        assert len(output.metadata) == 1
-        assert list(output.metadata) == ["b"]
-        assert "b" in output.metadata
+        assert len(output.metadata) == 0
 
         assert isinstance(output["a"], np.ndarray)
-        assert output["a"].shape == (15, 5)
+        assert output["a"].shape == (5,)
         assert output["a"].dtype == np.uint8
 
         assert isinstance(output["c"], np.ndarray)
-        assert output["c"].shape == (15, 3, 7)
+        assert output["c"].shape == (3, 7)
         assert output["c"].dtype == np.float32
-
-        assert isinstance(output.metadata["b"], dict)
-        assert not output.metadata["b"]

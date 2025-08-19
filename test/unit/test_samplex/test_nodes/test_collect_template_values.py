@@ -76,10 +76,15 @@ def test_validate_fails():
 
 def test_collect(rng):
     """Test the collect method."""
-    # prerequisites
     num_samples = 11
     outputs = SamplexOutput(
-        [TensorSpecification("template_values", (100,), np.float32)], [], num_samples
+        [
+            TensorSpecification(
+                "template_values",
+                (num_samples, 100),
+                np.float32,
+            )
+        ]
     )
     x = HaarU2(10).sample(num_samples, rng)
     outputs["template_values"].ravel()[...] = np.linspace(0, 1, outputs["template_values"].size)
