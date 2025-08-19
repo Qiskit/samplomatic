@@ -161,17 +161,30 @@ class Interface(Mapping):
 
     @property
     def fully_bound(self) -> bool:
+        """Whether all the interfaces have data specified."""
         return self.specs.keys() == self._data.keys()
 
     @property
     def non_tensor_specs(self) -> list[Specification]:
+        """The non-tensor specifications in this interface."""
         return [spec for spec in self.specs if not isinstance(spec, TensorSpecification)]
 
     @property
     def tensor_specs(self) -> list[TensorSpecification]:
+        """The tensor specifications in this interface."""
         return [spec for spec in self.specs if isinstance(spec, TensorSpecification)]
 
     def bind(self, **kwargs) -> Self:
+        """Bind data to an interface.
+
+        Args:
+            **kwargs: The interface to bind.
+
+        Raises:
+            ValueError: If a specification not present in this interface is in ``kwargs``.
+
+        Returns:
+            This interface."""
         for interface_name, value in kwargs.items():
             if isinstance(value, dict):
                 self.bind(**{".".join([interface_name, k]): v for k, v in value.items()})

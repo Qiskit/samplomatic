@@ -221,6 +221,11 @@ class Samplex:
         self._finalized = True
 
     def inputs(self) -> SamplexInput:
+        """Returns an object that specifies the inputs of ``sample``.
+
+        Returns:
+            The input for this samplex.
+        """
         num_randomizations = Specification(
             "num_randomizations", ValueType.INT, "How many randomizations to sample."
         )
@@ -231,6 +236,14 @@ class Samplex:
         )
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
+        """Returns an object that specifies the outputs of ``sample``.
+
+        Args:
+            num_randomizations: The number of randomizations requested.
+
+        Returns:
+            The input for this samplex.
+        """
         outputs = []
         for spec in self._output_specifications.values():
             if isinstance(spec, TensorSpecification):
