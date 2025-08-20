@@ -1067,7 +1067,7 @@ class PreSamplex:
         for basis_ref, length in self._basis_transforms.items():
             samplex.add_input(
                 TensorSpecification(
-                    "basis_changes." + basis_ref,
+                    f"basis_changes.{basis_ref}",
                     (length,),
                     np.dtype(np.uint8),
                     "Basis changing gates.",
