@@ -36,4 +36,4 @@ echo "Committing the changelog and removed changelog entries ..."
 echo "=================================================================="
 git add CHANGELOG.md
 #git rm -r changelog.d
-git commit -m "Adding changelog for Release $1"
+git commit -m "Add changelog for release $1"
