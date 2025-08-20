@@ -38,7 +38,8 @@ class TestWithoutSimulation:
         samplex = samplex_state.finalize()
         samplex.finalize()
 
-        samplex_output = samplex.sample([], size=20)
+        samplex_input = samplex.inputs().bind(num_randomizations=20)
+        samplex_output = samplex.sample(samplex_input)
         measurement_flips = samplex_output["measurement_flips"]
         assert not np.any(measurement_flips[:, 1:3])
 

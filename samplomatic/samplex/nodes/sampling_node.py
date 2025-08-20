@@ -27,11 +27,7 @@ class SamplingNode(abc.ABC, Node):
 
     @abc.abstractmethod
     def sample(
-        self,
-        registers: dict[RegisterName, VirtualRegister],
-        rng: Generator,
-        inputs: SamplexInput,
-        **kwargs,
+        self, registers: dict[RegisterName, VirtualRegister], rng: Generator, inputs: SamplexInput
     ):
         """Sample this node.
 

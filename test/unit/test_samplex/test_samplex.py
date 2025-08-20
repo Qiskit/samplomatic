@@ -18,14 +18,15 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import MetadataOutput, Samplex, TensorSpecification
+from samplomatic.samplex import Samplex, Specification, TensorSpecification
+from samplomatic.samplex.interfaces import ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, DummySamplingNode
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, rng, inputs, **kwargs):
+    def sample(self, registers, rng, inputs):
         raise SamplexRuntimeError("This node cannot sample.")
 
 
@@ -36,13 +37,18 @@ class TestBasic:
         """Test that an empty samplex doesn't error when sampled."""
         samplex = Samplex()
         samplex.finalize()
-        samplex.sample(size=10)
+        samplex.sample(samplex.inputs())
 
     def test_requires_finalize(self):
         """Test that we get an error when we try and sample without finalizing first."""
         samplex = Samplex()
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(size=10)
+            samplex.sample(samplex.inputs().bind(num_randomizations=10))
+
+    def test_finalize_chain(self):
+        """Test that we can chain the finalize method because it returns self."""
+        samplex = Samplex()
+        assert samplex.finalize() is samplex
 
     def test_append_parametric_expression(self):
         """Test the method that appends parametric expressions."""
@@ -61,16 +67,17 @@ class TestBasic:
         samplex = Samplex()
         samplex.add_output(TensorSpecification("out", (5, 6), float))
         samplex.finalize()
-        output = samplex.sample(size=11)
+        samplex_input = samplex.inputs().bind(num_randomizations=11)
+        output = samplex.sample(samplex_input)
         assert set(output) == {"out"}
         assert output["out"].shape == (11, 5, 6)
 
     def test_add_output_fails(self):
         """Test that adding an output fails when it should."""
         samplex = Samplex()
-        samplex.add_output(MetadataOutput("out"))
+        samplex.add_output(Specification("out", ValueType.BOOL))
         with pytest.raises(SamplexConstructionError, match="'out' already exists"):
-            samplex.add_output(MetadataOutput("out"))
+            samplex.add_output(Specification("out", ValueType.BOOL))
 
     def test_add_node_fails(self):
         """Test that adding a node fails when expected."""
@@ -84,10 +91,10 @@ class TestBasic:
         """Test that adding a node causes the samplex to not be finalized."""
         samplex = Samplex()
         samplex.finalize()
-        samplex.sample(size=10)
+        samplex.sample(samplex.inputs())
         samplex.add_node(DummySamplingNode())
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(size=10)
+            samplex.sample(samplex.inputs())
 
     def test_add_edge_undoes_finalize(self):
         """Test that adding an edge causes the samplex to not be finalized."""
@@ -95,10 +102,10 @@ class TestBasic:
         a = samplex.add_node(DummySamplingNode())
         b = samplex.add_node(DummyCollectionNode())
         samplex.finalize()
-        samplex.sample(size=10)
+        samplex.sample(samplex.inputs())
         samplex.add_edge(a, b)
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(size=10)
+            samplex.sample(samplex.inputs())
 
     @pytest.mark.skipif(not HAS_PLOTLY, reason="plotly is not installed")
     def test_draw(self, save_plot):
@@ -152,12 +159,12 @@ class TestSample:
         """Test that the keep_registers sample argument works."""
         samplex = Samplex()
         samplex.finalize()
-        output = samplex.sample()
+        output = samplex.sample(samplex.inputs())
         assert "registers" not in output
 
         samplex = Samplex()
         samplex.finalize()
-        output = samplex.sample(keep_registers=True)
+        output = samplex.sample(samplex.inputs(), keep_registers=True)
         assert "registers" in output.metadata
 
     def test_single_component(self):
@@ -188,7 +195,7 @@ class TestSample:
 
         samplex.finalize()
 
-        outputs = samplex.sample(size=13, keep_registers=True)
+        outputs = samplex.sample(samplex.inputs().bind(num_randomizations=13), keep_registers=True)
         assert set(outputs) == {"out"}
         assert set(outputs.metadata) == {"registers"}
 
@@ -223,7 +230,8 @@ class TestSample:
 
         samplex.finalize()
 
-        registers = samplex.sample(size=13, keep_registers=True).metadata["registers"]
+        samplex_input = samplex.inputs().bind(num_randomizations=13)
+        registers = samplex.sample(samplex_input, keep_registers=True).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
@@ -260,9 +268,12 @@ class TestSample:
 
         samplex.finalize()
 
-        registers = samplex.sample(
-            parameter_values=np.array([1, 2, 4], float), size=13, keep_registers=True
-        ).metadata["registers"]
+        samplex_input = (
+            samplex.inputs()
+            .bind(num_randomizations=13)
+            .bind(parameter_values=np.array([1, 2, 4], float))
+        )
+        registers = samplex.sample(samplex_input, keep_registers=True).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
@@ -283,4 +294,4 @@ class TestSample:
         samplex.finalize()
 
         with pytest.raises(SamplexRuntimeError, match="This node cannot sample."):
-            samplex.sample()
+            samplex.sample(samplex.inputs())

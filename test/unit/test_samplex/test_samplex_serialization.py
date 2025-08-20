@@ -60,8 +60,8 @@ class TestSamplexSerialization:
         samplex_new.finalize()
 
         copy_rng = deepcopy(rng)
-        samplex_output = samplex.sample(rng=rng)
-        samplex_new_output = samplex_new.sample(rng=copy_rng)
+        samplex_output = samplex.sample(samplex.inputs(), rng=rng)
+        samplex_new_output = samplex_new.sample(samplex.inputs(), rng=copy_rng)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
@@ -83,9 +83,11 @@ class TestSamplexSerialization:
         samplex.finalize()
         samplex_new.finalize()
 
+        samplex_input = samplex.inputs().bind(noise_maps={"my_noise": noise_map})
         copy_rng = deepcopy(rng)
-        samplex_output = samplex.sample(rng=rng, noise_maps={"my_noise": noise_map})
-        samplex_new_output = samplex_new.sample(rng=copy_rng, noise_maps={"my_noise": noise_map})
+
+        samplex_output = samplex.sample(samplex_input, rng=rng)
+        samplex_new_output = samplex_new.sample(samplex_input, rng=copy_rng)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
@@ -108,9 +110,11 @@ class TestSamplexSerialization:
         samplex.finalize()
         samplex_new.finalize()
 
+        samplex_input = samplex.inputs().bind(basis_changes={"measure": basis})
         copy_rng = deepcopy(rng)
-        samplex_output = samplex.sample(rng=rng, measure=basis)
-        samplex_new_output = samplex_new.sample(rng=copy_rng, measure=basis)
+
+        samplex_output = samplex.sample(samplex_input, rng=rng)
+        samplex_new_output = samplex_new.sample(samplex_input, rng=copy_rng)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
@@ -144,9 +148,11 @@ class TestSamplexSerialization:
         samplex.finalize()
         samplex_new.finalize()
 
+        samplex_input = samplex.inputs().bind(parameter_values=circuit_params)
         copy_rng = deepcopy(rng)
-        samplex_output = samplex.sample(rng=rng, parameter_values=circuit_params)
-        samplex_new_output = samplex_new.sample(rng=copy_rng, parameter_values=circuit_params)
+
+        samplex_output = samplex.sample(samplex_input, rng=rng)
+        samplex_new_output = samplex_new.sample(samplex_input, rng=copy_rng)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )

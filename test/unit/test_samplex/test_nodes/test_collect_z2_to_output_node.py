@@ -48,9 +48,14 @@ def test_collect(rng):
     node2 = CollectZ2ToOutputNode("reg2", [4, 3, 2, 1, 0], "out", [1, 3, 5, 7, 9])
 
     outputs = SamplexOutput(
-        [TensorSpecification("out", (10,), np.uint8, "A ten-qubit array")],
-        [],
-        3,
+        [
+            TensorSpecification(
+                "out",
+                (3, 10),
+                np.uint8,
+                "A ten-qubit array",
+            )
+        ]
     )
 
     registers = {"reg1": reg1, "reg2": reg2}
