@@ -81,6 +81,9 @@ class Specification:
         Args:
             value: A value to validate and coerce with respect to this specification.
 
+        Raises:
+                TypeError: If the value cannot be coerced into a valid type.
+
         Returns:
             The coerced value.
         """
