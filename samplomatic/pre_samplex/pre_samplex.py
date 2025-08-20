@@ -1059,7 +1059,7 @@ class PreSamplex:
                 TensorSpecification(
                     "parameter_values",
                     (num_params,),
-                    np.float64,
+                    np.dtype(np.float64),
                     "Input parameter values to use during sampling.",
                 )
             )
@@ -1067,7 +1067,10 @@ class PreSamplex:
         for basis_ref, length in self._basis_transforms.items():
             samplex.add_input(
                 TensorSpecification(
-                    "basis_changes." + basis_ref, (length,), np.uint8, "Basis changing gates."
+                    "basis_changes." + basis_ref,
+                    (length,),
+                    np.dtype(np.uint8),
+                    "Basis changing gates.",
                 )
             )
 
@@ -1088,7 +1091,7 @@ class PreSamplex:
                 TensorSpecification(
                     f"noise_scales.{noise_modifier}",
                     (),
-                    np.float64,
+                    np.dtype(np.float64),
                     "A factor by which to scale a noise map.",
                 )
             )
@@ -1105,7 +1108,7 @@ class PreSamplex:
                 TensorSpecification(
                     "parameter_values",
                     (max_param_idx + 1,),
-                    np.float64,
+                    np.dtype(np.float64),
                     "Parameter values for the template circuit.",
                 )
             )
@@ -1115,7 +1118,7 @@ class PreSamplex:
                 TensorSpecification(
                     "measurement_flips",
                     (self.num_clbits,),
-                    np.bool_,
+                    np.dtype(np.bool_),
                     "Bit-flip corrections for measurement twirling, XOR your data against this"
                     " value. The ordering matches template.clbits.",
                 )
@@ -1126,7 +1129,7 @@ class PreSamplex:
                 TensorSpecification(
                     "pauli_signs",
                     (num_signs,),
-                    np.bool_,
+                    np.dtype(np.bool_),
                     "Signs from sampled noise maps. The order matches the iteration order of "
                     "injected noise in the circuit.",
                 )

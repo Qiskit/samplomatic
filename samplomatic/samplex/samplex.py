@@ -36,13 +36,7 @@ from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
-from .interfaces import (
-    SamplexInput,
-    SamplexOutput,
-    Specification,
-    TensorSpecification,
-    ValueType,
-)
+from .interfaces import SamplexInput, SamplexOutput, Specification, TensorSpecification, ValueType
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
 
@@ -283,10 +277,9 @@ class Samplex:
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
         if not samplex_input.fully_bound:
-            newline = "\n * "
             raise SamplexRuntimeError(
-                "The samplex input is missing the following inputs:\n"
-                f"{newline.join(samplex_input.unbound_specs)}."
+                "The samplex input is missing values for the following:\n"
+                f"{samplex_input.describe(prefix='  ', include_bound=False)}"
             )
 
         outputs = self.outputs(samplex_input["num_randomizations"])

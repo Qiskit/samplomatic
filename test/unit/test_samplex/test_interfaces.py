@@ -56,6 +56,64 @@ class TestSamplexInput:
         assert samplex_input.fully_bound
         assert samplex_input["c.d"] == np.float64(0.5)
 
+    def test_dunders(self):
+        """Test the bind method."""
+
+        samplex_input = SamplexInput(
+            [
+                TensorSpecification("a", (5,), np.uint8, "desc_a"),
+                TensorSpecification("b", (3, 7), np.float32, "desc_b"),
+                TensorSpecification("c.d", (), np.float64, "desc_c_d"),
+                TensorSpecification("e", (), np.float64, "has_a_default"),
+            ],
+            {"e": (e := np.float64(0.2))},
+        )
+
+        assert len(samplex_input) == 0
+        assert not list(samplex_input)
+
+        # __setitem__
+        samplex_input["b"] = b = np.linspace(0, 1, 21).reshape(3, 7).astype(np.float32)
+        samplex_input["c"] = {"d": (cd := 3.1)}
+
+        assert len(samplex_input) == 2
+        assert list(samplex_input) == ["b", "c.d"]
+
+        # __contains__
+        assert "b" in samplex_input
+        assert "c.d" in samplex_input
+        assert "e" in samplex_input
+
+        # __getitem__
+        assert np.allclose(samplex_input["b"], b)
+        assert np.allclose(samplex_input["c.d"], cd)
+        assert np.allclose(samplex_input["e"], e)
+
+    def test_describe(self):
+        """Test the describe() method."""
+
+        samplex_input = SamplexInput(
+            [
+                TensorSpecification("a", (5,), np.uint8, "desc_a"),
+                TensorSpecification("b", (3, 7), np.float32, "desc_b"),
+                TensorSpecification("c.d", (), np.float64, "desc_c_d"),
+                TensorSpecification("e", (), np.float64, "has_a_default"),
+            ],
+            {"e": np.float64(0.2)},
+        )
+
+        samplex_input["b"] = np.linspace(0, 1, 21).reshape(3, 7).astype(np.float32)
+
+        assert "desc_a" in samplex_input.describe()
+        assert "c.d" in samplex_input.describe()
+        assert "desc_c_d" in samplex_input.describe()
+        assert "has_a_default" in samplex_input.describe()
+
+        assert samplex_input.describe(prefix="***").count("***") == 4
+
+        assert "desc_b" not in samplex_input.describe(include_bound=False)
+        assert "has_a_default" not in samplex_input.describe(include_bound=False)
+
     def test_exceptions(self):
         """Test exceptions."""
 
@@ -68,8 +126,11 @@ class TestSamplexInput:
         )
         b = np.zeros((3, 7), np.float32)
 
-        with pytest.raises(ValueError, match="No specification named"):
+        with pytest.raises(ValueError, match="The interface has no specification named 'no_input'"):
             input.bind(no_input=b)
+
+        with pytest.raises(ValueError, match="The interface has no specification named 'no_input'"):
+            input["no_input"] = b
 
         with pytest.raises(SamplexInputError, match="expects an array"):
             input.bind(a=np.zeros((5,), np.float32), b=b)
