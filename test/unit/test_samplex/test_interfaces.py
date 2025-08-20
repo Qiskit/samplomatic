@@ -12,9 +12,80 @@
 
 import numpy as np
 import pytest
+from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic.exceptions import SamplexInputError
-from samplomatic.samplex import SamplexInput, SamplexOutput, TensorSpecification
+from samplomatic.samplex import SamplexInput, SamplexOutput, Specification, TensorSpecification
+from samplomatic.samplex.interfaces import ValueType
+
+
+class TestSpecification:
+    """Test Specification class."""
+
+    def test_specification_describe_and_repr(
+        self,
+    ):
+        spec = Specification("count", ValueType.INT, "an integer count")
+        assert "count" in spec.describe() and "int" in spec.describe()
+        assert repr(spec).startswith("Specification(")
+
+    @pytest.mark.parametrize("val, expected", [(0, False), (1, True), ("", False)])
+    def test_validate_and_coerce_bool(self, val, expected):
+        """Test with bool type."""
+        spec = Specification("flag", ValueType.BOOL)
+        assert spec.validate_and_coerce(val) is expected
+
+    def test_validate_and_coerce_int(self):
+        """Test with int type."""
+        spec = Specification("num", ValueType.INT)
+        assert spec.validate_and_coerce(30) == 30
+        assert spec.validate_and_coerce("5") == 5
+
+    def test_validate_and_coerce_lindblad(self):
+        """Test with lindblad type."""
+        spec = Specification("map", ValueType.LINDBLAD)
+        obj = PauliLindbladMap.from_list([("XX", 0.5)])
+        assert spec.validate_and_coerce(obj) is obj
+        with pytest.raises(TypeError):
+            spec.validate_and_coerce("not-lindblad")
+
+    def test_validate_and_coerce_numpy_array(self):
+        """Test with numpy type."""
+        spec = Specification("arr", ValueType.NUMPY_ARRAY)
+        out = spec.validate_and_coerce([1, 2, 3])
+        assert isinstance(out, np.ndarray)
+        np.testing.assert_array_equal(out, np.array([1, 2, 3]))
+
+
+class TestTensorSpecification:
+    """Test the TensorSpecification class."""
+
+    def test_tensor_specification_describe_and_repr(self):
+        ts = TensorSpecification("x", (3,), np.int64, "a vector")
+        desc = ts.describe()
+        assert "int64" in desc and "[3]" in desc
+        assert repr(ts).startswith("TensorSpecification(")
+
+    def test_tensor_specification_empty_matches_shape_and_dtype(self):
+        ts = TensorSpecification("x", (2, 3), np.float64)
+        arr = ts.empty()
+        assert arr.shape == (2, 3)
+        assert arr.dtype == np.float64
+
+    def test_tensor_specification_validate_and_coerce_accepts_correct_array(self):
+        ts = TensorSpecification("x", (2, 2), np.int64)
+        arr = np.zeros((2, 2), dtype=np.int64)
+        result = ts.validate_and_coerce(arr)
+        assert np.allclose(result, arr)
+
+    def test_tensor_specification_validate_and_coerce_rejects_bad_shape_or_dtype(self):
+        ts = TensorSpecification("x", (2, 2), np.int64)
+        bad_shape = np.zeros((3, 3), dtype=np.int64)
+        bad_dtype = np.zeros((2, 2), dtype=np.float32)
+        with pytest.raises(SamplexInputError):
+            ts.validate_and_coerce(bad_shape)
+        with pytest.raises(SamplexInputError):
+            ts.validate_and_coerce(bad_dtype)
 
 
 class TestSamplexInput:
