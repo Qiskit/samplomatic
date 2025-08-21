@@ -279,7 +279,7 @@ class Samplex:
         if not samplex_input.fully_bound:
             raise SamplexRuntimeError(
                 "The samplex input is missing values for the following:\n"
-                f"{samplex_input.describe(prefix='  ', include_bound=False)}"
+                f"{samplex_input.describe(prefix='  * ', include_bound=False)}"
             )
 
         outputs = self.outputs(samplex_input["num_randomizations"])
