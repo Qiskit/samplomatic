@@ -40,7 +40,7 @@ class TestWithoutSimulation:
 
         samplex_input = samplex.inputs().bind(num_randomizations=20)
         samplex_output = samplex.sample(samplex_input)
-        measurement_flips = samplex_output["measurement_flips"]
+        measurement_flips = samplex_output["measurement_flips.c"]
         assert not np.any(measurement_flips[:, 1:3])
 
     def test_repeated_twirled_clbit_error(self):
@@ -79,7 +79,7 @@ class TestWithSimulation:
 
     def test_separate_measures(self, save_plot):
         """Test separate measurement boxes, with non-standard cbit associations"""
-        circuit = QuantumCircuit(3, 3)
+        circuit = QuantumCircuit(QuantumRegister(size=3), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         circuit.h(1)
         with circuit.box([Twirl(dressing="left")]):
@@ -110,7 +110,7 @@ class TestWithSimulation:
 
     def test_mid_circuit_measurements(self, save_plot):
         """Test separate measurement boxes, with repeated twirled measurements on the same qubit"""
-        circuit = QuantumCircuit(1, 3)
+        circuit = QuantumCircuit(QuantumRegister(size=1), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         circuit.h(0)
         with circuit.box([Twirl(dressing="left")]):
@@ -138,7 +138,7 @@ class TestWithSimulation:
 
     def test_partially_twirled_measurements(self, save_plot):
         """Verify that twirling only some of the measurements works"""
-        circuit = QuantumCircuit(2, 3)
+        circuit = QuantumCircuit(QuantumRegister(size=2), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)

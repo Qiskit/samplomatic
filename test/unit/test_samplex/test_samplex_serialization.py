@@ -119,7 +119,7 @@ class TestSamplexSerialization:
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
         np.testing.assert_allclose(
-            samplex_output["measurement_flips"], samplex_new_output["measurement_flips"]
+            samplex_output["measurement_flips.meas"], samplex_new_output["measurement_flips.meas"]
         )
 
     def test_parametric_circuit(self, rng):
