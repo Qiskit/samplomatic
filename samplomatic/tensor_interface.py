@@ -100,10 +100,8 @@ class Specification:
         raise TypeError(f"Object is type {type(value)} but expected {self.value_type}.")
 
     def __repr__(self):
-        return (
-            f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}, "
-            f"{repr(self.description)}"
-        )
+        description = f", '{self.description}'" if self.description else ""
+        return f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}{description}"
 
 
 class TensorSpecification(Specification):
@@ -196,10 +194,7 @@ class TensorSpecification(Specification):
         return value
 
     def __repr__(self):
-        return (
-            f"{type(self).__name__}({repr(self.name)}, {repr(self.shape)}, {repr(self.dtype)}, "
-            f"{repr(self.description)}"
-        )
+        return super().__repr__()[:-1] + (", True)" if self.broadcastable else ")")
 
 
 class TensorInterface(MutableMapping):
