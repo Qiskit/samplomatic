@@ -152,7 +152,7 @@ class PreSamplex:
         optional_dangling: A map from qubit indices to sets of node indices that are still
             eligible to, but don't have to, receive edges at a further point in parsing the
             circuit being built.
-        num_clbits: The number of classical bits in the original circuit.
+        cregs: A list of classical registers in the order that they were added to the circuit.
         noise_map_count: A count of the total number of noise maps.
         noise_maps: A map from unique identifiers of noise maps to the number of systems the map
             acts on.
@@ -174,7 +174,6 @@ class PreSamplex:
         qubit_map: dict[Qubit, QubitIndex] | None = None,
         dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         optional_dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
-        num_clbits: int = 0,
         cregs: list[ClassicalRegister] | None = None,
         noise_map_count: count | None = None,
         noise_maps: dict[str, NumSubsystems] | None = None,
@@ -192,7 +191,6 @@ class PreSamplex:
         self._optional_dangling: dict[QubitIndex, set[NodeIndex]] = (
             defaultdict(set) if optional_dangling is None else optional_dangling
         )
-        self.num_clbits = num_clbits
         self._cregs = cregs
         self._noise_map_count = count() if noise_map_count is None else noise_map_count
         self._noise_maps = {} if noise_maps is None else noise_maps
@@ -220,7 +218,6 @@ class PreSamplex:
             qubit_map,
             self._dangling,
             self._optional_dangling,
-            self.num_clbits,
             self._cregs,
             self._noise_map_count,
             self._noise_maps,

@@ -95,9 +95,7 @@ def pre_build(circuit: QuantumCircuit) -> tuple[TemplateState, PreSamplex]:
     template_state = TemplateState.construct_for_circuit(circuit)
     template_builder = template_builder.set_state(template_state)
 
-    pre_samplex = PreSamplex(
-        qubit_map=template_state.qubit_map, num_clbits=circuit.num_clbits, cregs=circuit.cregs
-    )
+    pre_samplex = PreSamplex(qubit_map=template_state.qubit_map, cregs=circuit.cregs)
     samplex_builder = samplex_builder.set_state(pre_samplex)
 
     _build(circuit, template_builder, samplex_builder)
