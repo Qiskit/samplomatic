@@ -13,7 +13,7 @@
 
 """Interfaces"""
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, MutableMapping
 from enum import StrEnum
 from typing import Any, Literal, Self, overload
 
@@ -21,7 +21,6 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from .aliases import InterfaceName
-from .exceptions import SamplexInputError
 
 
 class ValueType(StrEnum):
@@ -115,8 +114,9 @@ class TensorSpecification(Specification):
         shape: The shape of the input array.
         dtype: The data type of the array.
         description: A description of what the interface represents.
-        broadcastable: Whether this values under this specification are allowed to be broadcastable
-            with other broadcastable values in the same interface.
+        broadcastable: Whether this values in an interface that are constrained by this
+            specification are allowed to be broadcastable with other broadcastable values in the
+            same interface.
     """
 
     def __init__(
@@ -130,7 +130,12 @@ class TensorSpecification(Specification):
         super().__init__(name, ValueType.NUMPY_ARRAY, description)
         self.shape = shape
         self.dtype = dtype
-        self.broadcastable = False
+        self.broadcastable = broadcastable
+
+    @property
+    def ndim(self) -> int:
+        """The number of dimensions, i.e. the length of :attr:`~shape`."""
+        return len(self.shape)
 
     def _to_json_dict(self) -> dict[str, Any]:
         return {
@@ -153,8 +158,11 @@ class TensorSpecification(Specification):
 
     def describe(self) -> str:
         """Return a human-readable description of this specification."""
-        shape = f"[*, {', '.join(map(str, self.shape))}]" if self.broadcastable else str(self.shape)
-        return f"'{self.name}' ({self.dtype}{shape}): {self.description}"
+        if self.broadcastable:
+            shape_string = f"[*, {', '.join(map(str, self.shape))}]"
+        else:
+            shape_string = str(list(self.shape))
+        return f"'{self.name}' ({self.dtype}{shape_string}): {self.description}"
 
     def empty(self) -> np.ndarray:
         """Create an empty output according to this specification.
@@ -169,18 +177,22 @@ class TensorSpecification(Specification):
 
     def validate_and_coerce(self, value):
         value = super().validate_and_coerce(value)
-        if self.broadcastable:
+        if value.dtype != self.dtype:
             raise ValueError(
-                f"Input '{self.name}' expects an array ending with shape {self.shape} and dtype "
-                f"{self.dtype} but received one with shape {value.shape} and dtype {value.dtype}."
+                f"Input '{self.name}' expects an array of dtype "
+                f"{self.dtype}, but received one with dtype {value.dtype}."
             )
-        else:
-            if value.dtype != self.dtype or value.shape != self.shape:
-                raise SamplexInputError(
-                    f"Input '{self.name}' expects an array of shape {self.shape} and dtype "
-                    f"{self.dtype}, but received one with shape {value.shape} and "
-                    f"dtype {value.dtype}."
+        if self.broadcastable:
+            if value.shape[len(value.shape) - self.ndim :] != self.shape:
+                raise ValueError(
+                    f"Input '{self.name}' expects an array ending with shape {self.shape} "
+                    f"one with shape {value.shape}."
                 )
+        elif value.shape != self.shape:
+            raise ValueError(
+                f"Input '{self.name}' expects an array of shape {self.shape}, "
+                f"but received one with shape {value.shape} and dtype {value.dtype}."
+            )
         return value
 
     def __repr__(self):
@@ -190,7 +202,7 @@ class TensorSpecification(Specification):
         )
 
 
-class TensorInterface(Mapping):
+class TensorInterface(MutableMapping):
     """An interface described by strict value type specifications, with a focus on tensor values.
 
     This object implements the mapping protocol against data that is present; if a possible
@@ -205,7 +217,7 @@ class TensorInterface(Mapping):
     def __init__(self, specs: Iterable[Specification]):
         self._specs = {spec.name: spec for spec in sorted(specs, key=lambda spec: spec.name)}
         self._data: dict[InterfaceName, Any] = {}
-        self.shape = ()
+        self._shape = ()
 
     @property
     def fully_bound(self) -> bool:
@@ -214,7 +226,25 @@ class TensorInterface(Mapping):
 
     @property
     def shape(self) -> tuple[int, ...]:
-        """The shape of this interface broadcasted over all present broadcastable tensor values."""
+        """The shape of this interface broadcasted over all present broadcastable tensor values.
+
+        This shape does not include the native shapes of any particular tensor value. For example,
+        if some broadastable value has shape ``(4, 5, 6, 7)`` and the associated tensor
+        specification has shape ``(6, 7)``, then this value naturally contributes a shape of
+        ``(4, 5)`` to this interface. Consequently, the shape here will always be ``()`` for an
+        interface with no broadcastable specifications.
+        """
+        return self._shape
+
+    @property
+    def size(self) -> int:
+        """The total number of elements once broadcasted, i.e. the product of the :attr:`~shape`."""
+        return int(np.prod(self.shape, dtype=int))
+
+    @property
+    def ndim(self) -> int:
+        """The number of dimensions, i.e. the length of :attr:`~shape`."""
+        return len(self.shape)
 
     @property
     def specs(self) -> list[Specification]:
@@ -271,14 +301,37 @@ class TensorInterface(Mapping):
 
         return self
 
+    def make_broadcastable(self) -> "TensorInterface":
+        """Return a new interface like this one where all tensor specifications are broadcastable.
+
+        Returns:
+            A new :class:`~.TensorInterface`.
+        """
+        return TensorInterface(
+            TensorSpecification(spec.name, spec.shape, spec.dtype, spec.description, True)
+            if isinstance(spec, TensorSpecification)
+            else spec
+            for spec in self.specs
+        ).bind(**self._data)
+
     def __repr__(self):
         return f"{type(self).__name__}({repr(self._specs)})"
 
     def __contains__(self, key):
         return key in self._data
 
+    def __delitem__(self, key):
+        del self._data[key]
+
     def __getitem__(self, key):
-        return self._data[key]
+        if isinstance(key, str):
+            return self._data[key]
+        return TensorInterface(self.specs).bind(
+            **{
+                name: (val[key] if getattr(self._specs[name], "broadcastable", False) else val)
+                for name, val in self.items()
+            }
+        )
 
     def __setitem__(self, key, value):
         if isinstance(value, dict):
@@ -291,14 +344,14 @@ class TensorInterface(Mapping):
             )
         else:
             value = spec.validate_and_coerce(value)
-            if isinstance(spec, TensorInterface) and spec.broadcastable:
+            if isinstance(spec, TensorSpecification) and spec.broadcastable:
                 value_shape = value.shape[: value.ndim - len(spec.shape)]
                 try:
-                    self._shape = np.broadcast_shapes(self.shape, value_shape)
+                    self._shape = np.broadcast_shapes(self._shape, value_shape)
                 except ValueError as exc:
                     raise ValueError(
                         f"Cannot set '{key}' to a value with shape {value.shape} because it "
-                        f"is not broadcastable with the current interface shape, {self.shape}."
+                        f"is not broadcastable with the current interface shape, {self._shape}."
                     ) from exc
             self._data[spec.name] = value
 

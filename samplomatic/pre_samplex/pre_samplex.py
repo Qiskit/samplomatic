@@ -55,7 +55,6 @@ from ..graph_utils import (
 )
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from ..samplex import Samplex
-from ..samplex.interfaces import Specification, TensorSpecification, ValueType
 from ..samplex.nodes import (
     BasisTransformNode,
     CollectTemplateValues,
@@ -76,6 +75,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
 from ..synths import Synth
+from ..tensor_interface import Specification, TensorSpecification, ValueType
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (

@@ -26,7 +26,7 @@ from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from ..aliases import InterfaceName
 from ..exceptions import DeserializationError
-from .interfaces import Specification, TensorSpecification
+from ..tensor_interface import Specification, TensorSpecification
 from .nodes import Node
 from .nodes.basis_transform_node import BasisTransformNode
 from .nodes.collect_template_values import CollectTemplateValues

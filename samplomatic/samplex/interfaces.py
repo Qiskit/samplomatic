@@ -16,54 +16,7 @@
 from collections.abc import Iterable
 from typing import Any
 
-from ..aliases import InterfaceName
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification
-
-
-class SamplexInput(TensorInterface):
-    """The input of a single call to :meth:`~Samplex.sample`.
-
-    Args:
-        specs: An iterable of specificaitons for the allowed data in this interface.
-        defaults: A map from input names to their default values.
-    """
-
-    def __init__(self, specs: Iterable[Specification], defaults: dict[InterfaceName, Any] | None):
-        super().__init__(specs)
-        defaults = {} if defaults is None else defaults
-        self.defaults = defaults
-
-    @property
-    def fully_bound(self):
-        values = set(self._data)
-        values.update(self.defaults)
-        return set(self._specs) == values
-
-    @property
-    def _unbound_specs(self) -> set[str]:
-        # override to consider items with defaults bound
-        return {
-            name for name in self._specs if name not in self._data and name not in self.defaults
-        }
-
-    def __getitem__(self, key):
-        if key not in self._specs:
-            raise KeyError(
-                f"'{key}' does not correspond to a specification present in this "
-                f"interface. Available names are:\n{self.describe(prefix='  * ')}"
-            )
-        try:
-            return self._data[key]
-        except KeyError:
-            try:
-                return self.defaults[key]
-            except KeyError:
-                raise KeyError(
-                    f"'{key}' has not yet had any data assigned and has no default value."
-                )
-
-    def __contains__(self, key):
-        return key in self._data or key in self.defaults
+from ..tensor_interface import TensorInterface, TensorSpecification
 
 
 class SamplexOutput(TensorInterface):

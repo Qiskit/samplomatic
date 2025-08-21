@@ -18,9 +18,10 @@ from qiskit.quantum_info import Operator, average_gate_fidelity
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError
-from samplomatic.samplex.interfaces import SamplexOutput, TensorSpecification
+from samplomatic.samplex.interfaces import SamplexOutput
 from samplomatic.samplex.nodes import CollectTemplateValues
 from samplomatic.synths import RzSxSynth
+from samplomatic.tensor_interface import TensorSpecification
 
 
 def test_construction():

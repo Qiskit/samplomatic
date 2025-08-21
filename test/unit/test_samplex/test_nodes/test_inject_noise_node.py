@@ -18,13 +18,13 @@ from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexRuntimeError
-from samplomatic.samplex.interfaces import (
-    SamplexInput,
+from samplomatic.samplex.nodes import InjectNoiseNode
+from samplomatic.tensor_interface import (
     Specification,
+    TensorInterface,
     TensorSpecification,
     ValueType,
 )
-from samplomatic.samplex.nodes import InjectNoiseNode
 from samplomatic.virtual_registers import PauliRegister, Z2Register
 
 
@@ -44,15 +44,16 @@ def test_sample(rng):
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
 
     samplex_input = (
-        SamplexInput(
+        TensorInterface(
             [
                 Specification("my_noise", ValueType.LINDBLAD),
                 Specification("num_randomizations", ValueType.INT),
                 TensorSpecification("noise_scales.my_modifier", (), np.float64),
                 TensorSpecification("local_scales.my_modifier", (1,), np.float64),
-            ],
-            {"noise_scales.my_modifier": np.float64(1.0), "local_scales.my_modifier": [1.0]},
+            ]
         )
+        .bind(noise_scales={"my_modifier": 1.0})
+        .bind(local_scales={"my_modifier": [1.0]})
         .bind(my_noise=PauliLindbladMap.from_list([("III", 0)]))
         .bind(num_randomizations=5)
     )
@@ -80,14 +81,13 @@ def test_sample_raises(rng):
     registers = {}
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
 
-    samplex_input = SamplexInput(
+    samplex_input = TensorInterface(
         [
             Specification("num_randomizations", ValueType.INT),
             Specification("my_noise", ValueType.LINDBLAD),
             Specification("local_scales.my_modifier", ValueType.NUMPY_ARRAY),
-        ],
-        {"local_scales.my_modifier": [1.0]},
-    )
+        ]
+    ).bind(local_scales={"my_modifier": [1.0]})
 
     samplex_input.bind(my_noise=PauliLindbladMap.from_list([("II", 0)])).bind(num_randomizations=5)
     with pytest.raises(SamplexRuntimeError, match="Received a noise map acting on `2`"):
@@ -96,4 +96,5 @@ def test_sample_raises(rng):
     samplex_input.bind(my_noise=PauliLindbladMap.from_list([("III", 0)]))
     samplex_input.bind(local_scales={"my_modifier": [1.0, 2.0]})
     with pytest.raises(SamplexRuntimeError, match="a local scale from reference 'my_modifier'"):
+        node.sample(registers, rng, samplex_input)
         node.sample(registers, rng, samplex_input)
