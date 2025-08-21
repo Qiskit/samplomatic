@@ -99,7 +99,7 @@ samplex_input.bind(parameter_values=np.array([0.1, 0.2]), num_randomizations=15)
 samples = samplex.sample(samplex_input)
 
 # measurement bitflips are available
-samples["measurement_flips"] # boolean array
+samples["measurement_flips.meas"] # boolean array
 
 # one can, for example, bind the template circuit against the 7th randomization.
 template.assign_parameters(samples["parameter_values"][7])

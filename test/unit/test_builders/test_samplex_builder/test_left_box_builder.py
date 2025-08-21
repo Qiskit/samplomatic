@@ -14,7 +14,7 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import CircuitInstruction, QuantumCircuit, QuantumRegister
+from qiskit.circuit import CircuitInstruction, ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import Measure, XGate
 
 from samplomatic import Twirl
@@ -33,10 +33,10 @@ from samplomatic.synths.rzsx_synth import RzSxSynth
 class TestLeftBoxBuilder:
     """Test Box Builders"""
 
-    def get_builder(self, qreg):
+    def get_builder(self, qreg, creg=None):
         """Helper function to return left box builder with empty PreSamplex."""
-
-        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(qreg)})
+        cregs = [ClassicalRegister(len(qreg)) if creg is None else creg]
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(qreg)}, cregs=cregs)
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxSamplexBuilder(
             CollectionSpec(qubits, "Left", RzSxSynth()),
@@ -58,7 +58,8 @@ class TestLeftBoxBuilder:
     def test_rhs_with_measurements(self):
         """Test rhs of left box with measurements"""
         qreg = QuantumRegister(2)
-        builder = self.get_builder(qreg)
+        creg = ClassicalRegister(3)
+        builder = self.get_builder(qreg, creg)
         builder.lhs(InstructionSpec())
         builder.parse(
             CircuitInstruction(Measure(), qreg),
@@ -76,7 +77,9 @@ class TestLeftBoxBuilder:
         assert builder.state.graph.nodes()[1] == PreEmit(
             subsystem_idxs, Direction.BOTH, VirtualType.PAULI
         )
-        assert builder.state.graph.nodes()[2] == PreZ2Collect(subsystem_idxs, clbit_idxs=[0, 2])
+        assert builder.state.graph.nodes()[2] == PreZ2Collect(
+            subsystem_idxs, clbit_idxs={creg.name: [0, 2]}, subsystems_idxs={creg.name: [0, 1]}
+        )
 
     def test_rhs_no_measurements(self):
         """Test rhs of left box with no measurements"""

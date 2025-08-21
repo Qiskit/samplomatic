@@ -53,8 +53,15 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
         samplex_input.bind(parameter_values=circuit_params)
     samplex_output = samplex.sample(samplex_input)
     parameter_values = samplex_output["parameter_values"]
-    measurement_flips = samplex_output.get(
-        "measurement_flips", [None] * NUM_RANDOMIZATIONS_PER_CIRCUIT
+    measurement_flips = np.concatenate(
+        [
+            samplex_output.get(
+                f"measurement_flips.{creg.name}",
+                [[False] * len(creg)] * NUM_RANDOMIZATIONS_PER_CIRCUIT,
+            )
+            for creg in circuit.cregs
+        ],
+        axis=1,
     )
     for params, correction in zip(parameter_values, measurement_flips):
         twirled_circuit_counts = _simulate(template.template, params)

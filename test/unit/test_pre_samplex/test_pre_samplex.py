@@ -231,15 +231,15 @@ class TestBuildPreSamplex:
         assert len(pre_samplex.graph.nodes()) == 3
 
     def test_add_z2_collect(self):
-        """Test that add z2 collect adds the node and edges to the graph"""
+        """Test that adding a Z2 collect adds the node and edges to the graph."""
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(2)
 
-        state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
+        state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1}, cregs=[creg])
         state.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         state.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
         state.add_propagate(CircuitInstruction(XGate(), [qreg[0]]), InstructionSpec())
-        state.add_z2_collect(QubitPartition.from_elements(qreg), creg)
+        state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1])
 
         subsys_idxs = QubitIndicesPartition.from_elements([0, 1])
         assert state.graph.nodes()[-3] == PrePropagate(
@@ -248,24 +248,25 @@ class TestBuildPreSamplex:
         assert state.graph.nodes()[-2] == PrePropagate(
             QubitIndicesPartition.from_elements([0]), Direction.LEFT, XGate(), [[0]], {}
         )
-        assert state.graph.nodes()[-1] == PreZ2Collect(subsys_idxs, creg)
+        assert state.graph.nodes()[-1] == PreZ2Collect(
+            subsys_idxs, {creg.name: [0, 1]}, {creg.name: [0, 1]}
+        )
 
     def test_add_z2_collect_errors(self):
-        """Test that add z2 collect raises errors when needed"""
+        """Test that adding a Z2 collect raises errors."""
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(2)
 
-        state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
+        state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1}, cregs=[creg])
         state.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         state.add_emit_twirl(QubitPartition.from_elements([qreg[0]]), PauliRegister)
         with pytest.raises(
             SamplexBuildError, match="some qubits are missing corresponding emissions"
         ):
-            state.add_z2_collect(QubitPartition.from_elements(qreg), creg)
+            state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1])
 
-        creg = ClassicalRegister(3)
         with pytest.raises(SamplexBuildError, match="Number of qubits != number of clbits"):
-            state.add_z2_collect(QubitPartition.from_elements(qreg), creg)
+            state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1, 2])
 
 
 class TestHelpersAttributes:

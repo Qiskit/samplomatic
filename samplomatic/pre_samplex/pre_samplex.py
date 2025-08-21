@@ -20,7 +20,7 @@ from itertools import count
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
-from qiskit.circuit import Qubit
+from qiskit.circuit import ClassicalRegister, Qubit
 from rustworkx.rustworkx import (
     PyDiGraph,
     topological_generations,
@@ -175,6 +175,7 @@ class PreSamplex:
         dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         optional_dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         num_clbits: int = 0,
+        cregs: list[ClassicalRegister] | None = None,
         noise_map_count: count | None = None,
         noise_maps: dict[str, NumSubsystems] | None = None,
         noise_modifiers: set[str] | None = None,
@@ -192,6 +193,7 @@ class PreSamplex:
             defaultdict(set) if optional_dangling is None else optional_dangling
         )
         self.num_clbits = num_clbits
+        self._cregs = cregs
         self._noise_map_count = count() if noise_map_count is None else noise_map_count
         self._noise_maps = {} if noise_maps is None else noise_maps
         self._noise_modifiers = set() if noise_modifiers is None else noise_modifiers
@@ -219,6 +221,7 @@ class PreSamplex:
             self._dangling,
             self._optional_dangling,
             self.num_clbits,
+            self._cregs,
             self._noise_map_count,
             self._noise_maps,
             self._noise_modifiers,
@@ -477,7 +480,19 @@ class PreSamplex:
             )
         self._twirled_clbits.update(clbit_idxs)
         subsystems = self.qubits_to_indices(qubits)
-        node_idx = self.graph.add_node(PreZ2Collect(subsystems, clbit_idxs))
+
+        clbit_dict = defaultdict(list)
+        subsystems_dict = defaultdict(list)
+        for idx, clbit_idx in enumerate(clbit_idxs):
+            val = 0
+            for reg in self._cregs:
+                if clbit_idx < val + len(reg):
+                    clbit_dict[reg.name].append(clbit_idx - val)
+                    subsystems_dict[reg.name].append(idx)
+                    break
+                val += len(reg)
+
+        node_idx = self.graph.add_node(PreZ2Collect(subsystems, clbit_dict, subsystems_dict))
 
         collected_subsystems = QubitIndicesPartition(1, [])
         # Collect relevant nodes which are an optional dangler, and leave them optionally dangling
@@ -1114,15 +1129,15 @@ class PreSamplex:
             )
 
         if self._twirled_clbits:
-            samplex.add_output(
-                TensorSpecification(
-                    "measurement_flips",
-                    (self.num_clbits,),
-                    np.dtype(np.bool_),
-                    "Bit-flip corrections for measurement twirling, XOR your data against this"
-                    " value. The ordering matches template.clbits.",
+            for reg in self._cregs:
+                samplex.add_output(
+                    TensorSpecification(
+                        f"measurement_flips.{reg.name}",
+                        (len(reg),),
+                        np.dtype(np.bool_),
+                        "Bit-flip corrections for measurement twirling.",
+                    )
                 )
-            )
 
         if (num_signs := next(self._noise_map_count)) > 0:
             samplex.add_output(
@@ -1491,7 +1506,6 @@ class PreSamplex:
                 implied by the edge (a, b) in the pre-samplex graph.
         """
         pre_node = cast(PreZ2Collect, self.graph[pre_node_idx])
-        all_subsystems = pre_node.subsystems
         combined_name = f"z2_collect_{order[pre_node_idx]}"
         combine_node_idx = self.add_combine_node(
             samplex,
@@ -1503,11 +1517,15 @@ class PreSamplex:
             VirtualType.Z2,
         )
 
-        z2collect = CollectZ2ToOutputNode(
-            combined_name, np.arange(len(all_subsystems)), "measurement_flips", pre_node.clbit_idxs
-        )
+        for reg_name, clbit_idxs in pre_node.clbit_idxs.items():
+            z2collect = CollectZ2ToOutputNode(
+                combined_name,
+                np.array(pre_node.subsystems_idxs[reg_name]),
+                f"measurement_flips.{reg_name}",
+                clbit_idxs,
+            )
 
-        samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
+            samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
 
     def subgraphs(self) -> list[PyDiGraph[PreNode, PreEdge]]:
         """Returns a list of disconnected components."""

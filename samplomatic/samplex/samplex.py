@@ -293,8 +293,10 @@ class Samplex:
                 self._passthrough_params[1]
             ]
 
-        if (measurement_flips := outputs.get("measurement_flips")) is not None:
-            measurement_flips[:] = 0
+        for key in outputs:
+            if key.startswith("measurement_flips"):
+                outputs[key][:] = 0
+
         rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
