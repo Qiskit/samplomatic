@@ -17,10 +17,15 @@ import pytest
 from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 from samplomatic.annotations import Twirl
-from samplomatic.builders import pre_build
+from samplomatic.builders import build, pre_build
 from samplomatic.exceptions import BuildError
 
-from .utils import sample_simulate_and_compare_counts
+from .utils import (
+    apply_bit_flips_correction,
+    hellinger_fidelity_equal,
+    sample_simulate_and_compare_counts,
+    simulate,
+)
 
 
 class TestWithoutSimulation:
@@ -120,21 +125,32 @@ class TestWithSimulation:
 
         sample_simulate_and_compare_counts(circuit, save_plot)
 
-    @pytest.mark.skip(
-        reason="Mid-circuit measurements followed by non twirled measurements are not supported yet"
-    )
     def test_mid_circuit_measurements_followed_by_non_twirled_measurement(self, save_plot):
-        """Test a twirled measurement followed by a non twirled measurement on the same qubit"""
-        circuit = QuantumCircuit(1, 3)
-        circuit.x(0)
-        circuit.h(0)
+        """Test a twirled measurement followed by a non twirled measurement on the same qubit."""
+        circuit = QuantumCircuit(QuantumRegister(size=2), ClassicalRegister(name="meas", size=2))
         with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="right")]):
-            circuit.noop(0)
+            circuit.measure_all(add_bits=False)
+
         circuit.measure_all()
 
-        sample_simulate_and_compare_counts(circuit, save_plot)
+        template, samplex = build(circuit)
+        samplex.finalize()
+        samplex_input = samplex.inputs().bind(num_randomizations=20)
+
+        # We concatenate the measurement flips on the first register with itself to apply to both
+        # registers.
+        output = samplex.sample(samplex_input)
+        meas_flips = output["measurement_flips.meas"]
+        correction = np.concatenate([meas_flips, meas_flips], axis=1)
+        parameter_values = output["parameter_values"]
+
+        for params, correction in zip(parameter_values, correction):
+            twirled_circuit_counts = simulate(template, params)
+            if correction is not None:
+                twirled_circuit_counts = apply_bit_flips_correction(
+                    twirled_circuit_counts, correction
+                )
+            hellinger_fidelity_equal({"00 00": 1024}, twirled_circuit_counts)
 
     def test_partially_twirled_measurements(self, save_plot):
         """Verify that twirling only some of the measurements works"""
