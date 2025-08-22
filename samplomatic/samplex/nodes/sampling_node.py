@@ -17,8 +17,8 @@ import abc
 from numpy.random import Generator
 
 from ...aliases import RegisterName
+from ...tensor_interface import TensorInterface
 from ...virtual_registers import VirtualRegister
-from ..interfaces import SamplexInput
 from .node import Node
 
 
@@ -27,7 +27,10 @@ class SamplingNode(abc.ABC, Node):
 
     @abc.abstractmethod
     def sample(
-        self, registers: dict[RegisterName, VirtualRegister], rng: Generator, inputs: SamplexInput
+        self,
+        registers: dict[RegisterName, VirtualRegister],
+        rng: Generator,
+        inputs: TensorInterface,
     ):
         """Sample this node.
 

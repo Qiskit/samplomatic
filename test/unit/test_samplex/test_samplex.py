@@ -18,8 +18,8 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import Samplex, Specification, TensorSpecification
-from samplomatic.samplex.interfaces import ValueType
+from samplomatic.samplex import Samplex
+from samplomatic.tensor_interface import Specification, TensorSpecification, ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, DummySamplingNode

@@ -12,6 +12,6 @@
 
 """Samplex"""
 
-from .interfaces import SamplexInput, SamplexOutput, Specification, TensorSpecification
+from .interfaces import SamplexOutput
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex

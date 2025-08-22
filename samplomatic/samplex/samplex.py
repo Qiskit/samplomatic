@@ -34,9 +34,10 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
+from ..tensor_interface import Specification, TensorInterface, TensorSpecification, ValueType
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
-from .interfaces import SamplexInput, SamplexOutput, Specification, TensorSpecification, ValueType
+from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
 
@@ -219,7 +220,7 @@ class Samplex:
 
         return self
 
-    def inputs(self) -> SamplexInput:
+    def inputs(self) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Returns:
@@ -228,11 +229,9 @@ class Samplex:
         num_randomizations = Specification(
             "num_randomizations", ValueType.INT, "How many randomizations to sample."
         )
-        defaults = {"num_randomizations": 1}
-        return SamplexInput(
+        return TensorInterface(
             chain(self._input_specifications.values(), [num_randomizations]),
-            defaults,
-        )
+        ).bind(num_randomizations=1)
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
         """Returns an object that specifies the promised outputs of :meth:`~sample`.
@@ -254,7 +253,7 @@ class Samplex:
 
     def sample(
         self,
-        samplex_input: SamplexInput,
+        samplex_input: TensorInterface,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
         max_workers: int | None = None,
@@ -279,7 +278,7 @@ class Samplex:
         if not samplex_input.fully_bound:
             raise SamplexRuntimeError(
                 "The samplex input is missing values for the following:\n"
-                f"{samplex_input.describe(prefix='  ', include_bound=False)}"
+                f"{samplex_input.describe(prefix='  * ', include_bound=False)}"
             )
 
         outputs = self.outputs(samplex_input["num_randomizations"])
