@@ -35,4 +35,3 @@ def test_sample(rng):
 
     node.sample(registers, rng, samplex_input.bind(num_randomizations=5))
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)
-    assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)

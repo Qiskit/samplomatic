@@ -71,5 +71,3 @@ class TestBasisTransformNode:
         basis_change.sample(registers, None, samplex_input)
         expected_register = U2Register(np.array([[HGate(), IGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
-        assert registers["basis_change"] == expected_register
-        assert registers["basis_change"] == expected_register

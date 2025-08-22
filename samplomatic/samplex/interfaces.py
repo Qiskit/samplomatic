@@ -33,4 +33,3 @@ class SamplexOutput(TensorInterface):
         super().__init__(specs)
         self._data = {spec.name: spec.empty() for spec in specs}
         self.metadata: dict[str, Any] = {} if metadata is None else metadata
-        self.metadata: dict[str, Any] = {} if metadata is None else metadata

@@ -48,4 +48,3 @@ class TestSamplexOutput:
         assert isinstance(output["c"], np.ndarray)
         assert output["c"].shape == (3, 7)
         assert output["c"].dtype == np.float32
-        assert output["c"].dtype == np.float32

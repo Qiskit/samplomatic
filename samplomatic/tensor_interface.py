@@ -77,7 +77,7 @@ class Specification:
     def validate_and_coerce(self: Literal[ValueType.NUMPY_ARRAY], value: Any) -> np.ndarray: ...
 
     def validate_and_coerce(self, value):
-        """Coerce values into correct type if valid.
+        """Coerce a value into a correct type if valid.
 
         Args:
             value: A value to validate and coerce with respect to this specification.
@@ -112,7 +112,7 @@ class TensorSpecification(Specification):
         shape: The shape of the input array.
         dtype: The data type of the array.
         description: A description of what the interface represents.
-        broadcastable: Whether this values in an interface that are constrained by this
+        broadcastable: Whether values in an interface that are constrained by this
             specification are allowed to be broadcastable with other broadcastable values in the
             same interface.
     """
@@ -184,7 +184,7 @@ class TensorSpecification(Specification):
             if value.shape[len(value.shape) - self.ndim :] != self.shape:
                 raise ValueError(
                     f"Input '{self.name}' expects an array ending with shape {self.shape} "
-                    f"one with shape {value.shape}."
+                    f"but received one with shape {value.shape}."
                 )
         elif value.shape != self.shape:
             raise ValueError(

@@ -295,6 +295,3 @@ class TestSample:
 
         with pytest.raises(SamplexRuntimeError, match="This node cannot sample."):
             samplex.sample(samplex.inputs())
-
-        with pytest.raises(SamplexRuntimeError, match="This node cannot sample."):
-            samplex.sample(samplex.inputs())

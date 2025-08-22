@@ -97,4 +97,3 @@ def test_sample_raises(rng):
     samplex_input.bind(local_scales={"my_modifier": [1.0, 2.0]})
     with pytest.raises(SamplexRuntimeError, match="a local scale from reference 'my_modifier'"):
         node.sample(registers, rng, samplex_input)
-        node.sample(registers, rng, samplex_input)
