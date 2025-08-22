@@ -40,3 +40,11 @@ samplomatic.samplex.samplex module
    :members:
    :show-inheritance:
    :undoc-members:
+
+samplomatic.samplex.samplex\_serialization module
+-------------------------------------------------
+
+.. automodule:: samplomatic.samplex.samplex_serialization
+   :members:
+   :show-inheritance:
+   :undoc-members:
