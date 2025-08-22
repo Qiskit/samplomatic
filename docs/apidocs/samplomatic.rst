@@ -66,3 +66,11 @@ samplomatic.partition module
    :members:
    :show-inheritance:
    :undoc-members:
+
+samplomatic.tensor\_interface module
+------------------------------------
+
+.. automodule:: samplomatic.tensor_interface
+   :members:
+   :show-inheritance:
+   :undoc-members:

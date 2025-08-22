@@ -33,6 +33,14 @@ samplomatic.utils.get\_annotation module
    :show-inheritance:
    :undoc-members:
 
+samplomatic.utils.serialization module
+--------------------------------------
+
+.. automodule:: samplomatic.utils.serialization
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 samplomatic.utils.undress\_box module
 -------------------------------------
 
