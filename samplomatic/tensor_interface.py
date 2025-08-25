@@ -321,12 +321,16 @@ class TensorInterface(MutableMapping):
     def __getitem__(self, key):
         if isinstance(key, str):
             return self._data[key]
-        return TensorInterface(self.specs).bind(
-            **{
-                name: (val[key] if getattr(self._specs[name], "broadcastable", False) else val)
-                for name, val in self.items()
-            }
-        )
+
+        # we slice every broadcastable array according to the key
+        new_values = {}
+        for name, value in self.items():
+            if isinstance(spec := self._specs[name], TensorSpecification) and spec.broadcastable:
+                value = np.broadcast_to(value, self.shape + value.shape[value.ndim - spec.ndim :])
+                new_values[name] = value[key]
+            else:
+                new_values[name] = value
+        return TensorInterface(self.specs).bind(**new_values)
 
     def __setitem__(self, key, value):
         if isinstance(value, dict):
