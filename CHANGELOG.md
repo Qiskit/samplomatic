@@ -1,3 +1,14 @@
+## [0.5.0](https://github.com/Qiskit/samplomatic/tree/0.5.0) - 2025-08-26
+
+### Added
+
+- Added new boolean option `remove_barriers` to `generate_boxing_pass_manager()` that adds the `RemoveBarriers` pass to the returned pass manager when true. ([#88](https://github.com/Qiskit/samplomatic/issues/88))
+
+### Changed
+
+- The pass manager returned by `generate_boxing_pass_manager()` now removes all pre-existing barriers, by default. ([#88](https://github.com/Qiskit/samplomatic/issues/88))
+
+
 ## [0.4.0](https://github.com/Qiskit/samplomatic/tree/0.4.0) - 2025-08-26
 
 ### Added
