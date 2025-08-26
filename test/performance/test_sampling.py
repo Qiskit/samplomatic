@@ -30,11 +30,10 @@ class TestSample:
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes)
 
-        parameter_values = rng.random(len(circuit.parameters))
-
         template, samplex = build(circuit)
+        samplex_input = samplex.inputs().bind(parameter_values=rng.random(len(circuit.parameters)))
         samplex_output = benchmark(
-            samplex.sample, parameter_values=parameter_values, num_randomizations=num_randomizations
+            samplex.sample, samplex_input, num_randomizations=num_randomizations
         )
 
         assert circuit.num_parameters == 29700
@@ -56,16 +55,15 @@ class TestSample:
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_layer_noise, odd_layer_noise = make_noise_maps(num_qubits)
 
-        parameter_values = rng.random(len(circuit.parameters))
-        noise_maps = {"even": even_layer_noise, "odd": odd_layer_noise}
-        noise_scales = {"even": scale, "odd": scale}
-
         template, samplex = build(circuit)
+        samplex_input = samplex.inputs().bind(
+            parameter_values=rng.random(len(circuit.parameters)),
+            noise_maps={"even": even_layer_noise, "odd": odd_layer_noise},
+            noise_scales={"even": scale, "odd": scale},
+        )
         samplex_output = benchmark(
             samplex.sample,
-            parameter_values=parameter_values,
-            noise_maps=noise_maps,
-            noise_scales=noise_scales,
+            samplex_input,
             num_randomizations=num_randomizations,
         )
 
@@ -88,9 +86,6 @@ class TestSample:
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_noise_maps(num_qubits)
 
-        parameter_values = rng.random(len(circuit.parameters))
-        noise_maps = {"even": even_noise, "odd": odd_noise}
-
         local_scales = {
             f"even_{idx}": [local_scale] * even_noise.num_terms for idx in range(num_boxes // 2)
         }
@@ -99,11 +94,14 @@ class TestSample:
         )
 
         template, samplex = build(circuit)
+        samplex_input = samplex.inputs().bind(
+            parameter_values=rng.random(len(circuit.parameters)),
+            noise_maps={"even": even_noise, "odd": odd_noise},
+            local_scales=local_scales,
+        )
         samplex_output = benchmark(
             samplex.sample,
-            parameter_values=parameter_values,
-            noise_maps=noise_maps,
-            local_scales=local_scales,
+            samplex_input,
             num_randomizations=num_randomizations,
         )
 

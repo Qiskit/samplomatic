@@ -93,10 +93,10 @@ It additionally generates values required during post-processing, which in this 
 ```python
 # generate input for the samplex
 samplex_input = samplex.inputs()
-samplex_input.bind(parameter_values=np.array([0.1, 0.2]), num_randomizations=15)
+samplex_input.bind(parameter_values=np.array([0.1, 0.2]))
 
 # sample 15 randomizations valid against the template circuit.
-samples = samplex.sample(samplex_input)
+samples = samplex.sample(samplex_input, num_randomizations=15)
 
 # measurement bitflips are available
 samples["measurement_flips.meas"] # boolean array

@@ -14,7 +14,6 @@
 
 from collections.abc import Iterable, Sequence
 from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait
-from itertools import chain
 from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
@@ -34,7 +33,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification, ValueType
+from ..tensor_interface import Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
@@ -226,12 +225,7 @@ class Samplex:
         Returns:
             The input for this samplex.
         """
-        num_randomizations = Specification(
-            "num_randomizations", ValueType.INT, "How many randomizations to sample."
-        )
-        return TensorInterface(
-            chain(self._input_specifications.values(), [num_randomizations]),
-        ).bind(num_randomizations=1)
+        return TensorInterface(self._input_specifications.values())
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
         """Returns an object that specifies the promised outputs of :meth:`~sample`.
@@ -254,6 +248,7 @@ class Samplex:
     def sample(
         self,
         samplex_input: TensorInterface,
+        num_randomizations: int = 1,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
         max_workers: int | None = None,
@@ -263,6 +258,7 @@ class Samplex:
         Args:
             samplex_input: The inputs required to generate samples for this samplex. See
                 :meth:`~inputs`.
+            num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
             rng: An integer for seeding a randomness generator, a generator itself, or ``None``
@@ -281,7 +277,7 @@ class Samplex:
                 f"{samplex_input.describe(prefix='  * ', include_bound=False)}"
             )
 
-        outputs = self.outputs(samplex_input["num_randomizations"])
+        outputs = self.outputs(num_randomizations)
         if keep_registers:
             outputs.metadata["registers"] = {}
 
@@ -303,7 +299,7 @@ class Samplex:
         with ThreadPoolExecutor(max_workers) as pool:
             # use rng.spawn() to ensure determinism of PRNG even when there is a thread pool
             wait_with_raise(
-                pool.submit(node.sample, registers, child_rng, samplex_input)
+                pool.submit(node.sample, registers, child_rng, samplex_input, num_randomizations)
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
                 )

@@ -43,8 +43,8 @@ class TestWithoutSimulation:
         samplex = samplex_state.finalize()
         samplex.finalize()
 
-        samplex_input = samplex.inputs().bind(num_randomizations=20)
-        samplex_output = samplex.sample(samplex_input)
+        samplex_input = samplex.inputs()
+        samplex_output = samplex.sample(samplex_input, num_randomizations=20)
         measurement_flips = samplex_output["measurement_flips.c"]
         assert not np.any(measurement_flips[:, 1:3])
 
@@ -135,11 +135,11 @@ class TestWithSimulation:
 
         template, samplex = build(circuit)
         samplex.finalize()
-        samplex_input = samplex.inputs().bind(num_randomizations=20)
+        samplex_input = samplex.inputs()
 
         # We concatenate the measurement flips on the first register with itself to apply to both
         # registers.
-        output = samplex.sample(samplex_input)
+        output = samplex.sample(samplex_input, num_randomizations=20)
         meas_flips = output["measurement_flips.meas"]
         correction = np.concatenate([meas_flips, meas_flips], axis=1)
         parameter_values = output["parameter_values"]

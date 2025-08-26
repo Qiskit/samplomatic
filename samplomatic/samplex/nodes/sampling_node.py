@@ -31,13 +31,15 @@ class SamplingNode(abc.ABC, Node):
         registers: dict[RegisterName, VirtualRegister],
         rng: Generator,
         inputs: TensorInterface,
+        num_randomizations: int,
     ):
         """Sample this node.
 
         Args:
             registers: Where to sample into.
             rng: A randomness generator.
-            kwargs: Optional keyword arguments to be used at sample time.
+            inputs: Inputs of the sampling program.
+            num_randomizations: How many randomizations to draw.
         """
 
     def get_style(self):

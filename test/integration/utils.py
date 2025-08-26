@@ -48,10 +48,12 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     circuit_params = np.random.random(len(circuit.parameters))
     original_circuit_counts = simulate(remove_boxes(circuit), circuit_params)
 
-    samplex_input = samplex.inputs().bind(num_randomizations=NUM_RANDOMIZATIONS_PER_CIRCUIT)
+    samplex_input = samplex.inputs().bind()
     if len(circuit_params) > 0:
         samplex_input.bind(parameter_values=circuit_params)
-    samplex_output = samplex.sample(samplex_input)
+    samplex_output = samplex.sample(
+        samplex_input, num_randomizations=NUM_RANDOMIZATIONS_PER_CIRCUIT
+    )
     parameter_values = samplex_output["parameter_values"]
     measurement_flips = np.concatenate(
         [
