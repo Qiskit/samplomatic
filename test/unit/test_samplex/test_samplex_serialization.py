@@ -12,7 +12,7 @@
 from copy import deepcopy
 
 import numpy as np
-from qiskit.circuit import ParameterVector, QuantumCircuit
+from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic import build
@@ -153,6 +153,31 @@ class TestSamplexSerialization:
 
         samplex_output = samplex.sample(samplex_input, rng=rng)
         samplex_new_output = samplex_new.sample(samplex_input, rng=copy_rng)
+        np.testing.assert_allclose(
+            samplex_output["parameter_values"], samplex_new_output["parameter_values"]
+        )
+
+    def test_passthrough_params_circuit(self, rng):
+        """Test a circuit with passthrough paramemeters."""
+        circuit = QuantumCircuit(2)
+        circuit.rx(Parameter("a"), 0)
+        circuit.rx(Parameter("b"), 1)
+        circuit.rx(Parameter("c"), 0)
+
+        circuit_params = rng.random(len(circuit.parameters))
+
+        _, samplex = build(circuit)
+        samplex_new = samplex_from_json(samplex_to_json(samplex))
+
+        samplex.finalize()
+        samplex_new.finalize()
+
+        samplex_input = samplex.inputs().bind(parameter_values=circuit_params)
+        copy_rng = deepcopy(rng)
+
+        samplex_output = samplex.sample(samplex_input, rng=rng)
+        samplex_new_output = samplex_new.sample(samplex_input, rng=copy_rng)
+
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
