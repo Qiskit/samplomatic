@@ -206,14 +206,17 @@ class TestTensorInterface:
 
     def test_getitem_with_slice_returns_new_interface(self):
         """Test indexing with slices returns a new TensorInterface."""
-        spec = TensorSpecification("x", (2,), np.float64, broadcastable=True)
-        tensor_interface = TensorInterface([spec])
-        tensor_interface["x"] = data = np.arange(12, dtype=np.float64).reshape(6, 2)
+        spec1 = TensorSpecification("x", (2,), np.float64, broadcastable=True)
+        spec2 = TensorSpecification("y", (5, 2), np.float64, broadcastable=True)
+        tensor_interface = TensorInterface([spec1, spec2])
+        tensor_interface["x"] = data_x = np.arange(12, dtype=np.float64).reshape(6, 2)
+        tensor_interface["y"] = data_y = np.arange(10, dtype=np.float64).reshape(5, 2)
         new_tensor_interface = tensor_interface[:3]
 
         assert isinstance(new_tensor_interface, TensorInterface)
         assert new_tensor_interface is not tensor_interface
-        assert np.allclose(new_tensor_interface["x"], data[:3])
+        assert np.allclose(new_tensor_interface["x"], data_x[:3])
+        assert np.allclose(new_tensor_interface["y"], data_y)
         assert new_tensor_interface.shape == (3,)
 
     def test_nested_dict_assignment(self):
