@@ -88,7 +88,7 @@ class InjectNoiseNode(SamplingNode):
             self._sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, rng, inputs):
+    def sample(self, registers, rng, inputs, num_randomizations):
         if (noise_map := inputs.get(self._noise_ref)) is None:
             raise SamplexRuntimeError(f"A noise map for '{self._noise_ref}' was not specified.")
         if (num_qubits := noise_map.num_qubits) != self._num_subsystems:
@@ -118,9 +118,7 @@ class InjectNoiseNode(SamplingNode):
                 ],
                 noise_map.num_qubits,
             )
-        signs, samples = noise_map.signed_sample(
-            inputs["num_randomizations"], rng.bit_generator.random_raw()
-        )
+        signs, samples = noise_map.signed_sample(num_randomizations, rng.bit_generator.random_raw())
         registers[self._register_name] = PauliRegister.from_paulis(samples)
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
 

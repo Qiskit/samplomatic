@@ -55,24 +55,21 @@ def test_sample(rng):
         .bind(noise_scales={"my_modifier": 1.0})
         .bind(local_scales={"my_modifier": [1.0]})
         .bind(my_noise=PauliLindbladMap.from_list([("III", 0)]))
-        .bind(num_randomizations=5)
     )
-    node.sample(registers, rng, samplex_input)
+    node.sample(registers, rng, samplex_input, 5)
     assert registers["injection"] == PauliRegister(np.zeros(15, dtype=np.uint8).reshape(3, 5))
     assert registers["the_sign"] == Z2Register(np.ones((1, 5), dtype=np.uint8))
 
-    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("XXX", -100)])).bind(
-        num_randomizations=100
-    )
-    node.sample(registers, rng, samplex_input)
+    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("XXX", -100)]))
+    node.sample(registers, rng, samplex_input, num_randomizations=100)
     assert (~registers["the_sign"].virtual_gates).any()
 
     samplex_input.bind(noise_scales={"my_modifier": 0.0})
-    node.sample(registers, rng, samplex_input)
+    node.sample(registers, rng, samplex_input, 100)
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
     samplex_input.bind(noise_scales={"my_modifier": 1.0}, local_scales={"my_modifier": [0.0]})
-    node.sample(registers, rng, samplex_input)
+    node.sample(registers, rng, samplex_input, 100)
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
 
 
@@ -89,11 +86,11 @@ def test_sample_raises(rng):
         ]
     ).bind(local_scales={"my_modifier": [1.0]})
 
-    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("II", 0)])).bind(num_randomizations=5)
+    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("II", 0)]))
     with pytest.raises(SamplexRuntimeError, match="Received a noise map acting on `2`"):
-        node.sample(registers, rng, samplex_input)
+        node.sample(registers, rng, samplex_input, 5)
 
     samplex_input.bind(my_noise=PauliLindbladMap.from_list([("III", 0)]))
     samplex_input.bind(local_scales={"my_modifier": [1.0, 2.0]})
     with pytest.raises(SamplexRuntimeError, match="a local scale from reference 'my_modifier'"):
-        node.sample(registers, rng, samplex_input)
+        node.sample(registers, rng, samplex_input, 5)

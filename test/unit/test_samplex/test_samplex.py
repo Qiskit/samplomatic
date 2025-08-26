@@ -26,7 +26,7 @@ from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, Du
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, rng, inputs):
+    def sample(self, registers, rng, inputs, num_randomizations):
         raise SamplexRuntimeError("This node cannot sample.")
 
 
@@ -43,7 +43,7 @@ class TestBasic:
         """Test that we get an error when we try and sample without finalizing first."""
         samplex = Samplex()
         with pytest.raises(SamplexRuntimeError, match="The samplex has not been finalized yet"):
-            samplex.sample(samplex.inputs().bind(num_randomizations=10))
+            samplex.sample(samplex.inputs())
 
     def test_finalize_chain(self):
         """Test that we can chain the finalize method because it returns self."""
@@ -67,8 +67,7 @@ class TestBasic:
         samplex = Samplex()
         samplex.add_output(TensorSpecification("out", (5, 6), float))
         samplex.finalize()
-        samplex_input = samplex.inputs().bind(num_randomizations=11)
-        output = samplex.sample(samplex_input)
+        output = samplex.sample(samplex.inputs(), num_randomizations=11)
         assert set(output) == {"out"}
         assert output["out"].shape == (11, 5, 6)
 
@@ -195,7 +194,7 @@ class TestSample:
 
         samplex.finalize()
 
-        outputs = samplex.sample(samplex.inputs().bind(num_randomizations=13), keep_registers=True)
+        outputs = samplex.sample(samplex.inputs(), num_randomizations=13, keep_registers=True)
         assert set(outputs) == {"out"}
         assert set(outputs.metadata) == {"registers"}
 
@@ -230,8 +229,9 @@ class TestSample:
 
         samplex.finalize()
 
-        samplex_input = samplex.inputs().bind(num_randomizations=13)
-        registers = samplex.sample(samplex_input, keep_registers=True).metadata["registers"]
+        registers = samplex.sample(
+            samplex.inputs(), num_randomizations=13, keep_registers=True
+        ).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
@@ -268,12 +268,10 @@ class TestSample:
 
         samplex.finalize()
 
-        samplex_input = (
-            samplex.inputs()
-            .bind(num_randomizations=13)
-            .bind(parameter_values=np.array([1, 2, 4], float))
-        )
-        registers = samplex.sample(samplex_input, keep_registers=True).metadata["registers"]
+        samplex_input = samplex.inputs().bind(parameter_values=np.array([1, 2, 4], float))
+        registers = samplex.sample(
+            samplex_input, num_randomizations=13, keep_registers=True
+        ).metadata["registers"]
         assert set(registers) == {"x", "y"}
 
         assert isinstance(registers["x"], PauliRegister)
