@@ -3,8 +3,8 @@ samplomatic.distributions package
 
 .. automodule:: samplomatic.distributions
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------
@@ -14,21 +14,21 @@ samplomatic.distributions.distribution module
 
 .. automodule:: samplomatic.distributions.distribution
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 samplomatic.distributions.haar\_u2 module
 -----------------------------------------
 
 .. automodule:: samplomatic.distributions.haar_u2
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 samplomatic.distributions.uniform\_pauli module
 -----------------------------------------------
 
 .. automodule:: samplomatic.distributions.uniform_pauli
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
