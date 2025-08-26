@@ -253,8 +253,8 @@ def test_sampling(circuit, save_plot):
     save_plot(lambda: pre_samplex.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    samplex_input = samplex.inputs().bind(num_randomizations=10)
-    samplex_output = samplex.sample(samplex_input)
+    samplex_input = samplex.inputs()
+    samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 
     expected_op = Operator(remove_boxes(circuit))

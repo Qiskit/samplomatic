@@ -109,8 +109,8 @@ def test_sampling(rng, circuit, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = rng.random(len(circuit.parameters))
-    samplex_input = samplex.inputs().bind(num_randomizations=10, parameter_values=circuit_params)
-    samplex_output = samplex.sample(samplex_input)
+    samplex_input = samplex.inputs().bind(parameter_values=circuit_params)
+    samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 
     expected_op = Operator(remove_boxes(circuit).assign_parameters(circuit_params))
