@@ -3,8 +3,8 @@ samplomatic package
 
 .. automodule:: samplomatic
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Subpackages
 -----------
@@ -32,45 +32,45 @@ samplomatic.aliases module
 
 .. automodule:: samplomatic.aliases
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.constants module
 ----------------------------
 
 .. automodule:: samplomatic.constants
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.exceptions module
 -----------------------------
 
 .. automodule:: samplomatic.exceptions
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.optionals module
 ----------------------------
 
 .. automodule:: samplomatic.optionals
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.partition module
 ----------------------------
 
 .. automodule:: samplomatic.partition
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.tensor\_interface module
 ------------------------------------
 
 .. automodule:: samplomatic.tensor_interface
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:

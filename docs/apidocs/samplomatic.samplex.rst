@@ -3,8 +3,8 @@ samplomatic.samplex package
 
 .. automodule:: samplomatic.samplex
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Subpackages
 -----------
@@ -22,29 +22,29 @@ samplomatic.samplex.interfaces module
 
 .. automodule:: samplomatic.samplex.interfaces
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.samplex.parameter\_expression\_table module
 -------------------------------------------------------
 
 .. automodule:: samplomatic.samplex.parameter_expression_table
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.samplex.samplex module
 ----------------------------------
 
 .. automodule:: samplomatic.samplex.samplex
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 samplomatic.samplex.samplex\_serialization module
 -------------------------------------------------
 
 .. automodule:: samplomatic.samplex.samplex_serialization
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
