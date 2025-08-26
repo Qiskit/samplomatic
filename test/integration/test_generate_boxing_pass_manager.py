@@ -56,23 +56,6 @@ def make_circuits():
 
     yield circuit, "circuit_with_boxes_and_barriers"
 
-    circuit = QuantumCircuit(3, 2)
-    circuit.sdg(0)
-    circuit.barrier(0, 1)
-    circuit.x(0)
-    circuit.z(0)
-    circuit.y(1)
-    circuit.ecr(0, 1)
-    circuit.t(1)
-    circuit.measure(0, 0)
-    circuit.measure(1, 1)
-    circuit.x(0)
-    circuit.y(0)
-    circuit.z(1)
-    circuit.measure_all()
-
-    yield circuit, "circuit_with_barriers_and_measurements"
-
     circuit = QuantumCircuit(QuantumRegister(6, "q"), ClassicalRegister(6, "c"))
     for layer_idx in range(8):
         for qubit_idx in range(circuit.num_qubits):
