@@ -1,3 +1,10 @@
+## [0.4.0](https://github.com/Qiskit/samplomatic/tree/0.4.0) - 2025-08-26
+
+### Added
+
+- Added support for measurements after twirled measurements. ([#82](https://github.com/Qiskit/samplomatic/issues/82))
+
+
 ## [0.3.0](https://github.com/Qiskit/samplomatic/tree/0.3.0) - 2025-08-22
 
 ### Removed
