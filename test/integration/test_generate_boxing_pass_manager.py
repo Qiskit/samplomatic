@@ -39,13 +39,6 @@ def make_circuits():
     circuit.barrier(0, 1, 2)
     circuit.x(0)
     circuit.x(1)
-
-    yield circuit, "circuit_with_barriers"
-
-    circuit = QuantumCircuit(3)
-    circuit.cx(0, 1)
-    circuit.x(0)
-    circuit.x(1)
     with circuit.box():
         circuit.noop(1)
     circuit.z(1)
@@ -61,16 +54,7 @@ def make_circuits():
     circuit.x(0)
     circuit.x(1)
 
-    yield circuit, "circuit_with_boxes"
-
-    circuit = QuantumCircuit(4, 4)
-    circuit.measure(1, 0)
-    circuit.measure(2, 1)
-    circuit.cx(1, 2)
-    circuit.measure(1, 2)
-    circuit.measure(2, 3)
-
-    yield circuit, "circuit_with_measurements"
+    yield circuit, "circuit_with_boxes_and_barriers"
 
     circuit = QuantumCircuit(3, 2)
     circuit.sdg(0)
