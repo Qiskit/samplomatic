@@ -101,11 +101,9 @@ class TestSample:
         even_noise, odd_noise = make_noise_maps(num_qubits)
 
         local_scales = {
-            f"even_{idx}": [local_scale] * even_noise.num_terms for idx in range(num_boxes // 2)
+            "even": [local_scale] * even_noise.num_terms,
+            "odd": [local_scale] * odd_noise.num_terms,
         }
-        local_scales.update(
-            {f"odd_{idx}": [local_scale] * odd_noise.num_terms for idx in range(num_boxes // 2)}
-        )
 
         template, samplex = build(circuit)
         samplex_input = samplex.inputs().bind(
