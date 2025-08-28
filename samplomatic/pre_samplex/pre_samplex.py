@@ -351,11 +351,7 @@ class PreSamplex:
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
 
-        match = DanglerMatch(
-            node_types=PreEmit | PrePropagate,
-            direction=Direction.RIGHT,
-            dangler_type=DanglerType.REQUIRED,
-        )
+        match = DanglerMatch(node_types=PreEmit | PrePropagate, direction=Direction.RIGHT)
         if any(True for _ in self.find_danglers(match, subsystems)):
             raise SamplexBuildError(f"Cannot propagate through {instr.operation.name} instruction.")
         match = DanglerMatch(direction=Direction.LEFT)
