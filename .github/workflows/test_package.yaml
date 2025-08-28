@@ -35,6 +35,9 @@ jobs:
       run: |
         # test/performance configured to be ignored in pyproject.toml
         python -m pytest
+        # test/performance are then ran in a lighter version as a smoke test
+        python -m pytest test/performance --benchmark-disable --performance-light
+
 
   docs:
     runs-on: ubuntu-latest

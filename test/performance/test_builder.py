@@ -24,8 +24,12 @@ class TestBuilder:
 
     @pytest.mark.parametrize("num_qubits", [96])
     @pytest.mark.parametrize("num_gates", [5_000])
-    def test_building_5k_circuit(self, benchmark, num_qubits, num_gates):
+    def test_building_5k_circuit(self, benchmark, num_qubits, num_gates, request):
         """Test the build function for circuits with different numbers of qubits and gates."""
+        if request.config.getoption("performance_light"):
+            num_qubits = 10
+            num_gates = 100
+
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes)
 

@@ -25,8 +25,15 @@ class TestSample:
     @pytest.mark.parametrize("num_qubits", [100])
     @pytest.mark.parametrize("num_gates", [5_000])
     @pytest.mark.parametrize("num_randomizations", [1650])
-    def test_sampling_5k_circuit(self, rng, benchmark, num_qubits, num_gates, num_randomizations):
+    def test_sampling_5k_circuit(
+        self, rng, benchmark, num_qubits, num_gates, num_randomizations, request
+    ):
         """Test the sample function for circuits with different numbers of qubits and gates."""
+        if request.config.getoption("performance_light"):
+            num_qubits = 10
+            num_gates = 100
+            num_randomizations = 10
+
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes)
 
@@ -36,8 +43,7 @@ class TestSample:
             samplex.sample, samplex_input, num_randomizations=num_randomizations
         )
 
-        assert circuit.num_parameters == 29700
-        assert template.num_parameters == 30300
+        assert template.num_parameters == (num_boxes + 1) * num_qubits * 3
         assert samplex_output["parameter_values"].shape == (
             num_randomizations,
             template.num_parameters,
@@ -48,9 +54,14 @@ class TestSample:
     @pytest.mark.parametrize("num_randomizations", [1650])
     @pytest.mark.parametrize("scale", [-1.0])
     def test_sampling_noisy_circuit(
-        self, rng, benchmark, num_qubits, num_gates, num_randomizations, scale
+        self, rng, benchmark, num_qubits, num_gates, num_randomizations, scale, request
     ):
         """Test the sample function using ``noise_maps``."""
+        if request.config.getoption("performance_light"):
+            num_qubits = 10
+            num_gates = 100
+            num_randomizations = 10
+
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_layer_noise, odd_layer_noise = make_noise_maps(num_qubits)
@@ -67,8 +78,7 @@ class TestSample:
             num_randomizations=num_randomizations,
         )
 
-        assert circuit.num_parameters == 29700
-        assert template.num_parameters == 30300
+        assert template.num_parameters == (num_boxes + 1) * num_qubits * 3
         assert samplex_output["parameter_values"].shape == (
             num_randomizations,
             template.num_parameters,
@@ -79,9 +89,13 @@ class TestSample:
     @pytest.mark.parametrize("num_randomizations", [1650])
     @pytest.mark.parametrize("local_scale", [2.0])
     def test_sampling_masked_noisy_circuit(
-        self, rng, benchmark, num_qubits, num_gates, num_randomizations, local_scale
+        self, rng, benchmark, num_qubits, num_gates, num_randomizations, local_scale, request
     ):
         """Test the sample function using ``noise_maps`` with ``local_scale``."""
+        if request.config.getoption("performance_light"):
+            num_qubits = 10
+            num_gates = 100
+            num_randomizations = 10
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_noise_maps(num_qubits)
@@ -105,8 +119,7 @@ class TestSample:
             num_randomizations=num_randomizations,
         )
 
-        assert circuit.num_parameters == 29700
-        assert template.num_parameters == 30300
+        assert template.num_parameters == (num_boxes + 1) * num_qubits * 3
         assert samplex_output["parameter_values"].shape == (
             num_randomizations,
             template.num_parameters,
