@@ -228,7 +228,7 @@ class TensorInterface(MutableMapping):
 
     @property
     def fully_bound(self) -> bool:
-        """Whether all the necessary interfaces have data specified."""
+        """Whether all non-optional interfaces have data specified."""
         required_keys = set(spec for spec, val in self._specs.items() if not val.optional)
         return required_keys.issubset(self._data)
 
