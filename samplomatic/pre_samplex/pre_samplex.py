@@ -20,7 +20,7 @@ from itertools import count
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
-from qiskit.circuit import Qubit
+from qiskit.circuit import ClassicalRegister, Qubit
 from rustworkx.rustworkx import (
     PyDiGraph,
     topological_generations,
@@ -55,7 +55,6 @@ from ..graph_utils import (
 )
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from ..samplex import Samplex
-from ..samplex.interfaces import TensorSpecification
 from ..samplex.nodes import (
     BasisTransformNode,
     CollectTemplateValues,
@@ -76,6 +75,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
 from ..synths import Synth
+from ..tensor_interface import Specification, TensorSpecification, ValueType
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
@@ -152,7 +152,7 @@ class PreSamplex:
         optional_dangling: A map from qubit indices to sets of node indices that are still
             eligible to, but don't have to, receive edges at a further point in parsing the
             circuit being built.
-        num_clbits: The number of classical bits in the original circuit.
+        cregs: A list of classical registers in the order that they were added to the circuit.
         noise_map_count: A count of the total number of noise maps.
         noise_maps: A map from unique identifiers of noise maps to the number of systems the map
             acts on.
@@ -174,9 +174,10 @@ class PreSamplex:
         qubit_map: dict[Qubit, QubitIndex] | None = None,
         dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         optional_dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
-        num_clbits: int = 0,
+        cregs: list[ClassicalRegister] | None = None,
         noise_map_count: count | None = None,
         noise_maps: dict[str, NumSubsystems] | None = None,
+        noise_modifiers: set[str] | None = None,
         basis_transforms: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
@@ -190,9 +191,10 @@ class PreSamplex:
         self._optional_dangling: dict[QubitIndex, set[NodeIndex]] = (
             defaultdict(set) if optional_dangling is None else optional_dangling
         )
-        self.num_clbits = num_clbits
+        self._cregs = cregs
         self._noise_map_count = count() if noise_map_count is None else noise_map_count
         self._noise_maps = {} if noise_maps is None else noise_maps
+        self._noise_modifiers = set() if noise_modifiers is None else noise_modifiers
         self._basis_transforms = {} if basis_transforms is None else basis_transforms
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
         self.passthrough_params: ParamSpec = (
@@ -216,9 +218,10 @@ class PreSamplex:
             qubit_map,
             self._dangling,
             self._optional_dangling,
-            self.num_clbits,
+            self._cregs,
             self._noise_map_count,
             self._noise_maps,
+            self._noise_modifiers,
             self._basis_transforms,
             self._twirled_clbits,
             self.passthrough_params,
@@ -348,7 +351,11 @@ class PreSamplex:
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
 
-        match = DanglerMatch(node_types=PreEmit | PrePropagate, direction=Direction.RIGHT)
+        match = DanglerMatch(
+            node_types=PreEmit | PrePropagate,
+            direction=Direction.RIGHT,
+            dangler_type=DanglerType.REQUIRED,
+        )
         if any(True for _ in self.find_danglers(match, subsystems)):
             raise SamplexBuildError(f"Cannot propagate through {instr.operation.name} instruction.")
         match = DanglerMatch(direction=Direction.LEFT)
@@ -474,7 +481,19 @@ class PreSamplex:
             )
         self._twirled_clbits.update(clbit_idxs)
         subsystems = self.qubits_to_indices(qubits)
-        node_idx = self.graph.add_node(PreZ2Collect(subsystems, clbit_idxs))
+
+        clbit_dict = defaultdict(list)
+        subsystems_dict = defaultdict(list)
+        for idx, clbit_idx in enumerate(clbit_idxs):
+            val = 0
+            for reg in self._cregs:
+                if clbit_idx < val + len(reg):
+                    clbit_dict[reg.name].append(clbit_idx - val)
+                    subsystems_dict[reg.name].append(idx)
+                    break
+                val += len(reg)
+
+        node_idx = self.graph.add_node(PreZ2Collect(subsystems, clbit_dict, subsystems_dict))
 
         collected_subsystems = QubitIndicesPartition(1, [])
         # Collect relevant nodes which are an optional dangler, and leave them optionally dangling
@@ -606,6 +625,7 @@ class PreSamplex:
             )
         else:
             self._noise_maps[noise_ref] = len(qubits)
+        self._noise_modifiers.add(modifier_ref)
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreInjectNoise(
@@ -642,6 +662,7 @@ class PreSamplex:
             )
         else:
             self._noise_maps[noise_ref] = len(qubits)
+        self._noise_modifiers.add(modifier_ref)
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreInjectNoise(
@@ -993,52 +1014,6 @@ class PreSamplex:
         self.merge_parallel_pre_propagate_nodes()
 
         samplex = Samplex()
-        max_param_idx = self.max_param_idx
-
-        if self.passthrough_params:
-            max_passthrough_param_idx = samplex.set_passthrough_params(self.passthrough_params)
-            max_param_idx = (
-                max(max_param_idx, max_passthrough_param_idx)
-                if max_param_idx is not None
-                else max_passthrough_param_idx
-            )
-
-        for basis_ref, length in self._basis_transforms.items():
-            samplex.add_input(
-                TensorSpecification(basis_ref, (length,), np.uint8, "Basis changing gates.")
-            )
-
-        if max_param_idx is not None:
-            samplex.add_output(
-                TensorSpecification(
-                    "parameter_values",
-                    (max_param_idx + 1,),
-                    np.float64,
-                    "Parameter values for the template circuit.",
-                )
-            )
-
-        if self._twirled_clbits:
-            samplex.add_output(
-                TensorSpecification(
-                    "measurement_flips",
-                    (self.num_clbits,),
-                    np.bool_,
-                    "Bit-flip corrections for measurement twirling, XOR your data against this"
-                    " value. The ordering matches template.clbits.",
-                )
-            )
-
-        if (num_signs := next(self._noise_map_count)) > 0:
-            samplex.add_output(
-                TensorSpecification(
-                    "pauli_signs",
-                    (num_signs,),
-                    np.bool_,
-                    "Signs from sampled noise maps. The order matches the iteration order of "
-                    "injected noise in the circuit.",
-                )
-            )
 
         # This is needed because we need to know the parent/child relationships between
         # prenodes to figure out the parent/child relationship between nodes
@@ -1086,13 +1061,93 @@ class PreSamplex:
             else:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
 
+        max_param_idx = self.max_param_idx
+        if self.passthrough_params:
+            max_passthrough_param_idx = samplex.set_passthrough_params(self.passthrough_params)
+            max_param_idx = (
+                max(max_param_idx, max_passthrough_param_idx)
+                if max_param_idx is not None
+                else max_passthrough_param_idx
+            )
+
         if num_params := samplex.num_parameters:
             samplex.add_input(
                 TensorSpecification(
                     "parameter_values",
                     (num_params,),
-                    np.float64,
+                    np.dtype(np.float64),
                     "Input parameter values to use during sampling.",
+                )
+            )
+
+        for basis_ref, length in self._basis_transforms.items():
+            samplex.add_input(
+                TensorSpecification(
+                    f"basis_changes.{basis_ref}",
+                    (length,),
+                    np.dtype(np.uint8),
+                    "Basis changing gates.",
+                )
+            )
+
+        for noise_map, length in self._noise_maps.items():
+            samplex.add_input(
+                Specification(
+                    f"noise_maps.{noise_map}",
+                    ValueType.LINDBLAD,
+                    f"A noise map acting on ``{length}`` qubits.",
+                )
+            )
+
+        for noise_modifier in self._noise_modifiers:
+            if noise_modifier == "":
+                continue
+
+            samplex.add_input(
+                TensorSpecification(
+                    f"noise_scales.{noise_modifier}",
+                    (),
+                    np.dtype(np.float64),
+                    "A factor by which to scale a noise map.",
+                )
+            )
+            samplex.add_input(
+                Specification(
+                    f"local_scales.{noise_modifier}",
+                    ValueType.NUMPY_ARRAY,
+                    "An array of factors by which to scale individual elements of a noise map.",
+                )
+            )
+
+        if max_param_idx is not None:
+            samplex.add_output(
+                TensorSpecification(
+                    "parameter_values",
+                    (max_param_idx + 1,),
+                    np.dtype(np.float64),
+                    "Parameter values for the template circuit.",
+                )
+            )
+
+        if self._twirled_clbits:
+            for reg in self._cregs:
+                samplex.add_output(
+                    TensorSpecification(
+                        f"measurement_flips.{reg.name}",
+                        (len(reg),),
+                        np.dtype(np.bool_),
+                        "Bit-flip corrections for measurement twirling.",
+                    )
+                )
+
+        if (num_signs := next(self._noise_map_count)) > 0:
+            samplex.add_output(
+                TensorSpecification(
+                    "pauli_signs",
+                    (num_signs,),
+                    np.dtype(np.bool_),
+                    "Signs from sampled noise maps. The order matches the iteration order of "
+                    "injected noise in the circuit.",
                 )
             )
 
@@ -1122,7 +1177,7 @@ class PreSamplex:
         node = BasisTransformNode(
             reg_name := f"basis_change_{reg_idx}",
             MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS,
-            pre_basis.basis_ref,
+            "basis_changes." + pre_basis.basis_ref,
             len(pre_basis.subsystems),
         )
         node_idx = samplex.add_node(node)
@@ -1159,7 +1214,7 @@ class PreSamplex:
         node = InjectNoiseNode(
             reg_name,
             sign_reg_name,
-            pre_inject.ref,
+            "noise_maps." + pre_inject.ref,
             len(pre_inject.subsystems),
             pre_inject.modifier_ref,
         )
@@ -1452,7 +1507,6 @@ class PreSamplex:
                 implied by the edge (a, b) in the pre-samplex graph.
         """
         pre_node = cast(PreZ2Collect, self.graph[pre_node_idx])
-        all_subsystems = pre_node.subsystems
         combined_name = f"z2_collect_{order[pre_node_idx]}"
         combine_node_idx = self.add_combine_node(
             samplex,
@@ -1464,11 +1518,15 @@ class PreSamplex:
             VirtualType.Z2,
         )
 
-        z2collect = CollectZ2ToOutputNode(
-            combined_name, np.arange(len(all_subsystems)), "measurement_flips", pre_node.clbit_idxs
-        )
+        for reg_name, clbit_idxs in pre_node.clbit_idxs.items():
+            z2collect = CollectZ2ToOutputNode(
+                combined_name,
+                np.array(pre_node.subsystems_idxs[reg_name]),
+                f"measurement_flips.{reg_name}",
+                clbit_idxs,
+            )
 
-        samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
+            samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
 
     def subgraphs(self) -> list[PyDiGraph[PreNode, PreEdge]]:
         """Returns a list of disconnected components."""

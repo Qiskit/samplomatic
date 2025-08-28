@@ -14,8 +14,8 @@
 
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import UniformPauli
-from samplomatic.samplex import SamplexInput
 from samplomatic.samplex.nodes import TwirlSamplingNode
+from samplomatic.tensor_interface import TensorInterface
 from samplomatic.virtual_registers import PauliRegister
 
 
@@ -31,6 +31,8 @@ def test_sample(rng):
     """Test the sample method."""
     registers = {}
     node = TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
+    samplex_input = TensorInterface([])
 
-    node.sample(registers, rng, SamplexInput([], 5))
+    node.sample(registers, rng, samplex_input, 5)
+    assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)

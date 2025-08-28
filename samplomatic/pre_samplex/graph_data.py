@@ -18,7 +18,7 @@ from typing import Any
 import numpy as np
 from qiskit.circuit.gate import Gate
 
-from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef
+from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef, SubsystemIndex
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode, InstructionSpec
 from ..constants import Direction
@@ -114,7 +114,12 @@ class PreZ2Collect(PreNode):
     """The Z2-collection node type used during samplex building."""
 
     direction: Direction = field(init=False)
-    clbit_idxs: list[ClbitIndex]
+
+    clbit_idxs: dict[str, list[ClbitIndex]]
+    """A dictionary from classical register names to indices this node writes to."""
+
+    subsystems_idxs: dict[str, list[SubsystemIndex]]
+    """A dictionary from classical register names to subsystem indices from which to collect."""
 
     def __post_init__(self):
         self.direction = Direction.RIGHT
@@ -132,6 +137,7 @@ class PreZ2Collect(PreNode):
             and self.subsystems == other.subsystems
             and self.direction == other.direction
             and self.clbit_idxs == other.clbit_idxs
+            and self.subsystems_idxs == other.subsystems_idxs
         )
 
 

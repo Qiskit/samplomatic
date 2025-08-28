@@ -109,11 +109,11 @@ def test_sampling(rng, circuit, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = rng.random(len(circuit.parameters))
+    samplex_input = samplex.inputs().bind(parameter_values=circuit_params)
+    samplex_output = samplex.sample(samplex_input, num_randomizations=10)
+    parameter_values = samplex_output["parameter_values"]
 
     expected_op = Operator(remove_boxes(circuit).assign_parameters(circuit_params))
-
-    samplex_output = samplex.sample(parameter_values=circuit_params, size=10)
-    parameter_values = samplex_output["parameter_values"]
     for row in parameter_values:
         op = Operator(template.template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f

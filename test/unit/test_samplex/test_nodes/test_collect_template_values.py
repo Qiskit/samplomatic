@@ -18,9 +18,10 @@ from qiskit.quantum_info import Operator, average_gate_fidelity
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError
-from samplomatic.samplex.interfaces import SamplexOutput, TensorSpecification
+from samplomatic.samplex.interfaces import SamplexOutput
 from samplomatic.samplex.nodes import CollectTemplateValues
 from samplomatic.synths import RzSxSynth
+from samplomatic.tensor_interface import TensorSpecification
 
 
 def test_construction():
@@ -76,10 +77,15 @@ def test_validate_fails():
 
 def test_collect(rng):
     """Test the collect method."""
-    # prerequisites
     num_samples = 11
     outputs = SamplexOutput(
-        [TensorSpecification("template_values", (100,), np.float32)], [], num_samples
+        [
+            TensorSpecification(
+                "template_values",
+                (num_samples, 100),
+                np.float32,
+            )
+        ]
     )
     x = HaarU2(10).sample(num_samples, rng)
     outputs["template_values"].ravel()[...] = np.linspace(0, 1, outputs["template_values"].size)

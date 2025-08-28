@@ -26,7 +26,7 @@ from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from ..aliases import InterfaceName
 from ..exceptions import DeserializationError
-from .interfaces import TensorSpecification
+from ..tensor_interface import Specification, TensorSpecification
 from .nodes import Node
 from .nodes.basis_transform_node import BasisTransformNode
 from .nodes.collect_template_values import CollectTemplateValues
@@ -96,27 +96,40 @@ def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
     return param_table
 
 
-def _serialize_tensor_specifications(data: dict[InterfaceName, TensorSpecification]) -> str:
+def _serialize_specifications(data: dict[InterfaceName, Specification]) -> str:
     out_dict = {}
     for name, spec in data.items():
         out_dict[name] = orjson.dumps(spec._to_json_dict()).decode("utf-8")  # noqa: SLF001
     return orjson.dumps(out_dict).decode("utf-8")
 
 
-def _deserialize_tensor_specifications(data: str) -> dict[InterfaceName, TensorSpecification]:
+def _deserialize_specifications(data: str) -> dict[InterfaceName, Specification]:
     outputs_raw = orjson.loads(data)
     outputs = {}
     for name, output in outputs_raw.items():
-        outputs[name] = TensorSpecification._from_json(orjson.loads(output))  # noqa: SLF001
+        outputs[name] = Specification._from_json(orjson.loads(output))  # noqa: SLF001
     return outputs
+
+
+def _serialize_passthrough_params(data: tuple[list[int], list[int]] | None) -> str:
+    if data is None:
+        return "None"
+    return orjson.dumps([data[0], [data[1]]]).decode("utf-8")
+
+
+def _deserialize_passthrough_params(data: str) -> tuple[list[int], list[int]] | None:
+    if data == "None":
+        return None
+    return tuple(orjson.loads(data))
 
 
 def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
     return {
         "finalized": str(samplex._finalized),  # noqa: SLF001
         "param_table": _serialize_expression_table(samplex._param_table),  # noqa: SLF001
-        "input_specification": _serialize_tensor_specifications(samplex._input_specifications),  # noqa: SLF001
-        "output_specification": _serialize_tensor_specifications(samplex._output_specifications),  # noqa: SLF001
+        "input_specification": _serialize_specifications(samplex._input_specifications),  # noqa: SLF001
+        "output_specification": _serialize_specifications(samplex._output_specifications),  # noqa: SLF001
+        "passthrough_params": _serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
     }
 
 
@@ -130,9 +143,10 @@ def _process_graph_header(
 ]:
     raw_param_table_dict = orjson.loads(data["param_table"])
     param_table = _deserialize_expression_table(raw_param_table_dict)
-    inputs = _deserialize_tensor_specifications(data["input_specification"])
-    outputs = _deserialize_tensor_specifications(data["output_specification"])
-    return (param_table, data["finalized"] == "true", inputs, outputs)
+    inputs = _deserialize_specifications(data["input_specification"])
+    outputs = _deserialize_specifications(data["output_specification"])
+    passthrough_params = _deserialize_passthrough_params(data["passthrough_params"])
+    return (param_table, data["finalized"] == "true", inputs, outputs, passthrough_params)
 
 
 def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
@@ -170,6 +184,7 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex._finalized = graph_attrs[1]  # noqa: SLF001
     samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
     samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
+    samplex._passthrough_params = graph_attrs[4]  # noqa: SLF001
     return samplex
 
 

@@ -25,6 +25,15 @@ repos:
         pass_filenames: false
         args: [-b, indexes-indices, -b, graphvis-graphviz]
 
+  - repo: local
+    hooks:
+      - id: api-docs
+        name: Rebuild API doctree
+        entry: sphinx-apidoc -o docs/apidocs --force --remove-old --no-toc --module-first ./samplomatic
+        language: system
+        types: [python]
+        pass_filenames: false
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.4
     hooks:

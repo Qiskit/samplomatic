@@ -46,26 +46,38 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = np.random.random(len(circuit.parameters))
-    original_circuit_counts = _simulate(remove_boxes(circuit), circuit_params)
+    original_circuit_counts = simulate(remove_boxes(circuit), circuit_params)
 
+    samplex_input = samplex.inputs().bind()
+    if len(circuit_params) > 0:
+        samplex_input.bind(parameter_values=circuit_params)
     samplex_output = samplex.sample(
-        parameter_values=circuit_params, size=NUM_RANDOMIZATIONS_PER_CIRCUIT
+        samplex_input, num_randomizations=NUM_RANDOMIZATIONS_PER_CIRCUIT
     )
     parameter_values = samplex_output["parameter_values"]
-    measurement_flips = samplex_output.get(
-        "measurement_flips", [None] * NUM_RANDOMIZATIONS_PER_CIRCUIT
+    measurement_flips = np.concatenate(
+        [
+            samplex_output.get(
+                f"measurement_flips.{creg.name}",
+                [[False] * len(creg)] * NUM_RANDOMIZATIONS_PER_CIRCUIT,
+            )
+            for creg in circuit.cregs
+        ],
+        axis=1,
     )
     for params, correction in zip(parameter_values, measurement_flips):
-        twirled_circuit_counts = _simulate(template.template, params)
+        twirled_circuit_counts = simulate(template.template, params)
         if correction is not None:
-            twirled_circuit_counts = _apply_bit_flips_correction(twirled_circuit_counts, correction)
-        assert (
-            hellinger_fidelity(original_circuit_counts, twirled_circuit_counts)
-            > REQUIRED_HELLINGER_FIDELITY
-        )
+            twirled_circuit_counts = apply_bit_flips_correction(twirled_circuit_counts, correction)
+        hellinger_fidelity_equal(original_circuit_counts, twirled_circuit_counts)
 
 
-def _simulate(circuit: QuantumCircuit, circuit_params):
+def hellinger_fidelity_equal(counts: dict, other_counts: dict):
+    """Helper function that asserts that the Hellinger fidelity is close to one."""
+    assert hellinger_fidelity(counts, other_counts) > REQUIRED_HELLINGER_FIDELITY
+
+
+def simulate(circuit: QuantumCircuit, circuit_params):
     """Helper function that runs the Aer simulator and returns the counts."""
     simulator = AerSimulator()
     assigned_circuit = circuit.assign_parameters(circuit_params)
@@ -73,8 +85,8 @@ def _simulate(circuit: QuantumCircuit, circuit_params):
     return result.get_counts()
 
 
-def _apply_bit_flips_correction(original_counts, correction):
-    """A helper function that applies the bit flip correction to the counts string."""
+def apply_bit_flips_correction(original_counts, correction):
+    """Helper function that applies the bit flip correction to the counts string."""
     corrected_counts = dict()
     correction = correction[::-1]  # Qiskit bitstrings use little-endian convention
     for key, value in original_counts.items():
