@@ -69,7 +69,7 @@ class TestSamplexSerialization:
     def test_noise_injection_circuit(self, rng):
         """Test a circuit with inject noise annotations."""
         circuit = QuantumCircuit(2)
-        with circuit.box([Twirl(), InjectNoise("my_noise")]):
+        with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
             circuit.noop(range(2))
 
         with circuit.box([Twirl(dressing="right")]):

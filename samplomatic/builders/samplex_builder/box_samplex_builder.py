@@ -137,7 +137,9 @@ class LeftBoxSamplexBuilder(BoxSamplexBuilder):
                 remaining_qubits, self.collection.synth, spec.param_idxs, self.collection_node_idx
             )
         if self.emission.noise_ref:
-            self.state.add_emit_noise_left(self.emission.qubits, self.emission.noise_ref)
+            self.state.add_emit_noise_left(
+                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+            )
         if self.emission.basis_ref:
             self.state.add_emit_meas_basis_transform(self.emission.qubits, self.emission.basis_ref)
         if twirl_type := self.emission.twirl_register_type:
@@ -205,7 +207,9 @@ class RightBoxSamplexBuilder(BoxSamplexBuilder):
         if self.emission.basis_ref:
             self.state.add_emit_prep_basis_transform(self.emission.qubits, self.emission.basis_ref)
         if self.emission.noise_ref:
-            self.state.add_emit_noise_right(self.emission.qubits, self.emission.noise_ref)
+            self.state.add_emit_noise_right(
+                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+            )
         if self.emission.twirl_register_type:
             self.state.add_emit_twirl(self.emission.qubits, self.emission.twirl_register_type)
 

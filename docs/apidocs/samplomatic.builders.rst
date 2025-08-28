@@ -18,6 +18,14 @@ Subpackages
 Submodules
 ----------
 
+samplomatic.builders.box\_builder module
+----------------------------------------
+
+.. automodule:: samplomatic.builders.box_builder
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 samplomatic.builders.build module
 ---------------------------------
 

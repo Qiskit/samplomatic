@@ -39,18 +39,23 @@ class Specification:
         name: The name of the specification.
         value_type: The type of this specification.
         description: A description of what the specification represents.
+        optional: Whether the specification is optional.
     """
 
-    def __init__(self, name: InterfaceName, value_type: ValueType, description: str = ""):
+    def __init__(
+        self, name: InterfaceName, value_type: ValueType, description: str = "", optional=False
+    ):
         self.name: InterfaceName = name
         self.value_type = value_type
         self.description: str = description
+        self.optional: bool = optional
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "name": self.name,
             "value_type": self.value_type.value,
             "description": self.description,
+            "optional": self.optional,
         }
 
     @classmethod
@@ -62,7 +67,8 @@ class Specification:
 
     def describe(self) -> str:
         """Return a human-readable description of this specification."""
-        return f"'{self.name}' ({self.value_type.value}): {self.description}"
+        optional = " (Optional)" if self.optional else ""
+        return f"'{self.name}' ({self.value_type.value}): {self.description}{optional}"
 
     @overload
     def validate_and_coerce(self: Literal[ValueType.BOOL], value: Any) -> bool: ...
@@ -100,8 +106,9 @@ class Specification:
         raise TypeError(f"Object is type {type(value)} but expected {self.value_type}.")
 
     def __repr__(self):
-        description = f", '{self.description}'" if self.description else ""
-        return f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}{description}"
+        desc = f", '{self.description}'" if self.description else ""
+        optional = ", (Optional)" if self.optional else ""
+        return f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}{desc}{optional}"
 
 
 class TensorSpecification(Specification):
@@ -115,6 +122,7 @@ class TensorSpecification(Specification):
         broadcastable: Whether values in an interface that are constrained by this
             specification are allowed to be broadcastable with other broadcastable values in the
             same interface.
+        optional: Whether the specification is optional.
     """
 
     def __init__(
@@ -124,8 +132,9 @@ class TensorSpecification(Specification):
         dtype: np.dtype,
         description: str = "",
         broadcastable: bool = False,
+        optional: bool = False,
     ):
-        super().__init__(name, ValueType.NUMPY_ARRAY, description)
+        super().__init__(name, ValueType.NUMPY_ARRAY, description, optional)
         self.shape = shape
         self.dtype = dtype
         self.broadcastable = broadcastable
@@ -142,6 +151,7 @@ class TensorSpecification(Specification):
             "dtype": str(self.dtype),
             "shape": tuple(int(x) for x in self.shape),
             "broadcastable": self.broadcastable,
+            "optional": self.optional,
         }
 
     @classmethod
@@ -152,6 +162,7 @@ class TensorSpecification(Specification):
             np.dtype(data["dtype"]),
             data["description"],
             data["broadcastable"],
+            data["optional"],
         )
 
     def describe(self) -> str:
@@ -160,7 +171,8 @@ class TensorSpecification(Specification):
             shape_string = f"[*, {', '.join(map(str, self.shape))}]"
         else:
             shape_string = str(list(self.shape))
-        return f"'{self.name}' ({self.dtype}{shape_string}): {self.description}"
+        optional = " (Optional)" if self.optional else ""
+        return f"'{self.name}' ({self.dtype}{shape_string}): {self.description}{optional}"
 
     def empty(self) -> np.ndarray:
         """Create an empty output according to this specification.
@@ -216,8 +228,9 @@ class TensorInterface(MutableMapping):
 
     @property
     def fully_bound(self) -> bool:
-        """Whether all the interfaces have data specified."""
-        return self._specs.keys() == self._data.keys()
+        """Whether all the necessary interfaces have data specified."""
+        required_keys = set(spec for spec, val in self._specs.items() if not val.optional)
+        return required_keys.issubset(self._data.keys())
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -303,7 +316,9 @@ class TensorInterface(MutableMapping):
             A new :class:`~.TensorInterface`.
         """
         return TensorInterface(
-            TensorSpecification(spec.name, spec.shape, spec.dtype, spec.description, True)
+            TensorSpecification(
+                spec.name, spec.shape, spec.dtype, spec.description, True, spec.optional
+            )
             if isinstance(spec, TensorSpecification)
             else spec
             for spec in self.specs
