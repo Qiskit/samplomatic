@@ -358,9 +358,6 @@ def wait_with_raise(futures):
     """Wait for futures to complete, raising the first exception encountered.
     If there is an exception, cancel all remaining futures.
 
-    canel() is a best-effort attempt, and does not guarantee that the task will be
-    cancelled if already running.
-
     Args:
         futures: An iterable of futures to wait on.
     """
@@ -371,6 +368,8 @@ def wait_with_raise(futures):
             if exception is not None:
                 # Let's cancel the remaining tasks
                 for task in futures:
+                    # canel() is a best-effort attempt, and does not guarantee that the task will be
+                    # cancelled if already running.
                     task.cancel()
                 raise exception
     finally:
