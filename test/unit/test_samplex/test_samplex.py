@@ -296,18 +296,19 @@ class TestSample:
 
         with pytest.raises(SamplexRuntimeError, match="This node cannot sample."):
             samplex.sample(samplex.inputs())
-            def test_wait_with_raise_completes_all_tasks():
-                """Test that wait_with_raise waits for all tasks to complete when no exception is raised."""
-                results = []
-                def task(x):
-                    results.append(x)
-                    return x
 
-                with ThreadPoolExecutor(max_workers=2) as executor:
-                    futures = [executor.submit(task, i) for i in range(3)]
-                    wait_with_raise(futures)
-                assert sorted(results) == [0, 1, 2]
-                assert all(f.done() for f in futures)
+    def test_wait_with_raise_completes_all_tasks(self):
+        """Test that wait_with_raise waits for all tasks to complete when no exception is raised."""
+        results = []
+        def task(x):
+            results.append(x)
+            return x
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = [executor.submit(task, i) for i in range(3)]
+            wait_with_raise(futures)
+        assert sorted(results) == [0, 1, 2]
+        assert all(f.done() for f in futures)
 
     def test_wait_with_raise_raises_on_exception(self):
         """Test that wait_with_raise raises the first exception from the futures."""
