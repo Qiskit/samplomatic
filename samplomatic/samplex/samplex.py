@@ -13,7 +13,7 @@
 """Samplex"""
 
 from collections.abc import Iterable, Sequence
-from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait
+from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait, as_completed
 from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
@@ -354,16 +354,25 @@ class Samplex:
         )
 
 
-def wait_with_raise(futures: Iterable[Future]):
-    """Wait for all provided futures to complete, and raise if any of them fail.
+def wait_with_raise(futures):
+    """Wait for futures to complete, raising the first exception encountered.
+    If there is an exception, cancel all remaining futures.
 
+    canel() is a best-effort attempt, and does not guarantee that the task will be
+    cancelled if already running.
+    
     Args:
-        futures: The futures to wait for.
-
-    Raises:
-         Exception: The first exception found in the provided futures.
+        futures: An iterable of futures to wait on.
     """
-    completed_futures, _ = wait(futures, return_when=FIRST_EXCEPTION)
-    for future in completed_futures:
-        if exception := future.exception():
-            raise exception
+    futures = list(futures)
+    try:
+        for completed_task in as_completed(futures):
+            exception = completed_task.exception()
+            if exception is not None:
+                # Let's cancel the remaining tasks
+                for task in futures:
+                    task.cancel()
+                raise exception
+    finally:
+        # ensure remaining futures complete or are cancelled
+        wait(futures)
