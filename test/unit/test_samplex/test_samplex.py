@@ -12,6 +12,9 @@
 
 """Test the Samplex class"""
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
 import numpy as np
 import pytest
 from qiskit.circuit import Parameter
@@ -19,13 +22,11 @@ from qiskit.circuit import Parameter
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.samplex import Samplex
+from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import Specification, TensorSpecification, ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, DummySamplingNode
-import threading
-from concurrent.futures import ThreadPoolExecutor, Future
-from samplomatic.samplex.samplex import wait_with_raise
 
 
 class DummySamplingErrorNode(DummySamplingNode):
@@ -300,6 +301,7 @@ class TestSample:
     def test_wait_with_raise_completes_all_tasks(self):
         """Test that wait_with_raise waits for all tasks to complete when no exception is raised."""
         results = []
+
         def task(x):
             results.append(x)
             return x
@@ -312,6 +314,7 @@ class TestSample:
 
     def test_wait_with_raise_raises_on_exception(self):
         """Test that wait_with_raise raises the first exception from the futures."""
+
         def good_task():
             return 42
 
@@ -328,6 +331,7 @@ class TestSample:
     def test_wait_with_raise_cancels_remaining_on_exception(self):
         """Test that wait_with_raise cancels remaining tasks after an exception."""
         event = threading.Event()
+
         def slow_task():
             event.wait(timeout=1)
             return "slow"
@@ -342,4 +346,3 @@ class TestSample:
                 wait_with_raise([f_fail, f_slow])
             # At least one future should be cancelled
             assert f_slow.cancelled()
-

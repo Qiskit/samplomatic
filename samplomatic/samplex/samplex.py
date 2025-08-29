@@ -12,8 +12,8 @@
 
 """Samplex"""
 
-from collections.abc import Iterable, Sequence
-from concurrent.futures import FIRST_EXCEPTION, Future, ThreadPoolExecutor, wait, as_completed
+from collections.abc import Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
@@ -360,7 +360,7 @@ def wait_with_raise(futures):
 
     canel() is a best-effort attempt, and does not guarantee that the task will be
     cancelled if already running.
-    
+
     Args:
         futures: An iterable of futures to wait on.
     """
