@@ -30,7 +30,11 @@ class TestSpecification:
     ):
         spec = Specification("count", ValueType.INT, "an integer count")
         assert "count" in spec.describe() and "int" in spec.describe()
+        assert "Optional" not in spec.describe()
         assert repr(spec).startswith("Specification(")
+
+        spec = Specification("count", ValueType.INT, "an integer count", True)
+        assert "Optional" in spec.describe()
 
     @pytest.mark.parametrize("val, expected", [(0, False), (1, True), ("", False)])
     def test_validate_and_coerce_bool(self, val, expected):
@@ -71,6 +75,12 @@ class TestTensorSpecification:
         assert repr(ts).startswith("TensorSpecification(")
         assert ts.shape == (3,)
         assert ts.ndim == 1
+        assert not ts.optional
+        assert "Optional" not in desc
+
+        ts = TensorSpecification("x", (3,), np.dtype(np.int64), "a vector", optional=True)
+        assert ts.optional
+        assert "Optional" in ts.describe()
 
     def test_tensor_specification_empty_matches_shape_and_dtype(self):
         """Test the empty method gives valid type."""
@@ -162,14 +172,18 @@ class TestTensorInterface:
         """Test fully_bound property."""
         spec1 = Specification("flag", ValueType.BOOL, "boolean flag")
         spec2 = TensorSpecification("vec", (2,), np.float64, "vector input")
+        spec3 = Specification("optional", ValueType.INT, "optional int", True)
 
-        tensor_interface = TensorInterface([spec1, spec2])
+        tensor_interface = TensorInterface([spec1, spec2, spec3])
         assert not tensor_interface.fully_bound
 
         tensor_interface.bind(flag=0)
         assert not tensor_interface.fully_bound
 
         tensor_interface.bind(vec=np.array([1.0, 2.0]))
+        assert tensor_interface.fully_bound
+
+        tensor_interface.bind(optional=1.0)
         assert tensor_interface.fully_bound
 
     def test_make_broadcastable_returns_new_interface(self):
@@ -208,15 +222,19 @@ class TestTensorInterface:
         """Test indexing with slices returns a new TensorInterface."""
         spec1 = TensorSpecification("x", (2,), np.float64, broadcastable=True)
         spec2 = TensorSpecification("y", (5, 2), np.float64, broadcastable=True)
-        tensor_interface = TensorInterface([spec1, spec2])
+        spec3 = Specification("z", ValueType.INT, optional=True)
+        tensor_interface = TensorInterface([spec1, spec2, spec3])
         tensor_interface["x"] = data_x = np.arange(12, dtype=np.float64).reshape(6, 2)
         tensor_interface["y"] = data_y = np.arange(10, dtype=np.float64).reshape(5, 2)
+        tensor_interface["z"] = data_z = 1
         new_tensor_interface = tensor_interface[:3]
 
         assert isinstance(new_tensor_interface, TensorInterface)
         assert new_tensor_interface is not tensor_interface
         assert np.allclose(new_tensor_interface["x"], data_x[:3])
         assert np.allclose(new_tensor_interface["y"], data_y)
+        assert new_tensor_interface["z"] == data_z
+        assert new_tensor_interface.specs[2].optional
         assert new_tensor_interface.shape == (3,)
 
     def test_nested_dict_assignment(self):

@@ -1105,6 +1105,7 @@ class PreSamplex:
                     (),
                     np.dtype(np.float64),
                     "A factor by which to scale a noise map.",
+                    optional=True,
                 )
             )
             samplex.add_input(
@@ -1112,6 +1113,7 @@ class PreSamplex:
                     f"local_scales.{noise_modifier}",
                     ValueType.NUMPY_ARRAY,
                     "An array of factors by which to scale individual elements of a noise map.",
+                    True,
                 )
             )
 

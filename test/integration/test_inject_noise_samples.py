@@ -34,6 +34,15 @@ def make_circuits():
 
     yield (circuit, expected, {"my_noise": noise_map}), "identity"
 
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
+        circuit.noop(0, 1)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield (circuit, expected, {"my_noise": noise_map}), "identity_optional_modifiers"
+
     noise_map = PauliLindbladMap.from_list([("XX", 100)])
     prob = next(iter(noise_map.probabilities()))
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
