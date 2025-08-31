@@ -292,17 +292,29 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
-        rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
+        def _as_base_generator(rng_like) -> Generator:
+            if isinstance(rng_like, Generator):
+                return rng_like
+            if isinstance(rng_like, SeedSequence):
+                return default_rng(rng_like)
+            return default_rng(rng_like)
+
+        base_gen = _as_base_generator(rng)
+
+        sampling_len = len(self._sampling_nodes)
+        collect_len = len(self._collection_nodes)
+
+        children = base_gen.spawn(sampling_len + collect_len)
+
+        sampling_rngs = children[:sampling_len]  # list[Generator]
+        collect_rngs = children[sampling_len:]  # list[Generator]
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
         with ThreadPoolExecutor(max_workers) as pool:
-            # use rng.spawn() to ensure determinism of PRNG even when there is a thread pool
             wait_with_raise(
                 pool.submit(node.sample, registers, child_rng, samplex_input, num_randomizations)
-                for child_rng, node in zip(
-                    rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
-                )
+                for child_rng, node in zip(sampling_rngs, self._sampling_nodes)
             )
 
             for stream in self._evaluation_streams:
@@ -313,9 +325,7 @@ class Samplex:
 
             wait_with_raise(
                 pool.submit(node.collect, registers, outputs, child_rng)
-                for child_rng, node in zip(
-                    rng.spawn(len(self._collection_nodes)), self._collection_nodes
-                )
+                for child_rng, node in zip(collect_rngs, self._collection_nodes)
             )
 
         return outputs
