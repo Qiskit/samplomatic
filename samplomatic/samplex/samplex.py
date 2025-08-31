@@ -12,8 +12,8 @@
 
 """Samplex"""
 
-from collections.abc import Sequence
-from concurrent.futures import ThreadPoolExecutor, as_completed, wait
+from collections.abc import Iterable, Sequence
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
@@ -354,12 +354,15 @@ class Samplex:
         )
 
 
-def wait_with_raise(futures):
+def wait_with_raise(futures: Iterable[Future]) -> None:
     """Wait for futures to complete, raising the first exception encountered.
     If there is an exception, cancel all remaining futures.
 
     Args:
         futures: An iterable of futures to wait on.
+
+    Raises:
+        Exception: The first exception encountered among the futures.
     """
     futures = list(futures)
     try:
