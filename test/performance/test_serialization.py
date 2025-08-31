@@ -21,14 +21,27 @@ from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex
 from .utils import make_layered_circuit
 
 
-@pytest.mark.parametrize("num_qubits", [100])
-@pytest.mark.parametrize("num_gates", [5_000])
-def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates, request):
+@pytest.mark.parametrize(
+    ("num_qubits", "num_gates"),
+    [
+        pytest.param(
+            100,
+            5_000,
+            marks=pytest.mark.skipif(
+                "config.getoption('--performance-light')", reason="smoke test only"
+            ),
+        ),
+        pytest.param(
+            10,
+            100,
+            marks=pytest.mark.skipif(
+                "not config.getoption('--performance-light')", reason="performance test only"
+            ),
+        ),
+    ],
+)
+def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     """Test the speed of serializing a samplex."""
-    if request.config.getoption("performance_light"):
-        num_qubits = 10
-        num_gates = 100
-
     num_boxes = num_gates // (num_qubits // 2)
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
@@ -36,13 +49,27 @@ def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates, request)
     benchmark(samplex_to_json, samplex)
 
 
-@pytest.mark.parametrize("num_qubits", [100])
-@pytest.mark.parametrize("num_gates", [5_000])
-def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates, request):
+@pytest.mark.parametrize(
+    ("num_qubits", "num_gates"),
+    [
+        pytest.param(
+            100,
+            5_000,
+            marks=pytest.mark.skipif(
+                "config.getoption('--performance-light')", reason="smoke test only"
+            ),
+        ),
+        pytest.param(
+            10,
+            100,
+            marks=pytest.mark.skipif(
+                "not config.getoption('--performance-light')", reason="performance test only"
+            ),
+        ),
+    ],
+)
+def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     """Test the speed of deserializing a samplex."""
-    if request.config.getoption("performance_light"):
-        num_qubits = 10
-        num_gates = 100
 
     num_boxes = num_gates // (num_qubits // 2)
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)

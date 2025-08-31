@@ -22,18 +22,29 @@ from .utils import make_layered_circuit, make_noise_maps
 class TestSample:
     """Test the `sample` method."""
 
-    @pytest.mark.parametrize("num_qubits", [100])
-    @pytest.mark.parametrize("num_gates", [5_000])
-    @pytest.mark.parametrize("num_randomizations", [1650])
-    def test_sampling_5k_circuit(
-        self, rng, benchmark, num_qubits, num_gates, num_randomizations, request
-    ):
+    @pytest.mark.parametrize(
+        ("num_qubits", "num_gates", "num_randomizations"),
+        [
+            pytest.param(
+                96,
+                5_000,
+                1650,
+                marks=pytest.mark.skipif(
+                    "config.getoption('--performance-light')", reason="smoke test only"
+                ),
+            ),
+            pytest.param(
+                10,
+                100,
+                10,
+                marks=pytest.mark.skipif(
+                    "not config.getoption('--performance-light')", reason="performance test only"
+                ),
+            ),
+        ],
+    )
+    def test_sampling_5k_circuit(self, rng, benchmark, num_qubits, num_gates, num_randomizations):
         """Test the sample function for circuits with different numbers of qubits and gates."""
-        if request.config.getoption("performance_light"):
-            num_qubits = 10
-            num_gates = 100
-            num_randomizations = 10
-
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes)
 
@@ -49,19 +60,32 @@ class TestSample:
             template.num_parameters,
         )
 
-    @pytest.mark.parametrize("num_qubits", [100])
-    @pytest.mark.parametrize("num_gates", [5_000])
-    @pytest.mark.parametrize("num_randomizations", [1650])
+    @pytest.mark.parametrize(
+        ("num_qubits", "num_gates", "num_randomizations"),
+        [
+            pytest.param(
+                96,
+                5_000,
+                1650,
+                marks=pytest.mark.skipif(
+                    "config.getoption('--performance-light')", reason="smoke test only"
+                ),
+            ),
+            pytest.param(
+                10,
+                100,
+                10,
+                marks=pytest.mark.skipif(
+                    "not config.getoption('--performance-light')", reason="performance test only"
+                ),
+            ),
+        ],
+    )
     @pytest.mark.parametrize("scale", [-1.0])
     def test_sampling_noisy_circuit(
-        self, rng, benchmark, num_qubits, num_gates, num_randomizations, scale, request
+        self, rng, benchmark, num_qubits, num_gates, num_randomizations, scale
     ):
         """Test the sample function using ``noise_maps``."""
-        if request.config.getoption("performance_light"):
-            num_qubits = 10
-            num_gates = 100
-            num_randomizations = 10
-
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_layer_noise, odd_layer_noise = make_noise_maps(num_qubits)
@@ -84,18 +108,32 @@ class TestSample:
             template.num_parameters,
         )
 
-    @pytest.mark.parametrize("num_qubits", [100])
-    @pytest.mark.parametrize("num_gates", [5_000])
-    @pytest.mark.parametrize("num_randomizations", [1650])
+    @pytest.mark.parametrize(
+        ("num_qubits", "num_gates", "num_randomizations"),
+        [
+            pytest.param(
+                96,
+                5_000,
+                1650,
+                marks=pytest.mark.skipif(
+                    "config.getoption('--performance-light')", reason="smoke test only"
+                ),
+            ),
+            pytest.param(
+                10,
+                100,
+                10,
+                marks=pytest.mark.skipif(
+                    "not config.getoption('--performance-light')", reason="performance test only"
+                ),
+            ),
+        ],
+    )
     @pytest.mark.parametrize("local_scale", [2.0])
     def test_sampling_masked_noisy_circuit(
-        self, rng, benchmark, num_qubits, num_gates, num_randomizations, local_scale, request
+        self, rng, benchmark, num_qubits, num_gates, num_randomizations, local_scale
     ):
         """Test the sample function using ``noise_maps`` with ``local_scale``."""
-        if request.config.getoption("performance_light"):
-            num_qubits = 10
-            num_gates = 100
-            num_randomizations = 10
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_noise_maps(num_qubits)

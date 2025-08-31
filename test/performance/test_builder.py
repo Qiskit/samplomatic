@@ -22,14 +22,27 @@ from .utils import make_layered_circuit
 class TestBuilder:
     """Test the `build` method."""
 
-    @pytest.mark.parametrize("num_qubits", [96])
-    @pytest.mark.parametrize("num_gates", [5_000])
-    def test_building_5k_circuit(self, benchmark, num_qubits, num_gates, request):
+    @pytest.mark.parametrize(
+        ("num_qubits", "num_gates"),
+        [
+            pytest.param(
+                96,
+                5_000,
+                marks=pytest.mark.skipif(
+                    "config.getoption('--performance-light')", reason="smoke test only"
+                ),
+            ),
+            pytest.param(
+                10,
+                100,
+                marks=pytest.mark.skipif(
+                    "not config.getoption('--performance-light')", reason="performance test only"
+                ),
+            ),
+        ],
+    )
+    def test_building_5k_circuit(self, benchmark, num_qubits, num_gates):
         """Test the build function for circuits with different numbers of qubits and gates."""
-        if request.config.getoption("performance_light"):
-            num_qubits = 10
-            num_gates = 100
-
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes)
 
