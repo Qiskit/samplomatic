@@ -356,6 +356,7 @@ class Samplex:
 
 def wait_with_raise(futures: Iterable[Future]):
     """Wait for futures to complete, raising the first exception encountered.
+
     If there is an exception, cancel all remaining futures.
 
     Args:
