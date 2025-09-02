@@ -372,7 +372,7 @@ def wait_with_raise(futures: Iterable[Future]):
             if exception is not None:
                 # Let's cancel the remaining tasks
                 for task in futures:
-                    # canel() is a best-effort attempt, and does not guarantee that the task will be
+                    # cancel() is a best-effort attempt, and does not guarantee that the task will be
                     # cancelled if already running.
                     task.cancel()
                 raise exception
