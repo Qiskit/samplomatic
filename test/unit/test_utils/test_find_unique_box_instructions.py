@@ -177,15 +177,13 @@ def test_normalize_annotations():
 
 def test_annotation_handling():
     """Test that ``find_unique_box_instructions`` does not modify annotations in-place.
-
-    This is a regression test against https://github.com/Qiskit/samplomatic/issues/97.
     """
     inject_noise = InjectNoise("ref", "modifier_ref")
     circuit = QuantumCircuit(2)
     with circuit.box(annotations=[inject_noise]):
         circuit.cx(0, 1)
 
-    _ = find_unique_box_instructions(circuit)
+    find_unique_box_instructions(circuit)
     inject_noise_after = circuit[0].operation.annotations[0]
     assert inject_noise == inject_noise_after
 
