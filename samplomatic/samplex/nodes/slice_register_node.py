@@ -15,6 +15,7 @@
 from collections.abc import Sequence
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -152,7 +153,7 @@ class SliceRegisterNode(EvaluationNode):
         registers[self._output_register_name] = converted_register[self._slice_idxs]
 
 
-def get_slice_from_idxs(slice_idxs: np.typing.ArrayLike) -> np.typing.ArrayLike | slice:
+def get_slice_from_idxs(slice_idxs: ArrayLike) -> ArrayLike | slice:
     """A helper function that returns a slice object, if indices permit."""
     if len(slice_idxs) == 1:
         return slice(slice_idxs[0], slice_idxs[0] + 1, 1)
