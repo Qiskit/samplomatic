@@ -176,8 +176,7 @@ def test_normalize_annotations():
 
 
 def test_annotation_handling():
-    """Test that ``find_unique_box_instructions`` does not modify annotations in-place.
-    """
+    """Test that ``find_unique_box_instructions`` does not modify annotations in-place."""
     inject_noise = InjectNoise("ref", "modifier_ref")
     circuit = QuantumCircuit(2)
     with circuit.box(annotations=[inject_noise]):
