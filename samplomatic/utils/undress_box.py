@@ -28,7 +28,7 @@ def undress_box(box: BoxOp) -> BoxOp:
 
     This function removes all the single-qubit gates that can be pushed to the side indicated by its
     dressing (left or right) without encountering any other operation. If the input box contains no
-    ``Twirl`` annotation, it is simply returned as is.
+    ``Twirl`` annotation, an unmodified copy of it is returned.
 
     The returned box owns a copy of all the annotations present in the given ``box``.
 
@@ -36,7 +36,7 @@ def undress_box(box: BoxOp) -> BoxOp:
         box: The box to remove the single-qubit gates from.
     """
     if not (twirl_annotation := get_annotation(box, Twirl)):
-        return box
+        return box.copy()
 
     return (
         undress_left_dressed_box(box)
