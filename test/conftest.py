@@ -34,6 +34,12 @@ def pytest_addoption(parser):
         action="store_true",
         help="Whether to save plots that are generated during testing to disk.",
     )
+    parser.addoption(
+        "--performance-light",
+        action="store_true",
+        default=False,
+        help="Use lighter version of the performance tests for smoke test purposes.",
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
