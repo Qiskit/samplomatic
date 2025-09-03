@@ -36,7 +36,7 @@ def undress_box(box: BoxOp) -> BoxOp:
         box: The box to remove the single-qubit gates from.
     """
     if not (twirl_annotation := get_annotation(box, Twirl)):
-        return box
+        return box.copy()
 
     return (
         undress_left_dressed_box(box)
