@@ -1,3 +1,19 @@
+## [0.6.0](https://github.com/Qiskit/samplomatic/tree/0.6.0) - 2025-09-03
+
+### Added
+
+- Added an `optional` field to `Specification`. ([#94](https://github.com/Qiskit/samplomatic/issues/94))
+
+### Changed
+
+- Modified `undress_box` so that if the input box contains no ``Twirl`` annotation, it returns a copy of the box rather than the box itself. ([#98](https://github.com/Qiskit/samplomatic/issues/98))
+
+### Fixed
+
+- Fixed a bug where the `modifier_ref`s of `InjectNoise` annotations were not being added to a samplex. ([#94](https://github.com/Qiskit/samplomatic/issues/94))
+- Fixed a bug with imports for `numpy` versions older than `2.0.0`. ([#99](https://github.com/Qiskit/samplomatic/issues/99))
+
+
 ## [0.5.0](https://github.com/Qiskit/samplomatic/tree/0.5.0) - 2025-08-26
 
 ### Added
