@@ -12,6 +12,9 @@
 
 """Test the Samplex class"""
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
 import numpy as np
 import pytest
 from qiskit.circuit import Parameter
@@ -19,6 +22,7 @@ from qiskit.circuit import Parameter
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.samplex import Samplex
+from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import Specification, TensorSpecification, ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
@@ -293,3 +297,52 @@ class TestSample:
 
         with pytest.raises(SamplexRuntimeError, match="This node cannot sample."):
             samplex.sample(samplex.inputs())
+
+    def test_wait_with_raise_completes_all_tasks(self):
+        """Test that wait_with_raise waits for all tasks to complete when no exception is raised."""
+        results = []
+
+        def task(x):
+            results.append(x)
+            return x
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = [executor.submit(task, i) for i in range(3)]
+            wait_with_raise(futures)
+        assert sorted(results) == [0, 1, 2]
+        assert all(f.done() for f in futures)
+
+    def test_wait_with_raise_raises_on_exception(self):
+        """Test that wait_with_raise raises the first exception from the futures."""
+
+        def good_task():
+            return 42
+
+        def bad_task():
+            raise ValueError("fail!")
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = [executor.submit(good_task), executor.submit(bad_task)]
+            with pytest.raises(ValueError, match="fail!"):
+                wait_with_raise(futures)
+            # All futures should be done or cancelled
+            assert all(f.done() or f.cancelled() for f in futures)
+
+    def test_wait_with_raise_cancels_remaining_on_exception(self):
+        """Test that wait_with_raise cancels remaining tasks after an exception."""
+        event = threading.Event()
+
+        def slow_task():
+            event.wait(timeout=1)
+            return "slow"
+
+        def fast_fail():
+            raise RuntimeError("boom")
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            f_fail = executor.submit(fast_fail)
+            f_slow = executor.submit(slow_task)  # stays pending
+            with pytest.raises(RuntimeError, match="boom"):
+                wait_with_raise([f_fail, f_slow])
+            # At least one future should be cancelled
+            assert f_slow.cancelled()
