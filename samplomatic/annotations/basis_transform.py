@@ -28,6 +28,8 @@ class BasisTransform(Annotation):
         ref: A unique identifier of this basis transform. If ``None``, it is set to ``mode.value``.
     """
 
+    namespace = "samplomatic.basis_transform"
+
     __slots__ = ("decomposition", "mode", "ref")
 
     def __init__(

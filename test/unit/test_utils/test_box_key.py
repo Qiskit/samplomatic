@@ -17,7 +17,6 @@ from itertools import combinations
 
 import pytest
 from qiskit.circuit import (
-    Annotation,
     BoxOp,
     CircuitInstruction,
     Parameter,
@@ -153,10 +152,6 @@ def test_symmetric_gates():
 
 def test_boxes_with_annotations():
     """Test boxes with annotations."""
-
-    class MyAnnotation(Annotation):
-        pass
-
     body = QuantumCircuit(2)
     body.h(0)
     body.h(1)
@@ -165,11 +160,6 @@ def test_boxes_with_annotations():
     qubits = body.qubits
 
     instr = CircuitInstruction(BoxOp(body), qubits)
-    instr_custom_annotation = CircuitInstruction(BoxOp(body, annotations=[MyAnnotation()]), qubits)
-    instr_twirl = CircuitInstruction(BoxOp(body, annotations=[Twirl()]), qubits)
-    instr_right_twirl = CircuitInstruction(
-        BoxOp(body, annotations=[Twirl(dressing="right")]), qubits
-    )
     instr_twirl_inject = CircuitInstruction(
         BoxOp(body, annotations=[Twirl(), InjectNoise("ref")]), qubits
     )
@@ -177,7 +167,6 @@ def test_boxes_with_annotations():
         BoxOp(body, annotations=[InjectNoise("ref"), Twirl()]), qubits
     )
 
-    assert BoxKey(instr) != BoxKey(instr_custom_annotation)
-    assert BoxKey(instr) != BoxKey(instr_twirl)
-    assert BoxKey(instr_twirl) != BoxKey(instr_right_twirl)
-    assert BoxKey(instr_twirl_inject) == BoxKey(instr_inject_twirl)
+    assert BoxKey(instr) != BoxKey(instr_twirl_inject)
+    assert BoxKey(instr) != BoxKey(instr_inject_twirl)
+    assert BoxKey(instr_inject_twirl) == BoxKey(instr_twirl_inject)

@@ -14,6 +14,7 @@
 
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
+from qiskit.transpiler.passes import RemoveBarriers
 
 from .noise_injection_strategies import NoiseInjectionStrategyLiteral
 from .passes import (
@@ -35,6 +36,7 @@ def generate_boxing_pass_manager(
     enable_measure: bool = True,
     twirling_strategy: TwirlingStrategyLiteral = "active",
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
+    remove_barriers: bool = True,
 ) -> PassManager:
     """Generate a pass manager to group the operations in a circuit into boxes.
 
@@ -45,6 +47,9 @@ def generate_boxing_pass_manager(
             :class:`~.GroupMeasIntoBoxes` pass.
         twirling_strategy: The twirling strategy.
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
+        remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
+            before beginning to group gates and measurements into boxes. Setting this to ``True``
+            generally leads to a smaller number of boxes in the output circuits.
 
     Returns:
         A pass manager that groups operations into boxes.
@@ -52,7 +57,10 @@ def generate_boxing_pass_manager(
     Raises:
         TranspilerError: If the user selects a combination of inputs that is not supported.
     """
-    passes = [GroupGatesIntoBoxes()] if enable_gates else []
+    passes = [RemoveBarriers()] if remove_barriers else []
+
+    if enable_gates:
+        passes.append(GroupGatesIntoBoxes())
 
     if enable_measure:
         passes.append(GroupMeasIntoBoxes())

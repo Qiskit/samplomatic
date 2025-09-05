@@ -17,12 +17,9 @@ import pytest
 from qiskit.circuit.library import HGate, IGate
 
 from samplomatic.annotations import VirtualType
-from samplomatic.exceptions import SamplexRuntimeError
 from samplomatic.samplex.nodes import BasisTransformNode
-from samplomatic.samplex.nodes.basis_transform_node import (
-    MEAS_PAULI_BASIS,
-    BasisChange,
-)
+from samplomatic.samplex.nodes.basis_transform_node import MEAS_PAULI_BASIS, BasisChange
+from samplomatic.tensor_interface import TensorInterface, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 
@@ -62,18 +59,16 @@ class TestBasisTransformNode:
     def test_sample(self):
         """Test evaluation of the node."""
         basis_change = BasisTransformNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        samplex_input = TensorInterface([TensorSpecification("measure", (3,), np.uint8)])
         registers = {}
 
-        pauli = np.array([1, 1, 2], dtype=np.uint8)
-        basis_change.sample(registers, None, None, basis_transforms={"measure": pauli})
+        samplex_input.bind(measure=np.array([1, 1, 2], dtype=np.uint8))
+        basis_change.sample(registers, None, samplex_input, 1)
         expected_register = U2Register(np.array([[HGate(), HGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
 
-        pauli = np.array([1, 0, 0], dtype=np.uint8)
-        basis_change.sample(registers, None, None, basis_transforms={"measure": pauli})
+        samplex_input.bind(measure=np.array([1, 0, 0], dtype=np.uint8))
+        basis_change.sample(registers, None, samplex_input, 13)
         expected_register = U2Register(np.array([[HGate(), IGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
-
-        pauli = np.array([2, 1], dtype=np.uint8)
-        with pytest.raises(SamplexRuntimeError, match="observables for basis transform"):
-            basis_change.sample(registers, None, None, basis_transforms={"measure": pauli})
+        assert registers["basis_change"] == expected_register

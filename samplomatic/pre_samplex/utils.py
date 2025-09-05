@@ -81,4 +81,5 @@ def merge_pre_edges(
     return PreEdge(
         subsystems=QubitIndicesPartition.union(*(edge.subsystems for edge in edges)),
         direction=next(iter(directions)),
+        force_register_copy=any(edge.force_register_copy for edge in edges),
     )

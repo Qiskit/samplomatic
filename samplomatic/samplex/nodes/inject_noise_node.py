@@ -52,11 +52,31 @@ class InjectNoiseNode(SamplingNode):
         num_subsystems: int,
         modifier_ref: StrRef = "",
     ):
-        self.register_name = register_name
-        self.sign_register_name = sign_register_name
+        self._register_name = register_name
+        self._sign_register_name = sign_register_name
         self._noise_ref = noise_ref
         self._modifier_ref = modifier_ref
         self._num_subsystems = num_subsystems
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "5",
+            "register_name": self._register_name,
+            "sign_register_name": self._sign_register_name,
+            "noise_ref": self._noise_ref,
+            "modifier_ref": self._modifier_ref,
+            "num_subsystems": str(self._num_subsystems),
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "InjectNoiseNode":
+        return cls(
+            data["register_name"],
+            data["sign_register_name"],
+            data["noise_ref"],
+            int(data["num_subsystems"]),
+            data["modifier_ref"],
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:
@@ -64,12 +84,12 @@ class InjectNoiseNode(SamplingNode):
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
         return {
-            self.register_name: (self._num_subsystems, VirtualType.PAULI),
-            self.sign_register_name: (1, VirtualType.Z2),
+            self._register_name: (self._num_subsystems, VirtualType.PAULI),
+            self._sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, size, rng, **kwargs):
-        if (noise_map := kwargs.get("noise_maps", {}).get(self._noise_ref)) is None:
+    def sample(self, registers, rng, inputs, num_randomizations):
+        if (noise_map := inputs.get(self._noise_ref)) is None:
             raise SamplexRuntimeError(f"A noise map for '{self._noise_ref}' was not specified.")
         if (num_qubits := noise_map.num_qubits) != self._num_subsystems:
             raise SamplexRuntimeError(
@@ -77,9 +97,9 @@ class InjectNoiseNode(SamplingNode):
                 f"'{self._noise_ref}' when it requires `{self._num_subsystems}`."
             )
         if self._modifier_ref:
-            scale = kwargs.get("noise_scales", {}).get(self._modifier_ref, 1.0)
-            local_scale = kwargs.get("local_scales", {}).get(
-                self._modifier_ref, np.ones(noise_map.num_terms)
+            scale = inputs.get("noise_scales." + self._modifier_ref, 1.0)
+            local_scale = inputs.get(
+                "local_scales." + self._modifier_ref, np.ones(noise_map.num_terms)
             )
 
             if len(local_scale) != noise_map.num_terms:
@@ -98,9 +118,16 @@ class InjectNoiseNode(SamplingNode):
                 ],
                 noise_map.num_qubits,
             )
-        signs, samples = noise_map.signed_sample(size, rng.bit_generator.random_raw())
-        registers[self.register_name] = PauliRegister.from_paulis(samples)
-        registers[self.sign_register_name] = Z2Register(signs.reshape(1, -1))
+        signs, samples = noise_map.signed_sample(num_randomizations, rng.bit_generator.random_raw())
+        registers[self._register_name] = PauliRegister.from_paulis(samples)
+        registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
 
     def get_style(self):
-        return super().get_style().append_data("Register", repr(self.register_name))
+        return (
+            super()
+            .get_style()
+            .append_data("Register Name", repr(self._register_name))
+            .append_data("Subsystems", repr(self._num_subsystems))
+            .append_data("Noise Reference", repr(self._noise_ref))
+            .append_data("Modifier Reference", repr(self._modifier_ref))
+        )

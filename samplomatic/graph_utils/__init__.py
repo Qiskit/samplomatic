@@ -12,7 +12,6 @@
 
 """Graph Utilities"""
 
-from .cluster_compatible_nodes import cluster_compatible_nodes
 from .find_unreachable_nodes import find_unreachable_nodes
 from .get_clusters import get_clusters
 from .node_candidate import NodeCandidate

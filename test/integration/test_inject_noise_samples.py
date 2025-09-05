@@ -34,6 +34,15 @@ def make_circuits():
 
     yield (circuit, expected, {"my_noise": noise_map}), "identity"
 
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
+        circuit.noop(0, 1)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield (circuit, expected, {"my_noise": noise_map}), "identity_optional_modifiers"
+
     noise_map = PauliLindbladMap.from_list([("XX", 100)])
     prob = next(iter(noise_map.probabilities()))
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
@@ -93,8 +102,8 @@ def test_sampling(circuit, expected, noise_maps, save_plot):
     save_plot(lambda: samplex_state.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    circuit_params = np.random.random(len(circuit.parameters)).tolist()
-    samplex_output = samplex.sample(circuit_params, noise_maps=noise_maps, size=1000)
+    samplex_input = samplex.inputs().bind(noise_maps=noise_maps)
+    samplex_output = samplex.sample(samplex_input, num_randomizations=1000)
     parameter_values = samplex_output["parameter_values"]
 
     superops = []
