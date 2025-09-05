@@ -118,6 +118,10 @@ class ParameterExpressionTable:
         if not isinstance(parameter_values, dict):
             parameter_values = dict(zip(self.parameters, parameter_values))
 
-        return np.array(
-            [expression.bind_all(parameter_values) for expression in self._expressions], dtype=float
-        )
+        try:
+            return np.array(
+                [expression.bind_all(parameter_values) for expression in self._expressions],
+                dtype=float,
+            )
+        except KeyError as exc:
+            raise ParameterError(f"Missing value for {exc}.")
