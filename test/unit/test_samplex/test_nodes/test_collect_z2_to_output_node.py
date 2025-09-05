@@ -15,8 +15,9 @@ import pytest
 
 from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
-from samplomatic.samplex import ArrayOutput, SamplexOutput
+from samplomatic.samplex import SamplexOutput
 from samplomatic.samplex.nodes import CollectZ2ToOutputNode
+from samplomatic.tensor_interface import TensorSpecification
 from samplomatic.virtual_registers import Z2Register
 
 
@@ -48,7 +49,14 @@ def test_collect(rng):
     node2 = CollectZ2ToOutputNode("reg2", [4, 3, 2, 1, 0], "out", [1, 3, 5, 7, 9])
 
     outputs = SamplexOutput(
-        [ArrayOutput("out", (10,), np.uint8, "A ten-qubit array")], num_samples=3
+        [
+            TensorSpecification(
+                "out",
+                (3, 10),
+                np.uint8,
+                "A ten-qubit array",
+            )
+        ]
     )
 
     registers = {"reg1": reg1, "reg2": reg2}

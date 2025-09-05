@@ -17,6 +17,7 @@ import abc
 from numpy.random import Generator
 
 from ...aliases import RegisterName
+from ...tensor_interface import TensorInterface
 from ...virtual_registers import VirtualRegister
 from .node import Node
 
@@ -28,17 +29,17 @@ class SamplingNode(abc.ABC, Node):
     def sample(
         self,
         registers: dict[RegisterName, VirtualRegister],
-        size: int,
         rng: Generator,
-        **kwargs,
+        inputs: TensorInterface,
+        num_randomizations: int,
     ):
         """Sample this node.
 
         Args:
             registers: Where to sample into.
-            size: How many randomizations to sample.
             rng: A randomness generator.
-            kwargs: Optional keyword arguments to be used at sample time.
+            inputs: Inputs of the sampling program.
+            num_randomizations: How many randomizations to draw.
         """
 
     def get_style(self):

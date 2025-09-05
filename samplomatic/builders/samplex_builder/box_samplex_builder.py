@@ -69,12 +69,20 @@ class LeftBoxSamplexBuilder(BoxSamplexBuilder):
                     self.state.qubits_to_indices(qubits_partition),
                 )
             )
+            # We need to track all nodes which are added from this point on, to know which
+            # nodes have to force copy of registers. There is currently no efficient way of
+            # doing this, so we are forced to compare the set of all nodes before and after.
+            # If we assume no node removal, we can simplify and look at the max
+            # node idx before and after.
+            # If we return node indices from parse() we can also simplify this.
+            after_if_node_idxs = set(self.state.graph.node_indices())
+
             self.state.set_all_danglers(*original_danglers)
             self.state.add_collect(qubits_partition, self.collection.synth, else_params)
             if instr.operation.params[1] is not None:
                 for sub_instr, sub_spec in zip(instr.operation.params[1], else_specs):
                     self.parse(sub_instr, sub_spec)
-            # Right now, all of the qubits have the false branch nodes as dangling.
+            # Right now, all of the qubits have the else branch nodes as dangling.
             # We need to add the danglers of the true branch.
             # Note that by construction all of these danglers are new, and their type is forced,
             # as they don't follow a measurement.
@@ -83,7 +91,10 @@ class LeftBoxSamplexBuilder(BoxSamplexBuilder):
                     subsystems.all_elements,
                     node_idx,
                 )
-
+            # We don't want the else branch to share views with the if branch.
+            self.state.add_force_copy_nodes(
+                idx for idx in self.state.graph.node_indices() if idx not in after_if_node_idxs
+            )
             return
 
         if to_be_collected := [
@@ -126,7 +137,9 @@ class LeftBoxSamplexBuilder(BoxSamplexBuilder):
                 remaining_qubits, self.collection.synth, spec.param_idxs, self.collection_node_idx
             )
         if self.emission.noise_ref:
-            self.state.add_emit_noise_left(self.emission.qubits, self.emission.noise_ref)
+            self.state.add_emit_noise_left(
+                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+            )
         if self.emission.basis_ref:
             self.state.add_emit_meas_basis_transform(self.emission.qubits, self.emission.basis_ref)
         if twirl_type := self.emission.twirl_register_type:
@@ -161,6 +174,11 @@ class RightBoxSamplexBuilder(BoxSamplexBuilder):
                 QubitPartition.from_elements(instr.qubits), self.collection.synth, if_params
             )
             self.state.set_all_danglers(*original_danglers)
+            # We don't want the else branch to share views with the if branch
+            for danglers_dict in original_danglers:
+                for node_idxs in danglers_dict.values():
+                    self.state.add_force_copy_nodes(node_idxs)
+
             if instr.operation.params[1] is not None:
                 for sub_instr, sub_spec in zip(instr.operation.params[1], else_specs):
                     self.parse(sub_instr, sub_spec)
@@ -175,8 +193,13 @@ class RightBoxSamplexBuilder(BoxSamplexBuilder):
                 ).all_elements,
                 true_collect_idx,
             )
-            # And finally mark all qubits as already collected
+            # Mark all qubits as already collected
             self.already_collected_qubits.update(instr.qubits)
+            # We are done with everything incoming to the else branch,
+            # so we can remove the nodes and let them share views now.
+            for danglers_dict in original_danglers:
+                for node_idxs in danglers_dict.values():
+                    self.state.remove_force_copy_nodes(node_idxs)
             return
         self.state.add_propagate(instr, spec)
 
@@ -184,7 +207,9 @@ class RightBoxSamplexBuilder(BoxSamplexBuilder):
         if self.emission.basis_ref:
             self.state.add_emit_prep_basis_transform(self.emission.qubits, self.emission.basis_ref)
         if self.emission.noise_ref:
-            self.state.add_emit_noise_right(self.emission.qubits, self.emission.noise_ref)
+            self.state.add_emit_noise_right(
+                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+            )
         if self.emission.twirl_register_type:
             self.state.add_emit_twirl(self.emission.qubits, self.emission.twirl_register_type)
 

@@ -15,10 +15,12 @@
 from collections.abc import Sequence
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
+from ...utils.serialization import array_from_json, array_to_json, slice_from_json, slice_to_json
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
 
@@ -38,6 +40,8 @@ class SliceRegisterNode(EvaluationNode):
         input_register_name: The name of the input register.
         output_register_name: The name of the output register.
         slice_idxs: The indices used to slice the register.
+        force_copy: Whether or not to force output register to be a copy instead of a view of
+            the input register.
 
     Raises:
         SamplexConstructionError: If ``slice_idxs`` has the wrong shape.
@@ -49,29 +53,90 @@ class SliceRegisterNode(EvaluationNode):
         output_type: VirtualType,
         input_register_name: RegisterName,
         output_register_name: RegisterName,
-        slice_idxs: Sequence[SubsystemIndex],
+        slice_idxs: slice | Sequence[SubsystemIndex],
+        force_copy: bool = False,
     ):
         self._input_type = input_type
         self._output_type = output_type
         self._input_register_name = input_register_name
         self._output_register_name = output_register_name
-        self._slice_idxs = np.asarray(slice_idxs, dtype=np.intp)
 
-        if self._slice_idxs.ndim != 1:
-            raise SamplexConstructionError(
-                f"'slice_idxs' for '{input_register_name}' has a shape {self._slice_idxs.shape}, "
-                "but a shape with a single axes is required."
-            )
+        if isinstance(slice_idxs, slice):
+            self._slice_idxs = slice_idxs
+        else:
+            slice_idxs = np.asarray(slice_idxs, dtype=np.intp)
+            if slice_idxs.ndim != 1:
+                raise SamplexConstructionError(
+                    f"'slice_idxs' for '{input_register_name}' has a shape {slice_idxs.shape}, "
+                    "but a shape with a single axes is required."
+                )
+            # Check if indices could be converted to a slice
+            elif not force_copy:
+                self._slice_idxs = get_slice_from_idxs(slice_idxs)
+            else:
+                self._slice_idxs = slice_idxs
+
+    def _to_json_dict(self) -> dict[str, str]:
+        if isinstance(self._slice_idxs, slice):
+            is_slice = "true"
+            slice_idxs = slice_to_json(self._slice_idxs)
+        else:
+            is_slice = "false"
+            slice_idxs = array_to_json(self._slice_idxs)
+        return {
+            "node_type": "8",
+            "input_type": self._input_type,
+            "output_type": self._output_type,
+            "input_register_name": self._input_register_name,
+            "output_register_name": self._output_register_name,
+            "slice_idxs": slice_idxs,
+            "is_slice": is_slice,
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "SliceRegisterNode":
+        slice_idxs = (
+            slice_from_json(data["slice_idxs"])
+            if data["is_slice"] == "true"
+            else array_from_json(data["slice_idxs"])
+        )
+        return cls(
+            VirtualType(data["input_type"]),
+            VirtualType(data["output_type"]),
+            data["input_register_name"],
+            data["output_register_name"],
+            slice_idxs,
+        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self._output_type
 
     def instantiates(self):
-        return {self._output_register_name: (len(self._slice_idxs), self._output_type)}
+        if isinstance(self._slice_idxs, slice):
+            length = len(
+                range(
+                    self._slice_idxs.start,
+                    self._slice_idxs.stop if self._slice_idxs.stop is not None else -1,
+                    self._slice_idxs.step,
+                )
+            )
+        else:
+            length = len(self._slice_idxs)
+        return {self._output_register_name: (length, self._output_type)}
 
     def reads_from(self):
-        return {self._input_register_name: (set(self._slice_idxs), self._input_type)}
+        if isinstance(self._slice_idxs, slice):
+            idxs_set = set(
+                range(
+                    self._slice_idxs.start,
+                    self._slice_idxs.stop if self._slice_idxs.stop is not None else -1,
+                    self._slice_idxs.step,
+                )
+            )
+        else:
+            idxs_set = set(self._slice_idxs)
+        return {self._input_register_name: (idxs_set, self._input_type)}
 
     def validate_and_update(self, register_descriptions):
         super().validate_and_update(register_descriptions)
@@ -85,8 +150,21 @@ class SliceRegisterNode(EvaluationNode):
 
     def evaluate(self, registers, *_):
         converted_register = registers[self._input_register_name].convert_to(self._output_type)
-        if np.array_equal(self._slice_idxs, np.arange(converted_register.num_subsystems)):
-            # No slicing required
-            registers[self._output_register_name] = converted_register
-        else:
-            registers[self._output_register_name] = converted_register[self._slice_idxs]
+        registers[self._output_register_name] = converted_register[self._slice_idxs]
+
+
+def get_slice_from_idxs(slice_idxs: ArrayLike) -> ArrayLike | slice:
+    """A helper function that returns a slice object, if indices permit."""
+    if len(slice_idxs) == 1:
+        return slice(slice_idxs[0], slice_idxs[0] + 1, 1)
+    else:
+        step = slice_idxs[1] - slice_idxs[0]
+        expected = slice_idxs[0] + step * np.arange(len(slice_idxs))
+
+        if np.array_equal(slice_idxs, expected):
+            return slice(
+                int(slice_idxs[0]),
+                int(slice_idxs[-1] + step) if slice_idxs[-1] + step >= 0 else None,
+                int(step),
+            )
+    return slice_idxs

@@ -13,5 +13,6 @@
 """Utility functions."""
 
 from .box_key import BoxKey
+from .find_unique_box_instructions import find_unique_box_instructions
 from .get_annotation import get_annotation
 from .undress_box import undress_box

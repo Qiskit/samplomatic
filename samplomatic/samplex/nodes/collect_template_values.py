@@ -14,10 +14,11 @@
 
 import numpy as np
 
-from ...aliases import OutputName, ParamIndices, RegisterName, SubsystemIndices
+from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
 from ...annotations import VirtualType
-from ...exceptions import SamplexConstructionError
-from ...synths import Synth
+from ...exceptions import DeserializationError, SamplexConstructionError
+from ...synths import RzRxSynth, RzSxSynth, Synth
+from ...utils.serialization import array_from_json, array_to_json
 from .collection_node import CollectionNode
 
 
@@ -43,7 +44,7 @@ class CollectTemplateValues(CollectionNode):
 
     def __init__(
         self,
-        template_params_name: OutputName,
+        template_params_name: InterfaceName,
         template_idxs: ParamIndices,
         register_name: RegisterName,
         register_type: VirtualType,
@@ -75,6 +76,36 @@ class CollectTemplateValues(CollectionNode):
                 f"Expected to reference {num_subsys} subsystems of '{register_name}', but "
                 f"received shape {self._subsystem_idxs.shape} instead."
             )
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "1",
+            "template_param_names": self._template_params_name,
+            "template_idxs": array_to_json(self._template_idxs),
+            "register_type": self._register_type,
+            "register_name": self._register_name,
+            "subsystem_idxs": array_to_json(self._subsystem_idxs),
+            "synth": type(self._synth).__name__,
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "CollectTemplateValues":
+        synth_class_name = data["synth"]
+        if synth_class_name == "RzRxSynth":
+            synth = RzRxSynth()
+        elif synth_class_name == "RzSxSynth":
+            synth = RzSxSynth()
+        else:
+            raise DeserializationError(f"Invalid Synth class: {synth_class_name}")
+
+        return cls(
+            data["template_param_names"],
+            array_from_json(data["template_idxs"]),
+            data["register_name"],
+            VirtualType(data["register_type"]),
+            array_from_json(data["subsystem_idxs"]),
+            synth,
+        )
 
     @property
     def num_subsystems(self):
