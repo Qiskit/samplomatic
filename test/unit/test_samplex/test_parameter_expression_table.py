@@ -106,5 +106,5 @@ def test_evaluate_fails():
     with pytest.raises(ParameterError, match="Expecting 3 parameters but received 2"):
         table.evaluate({a: 1, b: 2})
 
-    with pytest.raises(ParameterError, match=r"only received values for parameters \[b\]"):
+    with pytest.raises(ParameterError, match="Missing value for Parameter"):
         table.evaluate({a: 1, b: 2, Parameter("d"): 3})
