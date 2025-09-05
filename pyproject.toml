@@ -116,6 +116,11 @@ name = "Changed"
 showcontent = true
 
 [[tool.towncrier.type]]
+directory = "improved"
+name = "Improved"
+showcontent = true
+
+[[tool.towncrier.type]]
 directory = "fixed"
 name = "Fixed"
 showcontent = true
