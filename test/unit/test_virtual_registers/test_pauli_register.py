@@ -13,7 +13,6 @@
 """Test the PauliRegister"""
 
 import numpy as np
-from qiskit.quantum_info import QubitSparsePauliList
 
 from samplomatic.annotations import VirtualType
 from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Register
@@ -161,14 +160,3 @@ def test_invert():
     assert paulis == inverted
     paulis[0, 0] = 2
     assert inverted.virtual_gates[0, 0] != 2
-
-
-def test_from_paulis():
-    """Test the from_paulis() class method."""
-    paulis = QubitSparsePauliList.from_list(["IIX", "XIZ", "YYY"])
-    expected = PauliRegister([[2, 1, 3], [0, 0, 3], [0, 2, 3]])
-    assert PauliRegister.from_paulis(paulis) == expected
-
-    paulis = QubitSparsePauliList.from_sparse_list([("ZX", (1, 4))], num_qubits=6)
-    expected = PauliRegister(np.array([0, 1, 0, 0, 2, 0]).reshape(6, 1))
-    assert PauliRegister.from_paulis(paulis) == expected

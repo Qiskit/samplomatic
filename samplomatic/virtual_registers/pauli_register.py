@@ -13,7 +13,6 @@
 """PauliRegister"""
 
 import numpy as np
-from qiskit.quantum_info import QubitSparsePauliList
 
 from ..aliases import SubsystemIndex
 from ..annotations import VirtualType
@@ -58,23 +57,6 @@ class PauliRegister(GroupRegister):
     @classmethod
     def identity(cls, num_subsystems, num_samples):
         return cls(np.zeros((num_subsystems, num_samples), dtype=np.uint8))
-
-    @classmethod
-    def from_paulis(cls, paulis: QubitSparsePauliList) -> "PauliRegister":
-        """Instantiate a new register from a list of qubit sparse Paulis.
-
-        Each :class:`qiskit.quantum_info.QubitSparsePauli` corresponds to a single sample.
-
-        Args:
-            paulis: A :class:`qiskit.quantum_info.QubitSparsePauliList`.
-
-        Returns:
-            A new Pauli register.
-        """
-        array = np.zeros((paulis.num_qubits, paulis.num_terms), dtype=np.uint8)
-        for sample_idx, pauli in enumerate(paulis):
-            array[pauli.indices, sample_idx] = pauli.paulis
-        return cls(array)
 
     def convert_to(self, register_type):
         if register_type is VirtualType.U2:

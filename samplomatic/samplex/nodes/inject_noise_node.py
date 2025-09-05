@@ -119,7 +119,7 @@ class InjectNoiseNode(SamplingNode):
                 noise_map.num_qubits,
             )
         signs, samples = noise_map.signed_sample(num_randomizations, rng.bit_generator.random_raw())
-        registers[self._register_name] = PauliRegister.from_paulis(samples)
+        registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
 
     def get_style(self):
