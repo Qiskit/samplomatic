@@ -25,6 +25,14 @@ samplomatic.samplex.interfaces module
    :show-inheritance:
    :undoc-members:
 
+samplomatic.samplex.noise\_model module
+---------------------------------------
+
+.. automodule:: samplomatic.samplex.noise_model
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 samplomatic.samplex.parameter\_expression\_table module
 -------------------------------------------------------
 

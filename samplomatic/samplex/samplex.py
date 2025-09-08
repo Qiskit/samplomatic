@@ -16,8 +16,10 @@ from collections.abc import Iterable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Self
 
+import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
 from qiskit.circuit import Parameter, ParameterExpression
+from qiskit.quantum_info import QubitSparsePauliList
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -37,7 +39,8 @@ from ..tensor_interface import Specification, TensorInterface, TensorSpecificati
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
-from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
+from .nodes import CollectionNode, EvaluationNode, InjectNoiseNode, Node, SamplingNode
+from .noise_model import NoiseModel
 from .parameter_expression_table import ParameterExpressionTable
 
 if TYPE_CHECKING:
@@ -66,6 +69,7 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
+        self._noise_models: dict[str, NoiseModel] = {}
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
@@ -122,17 +126,64 @@ class Samplex:
         self._passthrough_params = (param_idxs, param_exp_idxs)
         return max(param_idxs)
 
-    def add_input(self, specification: Specification):
+    def set_noise_models(self, **noise_models: QubitSparsePauliList):
+        """Set the noise models to use at sampling time."""
+        if not self._finalized:
+            raise SamplexConstructionError()
+
+        for name, paulis in noise_models.items():
+            if (noise_model := self._noise_models.get(f"noise_maps.{name}")) is None:
+                raise ValueError(f"'{name}' is not a valid noise model identifier.")
+            noise_model.paulis = paulis
+            self.add_input(
+                TensorSpecification(
+                    f"noise_maps.{name}",
+                    (num_terms := (paulis.num_terms),),
+                    np.dtype(np.float64),
+                    f"The rates of a noise map with ``{num_terms}`` terms acting on "
+                    f"``{noise_model.num_qubits}`` qubits.",
+                ),
+                overwrite=True,
+            )
+
+            for noise_modifier in noise_model.noise_modifiers:
+                self.add_input(
+                    TensorSpecification(
+                        f"noise_scales.{noise_modifier}",
+                        (),
+                        np.dtype(np.float64),
+                        "A factor by which to scale a noise map.",
+                        optional=True,
+                    ),
+                    overwrite=True,
+                )
+                self.add_input(
+                    TensorSpecification(
+                        f"local_scales.{noise_modifier}",
+                        (num_terms,),
+                        "An array of factors by which to scale individual rates of a noise map.",
+                        np.dtype(np.float64),
+                        optional=True,
+                    ),
+                    overwrite=True,
+                )
+
+        for node in self._sampling_nodes:
+            if isinstance(node, InjectNoiseNode):
+                node.set_model(self._noise_models[node._noise_ref].paulis)  # noqa: SLF001
+
+    def add_input(self, specification: Specification, overwrite: bool = False):
         """Add a sampling input to this samplex.
 
         Args:
             specification: A specification of the input name and type.
+            overwrite: Whether to overwrite the current input.
         """
         if specification.name in self._RESERVED_INPUTS:
             raise SamplexConstructionError(
                 f"Input name '{specification.name}' is reserved and cannot be used."
             )
-        if (name := specification.name) in self._input_specifications:
+        if (name := specification.name) in self._input_specifications and not overwrite:
             raise SamplexConstructionError(f"An input with name '{name}' already exists.")
         self._input_specifications[name] = specification
 
@@ -149,6 +200,18 @@ class Samplex:
         if (name := specification.name) in self._output_specifications:
             raise SamplexConstructionError(f"An output with name '{name}' already exists.")
         self._output_specifications[name] = specification
+
+    def add_noise_model(self, noise_model: NoiseModel):
+        """Add a noise model to this samplex.
+
+        Args:
+            noise_model: A noise model.
+        """
+        if (noise_ref := noise_model.noise_ref) in self._noise_models:
+            raise SamplexConstructionError(
+                f"A noise model with reference '{noise_ref}' already exists."
+            )
+        self._noise_models[f"noise_maps.{noise_ref}"] = noise_model
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -234,6 +297,9 @@ class Samplex:
         Returns:
             The input for this samplex.
         """
+        if any(noise_model.paulis is None for noise_model in self._noise_models.values()):
+            raise ValueError("Samplex inputs require noise models, call `set_noise_models()`.")
+
         return TensorInterface(self._input_specifications.values())
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
