@@ -14,7 +14,7 @@
 
 from typing import Self
 
-from qiskit.circuit import Parameter
+from ..aliases import Parameter
 
 
 class ParamIter:
