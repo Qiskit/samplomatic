@@ -127,10 +127,17 @@ class Samplex:
         return max(param_idxs)
 
     def set_noise_models(self, **noise_models: QubitSparsePauliList):
-        """Set the noise models to use at sampling time."""
-        if not self._finalized:
-            raise SamplexConstructionError()
+        """Set the noise models to use at sampling time.
 
+        This method sets noise models in the samplex and creates input specifications
+        for its rates and modifiers with the appropriate size.
+
+        Args:
+            **noise_models: The terms contained in the noise model.
+
+        Raises:
+            ValueError: If any of references are not present in the samplex.
+        """
         for name, paulis in noise_models.items():
             if (noise_model := self._noise_models.get(f"noise_maps.{name}")) is None:
                 raise ValueError(f"'{name}' is not a valid noise model identifier.")
@@ -167,10 +174,6 @@ class Samplex:
                     ),
                     overwrite=True,
                 )
-
-        for node in self._sampling_nodes:
-            if isinstance(node, InjectNoiseNode):
-                node.set_model(self._noise_models[node._noise_ref].paulis)  # noqa: SLF001
 
     def add_input(self, specification: Specification, overwrite: bool = False):
         """Add a sampling input to this samplex.
@@ -351,6 +354,11 @@ class Samplex:
                 "The samplex input is missing values for the following:\n"
                 f"{samplex_input.describe(prefix='  * ', include_bound=False)}"
             )
+
+        # TODO: use the input interface?
+        for node in self._sampling_nodes:
+            if isinstance(node, InjectNoiseNode):
+                node.set_model(self._noise_models[node._noise_ref].paulis)  # noqa: SLF001
 
         outputs = self.outputs(num_randomizations)
         if keep_registers:
