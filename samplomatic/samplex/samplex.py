@@ -17,7 +17,6 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
-from qiskit.circuit import Parameter, ParameterExpression
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -27,6 +26,8 @@ from ..aliases import (
     LayoutPresets,
     NodeIndex,
     NumSubsystems,
+    Parameter,
+    ParameterExpression,
     ParamIndex,
     ParamSpec,
     RegisterName,
