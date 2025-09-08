@@ -52,7 +52,7 @@ def test_collect(rng):
         [
             TensorSpecification(
                 "out",
-                (3, 10),
+                (3, 1, 10),
                 np.uint8,
                 "A ten-qubit array",
             )
@@ -64,7 +64,7 @@ def test_collect(rng):
     node2.collect(registers, outputs, rng)
 
     assert outputs["out"].tolist() == [
-        [1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-        [0, 1, 1, 0, 0, 1, 1, 1, 1, 0],
-        [0, 0, 0, 1, 1, 1, 1, 1, 1, 0],
+        [[1, 1, 0, 1, 0, 1, 1, 1, 0, 0]],
+        [[0, 1, 1, 0, 0, 1, 1, 1, 1, 0]],
+        [[0, 0, 0, 1, 1, 1, 1, 1, 1, 0]],
     ]

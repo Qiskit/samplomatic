@@ -81,7 +81,13 @@ class CollectZ2ToOutputNode(CollectionNode):
 
     def collect(self, registers, outputs, rng):
         register = registers[self._register_name]
-        outputs[self._output_name][:, self._output_idxs] = register.virtual_gates[
+        # Measurement flips have shape (# randomization, 1, # qubits)
+        # but noise signs don't have the extra dimension.
+        out_idxs = [slice(None)]
+        if outputs[self._output_name].ndim == 3:
+            out_idxs.append(0)
+        out_idxs.append(self._output_idxs)
+        outputs[self._output_name][tuple(out_idxs)] = register.virtual_gates[
             self._subsystem_idxs, :
         ].transpose(1, 0)
 
