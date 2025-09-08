@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, Qubit
+from qiskit.quantum_info import QubitSparsePauliList
 from rustworkx.rustworkx import (
     PyDiGraph,
     topological_generations,
@@ -34,7 +35,6 @@ from ..aliases import (
     LayoutMethod,
     LayoutPresets,
     NodeIndex,
-    NumSubsystems,
     OperationName,
     ParamIndices,
     ParamSpec,
@@ -75,7 +75,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
 from ..synths import Synth
-from ..tensor_interface import Specification, TensorSpecification, ValueType
+from ..tensor_interface import TensorSpecification
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
@@ -176,8 +176,8 @@ class PreSamplex:
         optional_dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         cregs: list[ClassicalRegister] | None = None,
         noise_map_count: count | None = None,
-        noise_maps: dict[str, NumSubsystems] | None = None,
-        noise_modifiers: set[str] | None = None,
+        noise_maps: dict[str, QubitSparsePauliList] | None = None,
+        noise_modifiers: dict[str, str] | None = None,
         basis_transforms: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
@@ -194,7 +194,7 @@ class PreSamplex:
         self._cregs = cregs
         self._noise_map_count = count() if noise_map_count is None else noise_map_count
         self._noise_maps = {} if noise_maps is None else noise_maps
-        self._noise_modifiers = set() if noise_modifiers is None else noise_modifiers
+        self._noise_modifiers = {} if noise_modifiers is None else noise_modifiers
         self._basis_transforms = {} if basis_transforms is None else basis_transforms
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
         self.passthrough_params: ParamSpec = (
@@ -598,30 +598,43 @@ class PreSamplex:
         return node_idx
 
     def add_emit_noise_left(
-        self, qubits: QubitPartition, noise_ref: StrRef, modifier_ref: StrRef = ""
+        self,
+        qubits: QubitPartition,
+        noise_ref: StrRef,
+        noise_model: QubitSparsePauliList,
+        modifier_ref: StrRef = "",
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the left.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             noise_ref: Unique identifier of the noise to inject.
+            noise_model: The model of the noise to emit.
             modifier_ref: Unique identifier for modifiers to apply to this noise map.
 
         Raises:
-            SamplexBuildError: If a noise map with the same `noise_ref` but of different
-                length has already been added.
+            SamplexBuildError: If the `noise_model` has a different number of qubits than `qubits`.
+            SamplexBuildError: If a noise map with the same `noise_ref` but with a different
+                model has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._noise_maps.get(noise_ref)) and num_subsys != len(qubits):
+        if len(qubits) != noise_model.num_qubits:
             raise SamplexBuildError(
-                f"Cannot add noise map `{noise_ref}` on `{qubits}` and a "
-                f"different subsystem with length `{num_subsys}`."
+                f"Cannot add noise reference '{noise_ref}' with model acting on"
+                f" '{noise_model.num_qubits}' to '{qubits}'."
+            )
+
+        if (model := self._noise_maps.get(noise_ref)) and model != noise_model:
+            raise SamplexBuildError(
+                f"Cannot add unequal noise maps for noise reference '{noise_ref}'."
             )
         else:
-            self._noise_maps[noise_ref] = len(qubits)
-        self._noise_modifiers.add(modifier_ref)
+            self._noise_maps[noise_ref] = noise_model
+
+        if modifier_ref:
+            self._noise_modifiers[modifier_ref] = noise_ref
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreInjectNoise(
@@ -629,36 +642,50 @@ class PreSamplex:
             Direction.LEFT,
             VirtualType.PAULI,
             noise_ref,
+            noise_model,
             modifier_ref,
             next(self._noise_map_count),
         )
         return self._add_emit_left(node)
 
     def add_emit_noise_right(
-        self, qubits: QubitPartition, noise_ref: StrRef, modifier_ref: StrRef = ""
+        self,
+        qubits: QubitPartition,
+        noise_ref: StrRef,
+        noise_model: QubitSparsePauliList,
+        modifier_ref: StrRef = "",
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the right.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             noise_ref: Unique identifier of the noise to inject.
+            noise_model: The model of the noise to emit.
             modifier_ref: Unique identifier for modifiers to apply to this noise map.
 
         Raises:
-            SamplexBuildError: If a noise map with the same `noise_ref` but of different
-                length has already been added.
+            SamplexBuildError: If the `noise_model` has a different number of qubits than `qubits`.
+            SamplexBuildError: If a noise map with the same `noise_ref` but with a different
+                model has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._noise_maps.get(noise_ref)) and (num_subsys) != len(qubits):
+        if len(qubits) != noise_model.num_qubits:
             raise SamplexBuildError(
-                f"Cannot add noise map `{noise_ref}` on `{qubits}` and a "
-                f"different subsystem with length `{num_subsys}`."
+                f"Cannot add noise reference '{noise_ref}' with model acting on"
+                f" '{noise_model.num_qubits}' to '{qubits}'."
+            )
+
+        if (model := self._noise_maps.get(noise_ref)) and model != noise_model:
+            raise SamplexBuildError(
+                f"Cannot add unequal noise maps for noise reference '{noise_ref}'."
             )
         else:
-            self._noise_maps[noise_ref] = len(qubits)
-        self._noise_modifiers.add(modifier_ref)
+            self._noise_maps[noise_ref] = noise_model
+
+        if modifier_ref:
+            self._noise_modifiers[noise_ref].add(modifier_ref)
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreInjectNoise(
@@ -666,6 +693,7 @@ class PreSamplex:
             Direction.LEFT,
             VirtualType.PAULI,
             noise_ref,
+            noise_model,
             modifier_ref,
             next(self._noise_map_count),
         )
@@ -1086,35 +1114,46 @@ class PreSamplex:
                 )
             )
 
-        for noise_map, length in self._noise_maps.items():
+        if self._noise_maps:
             samplex.add_input(
-                Specification(
-                    f"noise_maps.{noise_map}",
-                    ValueType.LINDBLAD,
-                    f"A noise map acting on ``{length}`` qubits.",
-                )
+                TensorSpecification(
+                    "global_scale",
+                    (),
+                    np.dtype(np.float64),
+                    "A factor by which to scale all noise maps.",
+                    optional=True,
+                ),
             )
 
-        for noise_modifier in self._noise_modifiers:
-            if noise_modifier == "":
-                continue
+        for noise_map, model in self._noise_maps.items():
+            samplex.add_input(
+                TensorSpecification(
+                    f"noise_maps.{noise_map}",
+                    (num_terms := (model.num_terms),),
+                    np.dtype(np.float64),
+                    f"The rates of a noise map with ``{num_terms}`` terms acting on "
+                    f"``{model.num_qubits}`` qubits.",
+                ),
+            )
 
+        for noise_modifier, noise_ref in self._noise_modifiers.items():
             samplex.add_input(
                 TensorSpecification(
                     f"noise_scales.{noise_modifier}",
                     (),
                     np.dtype(np.float64),
-                    "A factor by which to scale a noise map.",
+                    f"A factor by which to scale noise with modifier reference {noise_modifier}.",
                     optional=True,
-                )
+                ),
             )
             samplex.add_input(
-                Specification(
+                TensorSpecification(
                     f"local_scales.{noise_modifier}",
-                    ValueType.NUMPY_ARRAY,
-                    "An array of factors by which to scale individual elements of a noise map.",
-                    True,
-                )
+                    (self._noise_maps[noise_ref].num_terms,),
+                    "An array of factors by which to scale individual rates of a noise map.",
+                    np.dtype(np.float64),
+                    optional=True,
+                ),
             )
 
         if max_param_idx is not None:
@@ -1213,7 +1252,7 @@ class PreSamplex:
             reg_name,
             sign_reg_name,
             "noise_maps." + pre_inject.ref,
-            len(pre_inject.subsystems),
+            pre_inject.model,
             pre_inject.modifier_ref,
         )
         node_idx = samplex.add_node(node)

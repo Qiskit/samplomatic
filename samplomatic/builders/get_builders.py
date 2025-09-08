@@ -145,6 +145,7 @@ def inject_noise_parser(
         emission: The emission spec to modify.
     """
     emission.noise_ref = inject_noise.ref
+    emission.noise_model = inject_noise.model
     emission.noise_modifier_ref = inject_noise.modifier_ref
 
 

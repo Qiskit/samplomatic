@@ -17,6 +17,7 @@ from typing import Any
 
 import numpy as np
 from qiskit.circuit.gate import Gate
+from qiskit.quantum_info import QubitSparsePauliList
 
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef, SubsystemIndex
 from ..annotations import VirtualType
@@ -252,6 +253,9 @@ class PreInjectNoise(PreEmit):
 
     ref: StrRef
     """Unique identifier of this noise map."""
+
+    model: QubitSparsePauliList
+    """The noise model for this noise map."""
 
     modifier_ref: StrRef
     """Unique identifier for modifiers applied to this noise map."""

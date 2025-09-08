@@ -15,42 +15,55 @@
 import numpy as np
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import CXGate
-from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap
+from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap, QubitSparsePauliList
 
 from samplomatic.annotations import InjectNoise, Twirl
 from samplomatic.builders import pre_build
 
 
 def make_circuits():
+    model = QubitSparsePauliList.from_list(["XX"])
     circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_noise")]):
+    with circuit.box([Twirl(), InjectNoise("my_noise", model)]):
         circuit.noop(0, 1)
 
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    noise_map = PauliLindbladMap.from_list([("II", 0.0)])
     expected = Operator(np.identity(16))
 
-    yield (circuit, expected, {"my_noise": noise_map}), "identity"
+    yield (circuit, expected, {"my_noise": np.array([0.0])}), "identity"
 
     circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
+    with circuit.box([Twirl(), InjectNoise("my_noise", model, "my_modifier")]):
         circuit.noop(0, 1)
 
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    yield (circuit, expected, {"my_noise": noise_map}), "identity_optional_modifiers"
+    yield (circuit, expected, {"my_noise": np.array([0.0])}), "identity_optional_modifiers"
 
-    noise_map = PauliLindbladMap.from_list([("XX", 100)])
-    prob = next(iter(noise_map.probabilities()))
+    prob = next(iter(PauliLindbladMap.from_list([("XX", 100)]).probabilities()))
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
 
-    yield (circuit, expected, {"my_noise": noise_map}), "xx_noise"
+    yield (circuit, expected, {"my_noise": np.array([100.0])}), "xx_noise"
 
     circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_noise")]):
+    with circuit.box([Twirl(), InjectNoise("my_noise", model)]):
+        circuit.noop(0, 1)
+
+    with circuit.box([Twirl(), InjectNoise("my_noise", model)]):
+        circuit.noop(0, 1)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    expected = expected & expected
+
+    yield (circuit, expected, {"my_noise": np.array([100.0])}), "xx_noise_twice"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise("my_noise", model)]):
         circuit.cx(0, 1)
 
     with circuit.box([Twirl(dressing="right")]):
@@ -59,24 +72,7 @@ def make_circuits():
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
     expected = (Operator(CXGate()) ^ Operator(CXGate())) & expected
 
-    yield (circuit, expected, {"my_noise": noise_map}), "xx_noise_permuted"
-
-    circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_noise")]):
-        circuit.noop(0, 1)
-
-    with circuit.box([Twirl(), InjectNoise("my_noise")]):
-        circuit.noop(0, 1)
-
-    with circuit.box([Twirl(dressing="right")]):
-        circuit.noop(0, 1)
-
-    noise_map = PauliLindbladMap.from_list([("XX", 100)])
-    prob = next(iter(noise_map.probabilities()))
-    expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
-    expected = expected & expected
-
-    yield (circuit, expected, {"my_noise": noise_map}), "xx_noise_twice"
+    yield (circuit, expected, {"my_noise": np.array([100.0])}), "xx_noise_permuted"
 
 
 def pytest_generate_tests(metafunc):

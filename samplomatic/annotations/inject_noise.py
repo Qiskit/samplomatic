@@ -13,6 +13,7 @@
 """InjectNoise"""
 
 from qiskit.circuit import Annotation
+from qiskit.quantum_info import QubitSparsePauliList
 
 from ..aliases import StrRef
 
@@ -27,16 +28,18 @@ class InjectNoise(Annotation):
 
     namespace = "samplomatic.inject_noise"
 
-    __slots__ = ("ref", "modifier_ref")
+    __slots__ = ("ref", "model", "modifier_ref")
 
-    def __init__(self, ref: StrRef, modifier_ref: StrRef = ""):
+    def __init__(self, ref: StrRef, model: QubitSparsePauliList, modifier_ref: StrRef = ""):
         self.ref = ref
+        self.model = model
         self.modifier_ref = modifier_ref
 
     def __eq__(self, other):
         return (
             isinstance(other, InjectNoise)
             and self.ref == other.ref
+            and self.model == other.model
             and self.modifier_ref == other.modifier_ref
         )
 

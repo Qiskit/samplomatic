@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 from qiskit.circuit import Parameter
+from qiskit.quantum_info import QubitSparsePauliList
 
 from ..aliases import CircuitInstruction, ClbitIndex, ParamIndices, ParamSpec, Qubit, StrRef
 from ..annotations import DressingMode, VirtualType
@@ -68,6 +69,9 @@ class EmissionSpec:
 
     noise_ref: StrRef = ""
     """A unique identifier of the noise map."""
+
+    noise_model: QubitSparsePauliList | None = None
+    """The noise model to use."""
 
     noise_modifier_ref: StrRef = ""
     """A unique identifier of modifiers for the noise map."""
