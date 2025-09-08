@@ -43,6 +43,13 @@ class TestBasic:
         samplex.finalize()
         samplex.sample(samplex.inputs())
 
+    def test_str(self):
+        """Test the string dunder is doing fancy stuff."""
+        samplex = Samplex()
+        assert "Samplex" in str(samplex)
+        assert "Inputs:" in str(samplex)
+        assert "Outputs:" in str(samplex)
+
     def test_requires_finalize(self):
         """Test that we get an error when we try and sample without finalizing first."""
         samplex = Samplex()

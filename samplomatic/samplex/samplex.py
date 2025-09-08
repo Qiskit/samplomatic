@@ -69,6 +69,15 @@ class Samplex:
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
+    def __str__(self):
+        return (
+            f"Samplex(<{len(self.graph)} nodes>)\n"
+            f"  Inputs:\n{self.inputs().describe(prefix='    * ', width=100)}"
+            f"\n  Outputs:\n{self.outputs(123).describe(prefix='    * ', width=100)}".replace(
+                "[123", "[num_randomizations"
+            )
+        )
+
     @property
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
