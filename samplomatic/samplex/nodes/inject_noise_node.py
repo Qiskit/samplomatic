@@ -91,8 +91,8 @@ class InjectNoiseNode(SamplingNode):
     def sample(self, registers, rng, inputs, num_randomizations):
         rates = inputs.get(self._noise_ref)
         if self._modifier_ref:
-            scale = inputs.get("noise_scales." + self._modifier_ref) or inputs.get(
-                "noise_scales.all", 1.0
+            scale = inputs.get(
+                "noise_scales." + self._modifier_ref, inputs.get("global_scale", 1.0)
             )
             local_scale = inputs.get(
                 "local_scales." + self._modifier_ref, np.ones(self._model.num_terms)
