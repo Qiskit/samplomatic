@@ -23,6 +23,7 @@ class InjectNoise(Annotation):
 
     Args:
         ref: A unique identifier of the map from which to inject noise.
+        model: The Pauli operators in this noise model.
         modifier_ref: A unique identifer for modifiers to apply to the noise map before injection.
     """
 
