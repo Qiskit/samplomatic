@@ -18,7 +18,12 @@ import pytest
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformPauli
 from samplomatic.exceptions import SamplexConstructionError
-from samplomatic.samplex.nodes import LeftMultiplicationNode, RightMultiplicationNode
+from samplomatic.samplex.nodes import (
+    LeftConjugationNode,
+    LeftMultiplicationNode,
+    RightConjugationNode,
+    RightMultiplicationNode,
+)
 from samplomatic.virtual_registers import U2Register
 
 
@@ -78,5 +83,75 @@ class TestRightMultiplicationNode:
     def test_writes_to(self):
         """Test writes to"""
         node = RightMultiplicationNode(U2Register.identity(3, 1), "a")
+        assert node.writes_to() == {"a": ({0, 1, 2}, VirtualType.U2)}
+        assert node.outgoing_register_type is VirtualType.U2
+
+
+class TestRightConjugationNode:
+    def test_instantiation_errors(self):
+        """Test that errors are properly raised during instantiation"""
+        with pytest.raises(
+            SamplexConstructionError,
+            match=re.escape("Expected fixed operand to have only one sample but it has 7"),
+        ):
+            RightConjugationNode(U2Register.identity(5, 7), "a")
+
+    @pytest.mark.parametrize("distribution_type", [HaarU2, UniformPauli])
+    def test_multiply(self, distribution_type, rng):
+        """Test left multiply"""
+        operand = distribution_type(5).sample(1, rng)
+        register = distribution_type(5).sample(7, rng)
+        node = RightConjugationNode(operand, "a")
+        assert node.outgoing_register_type is operand.TYPE
+
+        registers = {"a": register.copy()}
+        node.evaluate(registers, [])
+        expected_registers = {"a": register.copy()}
+        node = LeftMultiplicationNode(operand.invert(), "a")
+        node.evaluate(expected_registers)
+        node = RightMultiplicationNode(operand, "a")
+        node.evaluate(expected_registers)
+
+        assert list(registers) == ["a"]
+        assert np.allclose(expected_registers["a"].virtual_gates, registers["a"].virtual_gates)
+
+    def test_writes_to(self):
+        """Test writes to"""
+        node = RightConjugationNode(U2Register.identity(3, 1), "a")
+        assert node.writes_to() == {"a": ({0, 1, 2}, VirtualType.U2)}
+        assert node.outgoing_register_type is VirtualType.U2
+
+
+class TestLeftConjugationNode:
+    def test_instantiation_errors(self):
+        """Test that errors are properly raised during instantiation"""
+        with pytest.raises(
+            SamplexConstructionError,
+            match=re.escape("Expected fixed operand to have only one sample but it has 7"),
+        ):
+            LeftConjugationNode(U2Register.identity(5, 7), "a")
+
+    @pytest.mark.parametrize("distribution_type", [HaarU2, UniformPauli])
+    def test_multiply(self, distribution_type, rng):
+        """Test left multiply"""
+        operand = distribution_type(5).sample(1, rng)
+        register = distribution_type(5).sample(7, rng)
+        node = LeftConjugationNode(operand, "a")
+        assert node.outgoing_register_type is operand.TYPE
+
+        registers = {"a": register.copy()}
+        node.evaluate(registers, [])
+        expected_registers = {"a": register.copy()}
+        node = LeftMultiplicationNode(operand, "a")
+        node.evaluate(expected_registers)
+        node = RightMultiplicationNode(operand.invert(), "a")
+        node.evaluate(expected_registers)
+
+        assert list(registers) == ["a"]
+        assert np.allclose(expected_registers["a"].virtual_gates, registers["a"].virtual_gates)
+
+    def test_writes_to(self):
+        """Test writes to"""
+        node = LeftConjugationNode(U2Register.identity(3, 1), "a")
         assert node.writes_to() == {"a": ({0, 1, 2}, VirtualType.U2)}
         assert node.outgoing_register_type is VirtualType.U2

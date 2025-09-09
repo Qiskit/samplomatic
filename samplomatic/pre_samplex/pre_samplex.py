@@ -61,10 +61,14 @@ from ..samplex.nodes import (
     CollectZ2ToOutputNode,
     CombineRegistersNode,
     InjectNoiseNode,
+    LeftConjugationNode,
     LeftMultiplicationNode,
+    LeftU2ParametricConjugationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
+    RightConjugationNode,
     RightMultiplicationNode,
+    RightU2ParametricConjugationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
     TwirlSamplingNode,
@@ -1410,6 +1414,28 @@ class PreSamplex:
                 combined_register_name,
                 np.array(list(pre_propagate.partition), dtype=np.intp),
             )
+        elif mode is InstructionMode.PROPAGATE:
+            # What's left are the supported non-clifford gates rz\rx
+            combined_register_type = VirtualType.U2
+            if pre_propagate.operation.is_parameterized():
+                param_idxs = [
+                    samplex.append_parameter_expression(param)
+                    for _, param in pre_propagate.spec.params
+                ]
+                if pre_propagate.direction is Direction.LEFT:
+                    propagate_node = RightU2ParametricConjugationNode(
+                        op_name, combined_register_name, param_idxs
+                    )
+                else:
+                    propagate_node = LeftU2ParametricConjugationNode(
+                        op_name, combined_register_name, param_idxs
+                    )
+            else:
+                operand = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
+                if pre_propagate.direction is Direction.LEFT:
+                    propagate_node = RightConjugationNode(operand, combined_register_name)
+                else:
+                    propagate_node = LeftConjugationNode(operand, combined_register_name)
         else:
             raise SamplexBuildError(
                 f"Encountered unsupported {op_name} propragation with mode {mode} and "
@@ -1430,8 +1456,6 @@ class PreSamplex:
             node_idx = samplex.add_node(propagate_node)
             samplex.add_edge(combine_node_idx, node_idx)
         else:
-            # TODO: It should be possible to not add a slice node in this case, if there is
-            # a single predecessor.
             node_idx = combine_node_idx
 
         pre_nodes_to_nodes[pre_propagate_idx] = node_idx

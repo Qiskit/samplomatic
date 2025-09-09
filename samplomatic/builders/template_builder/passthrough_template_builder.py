@@ -23,6 +23,11 @@ from .template_state import TemplateState
 class PassthroughTemplateBuilder(Builder[TemplateState, InstructionSpec]):
     """Template builder that passes all instructions through."""
 
+    def __init__(self):
+        super().__init__()
+        self.track_noncliffords = False
+        self.found_noncliffords = False
+
     def parse(self, instr: CircuitInstruction) -> InstructionSpec:
         """Parse a single non-box instruction.
 
@@ -53,6 +58,8 @@ class PassthroughTemplateBuilder(Builder[TemplateState, InstructionSpec]):
                 clbit_idxs=self.state.get_condition_clbits(instr.operation.condition),
             )
         else:
+            if self.track_noncliffords and instr.operation.name in ("rx", "rz"):
+                self.found_noncliffords = True
             return InstructionSpec(
                 params=self.state.append_remapped_gate(instr), mode=InstructionMode.PROPAGATE
             )

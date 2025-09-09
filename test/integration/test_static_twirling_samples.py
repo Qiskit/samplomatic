@@ -35,6 +35,20 @@ def make_circuits():
 
             yield circuit, f"{op_name}_{str(pair1).replace(' ', '')}_{str(pair2).replace(' ', '')}"
 
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl()]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+    circuit.cx(0, 1)
+    circuit.rz(1.2, 0)
+    circuit.h(1)
+    circuit.sx(0)
+    circuit.x(1)
+    circuit.rx(1.2, 1)
+
+    yield circuit, "instructions_outside_boxes_chain"
+
     circuit = QuantumCircuit(4)
     with circuit.box([Twirl(dressing="left")]):
         circuit.cx(1, 0)
@@ -228,6 +242,30 @@ def make_circuits():
         circuit.noop(0, 1)
 
     yield circuit, "propagate_through_merged_invariant_gates"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.rz(1.2, 0)
+        circuit.cx(0, 1)
+    circuit.rx(1.2, 0)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.cx(1, 0)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "nonclifford_between_left_left_boxes"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+    circuit.rx(1.2, 0)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.cx(0, 1)
+        circuit.rx(1.2, 1)
+
+    yield circuit, "nonclifford_between_right_right_boxes"
 
 
 def pytest_generate_tests(metafunc):

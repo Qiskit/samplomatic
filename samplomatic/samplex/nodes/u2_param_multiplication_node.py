@@ -24,11 +24,11 @@ from ...virtual_registers import U2Register, VirtualRegister
 from .evaluation_node import EvaluationNode
 
 
-class U2ParametricMultiplicationNode(EvaluationNode):
-    """Abstract parent node for nodes doing multiplication on a :class:`~.U2Register`.
+class U2ParametricTransformationNode(EvaluationNode):
+    """Abstract parent node for nodes doing transformation on a :class:`~.U2Register`.
 
     The node stores a parametric representation of a one-qubit gate or gates from the
-    original circuit to perform multiplication on a registry.
+    original circuit to perform transformation on a registry.
 
     Limited to the gates ``rz`` or ``rx``, and all gates within the node are of the
     same type.
@@ -107,7 +107,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         return U2Register(result)
 
 
-class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
+class LeftU2ParametricMultiplicationNode(U2ParametricTransformationNode):
     """Perform parametric left multiplication on a :class:`~.U2Register`.
 
     The node stores a parametric representation :math:`g` of a one-qubit gate or gates from the
@@ -158,7 +158,7 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         registers[self._register_name].left_inplace_multiply(self._get_operation(parameter_values))
 
 
-class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
+class RightU2ParametricMultiplicationNode(U2ParametricTransformationNode):
     """Perform parametric right multiplication on a :class:`~.U2Register`.
 
     The node stores a parametric representation :math:`g` of a one-qubit gate or gates from the
@@ -206,4 +206,94 @@ class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
                 f"{len(parameter_values)}"
             )
 
+        registers[self._register_name].inplace_multiply(self._get_operation(parameter_values))
+
+
+class LeftU2ParametricConjugationNode(U2ParametricTransformationNode):
+    """Perform parametric left conjugation on a :class:`~.U2Register`.
+
+    The node stores a parametric representation :math:`g` of a one-qubit gate or gates from the
+    original circuit and performs a :math:`g*reg*g^{\dagger}` conjugation, where :math:`reg` is
+    the existing ``U2Register``. This is consistent with a traveling virtual gate going from
+    right to left.
+
+    :math:`g` is limited to the gates ``rz`` or ``rx``, and all gates within the node are of the
+    same type:math:.
+
+    Args:
+        operand: The gate type, given as a string.
+        register_name: The name of the register the operation is applied to.
+        param_idxs: List of ``ParamIndex`` for the parameter expressions specifying the gate
+            arguments. List order must match the order subsystems in the register.
+
+    Raises:
+        SamplexConstructionError: if `param_idxs` is empty.
+    """
+
+    def evaluate(
+        self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray
+    ):
+        """Evaluate this node.
+
+        Args:
+            registers: At least those registers needed by this node to read from or write to.
+            parameter_values: The evaluated values of the parameter expressions in indices
+                ``self.parameter_idxs``, at the same order.
+
+        Raises:
+            SamplexRuntimeError: If the number of parameter values doesn't match the number of
+                parameter expressions in ``self.parameter_idxs``.
+        """
+        if len(parameter_values) != self.num_parameters:
+            raise SamplexRuntimeError(
+                f"Expected {self.num_parameters} parameter values instead got "
+                f"{len(parameter_values)}"
+            )
+
+        registers[self._register_name].left_inplace_multiply(self._get_operation(parameter_values))
+        registers[self._register_name].inplace_multiply(self._get_operation(-parameter_values))
+
+
+class RightU2ParametricConjugationNode(U2ParametricTransformationNode):
+    """Perform parametric right conjugation on a :class:`~.U2Register`.
+
+    The node stores a parametric representation :math:`g` of a one-qubit gate or gates from the
+    original circuit and performs a :math:`g^{\dagger}*reg*g` conjugation, where :math:`reg` is
+    the existing ``U2Register``. This is consistent with a traveling virtual gate going from
+    left to right.
+
+    :math:`g` is limited to the gates ``rz`` or ``rx``, and all gates within the node are of the
+    same type:math:.
+
+    Args:
+        operand: The gate type, given as a string.
+        register_name: The name of the register the operation is applied to.
+        param_idxs: List of ``ParamIndex`` for the parameter expressions specifying the gate
+            arguments. List order must match the order subsystems in the register.
+
+    Raises:
+        SamplexConstructionError: if `param_idxs` is empty.
+    """
+
+    def evaluate(
+        self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray
+    ):
+        """Evaluate this node.
+
+        Args:
+            registers: At least those registers needed by this node to read from or write to.
+            parameter_values: The evaluated values of the parameter expressions in indices
+                ``self.parameter_idxs``, at the same order.
+
+        Raises:
+            SamplexRuntimeError: If the number of parameter values doesn't match the number of
+                parameter expressions in ``self.parameter_idxs``.
+        """
+        if len(parameter_values) != self.num_parameters:
+            raise SamplexRuntimeError(
+                f"Expected {self.num_parameters} parameter values instead got "
+                f"{len(parameter_values)}"
+            )
+
+        registers[self._register_name].left_inplace_multiply(self._get_operation(-parameter_values))
         registers[self._register_name].inplace_multiply(self._get_operation(parameter_values))

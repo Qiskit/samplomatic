@@ -17,12 +17,18 @@ from collections.abc import Iterator
 from qiskit.circuit import QuantumCircuit
 
 from ..aliases import CircuitInstruction
+from ..exceptions import SamplexBuildError
 from ..pre_samplex import PreSamplex
 from ..samplex import Samplex
 from .builder import Builder
 from .get_builders import get_builders
 from .specs import InstructionSpec
-from .template_builder import TemplateState
+from .template_builder import (
+    LeftBoxTemplateBuilder,
+    PassthroughTemplateBuilder,
+    RightBoxTemplateBuilder,
+    TemplateState,
+)
 
 
 def _build_stream(
@@ -69,6 +75,24 @@ def _build(
     for idx, nested_instr in enumerate(_build_stream(stream, template_builder, samplex_builder)):
         # assume the nested instruction is a box for now, handle other control flow ops later
         inner_template_builder, inner_samplex_builder = get_builders(nested_instr)
+        if isinstance(template_builder, PassthroughTemplateBuilder):
+            if isinstance(inner_template_builder, LeftBoxTemplateBuilder):
+                # Upcoming box is left-dressed, so when we get back to the passthrough builder we
+                # need to track non-cliffords, in case then next box is right dressed.
+                template_builder.track_noncliffords = True
+                template_builder.found_noncliffords = False
+            elif (
+                isinstance(inner_template_builder, RightBoxTemplateBuilder)
+                and template_builder.found_noncliffords
+            ):
+                raise SamplexBuildError(
+                    "Cannot have non-clifford gate between a left-dressed box"
+                    " and a right-dressed box (which involve that qubit)."
+                )
+            else:
+                template_builder.track_noncliffords = False
+                template_builder.found_noncliffords = False
+
         qubit_remapping = dict(zip(nested_instr.operation.body.qubits, nested_instr.qubits))
 
         remapped_template_state = template_builder.state.remap(qubit_remapping, idx)
