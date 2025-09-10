@@ -31,6 +31,8 @@ class CollectZ2ToOutputNode(CollectionNode):
         subsystem_idxs: The subsystems to read from.
         output_name: The name of the output to write to.
         output_idxs: The indices of the output to write to.
+        num_dummy_axes: Number of dummy axes (length 1) in the output array between the
+            randomizations axis and the the ``output_idxs`` axis. Defaults to 0.
     """
 
     def __init__(
@@ -39,11 +41,15 @@ class CollectZ2ToOutputNode(CollectionNode):
         subsystem_idxs: Sequence[SubsystemIndex],
         output_name: InterfaceName,
         output_idxs: Sequence[OutputIndex],
+        num_dummy_axes: int = 0,
     ):
         self._register_name = register_name
         self._output_name = output_name
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.uint32)
-        self._output_idxs = np.asarray(output_idxs, dtype=np.uint32)
+        self._output_idxs = (
+            (slice(None),) + (0,) * num_dummy_axes + (np.asarray(output_idxs, dtype=np.uint32),)
+        )
+        self._num_dummy_axes = num_dummy_axes
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
@@ -51,7 +57,8 @@ class CollectZ2ToOutputNode(CollectionNode):
             "register_name": self._register_name,
             "output_name": self._output_name,
             "subsystem_indices": array_to_json(self._subsystem_idxs),
-            "output_indices": array_to_json(self._output_idxs),
+            "output_indices": array_to_json(self._output_idxs[-1]),
+            "num_dummy_axes": str(self._num_dummy_axes),
         }
 
     @classmethod
@@ -61,13 +68,14 @@ class CollectZ2ToOutputNode(CollectionNode):
             array_from_json(data["subsystem_indices"]),
             data["output_name"],
             array_from_json(data["output_indices"]),
+            int(data["num_dummy_axes"]),
         )
 
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}
 
     def outputs_to(self):
-        return {self._output_name: (set(self._output_idxs), VirtualType.Z2)}
+        return {self._output_name: (set(self._output_idxs[-1]), VirtualType.Z2)}
 
     def validate_and_update(self, register_descriptions):
         super().validate_and_update(register_descriptions)
@@ -81,13 +89,7 @@ class CollectZ2ToOutputNode(CollectionNode):
 
     def collect(self, registers, outputs, rng):
         register = registers[self._register_name]
-        # Measurement flips have shape (# randomization, 1, # qubits)
-        # but noise signs don't have the extra dimension.
-        out_idxs = [slice(None)]
-        if outputs[self._output_name].ndim == 3:
-            out_idxs.append(0)
-        out_idxs.append(self._output_idxs)
-        outputs[self._output_name][tuple(out_idxs)] = register.virtual_gates[
+        outputs[self._output_name][self._output_idxs] = register.virtual_gates[
             self._subsystem_idxs, :
         ].transpose(1, 0)
 
