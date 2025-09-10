@@ -14,9 +14,16 @@ import enum
 from dataclasses import dataclass, field
 
 import numpy as np
-from qiskit.circuit import Parameter
 
-from ..aliases import CircuitInstruction, ClbitIndex, ParamIndices, ParamSpec, Qubit, StrRef
+from ..aliases import (
+    CircuitInstruction,
+    ClbitIndex,
+    Parameter,
+    ParamIndices,
+    ParamSpec,
+    Qubit,
+    StrRef,
+)
 from ..annotations import DressingMode, VirtualType
 from ..partition import QubitPartition
 from ..synths import Synth

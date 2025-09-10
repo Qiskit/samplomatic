@@ -13,6 +13,7 @@
 
 """Interfaces"""
 
+import textwrap
 from collections.abc import Iterable, MutableMapping
 from enum import StrEnum
 from typing import Any, Literal, Self, overload
@@ -67,8 +68,8 @@ class Specification:
 
     def describe(self) -> str:
         """Return a human-readable description of this specification."""
-        optional = " (Optional)" if self.optional else ""
-        return f"'{self.name}' ({self.value_type.value}): {self.description}{optional}"
+        optional = "(Optional) " if self.optional else ""
+        return f"'{self.name}' <{self.value_type.value}>: {optional}{self.description}"
 
     @overload
     def validate_and_coerce(self: Literal[ValueType.BOOL], value: Any) -> bool: ...
@@ -107,8 +108,8 @@ class Specification:
 
     def __repr__(self):
         desc = f", '{self.description}'" if self.description else ""
-        optional = ", (Optional)" if self.optional else ""
-        return f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}{desc}{optional}"
+        optional = ", optional=True" if self.optional else ""
+        return f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}{desc}{optional})"
 
 
 class TensorSpecification(Specification):
@@ -135,7 +136,7 @@ class TensorSpecification(Specification):
         optional: bool = False,
     ):
         super().__init__(name, ValueType.NUMPY_ARRAY, description, optional)
-        self.shape = shape
+        self.shape = tuple(map(int, shape))
         self.dtype = dtype
         self.broadcastable = broadcastable
 
@@ -171,8 +172,8 @@ class TensorSpecification(Specification):
             shape_string = f"[*, {', '.join(map(str, self.shape))}]"
         else:
             shape_string = str(list(self.shape))
-        optional = " (Optional)" if self.optional else ""
-        return f"'{self.name}' ({self.dtype}{shape_string}): {self.description}{optional}"
+        optional = "(Optional) " if self.optional else ""
+        return f"'{self.name}' <{self.dtype}{shape_string}>: {optional}{self.description}"
 
     def empty(self) -> np.ndarray:
         """Create an empty output according to this specification.
@@ -206,7 +207,7 @@ class TensorSpecification(Specification):
         return value
 
     def __repr__(self):
-        return super().__repr__()[:-1] + (", True)" if self.broadcastable else ")")
+        return super().__repr__()[:-1] + (", broadcastable=True)" if self.broadcastable else ")")
 
 
 class TensorInterface(MutableMapping):
@@ -264,12 +265,13 @@ class TensorInterface(MutableMapping):
         """The specifications that do not have any data."""
         return {name for name in self._specs if name not in self._data}
 
-    def describe(self, include_bound: bool = True, prefix: str = "* ") -> str:
+    def describe(self, include_bound: bool = True, prefix: str = "* ", width: int = 0) -> str:
         """Return a human-readable description of this interface.
 
         Args:
             include_bound: Whether to include interface specs that are already bound.
             prefix: A string prefix for every line returned.
+            width: The text width to wrap at, minimum 40, but where 0 specifies no wrapping.
 
         Returns:
             A description.
@@ -289,6 +291,11 @@ class TensorInterface(MutableMapping):
             for spec in self._specs.values()
             if not isinstance(spec, TensorSpecification) and (include_bound or spec.name in unbound)
         )
+
+        if width >= 40:
+            joiner = "\n" + " " * (len(prefix) + 2)
+            for idx in range(len(ret)):
+                ret[idx] = joiner.join(textwrap.wrap(ret[idx], width - len(joiner)))
 
         return "\n".join(ret)
 

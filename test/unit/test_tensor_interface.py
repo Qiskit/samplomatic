@@ -130,12 +130,14 @@ class TestTensorInterface:
 
     def test_basic_attributes(self):
         """Test basic attributes post-construction."""
-        spec1 = Specification("flag", ValueType.BOOL, "boolean flag")
+        spec1 = Specification("flag", ValueType.BOOL, "boolean flag " * 30)
         spec2 = TensorSpecification("vec", (2,), np.dtype(np.float64), "vector input")
         tensor_interface = TensorInterface([spec2, spec1])
 
         assert "TensorInterface" in repr(tensor_interface)
-        assert "flag' (bool" in tensor_interface.describe()
+        assert "flag' <bool" in tensor_interface.describe()
+        assert "*abc123*" in tensor_interface.describe(prefix="*abc123*")
+        assert all(len(line) <= 100 for line in tensor_interface.describe(width=100).split("\n"))
         assert [spec.name for spec in tensor_interface.specs] == ["flag", "vec"]
         assert tensor_interface.shape == ()
         assert tensor_interface.size == 1

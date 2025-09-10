@@ -17,7 +17,6 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Self
 
 from numpy.random import Generator, SeedSequence, default_rng
-from qiskit.circuit import Parameter, ParameterExpression
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -27,6 +26,8 @@ from ..aliases import (
     LayoutPresets,
     NodeIndex,
     NumSubsystems,
+    Parameter,
+    ParameterExpression,
     ParamIndex,
     ParamSpec,
     RegisterName,
@@ -68,6 +69,15 @@ class Samplex:
         self._collection_nodes: list[CollectionNode] = []
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
+
+    def __str__(self):
+        return (
+            f"Samplex(<{len(self.graph)} nodes>)\n"
+            f"  Inputs:\n{self.inputs().describe(prefix='    * ', width=100)}"
+            f"\n  Outputs:\n{self.outputs(123).describe(prefix='    * ', width=100)}".replace(
+                "[123", "[num_randomizations"
+            )
+        )
 
     @property
     def parameters(self) -> list[Parameter]:
