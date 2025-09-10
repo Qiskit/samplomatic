@@ -1132,10 +1132,7 @@ class PreSamplex:
                 samplex.add_output(
                     TensorSpecification(
                         f"measurement_flips.{reg.name}",
-                        (
-                            1,
-                            len(reg),
-                        ),
+                        (1, len(reg)),
                         np.dtype(np.bool_),
                         "Bit-flip corrections for measurement twirling.",
                     )
