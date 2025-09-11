@@ -18,13 +18,12 @@ import uuid
 
 import orjson
 import pybase64
-from qiskit.circuit import Parameter, ParameterExpression
 
 # This is super private in Qiskit and on every upgrade should be checked for changes
 from qiskit.qpy.binary_io.value import _read_parameter_expr_v13, _write_parameter_expression_v13
 from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
-from ..aliases import InterfaceName
+from ..aliases import InterfaceName, Parameter, ParameterExpression
 from ..exceptions import DeserializationError
 from ..tensor_interface import Specification, TensorSpecification
 from .nodes import Node

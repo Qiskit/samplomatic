@@ -13,9 +13,9 @@
 """ParameterExpressionTable"""
 
 import numpy as np
-from qiskit.circuit import Parameter, ParameterExpression, ParameterVectorElement
+from qiskit.circuit import ParameterVectorElement
 
-from ..aliases import ParamIndex, ParamName, ParamValues
+from ..aliases import Parameter, ParameterExpression, ParamIndex, ParamName, ParamValues
 from ..exceptions import ParameterError
 
 

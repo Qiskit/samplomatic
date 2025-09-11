@@ -14,5 +14,5 @@
 
 from . import builders
 from ._version import __version__
-from .annotations import Twirl
+from .annotations import BasisTransform, InjectNoise, Twirl
 from .builders import build

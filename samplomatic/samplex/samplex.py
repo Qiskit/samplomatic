@@ -18,7 +18,6 @@ from typing import TYPE_CHECKING, Self
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
-from qiskit.circuit import Parameter, ParameterExpression
 from qiskit.quantum_info import QubitSparsePauliList
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
@@ -29,6 +28,8 @@ from ..aliases import (
     LayoutPresets,
     NodeIndex,
     NumSubsystems,
+    Parameter,
+    ParameterExpression,
     ParamIndex,
     ParamSpec,
     RegisterName,
