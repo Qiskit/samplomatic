@@ -74,7 +74,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
-from ..samplex.samplex import NoiseModel
+from ..samplex.noise_model_requirement import NoiseModelRequirement
 from ..synths import Synth
 from ..tensor_interface import TensorSpecification
 from ..virtual_registers import U2Register
@@ -1092,8 +1092,8 @@ class PreSamplex:
             )
 
         for noise_ref, num_qubits in self._noise_maps.items():
-            samplex.add_noise_model(
-                NoiseModel(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
+            samplex.add_noise_model_requirement(
+                NoiseModelRequirement(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
             )
 
         if max_param_idx is not None:

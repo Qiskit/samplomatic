@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""NoiseModel"""
+"""NoiseModelRequirement"""
 
 from dataclasses import dataclass, field
 
@@ -18,8 +18,8 @@ from qiskit.quantum_info import QubitSparsePauliList
 
 
 @dataclass
-class NoiseModel:
-    """A class that represents a noise model."""
+class NoiseModelRequirement:
+    """A class that represents a noise model required for sampling."""
 
     noise_ref: str
     """A unique reference to this handle."""
