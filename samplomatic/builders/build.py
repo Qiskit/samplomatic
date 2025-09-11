@@ -68,8 +68,10 @@ def _build(
     """
     for idx, nested_instr in enumerate(_build_stream(stream, template_builder, samplex_builder)):
         # assume the nested instruction is a box for now, handle other control flow ops later
-        inner_template_builder, inner_samplex_builder = get_builders(nested_instr)
-        qubit_remapping = dict(zip(nested_instr.operation.body.qubits, nested_instr.qubits))
+        inner_template_builder, inner_samplex_builder = get_builders(
+            nested_instr, template_builder.state.qubit_map
+        )
+        qubit_remapping = dict(zip(nested_instr.qubits, nested_instr.operation.body.qubits))
 
         remapped_template_state = template_builder.state.remap(qubit_remapping, idx)
         inner_template_builder = inner_template_builder.set_state(remapped_template_state)
@@ -91,8 +93,8 @@ def pre_build(circuit: QuantumCircuit) -> tuple[TemplateState, PreSamplex]:
     Returns:
         The built template state and the corresponding pre-samplex.
     """
-    template_builder, samplex_builder = get_builders(None)
     template_state = TemplateState.construct_for_circuit(circuit)
+    template_builder, samplex_builder = get_builders(None, template_state.qubit_map.keys())
     template_builder = template_builder.set_state(template_state)
 
     pre_samplex = PreSamplex(qubit_map=template_state.qubit_map, cregs=circuit.cregs)
