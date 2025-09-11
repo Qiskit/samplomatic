@@ -51,14 +51,6 @@ samplomatic.exceptions module
    :show-inheritance:
    :undoc-members:
 
-samplomatic.noise\_model module
--------------------------------
-
-.. automodule:: samplomatic.noise_model
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 samplomatic.optionals module
 ----------------------------
 
