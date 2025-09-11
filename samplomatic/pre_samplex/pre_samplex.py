@@ -1132,7 +1132,7 @@ class PreSamplex:
                 samplex.add_output(
                     TensorSpecification(
                         f"measurement_flips.{reg.name}",
-                        (len(reg),),
+                        (1, len(reg)),
                         np.dtype(np.bool_),
                         "Bit-flip corrections for measurement twirling.",
                     )
@@ -1522,6 +1522,7 @@ class PreSamplex:
                 np.array(pre_node.subsystems_idxs[reg_name]),
                 f"measurement_flips.{reg_name}",
                 clbit_idxs,
+                1,
             )
 
             samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))

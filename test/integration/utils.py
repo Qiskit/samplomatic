@@ -14,8 +14,9 @@
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
+from qiskit.primitives import BitArray
 from qiskit.quantum_info import hellinger_fidelity
-from qiskit_aer import AerSimulator
+from qiskit_aer.primitives import SamplerV2
 
 from samplomatic.builders import pre_build
 
@@ -46,7 +47,7 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = np.random.random(len(circuit.parameters))
-    original_circuit_counts = _simulate(remove_boxes(circuit), circuit_params)
+    original_circuit_result = _simulate(remove_boxes(circuit), circuit_params)
 
     samplex_input = samplex.inputs().bind()
     if len(circuit_params) > 0:
@@ -55,44 +56,40 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
         samplex_input, num_randomizations=NUM_RANDOMIZATIONS_PER_CIRCUIT
     )
     parameter_values = samplex_output["parameter_values"]
-    measurement_flips = np.concatenate(
-        [
-            samplex_output.get(
-                f"measurement_flips.{creg.name}",
-                [[False] * len(creg)] * NUM_RANDOMIZATIONS_PER_CIRCUIT,
+
+    twirled_circuit_result = _simulate(template.template, parameter_values)
+    for creg in circuit.cregs:
+        creg_name = creg.name
+        twirled_creg_data = getattr(twirled_circuit_result.data, creg_name)
+        original_creg_data = getattr(original_circuit_result.data, creg_name)
+
+        if "measurement_flips." + creg.name in samplex_output:
+            flips = samplex_output["measurement_flips." + creg.name]
+            corrected_bool_array = np.logical_xor(
+                np.unpackbits(twirled_creg_data.array, axis=-1, bitorder="little", count=creg.size),
+                flips,
             )
-            for creg in circuit.cregs
-        ],
-        axis=1,
-    )
-    for params, correction in zip(parameter_values, measurement_flips):
-        twirled_circuit_counts = _simulate(template.template, params)
-        if correction is not None:
-            twirled_circuit_counts = _apply_bit_flips_correction(twirled_circuit_counts, correction)
+
+            twirled_circuit_counts = BitArray.from_bool_array(
+                corrected_bool_array, order="little"
+            ).get_counts()
+        else:
+            twirled_circuit_counts = twirled_creg_data.get_counts()
+
+        print(twirled_circuit_counts)
+        print(original_creg_data.get_counts())
         assert (
-            hellinger_fidelity(original_circuit_counts, twirled_circuit_counts)
+            hellinger_fidelity(original_creg_data.get_counts(), twirled_circuit_counts)
             > REQUIRED_HELLINGER_FIDELITY
         )
 
 
 def _simulate(circuit: QuantumCircuit, circuit_params):
-    """Helper function that runs the Aer simulator and returns the counts."""
-    simulator = AerSimulator()
-    assigned_circuit = circuit.assign_parameters(circuit_params)
-    result = simulator.run(assigned_circuit).result()
-    return result.get_counts()
-
-
-def _apply_bit_flips_correction(original_counts, correction):
-    """A helper function that applies the bit flip correction to the counts string."""
-    corrected_counts = dict()
-    correction = correction[::-1]  # Qiskit bitstrings use little-endian convention
-    for key, value in original_counts.items():
-        space_idxs = [ind for ind, ch in enumerate(key) if ch == " "]
-        new_key_bool = np.bitwise_xor(np.array(list(key.replace(" ", "")), dtype=int), correction)
-        new_key_bitstring = "".join(new_key_bool.astype(int).astype(str))
-        new_key_bitstring = new_key_bitstring.rjust(len(key) - len(space_idxs), "0")
-        for ind in space_idxs:
-            new_key_bitstring = new_key_bitstring[:ind] + " " + new_key_bitstring[ind:]
-        corrected_counts[new_key_bitstring] = value
-    return corrected_counts
+    """Helper function that runs the Aer simulator and returns the result."""
+    sampler = SamplerV2()
+    print(circuit_params.shape)
+    print(len(circuit.parameters))
+    for inst in circuit:
+        print(inst)
+        print(inst.params)
+    return sampler.run([(circuit, circuit_params, 1000)]).result()[0]

@@ -78,6 +78,19 @@ class TestWithSimulation:
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_separate_measures(self, save_plot):
+        """Test separate measurement instructions, with non-standard cbit associations"""
+        circuit = QuantumCircuit(QuantumRegister(size=3), ClassicalRegister(name="meas", size=3))
+        circuit.x(0)
+        circuit.h(1)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.measure(0, 2)
+            circuit.measure(1, 0)
+            circuit.measure(2, 1)
+
+        sample_simulate_and_compare_counts(circuit, save_plot)
+
+    @pytest.mark.skip(reason="QiskitAer bug #2367")
+    def test_separate_measure_boxes(self, save_plot):
         """Test separate measurement boxes, with non-standard cbit associations"""
         circuit = QuantumCircuit(QuantumRegister(size=3), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
@@ -92,7 +105,7 @@ class TestWithSimulation:
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_measure_to_different_registers(self, save_plot):
-        """Test separate measurement boxes with several classical registers"""
+        """Test separate measurement instructions with several classical registers"""
         creg1 = ClassicalRegister(3, "c1")
         creg2 = ClassicalRegister(3, "c2")
         qreg = QuantumRegister(3, "q1")
@@ -101,9 +114,7 @@ class TestWithSimulation:
         circuit.h(1)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, creg1[1])
-        with circuit.box([Twirl(dressing="left")]):
             circuit.measure(1, creg1[2])
-        with circuit.box([Twirl(dressing="left")]):
             circuit.measure(2, creg2[1])
 
         sample_simulate_and_compare_counts(circuit, save_plot)
