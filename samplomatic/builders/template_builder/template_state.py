@@ -45,12 +45,12 @@ class TemplateState:
         self.scope_idx = scope_idx
 
     def remap(
-        self, scoped_qubit_map: dict[Qubit, QubitIndex], last_scope_idx: int | None = None
+        self, scoped_qubit_map: dict[QubitIndex, Qubit], last_scope_idx: int | None = None
     ) -> "TemplateState":
         """Return a new :class:`~.TemplateState` whose source qubits are different.
 
         Args:
-            scoped_qubit_map: A map from qubits in some inner scope to qubits in its parent scope.
+            scoped_qubit_map: A map to qubits in some inner scope from qubits in its parent scope.
             last_scope_idx: A new nesting level to append to the scope index, if wanted.
 
         Returns:
