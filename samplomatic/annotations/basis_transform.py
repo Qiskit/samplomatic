@@ -22,6 +22,11 @@ from .decomposition_mode import DecompositionLiteral, DecompositionMode
 class BasisTransform(Annotation):
     """Directive to add basis changing gates.
 
+    When a box instruction with this annotation is processed by :func:`~.build`, the resulting
+    :class:`~.Samplex` will have a tensor input with name ``ref`` and shape
+    '(len(box_instruction.qubits),)'. The indices of this input correspond to the box instruction's
+    qubits sorted in the order of the circuit's qubits.
+
     Args:
         decomposition: How to decompose basis changing gates.
         mode: Whether to add gates to prepare or measure in a given basis.
