@@ -20,10 +20,10 @@ from ..aliases import StrRef
 class InjectNoise(Annotation):
     """Directive to inject noise into a ``box`` instruction.
 
-    When a box instruction with this annotation is processed by :func:`~.build`, the resulting
-    :class:`~.Samplex` will use a :class:`qiskit.quantum_info.PauliLindbladMap` specified by
-    ``ref`` to generate samples. The indices of the terms in this noise map correspond to the box
-    instruction's qubits sorted in the order of the circuit's qubits.
+    The resulting :class:`~.Samplex` built from a circuit with a box with this annotation requires
+    a :class:`qiskit.quantum_info.PauliLindbladMap` with ``ref`` to at sample time. The qubits of
+    the map are indexed in physical qubit order, in other words, the order of the qubits in the
+    outer-most circuit, restricted to those used by the box.
 
     Args:
         ref: A unique identifier of the map from which to inject noise.
