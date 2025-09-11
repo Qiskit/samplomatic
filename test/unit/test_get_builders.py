@@ -23,13 +23,14 @@ from samplomatic.synths import RzSxSynth
 
 def test_get_builders_errors():
     """Test the errors when getting builders."""
-    op = CircuitInstruction(BoxOp(QuantumCircuit(1), annotations=[Annotation()]))
+    circuit = QuantumCircuit(1)
+    op = CircuitInstruction(BoxOp(circuit, annotations=[Annotation()]))
     with pytest.raises(BuildError, match="Cannot get a builder"):
-        get_builders(op)
+        get_builders(op, circuit.qubits)
 
-    op = CircuitInstruction(BoxOp(QuantumCircuit(1), annotations=[Twirl(), Twirl()]))
+    op = CircuitInstruction(BoxOp(circuit, annotations=[Twirl(), Twirl()]))
     with pytest.raises(BuildError, match="Cannot specify more than one"):
-        get_builders(op)
+        get_builders(op, circuit.qubits)
 
 
 def test_twirl_parser_errors():
