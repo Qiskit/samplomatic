@@ -12,6 +12,8 @@
 
 """generate_boxing_pass_manager"""
 
+from typing import Literal
+
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
@@ -30,10 +32,14 @@ from .passes.insert_noops import (
 )
 from .twirling_strategies import TwirlingStrategyLiteral
 
+SUPPORTED_MEASURE_ANNOTATIONS = Literal["twirl", "basis_transform", "all"]
+"""The supported values of ``measure_annotations``."""
+
 
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measure: bool = True,
+    measure_annotations: str = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active",
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
     remove_barriers: bool = True,
@@ -45,6 +51,12 @@ def generate_boxing_pass_manager(
             :class:`~.GroupGatesIntoBoxes` pass.
         enable_measure: Whether to collect measurements into boxes using the
             :class:`~.GroupMeasIntoBoxes` pass.
+        measure_annotations: The annotations placed on the boxes containing measurements. The
+            supported values are:
+                * ``'twirl'`` for a :class:`~.Twirl` annotation.
+                * ``'basis_transform'`` for a :class:`~.BasisTransform` annotation with mode
+                    ``measure``.
+                * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
         twirling_strategy: The twirling strategy.
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
@@ -57,13 +69,25 @@ def generate_boxing_pass_manager(
     Raises:
         TranspilerError: If the user selects a combination of inputs that is not supported.
     """
+    if measure_annotations not in SUPPORTED_MEASURE_ANNOTATIONS:
+        raise TranspilerError(
+            f"'{measure_annotations}' is not a valid argument for 'measure_annotations', "
+            f"select one of {SUPPORTED_MEASURE_ANNOTATIONS}."
+        )
+
     passes = [RemoveBarriers()] if remove_barriers else []
 
     if enable_gates:
         passes.append(GroupGatesIntoBoxes())
 
     if enable_measure:
-        passes.append(GroupMeasIntoBoxes())
+        if measure_annotations == "twirl":
+            add_twirling, basis_transform = True, False
+        elif measure_annotations == "basis_transform":
+            add_twirling, basis_transform = False, True
+        else:
+            add_twirling, basis_transform = True, True
+        passes.append(GroupMeasIntoBoxes(add_twirling, basis_transform))
 
     if twirling_strategy == "active":
         pass
