@@ -30,17 +30,9 @@ class NoiseModelRequirement:
     noise_modifiers: set = field(default=set)
     """The set of modifiers that act on this noise model."""
 
-    paulis: QubitSparsePauliList | None = field(default=None)
-    """The terms present in this model."""
-
-    def _validate_noise_model(self, value: QubitSparsePauliList | None):
-        if value is not None and self.num_qubits != value.num_qubits:
+    def validate_noise_model(self, value: QubitSparsePauliList):
+        if self.num_qubits != value.num_qubits:
             raise ValueError(
                 f"Noise model for '{self.noise_ref}' is expected to act on '{self.num_qubits}` "
                 f"systems, not '{value.num_qubits}'."
             )
-
-    def __setattr__(self, name, value):
-        if name == "paulis":
-            self._validate_noise_model(value)
-        super().__setattr__(name, value)

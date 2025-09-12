@@ -13,7 +13,7 @@
 """InjectNoiseNode"""
 
 import numpy as np
-from qiskit.quantum_info import PauliLindbladMap, QubitSparsePauliList
+from qiskit.quantum_info import PauliLindbladMap
 
 from ...aliases import NumSubsystems, RegisterName, StrRef
 from ...annotations import VirtualType
@@ -55,7 +55,6 @@ class InjectNoiseNode(SamplingNode):
         self._noise_ref = noise_ref
         self._modifier_ref = modifier_ref
         self._num_subsystems = num_subsystems
-        self._model: QubitSparsePauliList = None
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
@@ -81,10 +80,6 @@ class InjectNoiseNode(SamplingNode):
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI
 
-    def set_model(self, model: QubitSparsePauliList):
-        """Set the model to use the provided coefficients for at sample time."""
-        self._model = model
-
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
         return {
             self._register_name: (self._num_subsystems, VirtualType.PAULI),
@@ -92,19 +87,17 @@ class InjectNoiseNode(SamplingNode):
         }
 
     def sample(self, registers, rng, inputs, num_randomizations):
-        rates = inputs.get(self._noise_ref)
+        rates = inputs.get(f"noise_maps.rates.{self._noise_ref}")
+        paulis = inputs.get(f"noise_maps.paulis.{self._noise_ref}")
         if self._modifier_ref:
             scale = inputs.get("noise_scales." + self._modifier_ref, 1.0)
             local_scale = inputs.get(
-                "local_scales." + self._modifier_ref, np.ones(self._model.num_terms)
+                "local_scales." + self._modifier_ref, np.ones(paulis.num_terms)
             )
             rates = rates * scale * local_scale
         noise_map = PauliLindbladMap.from_sparse_list(
-            [
-                (pauli, idxs, rate)
-                for (pauli, idxs), rate in zip(self._model.to_sparse_list(), rates)
-            ],
-            num_qubits=self._model.num_qubits,
+            [(pauli, idxs, rate) for (pauli, idxs), rate in zip(paulis, rates)],
+            num_qubits=paulis.num_qubits,
         )
         signs, samples = noise_map.signed_sample(num_randomizations, rng.bit_generator.random_raw())
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())

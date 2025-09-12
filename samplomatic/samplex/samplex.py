@@ -40,7 +40,7 @@ from ..tensor_interface import Specification, TensorInterface, TensorSpecificati
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
-from .nodes import CollectionNode, EvaluationNode, InjectNoiseNode, Node, SamplingNode
+from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .noise_model_requirement import NoiseModelRequirement
 from .parameter_expression_table import ParameterExpressionTable
 
@@ -87,6 +87,11 @@ class Samplex:
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
         return self._param_table.parameters
+
+    @property
+    def noise_models(self) -> dict[str, NoiseModelRequirement]:
+        """The noise models required at sampling time."""
+        return self._noise_models
 
     @property
     def num_parameters(self) -> int:
@@ -245,22 +250,42 @@ class Samplex:
 
         return self
 
-    def inputs(self, **noise_models: QubitSparsePauliList) -> TensorInterface:
+    def inputs(self, **noise_model_paulis: QubitSparsePauliList) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Args:
-            **noise_models: The terms contained in the noise model.
+            **noise_model_paulis: The Pauli terms contained in the noise models. Each element of
+                :meth:`~noise_models` should be specified.
+
+        Raises:
+            ValueError: If `noise_model_paulis` has different keys than :meth:`~noise_models`.
+            ValueError: If any of the `noise_model_paulis` has a different number of qubits than
+                its requirement.
 
         Returns:
             The input for this samplex.
         """
+        if noise_model_paulis.keys() != self._noise_models.keys():
+            required_paulis = "\n".join(
+                f"{ref}: '{req.num_qubits}' qubits." for ref, req in self._noise_models.items()
+            )
+            raise ValueError(
+                f"The samplex input requires the following noise models:\n{required_paulis}"
+            )
+
         specs = [*self._input_specifications.values()]
         for name, noise_req in self._noise_models.items():
-            if (paulis := noise_models.get(f"noise_maps.{name}")) is None:
-                raise ValueError(f"Missing required noise model '{name}'.")
+            noise_req.validate_noise_model(paulis := noise_model_paulis[name])
+            specs.append(
+                Specification(
+                    f"noise_maps.paulis.{name}",
+                    VirtualType.PAULI,
+                    "The Pauli operators present in a noise map.",
+                )
+            )
             specs.append(
                 TensorSpecification(
-                    f"noise_maps.{name}",
+                    f"noise_maps.rates.{name}",
                     (num_terms := (paulis.num_terms),),
                     np.dtype(np.float64),
                     f"The rates of a noise map with ``{num_terms}`` terms acting on "
@@ -287,7 +312,10 @@ class Samplex:
                         optional=True,
                     )
                 )
-        return TensorInterface(specs)
+
+        return TensorInterface(specs).bind(
+            **{f"noise_maps.paulis.{name}": paulis for name, paulis in noise_model_paulis.items()}
+        )
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
         """Returns an object that specifies the promised outputs of :meth:`~sample`.
@@ -338,11 +366,6 @@ class Samplex:
                 "The samplex input is missing values for the following:\n"
                 f"{samplex_input.describe(prefix='  * ', include_bound=False)}"
             )
-
-        # TODO: use the input interface?
-        for node in self._sampling_nodes:
-            if isinstance(node, InjectNoiseNode):
-                node.set_model(self._noise_models[node._noise_ref].paulis)  # noqa: SLF001
 
         outputs = self.outputs(num_randomizations)
         if keep_registers:

@@ -1191,7 +1191,7 @@ class PreSamplex:
         node = InjectNoiseNode(
             reg_name,
             sign_reg_name,
-            "noise_maps." + pre_inject.ref,
+            pre_inject.ref,
             len(pre_inject.subsystems),
             pre_inject.modifier_ref,
         )
