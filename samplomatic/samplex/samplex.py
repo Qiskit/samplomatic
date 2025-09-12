@@ -307,8 +307,8 @@ class Samplex:
                     TensorSpecification(
                         f"local_scales.{noise_modifier}",
                         (num_terms,),
-                        "An array of factors by which to scale individual rates of a noise map.",
                         np.dtype(np.float64),
+                        "An array of factors by which to scale individual rates of a noise map.",
                         optional=True,
                     )
                 )
