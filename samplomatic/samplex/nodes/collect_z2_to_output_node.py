@@ -81,7 +81,8 @@ class CollectZ2ToOutputNode(CollectionNode):
 
     def collect(self, registers, outputs, rng):
         register = registers[self._register_name]
-        outputs[self._output_name][:, self._output_idxs] = register.virtual_gates[
+        output = outputs[self._output_name]
+        output.reshape(-1, output.shape[-1])[:, self._output_idxs] = register.virtual_gates[
             self._subsystem_idxs, :
         ].transpose(1, 0)
 

@@ -68,3 +68,33 @@ def test_collect(rng):
         [0, 1, 1, 0, 0, 1, 1, 1, 1, 0],
         [0, 0, 0, 1, 1, 1, 1, 1, 1, 0],
     ]
+
+
+def test_collect_with_dummy_axes(rng):
+    """Test the collect method."""
+    reg1 = Z2Register([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1], [0, 1, 1]])
+    reg2 = Z2Register([[0, 0, 0], [1, 1, 1], [1, 1, 1], [1, 0, 1], [1, 1, 0]])
+
+    node1 = CollectZ2ToOutputNode("reg1", [0, 1, 2, 3, 4], "out", [0, 2, 4, 6, 8])
+    node2 = CollectZ2ToOutputNode("reg2", [4, 3, 2, 1, 0], "out", [1, 3, 5, 7, 9])
+
+    outputs = SamplexOutput(
+        [
+            TensorSpecification(
+                "out",
+                (3, 1, 10),
+                np.uint8,
+                "A ten-qubit array",
+            )
+        ]
+    )
+
+    registers = {"reg1": reg1, "reg2": reg2}
+    node1.collect(registers, outputs, rng)
+    node2.collect(registers, outputs, rng)
+
+    assert outputs["out"].tolist() == [
+        [[1, 1, 0, 1, 0, 1, 1, 1, 0, 0]],
+        [[0, 1, 1, 0, 0, 1, 1, 1, 1, 0]],
+        [[0, 0, 0, 1, 1, 1, 1, 1, 1, 0]],
+    ]
