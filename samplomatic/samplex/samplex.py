@@ -36,7 +36,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification
+from ..tensor_interface import Specification, TensorInterface, TensorSpecification, ValueType
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
@@ -170,7 +170,7 @@ class Samplex:
             raise SamplexConstructionError(
                 f"A noise model requirement with reference '{noise_ref}' already exists."
             )
-        self._noise_models[f"noise_maps.{noise_ref}"] = noise_model
+        self._noise_models[noise_ref] = noise_model
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -279,7 +279,7 @@ class Samplex:
             specs.append(
                 Specification(
                     f"noise_maps.paulis.{name}",
-                    VirtualType.PAULI,
+                    ValueType.PAULIS,
                     "The Pauli operators present in a noise map.",
                 )
             )

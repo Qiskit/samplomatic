@@ -96,7 +96,7 @@ class InjectNoiseNode(SamplingNode):
             )
             rates = rates * scale * local_scale
         noise_map = PauliLindbladMap.from_sparse_list(
-            [(pauli, idxs, rate) for (pauli, idxs), rate in zip(paulis, rates)],
+            [(pauli, idxs, rate) for (pauli, idxs), rate in zip(paulis.to_sparse_list(), rates)],
             num_qubits=paulis.num_qubits,
         )
         signs, samples = noise_map.signed_sample(num_randomizations, rng.bit_generator.random_raw())
