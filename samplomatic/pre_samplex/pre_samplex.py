@@ -1522,7 +1522,6 @@ class PreSamplex:
                 np.array(pre_node.subsystems_idxs[reg_name]),
                 f"measurement_flips.{reg_name}",
                 clbit_idxs,
-                1,
             )
 
             samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
