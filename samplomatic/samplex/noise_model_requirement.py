@@ -13,6 +13,7 @@
 """NoiseModelRequirement"""
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from qiskit.quantum_info import QubitSparsePauliList
 
@@ -29,6 +30,18 @@ class NoiseModelRequirement:
 
     noise_modifiers: set = field(default=set)
     """The set of modifiers that act on this noise model."""
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "noise_ref": self.noise_ref,
+            "num_qubits": self.num_qubits,
+            "noise_modifiers": [modifier for modifier in self.noise_modifiers],
+        }
+
+    @classmethod
+    def _from_json(cls, data: dict[str, Any]) -> "NoiseModelRequirement":
+        data["noise_modifiers"] = set(data["noise_modifiers"])
+        return cls(**data)
 
     def validate_noise_model(self, value: QubitSparsePauliList):
         if self.num_qubits != value.num_qubits:

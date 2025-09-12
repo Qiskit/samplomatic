@@ -41,6 +41,7 @@ from .nodes.u2_param_multiplication_node import (
     LeftU2ParametricMultiplicationNode,
     RightU2ParametricMultiplicationNode,
 )
+from .noise_model_requirement import NoiseModelRequirement
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
 
@@ -122,6 +123,21 @@ def _deserialize_passthrough_params(data: str) -> tuple[list[int], list[int]] | 
     return tuple(orjson.loads(data))
 
 
+def _serialize_noise_requirements(data: dict[str, NoiseModelRequirement]) -> str:
+    out_dict = {}
+    for name, spec in data.items():
+        out_dict[name] = orjson.dumps(spec._to_json_dict()).decode("utf-8")  # noqa: SLF001
+    return orjson.dumps(out_dict).decode("utf-8")
+
+
+def _deserialize_noise_requirements(data: str) -> dict[str, NoiseModelRequirement]:
+    outputs_raw = orjson.loads(data)
+    outputs = {}
+    for name, output in outputs_raw.items():
+        outputs[name] = NoiseModelRequirement._from_json(orjson.loads(output))  # noqa: SLF001
+    return outputs
+
+
 def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
     return {
         "finalized": str(samplex._finalized),  # noqa: SLF001
@@ -129,6 +145,7 @@ def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
         "input_specification": _serialize_specifications(samplex._input_specifications),  # noqa: SLF001
         "output_specification": _serialize_specifications(samplex._output_specifications),  # noqa: SLF001
         "passthrough_params": _serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
+        "noise_requirements": _serialize_noise_requirements(samplex._noise_models),  # noqa: SLF001
     }
 
 
@@ -139,13 +156,22 @@ def _process_graph_header(
     bool,
     dict[InterfaceName, TensorSpecification],
     dict[InterfaceName, TensorSpecification],
+    dict[str, NoiseModelRequirement],
 ]:
     raw_param_table_dict = orjson.loads(data["param_table"])
     param_table = _deserialize_expression_table(raw_param_table_dict)
     inputs = _deserialize_specifications(data["input_specification"])
     outputs = _deserialize_specifications(data["output_specification"])
     passthrough_params = _deserialize_passthrough_params(data["passthrough_params"])
-    return (param_table, data["finalized"] == "true", inputs, outputs, passthrough_params)
+    noise_requirements = _deserialize_noise_requirements(data["noise_requirements"])
+    return (
+        param_table,
+        data["finalized"] == "true",
+        inputs,
+        outputs,
+        passthrough_params,
+        noise_requirements,
+    )
 
 
 def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
@@ -184,6 +210,7 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
     samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
     samplex._passthrough_params = graph_attrs[4]  # noqa: SLF001
+    samplex._noise_models = graph_attrs[5]  # noqa: SLF001
     return samplex
 
 
