@@ -86,7 +86,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
         if twirl and twirl.dressing == "right":
             # Right-dressed boxes act as collectors
             uncollected_qubits = uncollected_qubits.difference(node.qargs)
-        if twirl or basis_transform:
+        elif twirl or basis_transform:
             uncollected_qubits = uncollected_qubits.union(node.qargs)
             for sub_node in asap_topological_nodes(circuit_to_dag(node.op.body)):
                 if sub_node.op.name == "measure":
