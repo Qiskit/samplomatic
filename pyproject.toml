@@ -70,7 +70,7 @@ lint.select = [
     "UP",     # pyupgrade
 ]
 line-length = 100
-target-version = "py311"
+target-version = "py39"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [

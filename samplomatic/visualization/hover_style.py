@@ -12,8 +12,15 @@
 
 """Hover Styles for Graphs"""
 
+import sys
 from dataclasses import dataclass, field
-from typing import Any, Self, TypeVar
+from typing import Any, TypeVar
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing import Self
+
 
 T = TypeVar("T", bound="HoverStyle")
 

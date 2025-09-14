@@ -12,11 +12,11 @@
 
 """DecompositionMode"""
 
-from enum import StrEnum
+from enum import Enum
 from typing import Literal, TypeAlias
 
 
-class DecompositionMode(StrEnum):
+class DecompositionMode(str, Enum):
     """How to decompose arbitrary single-qubit gates."""
 
     RZSX = "rzsx"

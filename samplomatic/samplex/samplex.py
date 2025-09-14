@@ -12,9 +12,16 @@
 
 """Samplex"""
 
+import sys
 from collections.abc import Iterable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing import Self
+
 
 from numpy.random import Generator, SeedSequence, default_rng
 from rustworkx.rustworkx import PyDiGraph, topological_generations

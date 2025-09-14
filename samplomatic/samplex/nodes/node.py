@@ -14,8 +14,15 @@
 
 import abc
 import inspect
+import sys
 from numbers import Number
-from typing import Literal, Self
+from typing import Literal
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing import Self
+
 
 from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType

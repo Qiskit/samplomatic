@@ -12,11 +12,11 @@
 
 """NoiseInjectionStrategy"""
 
-from enum import StrEnum
+from enum import Enum
 from typing import Literal, TypeAlias
 
 
-class NoiseInjectionStrategy(StrEnum):
+class NoiseInjectionStrategy(str, Enum):
     """The noise inejection strategies supported by the boxing pass manager."""
 
     NONE = "none"
