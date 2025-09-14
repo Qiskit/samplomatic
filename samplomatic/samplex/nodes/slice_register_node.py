@@ -85,8 +85,8 @@ class SliceRegisterNode(EvaluationNode):
             slice_idxs = array_to_json(self._slice_idxs)
         return {
             "node_type": "8",
-            "input_type": self._input_type,
-            "output_type": self._output_type,
+            "input_type": self._input_type.value,
+            "output_type": self._output_type.value,
             "input_register_name": self._input_register_name,
             "output_register_name": self._output_register_name,
             "slice_idxs": slice_idxs,

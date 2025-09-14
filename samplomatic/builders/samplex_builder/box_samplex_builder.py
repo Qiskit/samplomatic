@@ -147,7 +147,7 @@ class LeftBoxSamplexBuilder(BoxSamplexBuilder):
             if len(self.measured_qubits) != 0:
                 if twirl_type != VirtualType.PAULI:
                     raise SamplexBuildError(
-                        f"Cannot use {twirl_type} twirl in a box with measurements."
+                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
                     )
                 self.state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
 

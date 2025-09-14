@@ -121,8 +121,8 @@ class Node(metaclass=NodeType):
             if register_type is not existing_register_type:
                 raise SamplexConstructionError(
                     f"Node {self} expected register '{register_name}' to have type "
-                    f"'{register_type}' for {read_or_write} access but found that it "
-                    f"has type '{existing_register_type}'."
+                    f"'{register_type.value}' for {read_or_write} access but found that it "
+                    f"has type '{existing_register_type.value}'."
                 )
 
     def validate_and_update(
