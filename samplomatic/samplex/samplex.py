@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
-    from typing import Self
+    from typing_extensions import Self
 
 
 from numpy.random import Generator, SeedSequence, default_rng

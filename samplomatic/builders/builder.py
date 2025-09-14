@@ -19,7 +19,7 @@ from typing import Generic, TypeVar, TypeVarTuple
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
-    from typing import Self
+    from typing_extensions import Self
 
 from ..aliases import CircuitInstruction
 from ..exceptions import BuildError
