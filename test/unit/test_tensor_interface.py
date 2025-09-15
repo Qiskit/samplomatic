@@ -12,7 +12,7 @@
 
 import numpy as np
 import pytest
-from qiskit.quantum_info import PauliLindbladMap
+from qiskit.quantum_info import QubitSparsePauliList
 
 from samplomatic.tensor_interface import (
     Specification,
@@ -48,13 +48,13 @@ class TestSpecification:
         assert spec.validate_and_coerce(30) == 30
         assert spec.validate_and_coerce("5") == 5
 
-    def test_validate_and_coerce_lindblad(self):
-        """Test with lindblad type."""
-        spec = Specification("map", ValueType.LINDBLAD)
-        obj = PauliLindbladMap.from_list([("XX", 0.5)])
+    def test_validate_and_coerce_paulis(self):
+        """Test with paulis type."""
+        spec = Specification("map", ValueType.PAULIS)
+        obj = QubitSparsePauliList.from_list(["XX"])
         assert spec.validate_and_coerce(obj) is obj
         with pytest.raises(TypeError):
-            spec.validate_and_coerce("not-lindblad")
+            spec.validate_and_coerce("not-paulis")
 
     def test_validate_and_coerce_numpy_array(self):
         """Test with numpy type."""
