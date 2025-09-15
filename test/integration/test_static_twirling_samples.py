@@ -257,7 +257,7 @@ def test_sampling(circuit, save_plot):
     samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 
-    assert parameter_values.type == np.float32
+    assert parameter_values.dtype == np.float32
 
     expected_op = Operator(remove_boxes(circuit))
     for row in parameter_values:
