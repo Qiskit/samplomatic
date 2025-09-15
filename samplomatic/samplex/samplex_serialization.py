@@ -145,7 +145,7 @@ def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
         "input_specification": _serialize_specifications(samplex._input_specifications),  # noqa: SLF001
         "output_specification": _serialize_specifications(samplex._output_specifications),  # noqa: SLF001
         "passthrough_params": _serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
-        "noise_requirements": _serialize_noise_requirements(samplex._noise_models),  # noqa: SLF001
+        "noise_requirements": _serialize_noise_requirements(samplex._noise_model_requirements),  # noqa: SLF001
     }
 
 
@@ -210,7 +210,7 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
     samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
     samplex._passthrough_params = graph_attrs[4]  # noqa: SLF001
-    samplex._noise_models = graph_attrs[5]  # noqa: SLF001
+    samplex._noise_model_requirements = graph_attrs[5]  # noqa: SLF001
     return samplex
 
 
