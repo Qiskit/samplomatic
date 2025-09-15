@@ -132,7 +132,7 @@ def test_sampling(circuit, expected, paulis, rates, save_plot):
     save_plot(lambda: samplex_state.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    samplex_input = samplex.inputs(**paulis).bind(noise_maps=rates)
+    samplex_input = samplex.inputs(paulis).bind(noise_maps=rates)
     samplex_output = samplex.sample(samplex_input, num_randomizations=1000)
     parameter_values = samplex_output["parameter_values"]
 

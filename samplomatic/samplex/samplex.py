@@ -12,7 +12,7 @@
 
 """Samplex"""
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Self
 
@@ -70,7 +70,7 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
-        self._noise_models: dict[str, NoiseModelRequirement] = {}
+        self._noise_model_requirements: dict[str, NoiseModelRequirement] = {}
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
@@ -89,9 +89,9 @@ class Samplex:
         return self._param_table.parameters
 
     @property
-    def noise_models(self) -> dict[str, NoiseModelRequirement]:
+    def noise_model_requirements(self) -> dict[str, NoiseModelRequirement]:
         """The noise models required at sampling time."""
-        return self._noise_models
+        return self._noise_model_requirements
 
     @property
     def num_parameters(self) -> int:
@@ -166,11 +166,11 @@ class Samplex:
         Args:
             noise_model: The requirement to add.
         """
-        if (noise_ref := noise_model.noise_ref) in self._noise_models:
+        if (noise_ref := noise_model.noise_ref) in self._noise_model_requirements:
             raise SamplexConstructionError(
                 f"A noise model requirement with reference '{noise_ref}' already exists."
             )
-        self._noise_models[noise_ref] = noise_model
+        self._noise_model_requirements[noise_ref] = noise_model
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -250,31 +250,33 @@ class Samplex:
 
         return self
 
-    def inputs(self, **noise_model_paulis: QubitSparsePauliList) -> TensorInterface:
+    def inputs(self, noise_model_paulis: Mapping[str, QubitSparsePauliList]) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Args:
-            **noise_model_paulis: The Pauli terms contained in the noise models. Each element of
-                :meth:`~noise_models` should be specified.
+            noise_model_paulis: The Pauli terms contained in the noise models. Each element of
+                :meth:`~noise_model_requirements` should be specified.
 
         Raises:
-            ValueError: If `noise_model_paulis` has different keys than :meth:`~noise_models`.
-            ValueError: If any of the `noise_model_paulis` has a different number of qubits than
+            ValueError: If ``noise_model_paulis`` has different keys than
+                :meth:`~noise_model_requirements`.
+            ValueError: If any of the ``noise_model_paulis`` has a different number of qubits than
                 its requirement.
 
         Returns:
             The input for this samplex.
         """
-        if noise_model_paulis.keys() != self._noise_models.keys():
+        if noise_model_paulis.keys() != self._noise_model_requirements.keys():
             required_paulis = "\n".join(
-                f"{ref}: '{req.num_qubits}' qubits." for ref, req in self._noise_models.items()
+                f" * {ref}: '{req.num_qubits}' qubits."
+                for ref, req in self._noise_model_requirements.items()
             )
             raise ValueError(
                 f"The samplex input requires the following noise models:\n{required_paulis}"
             )
 
         specs = [*self._input_specifications.values()]
-        for name, noise_req in self._noise_models.items():
+        for name, noise_req in self._noise_model_requirements.items():
             noise_req.validate_noise_model(paulis := noise_model_paulis[name])
             specs.append(
                 Specification(

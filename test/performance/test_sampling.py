@@ -99,7 +99,7 @@ class TestSample:
         )
 
         template, samplex = build(circuit)
-        samplex_input = samplex.inputs(even=even_paulis, odd=odd_paulis).bind(
+        samplex_input = samplex.inputs({"even": even_paulis, "odd": odd_paulis}).bind(
             parameter_values=rng.random(len(circuit.parameters)),
             noise_maps={"rates.even": even_noise.rates, "rates.odd": odd_noise.rates},
             noise_scales={"even": scale, "odd": scale},
@@ -159,7 +159,7 @@ class TestSample:
         }
 
         template, samplex = build(circuit)
-        samplex_input = samplex.inputs(even=even_paulis, odd=odd_paulis).bind(
+        samplex_input = samplex.inputs({"even": even_paulis, "odd": odd_paulis}).bind(
             parameter_values=rng.random(len(circuit.parameters)),
             noise_maps={"rates.even": even_noise.rates, "rates.odd": odd_noise.rates},
             local_scales=local_scales,
