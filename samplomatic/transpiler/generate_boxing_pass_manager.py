@@ -49,8 +49,9 @@ def generate_boxing_pass_manager(
             :class:`~.GroupGatesIntoBoxes` pass.
         enable_measure: Whether to collect measurements into boxes using the
             :class:`~.GroupMeasIntoBoxes` pass.
-        measure_annotations: The annotations placed on the boxes containing measurements when
-            ``enable_measure`` is ``True``. The supported values are:
+        measure_annotations: The annotations placed on the measurement boxes by
+            :class:`~.GroupMeasIntoBoxes` when ``enable_measure`` is ``True``. The supported values
+            are:
                 * ``'twirl'`` for a :class:`~.Twirl` annotation.
                 * ``'basis_transform'`` for a :class:`~.BasisTransform` annotation with mode
                     ``measure``.
