@@ -25,10 +25,6 @@ from samplomatic.exceptions import BuildError, SamplexBuildError
 
 
 class TestGeneralBuildErrors:
-    def _pre_build_and_assert_error(self, circuit, error_type, message):
-        with pytest.raises(error_type, match=message):
-            pre_build(circuit)
-
     def test_no_propagation_through_conditional_error(self):
         """Verify that an error is raised if a virtual gate reaches a conditional."""
         circuit = QuantumCircuit(2, 3)
@@ -38,9 +34,8 @@ class TestGeneralBuildErrors:
         with circuit.if_test((circuit.clbits[0], 1)):
             circuit.x(1)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot propagate through if_else instruction."
-        )
+        with pytest.raises(BuildError, match="Cannot propagate through if_else instruction."):
+            pre_build(circuit)
 
     def test_bad_order_right_box(self):
         """Verify that an error is raised if a gate follows a conditional in a right
@@ -53,9 +48,10 @@ class TestGeneralBuildErrors:
                 circuit.sx(1)
             circuit.sx(1)
 
-        self._pre_build_and_assert_error(
-            circuit, RuntimeError, "Cannot handle instructions to the right of if-else ops."
-        )
+        with pytest.raises(
+            RuntimeError, match="Cannot handle instructions to the right of if-else ops."
+        ):
+            pre_build(circuit)
 
     def test_bad_order_left_box(self):
         """Verify that an error is raised if a conditional follows a gate in a left
@@ -66,9 +62,10 @@ class TestGeneralBuildErrors:
             with circuit.if_test((circuit.clbits[0], 1)):
                 circuit.sx(1)
 
-        self._pre_build_and_assert_error(
-            circuit, SamplexBuildError, "No instruction can appear before a conditional"
-        )
+        with pytest.raises(
+            SamplexBuildError, match="No instruction can appear before a conditional"
+        ):
+            pre_build(circuit)
 
     def test_entangler_bad_order_left_box(self):
         """Verify that an error is raised if a entanglers appear in bad order."""
@@ -78,11 +75,11 @@ class TestGeneralBuildErrors:
                 circuit.cx(0, 1)
             circuit.x(0)
 
-        self._pre_build_and_assert_error(
-            circuit,
+        with pytest.raises(
             RuntimeError,
-            "Cannot handle single-qubit gate to the right of entangler when dressing=left",
-        )
+            match="Cannot handle single-qubit gate to the right of entangler when dressing=left",
+        ):
+            pre_build(circuit)
 
         # Now for the else branch
         circuit = QuantumCircuit(2, 3)
@@ -93,11 +90,11 @@ class TestGeneralBuildErrors:
                 circuit.cx(0, 1)
             circuit.x(0)
 
-        self._pre_build_and_assert_error(
-            circuit,
+        with pytest.raises(
             RuntimeError,
-            "Cannot handle single-qubit gate to the right of entangler when dressing=left",
-        )
+            match="Cannot handle single-qubit gate to the right of entangler when dressing=left",
+        ):
+            pre_build(circuit)
 
     def test_twirled_clbit_in_passthroguh_condition_error(self):
         """Test that an error is raised if a passthrough conditional depends on a twirled
@@ -112,9 +109,10 @@ class TestGeneralBuildErrors:
         with circuit.if_test((circuit.clbits[0], 1)):
             circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_twirled_clregister_in_passthrough_condition_error(self):
         """Test that an error is raised if a passthrough conditional depends on a twirled
@@ -129,9 +127,10 @@ class TestGeneralBuildErrors:
         with circuit.if_test((circuit.cregs[0], 1)):
             circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_twirled_clbit_in_right_condition_error(self):
         """Test that an error is raised if a right-box conditional depends on a twirled
@@ -145,9 +144,10 @@ class TestGeneralBuildErrors:
             with circuit.if_test((circuit.clbits[0], 1)):
                 circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_twirled_clregister_in_right_condition_error(self):
         """Test that an error is raised if a right-box conditional depends on a twirled
@@ -161,9 +161,10 @@ class TestGeneralBuildErrors:
             with circuit.if_test((circuit.cregs[0], 1)):
                 circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_twirled_clbit_in_left_condition_error(self):
         """Test that an error is raised if a left-box conditional depends on a twirled
@@ -175,9 +176,10 @@ class TestGeneralBuildErrors:
             with circuit.if_test((circuit.clbits[0], 1)):
                 circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_twirled_clregister_in_left_condition_error(self):
         """Test that an error is raised if a left-box conditional depends on a twirled
@@ -189,9 +191,10 @@ class TestGeneralBuildErrors:
             with circuit.if_test((circuit.cregs[0], 1)):
                 circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_twirled_expr_in_left_condition_error(self):
         """Test that an error is raised if a left-box conditional depends on a twirled
@@ -205,9 +208,10 @@ class TestGeneralBuildErrors:
             ):
                 circuit.sx(0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot use twirled classical bits in classical conditions"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
+            pre_build(circuit)
 
     def test_repeated_twirled_clbit_error(self):
         """Verify that an error is raised if the same clbit is used more than once for twirling"""
@@ -217,6 +221,7 @@ class TestGeneralBuildErrors:
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(1, 0)
 
-        self._pre_build_and_assert_error(
-            circuit, BuildError, "Cannot twirl more than one measurement on the same classical bit"
-        )
+        with pytest.raises(
+            BuildError, match="Cannot twirl more than one measurement on the same classical bit"
+        ):
+            pre_build(circuit)
