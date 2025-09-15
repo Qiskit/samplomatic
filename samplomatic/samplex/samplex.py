@@ -250,7 +250,9 @@ class Samplex:
 
         return self
 
-    def inputs(self, noise_model_paulis: Mapping[str, QubitSparsePauliList]) -> TensorInterface:
+    def inputs(
+        self, noise_model_paulis: Mapping[str, QubitSparsePauliList] | None = None
+    ) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Args:
@@ -266,6 +268,7 @@ class Samplex:
         Returns:
             The input for this samplex.
         """
+        noise_model_paulis = {} if noise_model_paulis is None else noise_model_paulis
         if noise_model_paulis.keys() != self._noise_model_requirements.keys():
             required_paulis = "\n".join(
                 f" * {ref}: '{req.num_qubits}' qubits."
