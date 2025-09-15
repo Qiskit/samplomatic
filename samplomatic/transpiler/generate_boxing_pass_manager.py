@@ -22,6 +22,7 @@ from .passes import (
     AddTerminalRightDressedBoxes,
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
+    RemoveBoxes,
 )
 from .passes.insert_noops import (
     AddNoopsActiveAccum,
@@ -37,6 +38,7 @@ def generate_boxing_pass_manager(
     twirling_strategy: TwirlingStrategyLiteral = "active",
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
     remove_barriers: bool = True,
+    remove_boxes: bool = True,
 ) -> PassManager:
     """Generate a pass manager to group the operations in a circuit into boxes.
 
@@ -50,6 +52,8 @@ def generate_boxing_pass_manager(
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
             before beginning to group gates and measurements into boxes. Setting this to ``True``
             generally leads to a smaller number of boxes in the output circuits.
+        remove_boxes: Whether to apply the :class:`~.RemoveBoxes` pass to the input circuit
+            before beginning to group gates and measurements into boxes.
 
     Returns:
         A pass manager that groups operations into boxes.
@@ -58,6 +62,9 @@ def generate_boxing_pass_manager(
         TranspilerError: If the user selects a combination of inputs that is not supported.
     """
     passes = [RemoveBarriers()] if remove_barriers else []
+
+    if remove_boxes:
+        passes.append(RemoveBoxes())
 
     if enable_gates:
         passes.append(GroupGatesIntoBoxes())
