@@ -13,7 +13,7 @@ name = "samplomatic"
 dynamic = ["version"]
 description = "Serving all of your circuit sampling needs since 2025."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = "Apache-2.0"
 license-files = ["LICENSE.txt"]
 authors = [

@@ -12,19 +12,12 @@
 
 """U2ParametricMultiplicationNode"""
 
-import sys
 from typing import Literal
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
 
 import numpy as np
 import orjson
 
-from ...aliases import ParamIndex, RegisterName, SubsystemIndex
+from ...aliases import ParamIndex, RegisterName, Self, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError, SamplexRuntimeError
 from ...virtual_registers import U2Register, VirtualRegister

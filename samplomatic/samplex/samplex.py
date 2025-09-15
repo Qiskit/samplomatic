@@ -12,16 +12,11 @@
 
 """Samplex"""
 
-import sys
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
 
 from numpy.random import Generator, SeedSequence, default_rng
 from rustworkx.rustworkx import PyDiGraph, topological_generations
@@ -38,6 +33,7 @@ from ..aliases import (
     ParamIndex,
     ParamSpec,
     RegisterName,
+    Self,
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
@@ -309,7 +305,7 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
-        rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
+        rng = default_rng(rng) if isinstance(rng, (int, SeedSequence)) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
@@ -342,7 +338,7 @@ class Samplex:
         cols: int = 2,
         subgraph_idxs: None | int | Sequence[int] = None,
         layout_method: LayoutPresets | LayoutMethod = "auto",
-    ) -> "Figure":
+    ) -> Figure:
         """Draw the graph in this samplex using the :meth:`~plot_graph` method.
 
         Args:

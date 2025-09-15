@@ -12,8 +12,12 @@
 
 """BasisTransformMode"""
 
+from __future__ import annotations
+
 from enum import Enum
-from typing import Literal, TypeAlias
+from typing import Literal, Union
+
+from ..aliases import TypeAlias
 
 
 class BasisTransformMode(str, Enum):
@@ -23,7 +27,7 @@ class BasisTransformMode(str, Enum):
     PREPARE = "prepare"
 
 
-BasisTransformLiteral: TypeAlias = BasisTransformMode | Literal["measure", "prepare"]
+BasisTransformLiteral: TypeAlias = Union[BasisTransformMode, Literal["measure", "prepare"]]
 """Allowed basis transform modes.
 
  * ``measure``: Gate collection templates are placed on the left side of boxes. The adjoint of the

@@ -118,7 +118,7 @@ class PauliPastCliffordNode(EvaluationNode):
         subsys = self._subsystem_idxs
 
         paulis_in = reg.virtual_gates[subsys]
-        paulis_out = self._lookup_table[*(paulis_in[:, i] for i in range(subsys.shape[-1]))]
+        paulis_out = self._lookup_table[tuple(paulis_in[:, i] for i in range(subsys.shape[-1]))]
         reg.virtual_gates[subsys] = np.transpose(paulis_out, (0, 2, 1))
 
     def reads_from(self):

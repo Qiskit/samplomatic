@@ -12,14 +12,7 @@
 
 """ParamIter"""
 
-import sys
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
-from ..aliases import Parameter
+from ..aliases import Parameter, Self
 
 
 class ParamIter:

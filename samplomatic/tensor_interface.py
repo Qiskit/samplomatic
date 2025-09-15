@@ -13,22 +13,15 @@
 
 """Interfaces"""
 
-import sys
 import textwrap
 from collections.abc import Iterable, MutableMapping
 from enum import Enum
 from typing import Any, Literal, overload
 
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
-
 import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
-from .aliases import InterfaceName
+from .aliases import InterfaceName, Self
 
 
 class ValueType(str, Enum):

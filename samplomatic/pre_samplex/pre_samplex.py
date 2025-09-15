@@ -12,6 +12,8 @@
 
 """PreSamplex"""
 
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
@@ -119,7 +121,7 @@ class DanglerMatch:
     Set to `None` to get all node directions. Note that setting to `BOTH` will only match nodes
     with `BOTH` direction."""
 
-    node_types: type[PreNode] | None = None
+    node_types: tuple[type[PreNode], ...] | None = None
     """The desired type of the node.
 
     Set to `None` to get all node types."""
@@ -204,7 +206,7 @@ class PreSamplex:
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
 
-    def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
+    def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> PreSamplex:
         """Remap the object to a new :class:`~.PreSamplex` object.
 
         Args:
@@ -351,7 +353,7 @@ class PreSamplex:
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
 
-        match = DanglerMatch(node_types=PreEmit | PrePropagate, direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         if any(True for _ in self.find_danglers(match, subsystems)):
             raise SamplexBuildError(f"Cannot propagate through {instr.operation.name} instruction.")
         match = DanglerMatch(direction=Direction.LEFT)
@@ -429,7 +431,7 @@ class PreSamplex:
             )
 
         # collect any nodes that need collecting and unmark them as dangling
-        match = DanglerMatch(node_types=PreEmit | PrePropagate, direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             if self.graph.has_edge(found_idx, node_idx):
                 # The force_register_copy stays the same and doesn't need update.
@@ -447,7 +449,7 @@ class PreSamplex:
         # this collection is in the way
         all(
             self.find_then_remove_danglers(
-                DanglerMatch(node_types=PreCollect | PrePropagate), subsystems
+                DanglerMatch(node_types=(PreCollect, PrePropagate)), subsystems
             )
         )
 
@@ -495,7 +497,7 @@ class PreSamplex:
         # Collect relevant nodes which are an optional dangler, and leave them optionally dangling
         # This needs to happen first, so the new optional danglers created later won't be counted.
         match = DanglerMatch(
-            node_types=PreEmit | PrePropagate,
+            node_types=(PreEmit, PrePropagate),
             direction=Direction.RIGHT,
             dangler_type=DanglerType.OPTIONAL,
         )
@@ -507,7 +509,7 @@ class PreSamplex:
         # Collect every relevant node which is a required dangler,
         # then convert it to an optional dangler.
         match = DanglerMatch(
-            node_types=PreEmit | PrePropagate,
+            node_types=(PreEmit, PrePropagate),
             direction=Direction.RIGHT,
             dangler_type=DanglerType.REQUIRED,
         )
@@ -519,7 +521,7 @@ class PreSamplex:
 
         # Remove previous Pre-Collects from the danglers. They can no longer be reached,
         # because the measurement blocks the way.
-        match = DanglerMatch(node_types=PreCollect, direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreCollect,), direction=Direction.RIGHT)
         all(self.find_then_remove_danglers(match, subsystems))
 
         # Verify that all measurements were reached by an emission
@@ -553,7 +555,7 @@ class PreSamplex:
         # connect this emmision there. we do NOT want to remove them as dangling because they
         # might need to be used again for future emissions, for example, a Pauli twirl followed by
         # a noise injection.
-        match = DanglerMatch(node_types=PreCollect | PrePropagate, direction=Direction.LEFT)
+        match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
 
         aggregate_found_subsystems = set()
         for found_idx, found_subsystems in self.find_danglers(match, subsystems):
@@ -581,7 +583,7 @@ class PreSamplex:
         This method adds edges to any node that is dangling with overlapping subsystems.
         """
         node_idx = self.graph.add_node(node)
-        match = DanglerMatch(node_types=PreCollect | PrePropagate, direction=Direction.LEFT)
+        match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
         for found_idx, found_subsystems in self.find_danglers(match, node.subsystems):
             self.graph.add_edge(node_idx, found_idx, PreEdge(found_subsystems, Direction.LEFT))
 
@@ -766,7 +768,7 @@ class PreSamplex:
         rightward_node_candidate = NodeCandidate(
             self.graph, PrePropagate(subsystems, Direction.RIGHT, op, partition, spec)
         )
-        match = DanglerMatch(node_types=PreEmit | PrePropagate, direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         all_found_qubit_idxs = set()
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             all_found_qubit_idxs.update(found_subsystems.all_elements)
@@ -788,7 +790,7 @@ class PreSamplex:
             self.graph, PrePropagate(subsystems, Direction.LEFT, op, partition, spec)
         )
         all_found_qubit_idxs = set()
-        match = DanglerMatch(node_types=PreCollect | PrePropagate, direction=Direction.LEFT)
+        match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             all_found_qubit_idxs.update(found_subsystems.all_elements)
             edge = PreEdge(
@@ -954,7 +956,7 @@ class PreSamplex:
         Raises:
             SamplexBuildError: If any nodes are expecting collections.
         """
-        match = DanglerMatch(node_types=PreEmit | PrePropagate, direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         uncollected_qubit_idxs = set()
         for qubit_idx, node_idxs in self._dangling.items():
             for node_idx in node_idxs:
@@ -1538,7 +1540,7 @@ class PreSamplex:
         cols: int = 2,
         subgraph_idxs: None | int | Sequence[int] = None,
         layout_method: LayoutPresets | LayoutMethod = "auto",
-    ) -> "Figure":
+    ) -> Figure:
         """Draw the graph in this pre-samplex using the :meth:`~plot_graph` method.
 
         Args:

@@ -12,19 +12,14 @@
 
 """Node"""
 
+from __future__ import annotations
+
 import abc
 import inspect
-import sys
 from numbers import Number
 from typing import Literal
 
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
-
-from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
+from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, Self, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...visualization.hover_style import NodeStyle
@@ -47,7 +42,7 @@ class NodeType(abc.ABCMeta):
 class Node(metaclass=NodeType):
     """Parent class for samplex node operations."""
 
-    NODE_REGISTRY: set[type["Node"]] = set()
+    NODE_REGISTRY: set[type[Node]] = set()
 
     def __repr__(self):
         register_names = sorted(f"{register_name}(r)" for register_name in self.reads_from())

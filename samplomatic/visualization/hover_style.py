@@ -12,15 +12,12 @@
 
 """Hover Styles for Graphs"""
 
-import sys
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
 
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
+from ..aliases import Self
 
 T = TypeVar("T", bound="HoverStyle")
 
@@ -117,7 +114,7 @@ class Divider(Datum):
         super().__init__(name="", bullet="────────────────────────────")
 
 
-@dataclass(kw_only=True)
+@dataclass
 class HoverStyle:
     """Summarizes the style of a graph element when plotted."""
 

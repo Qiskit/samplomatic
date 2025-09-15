@@ -174,7 +174,7 @@ def test_type_registration():
         class _(DummyRegister):
             TYPE = object()
 
-    with pytest.raises(ValueError, match="TYPE 'VirtualType.PAULI has already been registered"):
+    with pytest.raises(ValueError, match="TYPE 'pauli has already been registered"):
 
         class _(DummyRegister):
             TYPE = VirtualType.PAULI

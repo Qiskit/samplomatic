@@ -12,16 +12,9 @@
 
 """MultiplicationNode"""
 
-import sys
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
 import orjson
 
-from ...aliases import RegisterName
+from ...aliases import RegisterName, Self
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...virtual_registers import GroupRegister, VirtualRegister, virtual_register_from_json

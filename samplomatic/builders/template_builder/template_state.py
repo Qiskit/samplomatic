@@ -12,17 +12,12 @@
 
 """TemplateCircuitBuilder"""
 
-import sys
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
+from __future__ import annotations
 
 from qiskit.circuit import ClassicalRegister, Clbit, QuantumCircuit, QuantumRegister, Qubit
 from qiskit.circuit.classical import expr
 
-from ...aliases import CircuitInstruction, ClbitIndex, ParamSpec, QubitIndex
+from ...aliases import CircuitInstruction, ClbitIndex, ParamSpec, QubitIndex, Self
 from ...exceptions import TemplateBuildError
 from ..param_iter import ParamIter
 
@@ -51,7 +46,7 @@ class TemplateState:
 
     def remap(
         self, scoped_qubit_map: dict[QubitIndex, Qubit], last_scope_idx: int | None = None
-    ) -> "TemplateState":
+    ) -> TemplateState:
         """Return a new :class:`~.TemplateState` whose source qubits are different.
 
         Args:
