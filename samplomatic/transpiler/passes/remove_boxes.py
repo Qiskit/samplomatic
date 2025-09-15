@@ -26,10 +26,10 @@ class RemoveBoxes(TransformationPass):
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         new_dag = dag.copy_empty_like()
+
         for node in dag.op_nodes():
-            self._inline_node(new_dag, node)
             if node.op.name == "box":
-                self._inline_box(new_dag, node)
+                self._inline_box(dag, node)
             else:
                 new_dag.apply_operation_back(node.op, node.qargs, node.cargs)
 
