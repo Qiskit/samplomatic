@@ -29,13 +29,19 @@ class RemoveBoxes(TransformationPass):
 
         for node in dag.op_nodes():
             if node.op.name == "box":
-                self._inline_box(dag, node)
+                self._inline_box(new_dag, node)
             else:
                 new_dag.apply_operation_back(node.op, node.qargs, node.cargs)
 
         return new_dag
 
     def _inline_box(self, dag, node) -> DAGCircuit:
+        """Helper to inline the content of box nodes.
+
+        Applies recursively to nodes that contain boxes.
+
+        Assumes but does not check that ``node`` contains a box.
+        """
         body = node.op.body
         qubit_map: dict[Qubit, Qubit] = dict(zip(body.qubits, node.qargs))
         clbit_map: dict[Clbit, Clbit] = dict(zip(body.clbits, node.cargs))
