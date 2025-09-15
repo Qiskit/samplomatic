@@ -85,7 +85,7 @@ class TestSamplexSerialization:
         samplex_input = samplex.inputs({"my_noise": paulis}).bind(
             noise_maps={"rates.my_noise": [0.5]}
         )
-        samplex_new_input = samplex_new.inputs(my_noise=paulis).bind(
+        samplex_new_input = samplex_new.inputs({"my_noise": paulis}).bind(
             noise_maps={"rates.my_noise": [0.5]}
         )
         copy_rng = deepcopy(rng)
