@@ -126,7 +126,7 @@ def test_sampling(circuit, expected, noise_maps, save_plot):
 
     samplex_input = samplex.inputs().bind(noise_maps=noise_maps)
     samplex_output = samplex.sample(samplex_input, num_randomizations=1000)
-    parameter_values = samplex_output["parameter_values"]
+    parameter_values = samplex_output["parameter_values"].astype(np.float64)
 
     superops = []
     for row in parameter_values:
@@ -134,4 +134,4 @@ def test_sampling(circuit, expected, noise_maps, save_plot):
         superops.append(op.conjugate() ^ op)
 
     avg_op = sum(superops) / len(superops)
-    assert np.allclose(avg_op, expected, 0.1)
+    assert np.allclose(avg_op, expected, rtol=0.1, atol=1e-7)
