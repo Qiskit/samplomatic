@@ -24,6 +24,15 @@ def make_circuits():
     yield circuit, circuit, "empty_circuit"
 
     circuit = QuantumCircuit(4, 4)
+    circuit.h(1)
+    circuit.cx(1, 2)
+    circuit.cx(3, 1)
+    circuit.cx(2, 0)
+    circuit.measure(range(4), range(4))
+
+    yield circuit, circuit, "circuit_without_boxes"
+
+    circuit = QuantumCircuit(4, 4)
     with circuit.box():
         circuit.h(1)
         circuit.cx(1, 2)
@@ -48,7 +57,9 @@ def make_circuits():
         circuit.cx(1, 2)
     with circuit.box():
         with circuit.box():
+            circuit.noop(2)
             with circuit.box():
+                circuit.noop(3)
                 circuit.cx(1, 3)
     with circuit.box():
         circuit.cx(2, 0)
