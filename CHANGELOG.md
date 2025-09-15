@@ -20,12 +20,15 @@
   This change is reflected in `Samplex.inputs()` which now requires a `qiskit.quantum_info.QubitSparsePauliList` for each element of `Samplex.noise_models`.
   The returned `TensorInterface` object then contains the bound `QubitSparsePauliList`s, as well as `TensorSpecification`s for the rates, the scale, and the local scales. ([#112](https://github.com/Qiskit/samplomatic/issues/112))
 
+### Fixed
+
+- `Samplex.sample` arguments corresponding to `BasisTransform` and `InjectNoise` annotations are indexed in physical qubit order, in other words, the order of the qubits in the outer-most circuit, restricted to those used by the box.
+  Previously, they followed the order of `CircuitInstruction.qubits`. ([#116](https://github.com/Qiskit/samplomatic/issues/116))
+
 ### Improved
 
 - The `ParameterExpressionTable.evaluate` method now uses `ParameterExpression.bind_all` to increase performance. ([#13](https://github.com/Qiskit/samplomatic/issues/13))
 - The `InjectNoise.sample` now uses the `QubitSparsePauliList.to_dense_array` method for increased performance. ([#14](https://github.com/Qiskit/samplomatic/issues/14))
-- `Samplex.sample` arguments corresponding to `BasisTransform` and `InjectNoise` annotations are indexed in physical qubit order, in other words, the order of the qubits in the outer-most circuit, restricted to those used by the box.
-  Previously, they followed the order of `CircuitInstruction.qubits`. ([#116](https://github.com/Qiskit/samplomatic/issues/116))
 
 
 ## [0.6.0](https://github.com/Qiskit/samplomatic/tree/0.6.0) - 2025-09-03
