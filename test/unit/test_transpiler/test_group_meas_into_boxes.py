@@ -17,8 +17,9 @@ from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 
-from samplomatic import Twirl
+from samplomatic import BasisTransform, Twirl
 from samplomatic.transpiler.passes import GroupMeasIntoBoxes
+from samplomatic.utils import get_annotation
 
 
 def make_circuits():
@@ -199,6 +200,23 @@ def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
     transpiled_circuit = pm.run(circuit)
 
     assert transpiled_circuit == expected_circuit
+
+
+@pytest.mark.parametrize("add_twirling", [True, False])
+@pytest.mark.parametrize("add_basis_transform", [True, False])
+def test_annotations(add_twirling, add_basis_transform):
+    """Test that `GroupMeasIntoBoxes` attached the correct annotations."""
+    circuit = QuantumCircuit(1, 1)
+    circuit.measure(0, 0)
+
+    pm = PassManager(passes=[GroupMeasIntoBoxes(add_twirling, add_basis_transform, "ciao")])
+    box = pm.run(circuit).data[0].operation
+    assert (get_annotation(box, Twirl) is not None) == add_twirling
+    assert ((basis_t := get_annotation(box, BasisTransform)) is not None) == add_basis_transform
+
+    if basis_t:
+        assert basis_t.mode == "measure"
+        assert basis_t.ref.startswith("ciao")
 
 
 def test_raises_when_measurements_overwrite_clbit():
