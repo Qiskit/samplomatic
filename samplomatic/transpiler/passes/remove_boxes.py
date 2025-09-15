@@ -25,33 +25,29 @@ class RemoveBoxes(TransformationPass):
         TransformationPass.__init__(self)
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
-        new_dag = dag.copy_empty_like()
-
+        inlined_dag = dag.copy_empty_like()
         for node in dag.op_nodes():
-            if node.op.name == "box":
-                self._inline_box(new_dag, node)
+            if node.name == "box":
+                inlined_dag.compose(self._inline(node), list(node.qargs), list(node.cargs))
             else:
-                new_dag.apply_operation_back(node.op, node.qargs, node.cargs)
+                inlined_dag.apply_operation_back(node.op, node.qargs, node.cargs)
+        return inlined_dag
 
-        return new_dag
-
-    def _inline_box(self, dag, node) -> DAGCircuit:
-        """Helper to inline the content of box nodes.
-
-        Applies recursively to nodes that contain boxes.
-
-        Assumes but does not check that ``node`` contains a box.
-        """
+    def _inline(self, node) -> None:
         body = node.op.body
         qubit_map: dict[Qubit, Qubit] = dict(zip(body.qubits, node.qargs))
         clbit_map: dict[Clbit, Clbit] = dict(zip(body.clbits, node.cargs))
 
-        for body_node in circuit_to_dag(body).topological_op_nodes():
-            if body_node.op.name == "box":
-                self._inline_box(dag, body_node)
-            else:
-                qargs = [qubit_map[qubit] for qubit in body_node.qargs]
-                cargs = [clbit_map[clbit] for clbit in body_node.cargs]
-                dag.apply_operation_back(body_node.op, qargs, cargs)
+        content = DAGCircuit()
+        content.add_qubits(node.qargs)
+        content.add_clbits(node.cargs)
 
-        return dag
+        for box_node in circuit_to_dag(body).topological_op_nodes():
+            qargs = [qubit_map[qubit] for qubit in box_node.qargs]
+            cargs = [clbit_map[clbit] for clbit in box_node.cargs]
+            if box_node.op.name == "box":
+                content.compose(self._inline(box_node), qargs, cargs)
+            else:
+                content.apply_operation_back(box_node.op, qargs, cargs)
+
+        return content
