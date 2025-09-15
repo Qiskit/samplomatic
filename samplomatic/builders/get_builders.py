@@ -12,10 +12,10 @@
 
 """get_builders"""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import TypeAlias
 
-from qiskit.circuit import Annotation
+from qiskit.circuit import Annotation, Qubit
 
 from ..aliases import CircuitInstruction
 from ..annotations import (
@@ -48,11 +48,14 @@ SamplexBuilder: TypeAlias = Builder[PreSamplex, InstructionSpec, None]
 TemplateBuilder: TypeAlias = Builder[TemplateState, InstructionSpec]
 
 
-def get_builders(instr: CircuitInstruction | None) -> tuple[TemplateBuilder, SamplexBuilder]:
+def get_builders(
+    instr: CircuitInstruction | None, qubits: Sequence[Qubit]
+) -> tuple[TemplateBuilder, SamplexBuilder]:
     """Get the builders of a box.
 
     Args:
         instr: The box instrucion.
+        qubits: The qubits of the circuit containing the instruction.
 
     Raises:
         BuildError: If any of the annotations are unsupported.
@@ -65,7 +68,7 @@ def get_builders(instr: CircuitInstruction | None) -> tuple[TemplateBuilder, Sam
     if instr is None or not (annotations := instr.operation.annotations):
         return PassthroughTemplateBuilder(), PassthroughSamplexBuilder()
 
-    qubits = QubitPartition.from_elements(instr.qubits)
+    qubits = QubitPartition.from_elements(q for q in qubits if q in instr.qubits)
     collection = CollectionSpec(qubits)
     emission = EmissionSpec(qubits)
 

@@ -13,7 +13,7 @@
 """Tests that twirling samples are produced correctly from static circuits."""
 
 import numpy as np
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
 
 from samplomatic.annotations import BasisTransform, Twirl
@@ -158,6 +158,24 @@ def make_circuits():
 
     pauli = np.array([1], dtype=np.uint8)
     yield (circuit, expected, {"my_basis": pauli}), "z_to_x"
+
+    pauli = np.array([1, 0, 0], dtype=np.uint8)
+    expected = QuantumCircuit(3)
+    expected.h(0)
+    for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
+        circuit = QuantumCircuit(3)
+        with circuit.box([BasisTransform(mode="prepare")]):
+            circuit.noop(*perm)
+        yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
+
+    pauli = np.array([1, 0, 0], dtype=np.uint8)
+    for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
+        circuit = QuantumCircuit(3)
+        box_op = BoxOp(QuantumCircuit(3), annotations=[BasisTransform(mode="prepare")])
+        circuit.append(box_op, perm)
+        expected = QuantumCircuit(3)
+        expected.h(idx)
+        yield (circuit, expected, {"prepare": pauli}), f"permuted_box_op_qubits_{idx}"
 
 
 def pytest_generate_tests(metafunc):

@@ -13,7 +13,7 @@
 """Tests that twirling samples are produced correctly from static circuits with noise injection."""
 
 import numpy as np
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.circuit.library import CXGate
 from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap
 
@@ -77,6 +77,28 @@ def make_circuits():
     expected = expected & expected
 
     yield (circuit, expected, {"my_noise": noise_map}), "xx_noise_twice"
+
+    noise_map = PauliLindbladMap.from_list([("XI", 100)])
+    prob = next(iter(noise_map.probabilities()))
+    expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XIXI").to_matrix())
+    for idx, perm in enumerate([(0, 1), (1, 0)]):
+        circuit = QuantumCircuit(2)
+        with circuit.box([InjectNoise("my_noise"), Twirl()]):
+            circuit.noop(*perm)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1)
+        yield (circuit, expected, {"my_noise": noise_map}), f"permuted_context_qubits_{idx}"
+
+    noise_map = PauliLindbladMap.from_list([("XI", 100)])
+    prob = next(iter(noise_map.probabilities()))
+    for idx, (perm, pauli) in enumerate(zip([(0, 1), (1, 0)], [Pauli("XIXI"), Pauli("IXIX")])):
+        expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(pauli.to_matrix())
+        circuit = QuantumCircuit(2)
+        box_op = BoxOp(QuantumCircuit(2), annotations=[InjectNoise("my_noise"), Twirl()])
+        circuit.append(box_op, perm)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1)
+        yield (circuit, expected, {"my_noise": noise_map}), f"permuted_box_op_qubits_{idx}"
 
 
 def pytest_generate_tests(metafunc):
