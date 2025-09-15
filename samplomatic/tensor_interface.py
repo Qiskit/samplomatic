@@ -19,7 +19,7 @@ from enum import StrEnum
 from typing import Any, Literal, Self, overload
 
 import numpy as np
-from qiskit.quantum_info import PauliLindbladMap
+from qiskit.quantum_info import QubitSparsePauliList
 
 from .aliases import InterfaceName
 
@@ -29,7 +29,7 @@ class ValueType(StrEnum):
 
     BOOL = "bool"
     INT = "int"
-    LINDBLAD = "lindblad"
+    PAULIS = "paulis"
     NUMPY_ARRAY = "numpy_array"
 
 
@@ -78,7 +78,9 @@ class Specification:
     def validate_and_coerce(self: Literal[ValueType.INT], value: Any) -> int: ...
 
     @overload
-    def validate_and_coerce(self: Literal[ValueType.LINDBLAD], value: Any) -> PauliLindbladMap: ...
+    def validate_and_coerce(
+        self: Literal[ValueType.PAULIS], value: Any
+    ) -> QubitSparsePauliList: ...
 
     @overload
     def validate_and_coerce(self: Literal[ValueType.NUMPY_ARRAY], value: Any) -> np.ndarray: ...
@@ -99,8 +101,8 @@ class Specification:
             return bool(value)
         if self.value_type is ValueType.INT:
             return int(value)
-        if self.value_type is ValueType.LINDBLAD:
-            if isinstance(value, PauliLindbladMap):
+        if self.value_type is ValueType.PAULIS:
+            if isinstance(value, QubitSparsePauliList):
                 return value
         if self.value_type is ValueType.NUMPY_ARRAY:
             return np.array(value)
