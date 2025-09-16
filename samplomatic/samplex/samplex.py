@@ -320,7 +320,7 @@ class Samplex:
                         (num_terms,),
                         np.dtype(np.float64),
                         "An array of factors by which to scale individual rates of a noise map. "
-                        "The order should match the order of the corresponding pauli list.",
+                        "The order should match the order of the corresponding Pauli list.",
                         optional=True,
                     )
                 )
