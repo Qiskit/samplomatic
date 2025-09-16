@@ -28,7 +28,7 @@ class GroupMeasIntoBoxes(TransformationPass):
     """Collect the measurements in a circuit inside boxes.
 
     This pass collects all of the measurements in the input circuit in boxes, together with the
-    single-qubit gates that preceed them. To assign the measurements to these boxes, it
+    single-qubit gates that precede them. To assign the measurements to these boxes, it
     uses a greedy collection strategy that tries to collect measurements in the earliest possible
     box that they can fit.
 
