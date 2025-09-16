@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -29,6 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install ".[dev,vis]"
     - name: Pre-commit checks (linting)
+      if: matrix.python-version == '3.12'
       run: |
         pre-commit run --all-files
     - name: Test with pytest

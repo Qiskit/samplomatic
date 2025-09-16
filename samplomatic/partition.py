@@ -12,6 +12,8 @@
 
 """Partition"""
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Iterator
 from typing import Any, Generic, TypeVar
 
@@ -81,7 +83,7 @@ class Partition(Generic[ElementT]):
 
         return np.array(indices, dtype=np.intp)
 
-    def restrict(self, required: set[ElementT]) -> "Partition":
+    def restrict(self, required: set[ElementT]) -> Partition:
         """Restrict to those parts with containment in the required set.
 
         Order is maintained of those remaining parts.
@@ -91,7 +93,7 @@ class Partition(Generic[ElementT]):
             (part for part in self._parts if required.issuperset(part)),
         )
 
-    def difference(self, subtracted: set[ElementT]) -> "Partition":
+    def difference(self, subtracted: set[ElementT]) -> Partition:
         """Return the difference with respect to `subtracted`.
 
         Order is maintained of those remaining parts.
@@ -112,7 +114,7 @@ class Partition(Generic[ElementT]):
         """
         return not self.all_elements.isdisjoint(elements)
 
-    def intersection(self, other: "Partition", strict: bool = False) -> "Partition":
+    def intersection(self, other: Partition, strict: bool = False) -> Partition:
         """Return a new partition that is the intersection with the other.
 
         The order of this partition is maintained, whereas the order of the other partition is

@@ -12,6 +12,8 @@
 
 """Testing utilities."""
 
+from __future__ import annotations
+
 from qiskit.circuit import QuantumCircuit
 
 from samplomatic.aliases import CircuitInstruction, Qubit, QubitIndex
