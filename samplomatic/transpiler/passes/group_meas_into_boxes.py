@@ -24,7 +24,7 @@ from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
 
 from ...annotations import BasisTransform, Twirl
-from .utils import asap_topological_nodes, make_and_insert_box, validate_op_is_supported
+from .utils import make_and_insert_box, validate_op_is_supported
 
 SUPPORTED_ANNOTATIONS = ["twirl", "basis_transform", "all"]
 """The supported values of ``annotations``."""
@@ -92,76 +92,53 @@ class GroupMeasIntoBoxes(TransformationPass):
         # A map to temporarily store single-qubit gates before inserting them into a box
         cached_gates_1q: dict[Qubit, list[Instruction]] = defaultdict(list)
 
-        # The nodes to be added to the current box
-        nodes_current_box: list[DAGOpNode] = []
+        # A list of groups that need to be placed in the same box, expressed as a dict for fast
+        # access. Every node in each group either contains a single-qubit gate or a measurement
+        # --when constructing this dictionary, we explicitly leave out nodes that contain different
+        # ops.
+        groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
-        # The qubits that are active within the current box.
-        # Note: A qubit is marked as "active" when within the current box, there is a measurement
-        # gate acting on it. Therefore, active qubits are no longer willing to receive measurements
-        # within the current box.
-        active_qubits: set[Qubit] = set()
+        # A map from qubits/clbits to the index of the right-most group that is able to collect
+        # operations on those qubits/clbits
+        group_indices: dict[Qubit | Clbit, int] = defaultdict(int)
 
-        # The clbits of the measurements in the current box.
-        clbits: set[Clbit] = set()
-
-        # The qubits barred by a delimiter.
-        barred_qubits: set[Qubit] = set()
-
-        for node in asap_topological_nodes(dag):
+        for node in dag.topological_op_nodes():
             validate_op_is_supported(node)
+
+            # The right-most group that is able to collect operations on all the qubit in this node
+            group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
 
             if (name := node.op.name) in ["barrier", "box"] or node.op.num_qubits > 1:
                 # If `node` contains a barrier, a box, or a multi-qubit gates, flush the
-                # single-qubit gates.
-                for qarg in node.qargs:
-                    cached_gates_1q.pop(qarg, [])
-                barred_qubits = barred_qubits.union(node.qargs)
+                # single-qubit gates without placing them in a box.
+                for qubit in node.qargs:
+                    cached_gates_1q.pop(qubit, [])
+
+                    # Update the trackers
+                    group_indices[qubit] = group_idx
             elif name == "measure":
-                if any(carg in clbits for carg in node.cargs):
-                    raise TranspilerError(
-                        "Cannot twirl more than one measurement on the same classical bit."
-                    )
+                # If `node` contains a measurement, flush the cached one-qubit gates and the two
+                # qubit gates into a group.
+                for qubit in node.qargs:
+                    groups[group_idx] += cached_gates_1q.pop(qubit, [])
+                groups[group_idx].append(node)
 
-                # Make a box if the node's qubits are already active, or if a delimiter is
-                # present between this node and the previous ones
-                make_box = any(qarg in active_qubits for qarg in node.qargs)
-                make_box |= (not barred_qubits.isdisjoint(active_qubits)) and (
-                    not barred_qubits.isdisjoint(node.qargs)
-                )
-                if make_box:
-                    # If `node` overlaps with one or more active qubits, make and insert the box
-                    make_and_insert_box(
-                        dag,
-                        nodes_current_box,
-                        active_qubits,
-                        clbits,
-                        annotations=self._make_annotations(),
-                    )
-
-                    # Reset trackers
-                    nodes_current_box = []
-                    barred_qubits.difference_update(active_qubits)
-                    active_qubits.clear()
-                    clbits.clear()
-
-                # If `node` contains a measurement:
-                # - mark its qubit as active, store its clbit
-                # - flush the single-qubit gates for its qubit
-                # - append it to the list of nodes that will be added to current box
-                active_qubits.add(qarg := node.qargs[0])
-                clbits.add(node.cargs[0])
-                barred_qubits.discard(qarg)
-                nodes_current_box += cached_gates_1q.pop(qarg, [])
-                nodes_current_box.append(node)
+                # Update trackers
+                for qubit in node.qargs:
+                    group_indices[qubit] = group_idx + 1
             elif node.op.num_qubits == 1:
                 # If `node` contains a single-qubit gate, cache it.
                 cached_gates_1q[node.qargs[0]].append(node)
             else:
                 raise TranspilerError(f"``{name}`` operation is not supported.")
 
-        # make the final multi-qubit gate left-dressed box
-        make_and_insert_box(
-            dag, nodes_current_box, active_qubits, clbits, annotations=self._make_annotations()
-        )
+        for nodes in groups.values():
+            cargs = [carg for node in nodes for carg in node.cargs]
+            if len(cargs) != len(set(cargs)):
+                raise TranspilerError(
+                    "Cannot twirl more than one measurement on the same classical bit."
+                )
+
+            make_and_insert_box(dag, nodes, self._make_annotations())
 
         return dag

@@ -14,11 +14,11 @@
 
 from collections.abc import Iterator
 
-from qiskit.circuit import BoxOp, QuantumCircuit
+from qiskit.circuit import Annotation, BoxOp, QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.exceptions import TranspilerError
 
-from ...annotations import DressingLiteral, Twirl
+from ...annotations import Twirl
 
 
 def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
@@ -40,14 +40,17 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
 def make_and_insert_box(
     dag: DAGCircuit,
     nodes: list[DAGOpNode],
-    dressing: DressingLiteral = "left",
+    annotations: list[Annotation] = [Twirl()],
 ) -> None:
-    """Make a dressed box and insert it into a dag.
+    """Make a box and insert it into a dag.
 
     Args:
         dag: The dag to insert the box into (modified in place).
         nodes: The nodes of ``dag`` to be placed in the box.
-        dressing: Whether the box is left- or right-dressed.
+        active_qubits: The qubits that are active in the box being inserted.
+        clbits: The clbits that are part of the ``cargs`` of an operation that is being added
+            to the box.
+        annotations: The annotations of the new box.
     """
     if not nodes:
         return
@@ -66,7 +69,7 @@ def make_and_insert_box(
             [clbit_map[carg] for carg in node.cargs],
         )
 
-    box = BoxOp(body=content, annotations=[Twirl(dressing=dressing)])
+    box = BoxOp(body=content, annotations=annotations)
     dag.replace_block_with_op(nodes, box, qubit_map | clbit_map)
 
 

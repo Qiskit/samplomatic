@@ -66,7 +66,7 @@ class GroupGatesIntoBoxes(TransformationPass):
 
         # A list of groups that need to be placed in the same box, expressed as a dict for fast
         # access. Every node in each group either contains a single- or two-qubit gate--when
-        # constructing this dictionary, we leave out nodes that contain different ops.
+        # constructing this dictionary, we explicitly leave out nodes that contain different ops.
         groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
         # A map from qubits/clbits to the index of the right-most group that is able to collect
