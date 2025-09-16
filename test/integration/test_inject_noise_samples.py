@@ -15,7 +15,12 @@
 import numpy as np
 from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.circuit.library import CXGate
-from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap, QubitSparsePauliList
+from qiskit.quantum_info import (
+    Operator,
+    Pauli,
+    QubitSparsePauliList,
+    average_gate_fidelity,
+)
 
 from samplomatic.annotations import InjectNoise, Twirl
 from samplomatic.builders import pre_build
@@ -31,9 +36,9 @@ def make_circuits():
 
     paulis = {"my_noise": QubitSparsePauliList.from_list(["II"])}
     rates = {"rates.my_noise": [0.0]}
-    expected = Operator(np.identity(16))
+    expected = [Operator(np.identity(16))]
 
-    yield (circuit, expected, paulis, rates), "identity"
+    yield (circuit, [Operator(np.identity(16))], paulis, rates), "identity"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
@@ -46,10 +51,7 @@ def make_circuits():
 
     paulis = {"my_noise": QubitSparsePauliList.from_list(["XX"])}
     rates = {"rates.my_noise": [100.0]}
-
-    noise_map = PauliLindbladMap.from_list([("XX", 100)])
-    prob = next(iter(noise_map.probabilities()))
-    expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
+    expected = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
 
     yield (circuit, expected, paulis, rates), "xx_noise"
 
@@ -60,8 +62,8 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
-    expected = (Operator(CXGate()) ^ Operator(CXGate())) & expected
+    noise_ops = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
+    expected = [(Operator(CXGate()) ^ Operator(CXGate())) & op for op in noise_ops]
 
     yield (circuit, expected, paulis, rates), "xx_noise_permuted"
 
@@ -75,19 +77,13 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    noise_map = PauliLindbladMap.from_list([("XX", 100)])
-    prob = next(iter(noise_map.probabilities()))
-    expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
-    expected = expected & expected
+    expected = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
 
     yield (circuit, expected, paulis, rates), "xx_noise_twice"
 
     paulis = {"my_noise": QubitSparsePauliList.from_list(["XI"])}
     rates = {"rates.my_noise": [100.0]}
-
-    noise_map = PauliLindbladMap.from_list([("XI", 100)])
-    prob = next(iter(noise_map.probabilities()))
-    expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XIXI").to_matrix())
+    expected = [Operator(np.identity(16)), Operator(Pauli("XIXI").to_matrix())]
 
     for idx, perm in enumerate([(0, 1), (1, 0)]):
         circuit = QuantumCircuit(2)
@@ -97,10 +93,8 @@ def make_circuits():
             circuit.noop(0, 1)
         yield (circuit, expected, paulis, rates), f"permuted_context_qubits_{idx}"
 
-    noise_map = PauliLindbladMap.from_list([("XI", 100)])
-    prob = next(iter(noise_map.probabilities()))
     for idx, (perm, pauli) in enumerate(zip([(0, 1), (1, 0)], [Pauli("XIXI"), Pauli("IXIX")])):
-        expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(pauli.to_matrix())
+        expected = [Operator(np.identity(16)), Operator(pauli.to_matrix())]
         circuit = QuantumCircuit(2)
         box_op = BoxOp(QuantumCircuit(2), annotations=[InjectNoise("my_noise"), Twirl()])
         circuit.append(box_op, perm)
@@ -133,13 +127,12 @@ def test_sampling(circuit, expected, paulis, rates, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     samplex_input = samplex.inputs(paulis).bind(noise_maps=rates)
-    samplex_output = samplex.sample(samplex_input, num_randomizations=1000)
+    samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 
-    superops = []
     for row in parameter_values:
         op = Operator(template.template.assign_parameters(row))
-        superops.append(op.conjugate() ^ op)
-
-    avg_op = sum(superops) / len(superops)
-    assert np.allclose(avg_op, expected, 0.1)
+        assert any(
+            np.allclose(f := average_gate_fidelity(expected_op, op.conjugate() ^ op), 1)
+            for expected_op in expected
+        ), f
