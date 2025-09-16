@@ -18,7 +18,7 @@ import itertools
 from collections import defaultdict
 from typing import Literal
 
-from qiskit.circuit import Annotation, Clbit, Instruction, Qubit
+from qiskit.circuit import Annotation, Bit, Qubit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
@@ -88,9 +88,18 @@ class GroupMeasIntoBoxes(TransformationPass):
         )
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
-        """Collect the operations in the dag inside left-dressed boxes."""
-        # A map to temporarily store single-qubit gates before inserting them into a box
-        cached_gates_1q: dict[Qubit, list[Instruction]] = defaultdict(list)
+        """Collect the operations in the dag inside left-dressed boxes.
+
+        The collection strategy undertakes the following steps:
+            *   Loop through the DAG's op nodes in topological order.
+            *   Group together single-qubit gate nodes and measurement nodes that need to be
+                placed in the same  box.
+            *   Whenever a node can be placed in more than one group, place it in the earliest
+                possible group--where "earliest" is with reference to opological ordering.
+            *   When looping is complete, replace each group with a box.
+        """
+        # A map to temporarily store single-qubit gate nodes before inserting them into a group
+        cached_gates_1q: dict[Qubit, list[DAGOpNode]] = defaultdict(list)
 
         # A list of groups that need to be placed in the same box, expressed as a dict for fast
         # access. Every node in each group either contains a single-qubit gate or a measurement
@@ -98,27 +107,27 @@ class GroupMeasIntoBoxes(TransformationPass):
         # ops.
         groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
-        # A map from qubits/clbits to the index of the right-most group that is able to collect
-        # operations on those qubits/clbits
-        group_indices: dict[Qubit | Clbit, int] = defaultdict(int)
+        # A map from bits (qubits and clbits) to the index of the earliest group that is able to
+        # collect operations on those bits
+        group_indices: dict[Bit, int] = defaultdict(int)
 
         for node in dag.topological_op_nodes():
             validate_op_is_supported(node)
 
-            # The right-most group that is able to collect operations on all the qubit in this node
+            # The index of the earliest group able to collect ops on all the bits in this node
             group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
 
-            if (name := node.op.name) in ["barrier", "box"] or node.op.num_qubits > 1:
-                # If `node` contains a barrier, a box, or a multi-qubit gates, flush the
-                # single-qubit gates without placing them in a box.
+            if (name := node.op.name) in ["barrier", "box"] or (
+                node.is_standard_gate() and node.op.num_qubits == 2
+            ):
+                # Flush the single-qubit gate nodes without placing them in a group
                 for bit in node.qargs + node.cargs:
                     cached_gates_1q.pop(bit, [])
 
                     # Update the trackers
                     group_indices[bit] = group_idx
             elif name == "measure":
-                # If `node` contains a measurement, flush the cached one-qubit gates and the two
-                # qubit gates into a group.
+                # Flush the cached one-qubit gates and measurement into a group
                 for qubit in node.qargs:
                     groups[group_idx] += cached_gates_1q.pop(qubit, [])
                 groups[group_idx].append(node)
@@ -126,8 +135,8 @@ class GroupMeasIntoBoxes(TransformationPass):
                 # Update trackers
                 for qubit in node.qargs:
                     group_indices[qubit] = group_idx + 1
-            elif node.op.num_qubits == 1:
-                # If `node` contains a single-qubit gate, cache it.
+            elif node.is_standard_gate() and node.op.num_qubits == 1:
+                # Cache the node
                 cached_gates_1q[node.qargs[0]].append(node)
             else:
                 raise TranspilerError(f"``{name}`` operation is not supported.")

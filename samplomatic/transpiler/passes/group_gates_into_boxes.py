@@ -14,7 +14,7 @@
 
 from collections import defaultdict
 
-from qiskit.circuit import Clbit, Instruction, Qubit
+from qiskit.circuit import Bit, Qubit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
@@ -56,49 +56,49 @@ class GroupGatesIntoBoxes(TransformationPass):
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.
 
-        Each left-dressed box contains a non-zero number of multi-qubit gates that can only
-        be applied to non-overlapping sets of qubits. Each box also includes all the single-
-        qubit gates that precede the multi-qubit gates on overlapping qubits that haven't been
-        collected in a box.
+        The collection strategy undertakes the following steps:
+            *   Loop through the DAG's op nodes in topological order.
+            *   Group together single- and two-qubit gate nodes that need to be placed in the same
+                box.
+            *   Whenever a node can be placed in more than one group, place it in the earliest
+                possible group--where "earliest" is with reference to opological ordering.
+            *   When looping is complete, replace each group with a box.
         """
-        # A map to temporarily store single-qubit gates before inserting them into a box
-        cached_gates_1q: dict[Qubit, list[Instruction]] = defaultdict(list)
+        # A map to temporarily store single-qubit gate nodes before inserting them into a group
+        cached_gates_1q: dict[Qubit, list[DAGOpNode]] = defaultdict(list)
 
         # A list of groups that need to be placed in the same box, expressed as a dict for fast
         # access. Every node in each group either contains a single- or two-qubit gate--when
-        # constructing this dictionary, we explicitly leave out nodes that contain different ops.
+        # constructing this dictionary, we explicitly leave out nodes that contain different ops
         groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
-        # A map from qubits/clbits to the index of the right-most group that is able to collect
-        # operations on those qubits/clbits
-        group_indices: dict[Qubit | Clbit, int] = defaultdict(int)
+        # A map from bits (qubits and clbits) to the index of the earliest group that is able to
+        # collect operations on those bits
+        group_indices: dict[Bit, int] = defaultdict(int)
 
         for node in dag.topological_op_nodes():
             validate_op_is_supported(node)
 
-            # The right-most group that is able to collect operations on all the qubit in this node
+            # The index of the earliest group able to collect ops on all the bits in this node
             group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
 
             if (name := node.op.name) in ["barrier", "box"]:
-                # If `node` contains a barrier or a box, group them, as they need to be collected
-                # in a box
+                # Flush the single-qubit gate nodes and place them in a group
                 for qubit in node.qargs:
                     groups[group_idx] += cached_gates_1q.pop(qubit, [])
                     group_indices[qubit] = group_idx + 1
             elif name == "measure":
-                # If `node` contains a measurement, flush the single-qubit gates without placing
-                # them in a box.
+                # Flush the single-qubit gate nodes without placing them in a group
                 qubit = node.qargs[0]
                 clbit = node.cargs[0]
 
                 cached_gates_1q.pop(qubit, [])
                 group_indices[qubit] = group_indices[clbit] = group_idx
-            elif node.op.num_qubits == 1:
-                # If `node` contains a single-qubit gate, cache it.
+            elif node.is_standard_gate() and node.op.num_qubits == 1:
+                # Cache the node
                 cached_gates_1q[node.qargs[0]].append(node)
-            elif node.op.num_qubits == 2:
-                # If `node` contains a two-qubit gate, flush the cached one-qubit gates and the two
-                # qubit gates into a group.
+            elif node.is_standard_gate() and node.op.num_qubits == 2:
+                # Flush the cached single- and two-qubit gate nodes into a group
                 for qubit in node.qargs:
                     groups[group_idx] += cached_gates_1q.pop(qubit, [])
                 groups[group_idx].append(node)
