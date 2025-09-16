@@ -12,15 +12,14 @@
 
 """Utils for transpiler module."""
 
-from __future__ import annotations
-
 from collections.abc import Iterator
 
-from qiskit.circuit import Annotation, BoxOp, Clbit, QuantumCircuit, Qubit
+from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.exceptions import TranspilerError
 
-from ...annotations import Twirl
+from ...annotations import DressingLiteral, Twirl
+from .aliases import NodeGroup
 
 
 def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
@@ -41,28 +40,26 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
 
 def make_and_insert_box(
     dag: DAGCircuit,
-    nodes: list[DAGOpNode],
-    active_qubits: set[Qubit],
-    clbits: set[Clbit] = set(),
-    annotations: list[Annotation] = [Twirl()],
+    nodes: NodeGroup,
+    dressing: DressingLiteral = "left",
 ) -> None:
-    """Make a box and insert it into a dag.
+    """Make a dressed box and insert it into a dag.
 
     Args:
         dag: The dag to insert the box into (modified in place).
         nodes: The nodes of ``dag`` to be placed in the box.
-        active_qubits: The qubits that are active in the box being inserted.
-        clbits: The clbits that are part of the ``cargs`` of an operation that is being added
-            to the box.
-        annotations: The annotations of the new box.
+        dressing: Whether the box is left- or right-dressed.
     """
     if not nodes:
         return
 
-    qubit_map = {qubit: idx for (idx, qubit) in enumerate(active_qubits)}
+    qubits = set(qarg for node in nodes for qarg in node.qargs)
+    qubit_map = {qubit: idx for (idx, qubit) in enumerate(qubits)}
+
+    clbits = set(carg for node in nodes for carg in node.cargs)
     clbit_map = {clbit: idx for (idx, clbit) in enumerate(clbits)}
 
-    content = QuantumCircuit(list(active_qubits), list(clbits))
+    content = QuantumCircuit(list(qubits), list(clbits))
     for node in nodes:
         content.append(
             node.op,
@@ -70,7 +67,7 @@ def make_and_insert_box(
             [clbit_map[carg] for carg in node.cargs],
         )
 
-    box = BoxOp(body=content, annotations=annotations)
+    box = BoxOp(body=content, annotations=[Twirl(dressing=dressing)])
     dag.replace_block_with_op(nodes, box, qubit_map | clbit_map)
 
 
