@@ -15,7 +15,7 @@
 import numpy as np
 from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.circuit.library import CXGate
-from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap
+from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap, QubitSparsePauliList
 
 from samplomatic.annotations import InjectNoise, Twirl
 from samplomatic.builders import pre_build
@@ -29,10 +29,11 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    noise_map = PauliLindbladMap.from_list([("II", 0.0)])
+    paulis = {"my_noise": QubitSparsePauliList.from_list(["II"])}
+    rates = {"rates.my_noise": [0.0]}
     expected = Operator(np.identity(16))
 
-    yield (circuit, expected, {"my_noise": noise_map}), "identity"
+    yield (circuit, expected, paulis, rates), "identity"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
@@ -41,13 +42,16 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    yield (circuit, expected, {"my_noise": noise_map}), "identity_optional_modifiers"
+    yield (circuit, expected, paulis, rates), "identity_optional_modifiers"
+
+    paulis = {"my_noise": QubitSparsePauliList.from_list(["XX"])}
+    rates = {"rates.my_noise": [100.0]}
 
     noise_map = PauliLindbladMap.from_list([("XX", 100)])
     prob = next(iter(noise_map.probabilities()))
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
 
-    yield (circuit, expected, {"my_noise": noise_map}), "xx_noise"
+    yield (circuit, expected, paulis, rates), "xx_noise"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise")]):
@@ -59,7 +63,7 @@ def make_circuits():
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
     expected = (Operator(CXGate()) ^ Operator(CXGate())) & expected
 
-    yield (circuit, expected, {"my_noise": noise_map}), "xx_noise_permuted"
+    yield (circuit, expected, paulis, rates), "xx_noise_permuted"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise")]):
@@ -76,18 +80,22 @@ def make_circuits():
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XXXX").to_matrix())
     expected = expected & expected
 
-    yield (circuit, expected, {"my_noise": noise_map}), "xx_noise_twice"
+    yield (circuit, expected, paulis, rates), "xx_noise_twice"
+
+    paulis = {"my_noise": QubitSparsePauliList.from_list(["XI"])}
+    rates = {"rates.my_noise": [100.0]}
 
     noise_map = PauliLindbladMap.from_list([("XI", 100)])
     prob = next(iter(noise_map.probabilities()))
     expected = prob * Operator(np.identity(16)) + (1 - prob) * Operator(Pauli("XIXI").to_matrix())
+
     for idx, perm in enumerate([(0, 1), (1, 0)]):
         circuit = QuantumCircuit(2)
         with circuit.box([InjectNoise("my_noise"), Twirl()]):
             circuit.noop(*perm)
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1)
-        yield (circuit, expected, {"my_noise": noise_map}), f"permuted_context_qubits_{idx}"
+        yield (circuit, expected, paulis, rates), f"permuted_context_qubits_{idx}"
 
     noise_map = PauliLindbladMap.from_list([("XI", 100)])
     prob = next(iter(noise_map.probabilities()))
@@ -98,16 +106,16 @@ def make_circuits():
         circuit.append(box_op, perm)
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1)
-        yield (circuit, expected, {"my_noise": noise_map}), f"permuted_box_op_qubits_{idx}"
+        yield (circuit, expected, paulis, rates), f"permuted_box_op_qubits_{idx}"
 
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
         args, descriptions = zip(*make_circuits())
-        metafunc.parametrize("circuit,expected,noise_maps", list(args), ids=descriptions)
+        metafunc.parametrize("circuit,expected,paulis,rates", list(args), ids=descriptions)
 
 
-def test_sampling(circuit, expected, noise_maps, save_plot):
+def test_sampling(circuit, expected, paulis, rates, save_plot):
     """Test sampling.
 
     Casts the given ``circuit`` and the twirled circuit into operators, and it compares their
@@ -124,7 +132,7 @@ def test_sampling(circuit, expected, noise_maps, save_plot):
     save_plot(lambda: samplex_state.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    samplex_input = samplex.inputs().bind(noise_maps=noise_maps)
+    samplex_input = samplex.inputs(paulis).bind(noise_maps=rates)
     samplex_output = samplex.sample(samplex_input, num_randomizations=1000)
     parameter_values = samplex_output["parameter_values"].astype(np.float64)
 

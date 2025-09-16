@@ -74,8 +74,9 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
+from ..samplex.noise_model_requirement import NoiseModelRequirement
 from ..synths import Synth
-from ..tensor_interface import Specification, TensorSpecification, ValueType
+from ..tensor_interface import TensorSpecification
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
@@ -177,7 +178,7 @@ class PreSamplex:
         cregs: list[ClassicalRegister] | None = None,
         noise_map_count: count | None = None,
         noise_maps: dict[str, NumSubsystems] | None = None,
-        noise_modifiers: set[str] | None = None,
+        noise_modifiers: dict[str, set[str]] | None = None,
         basis_transforms: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
@@ -194,7 +195,7 @@ class PreSamplex:
         self._cregs = cregs
         self._noise_map_count = count() if noise_map_count is None else noise_map_count
         self._noise_maps = {} if noise_maps is None else noise_maps
-        self._noise_modifiers = set() if noise_modifiers is None else noise_modifiers
+        self._noise_modifiers = defaultdict(set) if noise_modifiers is None else noise_modifiers
         self._basis_transforms = {} if basis_transforms is None else basis_transforms
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
         self.passthrough_params: ParamSpec = (
@@ -621,7 +622,9 @@ class PreSamplex:
             )
         else:
             self._noise_maps[noise_ref] = len(qubits)
-        self._noise_modifiers.add(modifier_ref)
+
+        if modifier_ref:
+            self._noise_modifiers[noise_ref].add(modifier_ref)
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreInjectNoise(
@@ -658,7 +661,9 @@ class PreSamplex:
             )
         else:
             self._noise_maps[noise_ref] = len(qubits)
-        self._noise_modifiers.add(modifier_ref)
+
+        if modifier_ref:
+            self._noise_modifiers[noise_ref].add(modifier_ref)
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreInjectNoise(
@@ -1086,35 +1091,9 @@ class PreSamplex:
                 )
             )
 
-        for noise_map, length in self._noise_maps.items():
-            samplex.add_input(
-                Specification(
-                    f"noise_maps.{noise_map}",
-                    ValueType.LINDBLAD,
-                    f"A noise map acting on ``{length}`` qubits.",
-                )
-            )
-
-        for noise_modifier in self._noise_modifiers:
-            if noise_modifier == "":
-                continue
-
-            samplex.add_input(
-                TensorSpecification(
-                    f"noise_scales.{noise_modifier}",
-                    (),
-                    np.dtype(np.float64),
-                    "A factor by which to scale a noise map.",
-                    optional=True,
-                )
-            )
-            samplex.add_input(
-                Specification(
-                    f"local_scales.{noise_modifier}",
-                    ValueType.NUMPY_ARRAY,
-                    "An array of factors by which to scale individual elements of a noise map.",
-                    True,
-                )
+        for noise_ref, num_qubits in self._noise_maps.items():
+            samplex.add_noise_model_requirement(
+                NoiseModelRequirement(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
             )
 
         if max_param_idx is not None:
@@ -1212,7 +1191,7 @@ class PreSamplex:
         node = InjectNoiseNode(
             reg_name,
             sign_reg_name,
-            "noise_maps." + pre_inject.ref,
+            pre_inject.ref,
             len(pre_inject.subsystems),
             pre_inject.modifier_ref,
         )
