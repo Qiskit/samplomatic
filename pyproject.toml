@@ -63,6 +63,7 @@ vis = [
 
 [tool.ruff]
 lint.select = [
+    "D100",      # pydocstyle
     "E",      # pycodestyle
     "F",      # pyflake
     "I",      # isort
@@ -76,6 +77,9 @@ target-version = "py311"
 "__init__.py" = [
     "E402",   # module-import-not-at-top-of-file
     "F401",   # unused-import
+]
+"test/unit/**/*.py" = [
+    "D100",   #
 ]
 
 [tool.pytest.ini_options]

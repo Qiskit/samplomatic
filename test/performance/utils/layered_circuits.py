@@ -132,7 +132,7 @@ def make_noise_maps(
 ) -> tuple[PauliLindbladMap, PauliLindbladMap]:
     """Generate a pair of noise maps.
 
-    These first corresponds to the even layers of :meth:`~.make_layered_circuit` while the
+    The first corresponds to the even layers of :meth:`~.make_layered_circuit` while the
     second corresponds to the odd layers.
 
     Args:
