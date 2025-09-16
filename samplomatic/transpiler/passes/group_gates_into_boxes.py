@@ -12,6 +12,8 @@
 
 """GroupGatesIntoBoxes"""
 
+from __future__ import annotations
+
 from collections import defaultdict
 
 from qiskit.circuit import Bit, Qubit
@@ -107,7 +109,7 @@ class GroupGatesIntoBoxes(TransformationPass):
                 for qubit in node.qargs:
                     group_indices[qubit] = group_idx + 1
             else:
-                raise TranspilerError(f"``{name}`` operation is not supported.")
+                raise TranspilerError(f"'{name}' operation is not supported.")
 
         for nodes in groups.values():
             make_and_insert_box(dag, nodes)

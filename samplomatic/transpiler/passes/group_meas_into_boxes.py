@@ -139,7 +139,7 @@ class GroupMeasIntoBoxes(TransformationPass):
                 # Cache the node
                 cached_gates_1q[node.qargs[0]].append(node)
             else:
-                raise TranspilerError(f"``{name}`` operation is not supported.")
+                raise TranspilerError(f"'{name}' operation is not supported.")
 
         for nodes in groups.values():
             cargs = [carg for node in nodes for carg in node.cargs]
