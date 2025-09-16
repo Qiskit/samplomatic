@@ -13,9 +13,9 @@
 """Test the sample method."""
 
 import pytest
-from qiskit.quantum_info import QubitSparsePauliList
 
 from samplomatic import build
+from samplomatic.noise_source import StaticNoiseSource
 
 from .utils import make_layered_circuit, make_noise_maps
 
@@ -90,19 +90,16 @@ class TestSample:
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_noise_maps(num_qubits)
-
-        even_paulis = QubitSparsePauliList.from_sparse_list(
-            [(pauli, idxs) for pauli, idxs, _ in even_noise.to_sparse_list()], even_noise.num_qubits
-        )
-        odd_paulis = QubitSparsePauliList.from_sparse_list(
-            [(pauli, idxs) for pauli, idxs, _ in odd_noise.to_sparse_list()], odd_noise.num_qubits
-        )
+        noise_source = StaticNoiseSource({"even": even_noise, "odd": odd_noise})
 
         template, samplex = build(circuit)
-        samplex_input = samplex.inputs({"even": even_paulis, "odd": odd_paulis}).bind(
-            parameter_values=rng.random(len(circuit.parameters)),
-            noise_maps={"rates.even": even_noise.rates, "rates.odd": odd_noise.rates},
-            noise_scales={"even": scale, "odd": scale},
+        samplex_input = (
+            samplex.set_noise_source(noise_source)
+            .inputs()
+            .bind(
+                parameter_values=rng.random(len(circuit.parameters)),
+                noise_scales={"even": scale, "odd": scale},
+            )
         )
         samplex_output = benchmark(
             samplex.sample,
@@ -145,13 +142,7 @@ class TestSample:
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_noise_maps(num_qubits)
-
-        even_paulis = QubitSparsePauliList.from_sparse_list(
-            [(pauli, idxs) for pauli, idxs, _ in even_noise.to_sparse_list()], even_noise.num_qubits
-        )
-        odd_paulis = QubitSparsePauliList.from_sparse_list(
-            [(pauli, idxs) for pauli, idxs, _ in odd_noise.to_sparse_list()], odd_noise.num_qubits
-        )
+        noise_source = StaticNoiseSource({"even": even_noise, "odd": odd_noise})
 
         local_scales = {
             "even": [local_scale] * even_noise.num_terms,
@@ -159,10 +150,13 @@ class TestSample:
         }
 
         template, samplex = build(circuit)
-        samplex_input = samplex.inputs({"even": even_paulis, "odd": odd_paulis}).bind(
-            parameter_values=rng.random(len(circuit.parameters)),
-            noise_maps={"rates.even": even_noise.rates, "rates.odd": odd_noise.rates},
-            local_scales=local_scales,
+        samplex_input = (
+            samplex.set_noise_source(noise_source)
+            .inputs()
+            .bind(
+                parameter_values=rng.random(len(circuit.parameters)),
+                local_scales=local_scales,
+            )
         )
         samplex_output = benchmark(
             samplex.sample,
