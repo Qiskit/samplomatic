@@ -74,18 +74,7 @@ def generate_boxing_pass_manager(
         passes.append(GroupGatesIntoBoxes())
 
     if enable_measure:
-        if measure_annotations == "twirl":
-            add_twirling, basis_transform = True, False
-        elif measure_annotations == "basis_transform":
-            add_twirling, basis_transform = False, True
-        elif measure_annotations == "all":
-            add_twirling, basis_transform = True, True
-        else:
-            raise TranspilerError(
-                f"'{measure_annotations}' is not a valid argument for 'measure_annotations', "
-                f"select one of {SUPPORTED_MEASURE_ANNOTATIONS}."
-            )
-        passes.append(GroupMeasIntoBoxes(add_twirling, basis_transform))
+        passes.append(GroupMeasIntoBoxes(measure_annotations))
 
     if twirling_strategy == "active":
         pass
