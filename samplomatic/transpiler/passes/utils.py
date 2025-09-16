@@ -19,7 +19,6 @@ from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.exceptions import TranspilerError
 
 from ...annotations import DressingLiteral, Twirl
-from .aliases import NodeGroup
 
 
 def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
@@ -40,7 +39,7 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
 
 def make_and_insert_box(
     dag: DAGCircuit,
-    nodes: NodeGroup,
+    nodes: list[DAGOpNode],
     dressing: DressingLiteral = "left",
 ) -> None:
     """Make a dressed box and insert it into a dag.

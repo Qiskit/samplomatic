@@ -14,12 +14,11 @@
 
 from collections import defaultdict
 
-from qiskit.circuit import Instruction, Qubit
-from qiskit.dagcircuit import DAGCircuit
+from qiskit.circuit import Clbit, Instruction, Qubit
+from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
 
-from .aliases import NodeGroup, NodeGroupIndex
 from .utils import make_and_insert_box, validate_op_is_supported
 
 
@@ -65,19 +64,20 @@ class GroupGatesIntoBoxes(TransformationPass):
         # A map to temporarily store single-qubit gates before inserting them into a box
         cached_gates_1q: dict[Qubit, list[Instruction]] = defaultdict(list)
 
-        # A list of groups that need to be placed in the same box, expressed as a dict for
-        # fast access
-        groups: dict[NodeGroupIndex, NodeGroup] = defaultdict(list)
+        # A list of groups that need to be placed in the same box, expressed as a dict for fast
+        # access. Every node in each group either contains a single- or two-qubit gate--when
+        # constructing this dictionary, we leave out nodes that contain different ops.
+        groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
-        # A map from a qubits to the index of the right-most group that is able to collect
-        # operations on those qubits
-        group_indices: dict[Qubit, NodeGroupIndex] = defaultdict(int)
+        # A map from qubits/clbits to the index of the right-most group that is able to collect
+        # operations on those qubits/clbits
+        group_indices: dict[Qubit | Clbit, int] = defaultdict(int)
 
         for node in dag.topological_op_nodes():
             validate_op_is_supported(node)
 
             # The right-most group that is able to collect operations on all the qubit in this node
-            group_idx: NodeGroupIndex = max(group_indices[qubit] for qubit in node.qargs)
+            group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
 
             if (name := node.op.name) in ["barrier", "box"]:
                 # If `node` contains a barrier or a box, group them, as they need to be collected
@@ -88,8 +88,11 @@ class GroupGatesIntoBoxes(TransformationPass):
             elif name == "measure":
                 # If `node` contains a measurement, flush the single-qubit gates without placing
                 # them in a box.
-                cached_gates_1q.pop(qubit := node.qargs[0], [])
-                group_indices[qubit] = group_idx + 1
+                qubit = node.qargs[0]
+                clbit = node.cargs[0]
+
+                cached_gates_1q.pop(qubit, [])
+                group_indices[qubit] = group_indices[clbit] = group_idx
             elif node.op.num_qubits == 1:
                 # If `node` contains a single-qubit gate, cache it.
                 cached_gates_1q[node.qargs[0]].append(node)
