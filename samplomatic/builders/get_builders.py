@@ -12,12 +12,13 @@
 
 """get_builders"""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Sequence
-from typing import TypeAlias
 
 from qiskit.circuit import Annotation, Qubit
 
-from ..aliases import CircuitInstruction
+from ..aliases import CircuitInstruction, TypeAlias
 from ..annotations import (
     BasisTransform,
     BasisTransformMode,
@@ -44,7 +45,7 @@ from .template_builder import (
     TemplateState,
 )
 
-SamplexBuilder: TypeAlias = Builder[PreSamplex, InstructionSpec, None]
+SamplexBuilder: TypeAlias = Builder[PreSamplex, None]
 TemplateBuilder: TypeAlias = Builder[TemplateState, InstructionSpec]
 
 

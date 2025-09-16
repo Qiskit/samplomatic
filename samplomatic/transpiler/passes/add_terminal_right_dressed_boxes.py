@@ -12,6 +12,8 @@
 
 """AddTerminalRightDressedBoxes"""
 
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Iterable
 
@@ -20,7 +22,8 @@ from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 
-from ...annotations import Twirl
+from ...annotations import BasisTransform, Twirl
+from ...utils import get_annotation
 from .utils import asap_topological_nodes, validate_op_is_supported
 
 
@@ -80,19 +83,17 @@ class AddTerminalRightDressedBoxes(TransformationPass):
         if not node.op.name == "box":
             return uncollected_qubits
 
-        twirl_annotations = [
-            annotation for annotation in node.op.annotations if isinstance(annotation, Twirl)
-        ]
-        if twirl_annotations:
-            if (dressing := twirl_annotations[0].dressing) == "right":
-                # Right-dressed boxes act as collectors
-                uncollected_qubits = uncollected_qubits.difference(node.qargs)
-            elif dressing == "left":
-                uncollected_qubits = uncollected_qubits.union(node.qargs)
-                for sub_node in asap_topological_nodes(circuit_to_dag(node.op.body)):
-                    if sub_node.op.name == "measure":
-                        # Measurements in a left-dressed box act as collectors
-                        uncollected_qubits = uncollected_qubits.difference(sub_node.qargs)
+        twirl = get_annotation(node.op, Twirl)
+        basis_transform = get_annotation(node.op, BasisTransform)
+        if twirl and twirl.dressing == "right":
+            # Right-dressed boxes act as collectors
+            uncollected_qubits = uncollected_qubits.difference(node.qargs)
+        elif twirl or basis_transform:
+            uncollected_qubits = uncollected_qubits.union(node.qargs)
+            for sub_node in asap_topological_nodes(circuit_to_dag(node.op.body)):
+                if sub_node.op.name == "measure":
+                    # Measurements in a left-dressed box act as collectors
+                    uncollected_qubits = uncollected_qubits.difference(sub_node.qargs)
         return uncollected_qubits
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:

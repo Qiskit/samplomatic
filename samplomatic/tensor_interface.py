@@ -15,16 +15,16 @@
 
 import textwrap
 from collections.abc import Iterable, MutableMapping
-from enum import StrEnum
-from typing import Any, Literal, Self, overload
+from enum import Enum
+from typing import Any, Literal, overload
 
 import numpy as np
 from qiskit.quantum_info import QubitSparsePauliList
 
-from .aliases import InterfaceName
+from .aliases import InterfaceName, Self
 
 
-class ValueType(StrEnum):
+class ValueType(str, Enum):
     """Valid types for an interface value."""
 
     BOOL = "bool"

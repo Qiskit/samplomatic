@@ -16,11 +16,11 @@ import numpy as np
 from qiskit.circuit import QuantumCircuit
 from qiskit.primitives import BitArray
 from qiskit.quantum_info import hellinger_fidelity
+from qiskit.transpiler import PassManager
 from qiskit_aer.primitives import SamplerV2
 
 from samplomatic.builders import pre_build
-
-from ..utils import remove_boxes
+from samplomatic.transpiler.passes import InlineBoxes
 
 REQUIRED_HELLINGER_FIDELITY = 0.985
 NUM_RANDOMIZATIONS_PER_CIRCUIT = 10
@@ -47,7 +47,7 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = np.random.random(len(circuit.parameters))
-    original_circuit_result = _simulate(remove_boxes(circuit), circuit_params)
+    original_circuit_result = _simulate(PassManager([InlineBoxes()]).run(circuit), circuit_params)
 
     samplex_input = samplex.inputs().bind()
     if len(circuit_params) > 0:

@@ -12,6 +12,8 @@
 
 """High-level node specifications"""
 
+from __future__ import annotations
+
 import enum
 from dataclasses import dataclass, field
 
@@ -117,7 +119,7 @@ class InstructionSpec:
     clbit_idxs: list[ClbitIndex] = field(default_factory=list)
     """The mode of an added instruction."""
 
-    if_else: tuple[list["InstructionSpec"], ParamIndices, list["InstructionSpec"], ParamIndices] = (
+    if_else: tuple[list[InstructionSpec], ParamIndices, list[InstructionSpec], ParamIndices] = (
         field(default_factory=lambda: ([], EMPTY_IDXS, [], EMPTY_IDXS))
     )
     """The specs for an `IfElseOp`.
