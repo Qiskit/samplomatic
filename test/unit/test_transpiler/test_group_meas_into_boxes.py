@@ -204,7 +204,7 @@ def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
 
 @pytest.mark.parametrize("annotations", ["twirl", "basis_transform", "all"])
 def test_annotations(annotations):
-    """Test that `GroupMeasIntoBoxes` attached the correct annotations."""
+    """Test that `GroupMeasIntoBoxes` attaches the correct annotations."""
     circuit = QuantumCircuit(1, 1)
     circuit.measure(0, 0)
 
@@ -219,6 +219,12 @@ def test_annotations(annotations):
     if basis_transform:
         assert basis_transform.mode == "measure"
         assert basis_transform.ref.startswith("ciao")
+
+
+def test_annotations_raise():
+    """Test that `GroupMeasIntoBoxes` raises for incorrect annotations."""
+    with pytest.raises(ValueError, match="none is not a valid input"):
+        GroupMeasIntoBoxes("none")
 
 
 def test_raises_when_measurements_overwrite_clbit():
