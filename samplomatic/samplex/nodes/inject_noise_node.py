@@ -86,9 +86,9 @@ class InjectNoiseNode(SamplingNode):
             self._sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, rng, inputs, num_randomizations):
-        rates = inputs.get(f"noise_maps.rates.{self._noise_ref}")
-        paulis = inputs.get(f"noise_maps.paulis.{self._noise_ref}")
+    def sample(self, registers, rng, inputs, num_randomizations, noise_source):
+        rates = noise_source.get_rates(self._noise_ref)
+        paulis = noise_source.get_paulis(self._noise_ref)
         if self._modifier_ref:
             scale = inputs.get("noise_scales." + self._modifier_ref, 1.0)
             local_scale = inputs.get(

@@ -17,6 +17,7 @@ import abc
 from numpy.random import Generator
 
 from ...aliases import RegisterName
+from ...noise_source import NoiseSource
 from ...tensor_interface import TensorInterface
 from ...virtual_registers import VirtualRegister
 from .node import Node
@@ -32,6 +33,7 @@ class SamplingNode(abc.ABC, Node):
         rng: Generator,
         inputs: TensorInterface,
         num_randomizations: int,
+        noise_source: NoiseSource,
     ):
         """Sample this node.
 

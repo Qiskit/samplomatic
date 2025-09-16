@@ -16,6 +16,7 @@ Subpackages
    samplomatic.builders
    samplomatic.distributions
    samplomatic.graph_utils
+   samplomatic.noise_source
    samplomatic.pre_samplex
    samplomatic.samplex
    samplomatic.synths

@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING
 
@@ -39,7 +39,8 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification, ValueType
+from ..noise_source import NoiseSource
+from ..tensor_interface import Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
@@ -74,6 +75,7 @@ class Samplex:
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
         self._noise_model_requirements: dict[str, NoiseModelRequirement] = {}
+        self._noise_source: NoiseSource | None = None
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
@@ -100,6 +102,11 @@ class Samplex:
     def noise_model_requirements(self) -> dict[str, NoiseModelRequirement]:
         """The noise models required at sampling time."""
         return self._noise_model_requirements
+
+    @property
+    def noise_source(self) -> NoiseSource | None:
+        """The noise source to use at sampling time."""
+        return self._noise_source
 
     @property
     def num_parameters(self) -> int:
@@ -258,26 +265,8 @@ class Samplex:
 
         return self
 
-    def inputs(
-        self, noise_model_paulis: Mapping[str, QubitSparsePauliList] | None = None
-    ) -> TensorInterface:
-        """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
-
-        Args:
-            noise_model_paulis: The Pauli terms contained in the noise models. Each element of
-                :meth:`~noise_model_requirements` should be specified.
-
-        Raises:
-            ValueError: If ``noise_model_paulis`` has different keys than
-                :meth:`~noise_model_requirements`.
-            ValueError: If any of the ``noise_model_paulis`` has a different number of qubits than
-                its requirement.
-
-        Returns:
-            The input for this samplex.
-        """
-        noise_model_paulis = {} if noise_model_paulis is None else noise_model_paulis
-        if noise_model_paulis.keys() != self._noise_model_requirements.keys():
+    def set_noise_source(self, noise_source: NoiseSource):
+        if any(key not in noise_source for key in self._noise_model_requirements.keys()):
             required_paulis = "\n".join(
                 f" * {ref}: A Pauli list on {req.num_qubits} qubits."
                 for ref, req in self._noise_model_requirements.items()
@@ -285,28 +274,26 @@ class Samplex:
             raise ValueError(
                 f"The samplex input requires the following noise models:\n{required_paulis}"
             )
+        for ref, req in self._noise_model_requirements.items():
+            req.validate_noise_model(noise_source.get_paulis(ref))
+        self._noise_source = noise_source
+
+    def inputs(self) -> TensorInterface:
+        """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
+
+        Raises:
+            ValueError: If the samplex has :meth:`~noise_model_requirements` and the noise source
+                has not been set.
+
+        Returns:
+            The input for this samplex.
+        """
+        if self._noise_model_requirements and self._noise_source is None:
+            raise ValueError("Samplex input requires a noise source, call `set_noise_source()`.")
 
         specs = [*self._input_specifications.values()]
         for name, noise_req in self._noise_model_requirements.items():
-            noise_req.validate_noise_model(paulis := noise_model_paulis[name])
-            specs.append(
-                Specification(
-                    f"noise_maps.paulis.{name}",
-                    ValueType.PAULIS,
-                    "The Pauli operators present in a noise map.",
-                )
-            )
-            specs.append(
-                TensorSpecification(
-                    f"noise_maps.rates.{name}",
-                    (num_terms := (paulis.num_terms),),
-                    np.dtype(np.float64),
-                    f"The rates of a noise map with {num_terms} terms acting on "
-                    f"{noise_req.num_qubits} qubits. The order should match the order of the "
-                    "corresponding Pauli list.",
-                )
-            )
-
+            num_terms = self._noise_source[name].num_terms
             for noise_modifier in noise_req.noise_modifiers:
                 specs.append(
                     TensorSpecification(
@@ -328,9 +315,7 @@ class Samplex:
                     )
                 )
 
-        return TensorInterface(specs).bind(
-            **{f"noise_maps.paulis.{name}": paulis for name, paulis in noise_model_paulis.items()}
-        )
+        return TensorInterface(specs)
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
         """Returns an object that specifies the promised outputs of :meth:`~sample`.
@@ -404,7 +389,14 @@ class Samplex:
         with ThreadPoolExecutor(max_workers) as pool:
             # use rng.spawn() to ensure determinism of PRNG even when there is a thread pool
             wait_with_raise(
-                pool.submit(node.sample, registers, child_rng, samplex_input, num_randomizations)
+                pool.submit(
+                    node.sample,
+                    registers,
+                    child_rng,
+                    samplex_input,
+                    num_randomizations,
+                    self._noise_source,
+                )
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
                 )
