@@ -88,8 +88,8 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("circuits_to_compare", real_and_expected, ids=descriptions)
 
 
-def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
-    """Test `GroupMeasIntoBoxes`.
+def test_transpiled_circuits_are_correct(circuits_to_compare):
+    """Test `RemoveBoxes`.
 
     Args:
         circuits_to_compare: A tuple containing a ``(circuit, expected_circuit)`` pair.
