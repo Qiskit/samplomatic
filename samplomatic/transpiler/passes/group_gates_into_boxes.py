@@ -16,11 +16,12 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from qiskit.circuit import Instruction, Qubit
+from qiskit.circuit import Bit, Qubit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
+from qiskit.transpiler.exceptions import TranspilerError
 
-from .utils import asap_topological_nodes, make_and_insert_box, validate_op_is_supported
+from .utils import make_and_insert_box, validate_op_is_supported
 
 
 class GroupGatesIntoBoxes(TransformationPass):
@@ -57,81 +58,60 @@ class GroupGatesIntoBoxes(TransformationPass):
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.
 
-        Each left-dressed box contains a non-zero number of multi-qubit gates that can only
-        be applied to non-overlapping sets of qubits. Each box also includes all the single-
-        qubit gates that precede the multi-qubit gates on overlapping qubits that haven't been
-        collected in a box.
+        The collection strategy undertakes the following steps:
+            *   Loop through the DAG's op nodes in topological order.
+            *   Group together single- and two-qubit gate nodes that need to be placed in the same
+                box.
+            *   Whenever a node can be placed in more than one group, place it in the earliest
+                possible group--where "earliest" is with reference to topological ordering.
+            *   When looping is complete, replace each group with a box.
         """
-        # A map to temporarily store single-qubit gates before inserting them into a box
-        cached_gates_1q: dict[Qubit, list[Instruction]] = defaultdict(list)
+        # A map to temporarily store single-qubit gate nodes before inserting them into a group
+        cached_gates_1q: dict[Qubit, list[DAGOpNode]] = defaultdict(list)
 
-        # The nodes to be added to the current box
-        nodes_current_box: list[DAGOpNode] = []
+        # A list of groups that need to be placed in the same box, expressed as a dict for fast
+        # access. Every node in each group either contains a single- or two-qubit gate--when
+        # constructing this dictionary, we explicitly leave out nodes that contain different ops
+        groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
-        # The qubits that are active within the current box.
-        # Note: A qubit is marked as "active" when within the current box, there is a multi-qubit
-        # gate acting on it. Therefore, active qubits are no longer willing to receive gates
-        # within the current box.
-        active_qubits: set[Qubit] = set()
+        # A map from bits (qubits and clbits) to the index of the earliest group that is able to
+        # collect operations on those bits
+        group_indices: dict[Bit, int] = defaultdict(int)
 
-        # The qubits barred by a delimiter.
-        barred_qubits: set[Qubit] = set()
-
-        for node in asap_topological_nodes(dag):
+        for node in dag.topological_op_nodes():
             validate_op_is_supported(node)
 
+            # The index of the earliest group able to collect ops on all the bits in this node
+            group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
+
             if (name := node.op.name) in ["barrier", "box"]:
-                # If `node` contains a barrier or a box, collect the cached single-qubit gates into
-                # a left-dressed box.
-                nodes_1q_gates = []
-                qargs_1q_gates = []
-                for qarg in node.qargs:
-                    nodes_1q_gates += (gates_1q := cached_gates_1q.pop(qarg, []))
-                    if gates_1q:
-                        qargs_1q_gates += [qarg]
-
-                make_and_insert_box(dag, nodes_1q_gates, qargs_1q_gates)
-
-                # Update the trackers
-                barred_qubits = barred_qubits.union(node.qargs)
+                # Flush the single-qubit gate nodes and place them in a group
+                for qubit in node.qargs:
+                    groups[group_idx] += cached_gates_1q.pop(qubit, [])
+                    group_indices[qubit] = group_idx + 1
             elif name == "measure":
-                # If `node` contains a measurement, flush the single-qubit gates without placing
-                # them in a box.
-                qarg = node.qargs[0]
-                cached_gates_1q.pop(qarg, [])
+                # Flush the single-qubit gate nodes without placing them in a group
+                qubit = node.qargs[0]
+                clbit = node.cargs[0]
 
-                # Update the trackers
-                barred_qubits.add(qarg)
-            elif node.op.num_qubits == 1:
-                # If `node` contains a single-qubit gate, cache it.
+                cached_gates_1q.pop(qubit, [])
+                group_indices[qubit] = group_indices[clbit] = group_idx
+            elif node.is_standard_gate() and node.op.num_qubits == 1:
+                # Cache the node
                 cached_gates_1q[node.qargs[0]].append(node)
+            elif node.is_standard_gate() and node.op.num_qubits == 2:
+                # Flush the cached single- and two-qubit gate nodes into a group
+                for qubit in node.qargs:
+                    groups[group_idx] += cached_gates_1q.pop(qubit, [])
+                groups[group_idx].append(node)
+
+                # Update trackers
+                for qubit in node.qargs:
+                    group_indices[qubit] = group_idx + 1
             else:
-                # Make a box if the node's qubits are already active, or if a delimiter is
-                # present between this node and the previous ones
-                make_box = any(qarg in active_qubits for qarg in node.qargs)
-                make_box |= (not barred_qubits.isdisjoint(active_qubits)) and (
-                    not barred_qubits.isdisjoint(node.qargs)
-                )
-                if make_box:
-                    # If `node` overlaps with one or more active qubits, make and insert the box
-                    make_and_insert_box(dag, nodes_current_box, active_qubits)
+                raise TranspilerError(f"'{name}' operation is not supported.")
 
-                    # Reset trackers
-                    nodes_current_box = []
-                    barred_qubits.difference_update(active_qubits)
-                    active_qubits.clear()
-
-                # If `node` contains a multi-qubit gate:
-                # - mark its qubits as active
-                # - flush the single-qubit gates for its qubits
-                # - append it to the list of nodes that will be added to current box
-                for qarg in node.qargs:
-                    active_qubits.add(qarg)
-                    nodes_current_box += cached_gates_1q.pop(qarg, [])
-                    barred_qubits.discard(qarg)
-                nodes_current_box.append(node)
-
-        # make the final multi-qubit gate left-dressed box
-        make_and_insert_box(dag, nodes_current_box, active_qubits)
+        for nodes in groups.values():
+            make_and_insert_box(dag, nodes)
 
         return dag
