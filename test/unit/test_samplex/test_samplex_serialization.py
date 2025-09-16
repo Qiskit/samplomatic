@@ -13,10 +13,11 @@ from copy import deepcopy
 
 import numpy as np
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
-from qiskit.quantum_info import QubitSparsePauliList
+from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic import build
 from samplomatic.annotations import BasisTransform, InjectNoise, Twirl
+from samplomatic.noise_source.static_noise_source import StaticNoiseSource
 from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
 
 
@@ -81,13 +82,9 @@ class TestSamplexSerialization:
         samplex.finalize()
         samplex_new.finalize()
 
-        paulis = QubitSparsePauliList.from_list(["XX"])
-        samplex_input = samplex.inputs({"my_noise": paulis}).bind(
-            noise_maps={"rates.my_noise": [0.5]}
-        )
-        samplex_new_input = samplex_new.inputs({"my_noise": paulis}).bind(
-            noise_maps={"rates.my_noise": [0.5]}
-        )
+        noise_source = StaticNoiseSource({"my_noise": PauliLindbladMap.from_list([("XX", 0.5)])})
+        samplex_input = samplex.set_noise_source(noise_source).inputs()
+        samplex_new_input = samplex_new.set_noise_source(noise_source).inputs()
         copy_rng = deepcopy(rng)
 
         samplex_output = samplex.sample(samplex_input, rng=rng)

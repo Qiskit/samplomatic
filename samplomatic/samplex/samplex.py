@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
-from qiskit.quantum_info import QubitSparsePauliList
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -80,11 +79,11 @@ class Samplex:
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
     def __str__(self):
-        noise_models = {
-            ref: QubitSparsePauliList.from_sparse_list([], num_qubits=requirement.num_qubits)
-            for ref, requirement in self._noise_model_requirements.items()
-        }
-        inputs = self.inputs(noise_models)
+        inputs = (
+            TensorInterface(self._input_specifications.values())
+            if self.noise_source is None
+            else self.inputs()
+        )
         return (
             f"Samplex(<{len(self.graph)} nodes>)\n"
             f"  Inputs:\n{inputs.describe(prefix='    * ', width=100)}"
@@ -265,7 +264,7 @@ class Samplex:
 
         return self
 
-    def set_noise_source(self, noise_source: NoiseSource):
+    def set_noise_source(self, noise_source: NoiseSource) -> Self:
         if any(key not in noise_source for key in self._noise_model_requirements.keys()):
             required_paulis = "\n".join(
                 f" * {ref}: A Pauli list on {req.num_qubits} qubits."
@@ -277,6 +276,8 @@ class Samplex:
         for ref, req in self._noise_model_requirements.items():
             req.validate_noise_model(noise_source.get_paulis(ref))
         self._noise_source = noise_source
+
+        return self
 
     def inputs(self) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.

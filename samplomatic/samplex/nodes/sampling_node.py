@@ -33,7 +33,7 @@ class SamplingNode(abc.ABC, Node):
         rng: Generator,
         inputs: TensorInterface,
         num_randomizations: int,
-        noise_source: NoiseSource,
+        noise_source: NoiseSource | None,
     ):
         """Sample this node.
 
@@ -42,6 +42,7 @@ class SamplingNode(abc.ABC, Node):
             rng: A randomness generator.
             inputs: Inputs of the sampling program.
             num_randomizations: How many randomizations to draw.
+            noise_source: Noise sources to draw samples from.
         """
 
     def get_style(self):

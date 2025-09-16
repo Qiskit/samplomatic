@@ -34,7 +34,7 @@ class StaticNoiseSource(Mapping):
     def __contains__(self, key) -> bool:
         return key in self._noise_maps
 
-    def __get_item__(self, noise_ref) -> PauliLindbladMap:
+    def __getitem__(self, noise_ref) -> PauliLindbladMap:
         if (noise_map := self._noise_maps.get(noise_ref)) is None:
             raise ValueError(f"'{noise_ref}' is not present in this noise source.")
         return noise_map
