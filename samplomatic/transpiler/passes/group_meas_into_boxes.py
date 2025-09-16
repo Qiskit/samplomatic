@@ -111,11 +111,11 @@ class GroupMeasIntoBoxes(TransformationPass):
             if (name := node.op.name) in ["barrier", "box"] or node.op.num_qubits > 1:
                 # If `node` contains a barrier, a box, or a multi-qubit gates, flush the
                 # single-qubit gates without placing them in a box.
-                for qubit in node.qargs:
-                    cached_gates_1q.pop(qubit, [])
+                for bit in node.qargs + node.cargs:
+                    cached_gates_1q.pop(bit, [])
 
                     # Update the trackers
-                    group_indices[qubit] = group_idx
+                    group_indices[bit] = group_idx
             elif name == "measure":
                 # If `node` contains a measurement, flush the cached one-qubit gates and the two
                 # qubit gates into a group.
