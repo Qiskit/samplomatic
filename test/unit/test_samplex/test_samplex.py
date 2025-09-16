@@ -22,6 +22,7 @@ from qiskit.circuit import Parameter
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.samplex import Samplex
+from samplomatic.samplex.noise_model_requirement import NoiseModelRequirement
 from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import Specification, TensorSpecification, ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
@@ -46,6 +47,7 @@ class TestBasic:
     def test_str(self):
         """Test the string dunder is doing fancy stuff."""
         samplex = Samplex()
+        samplex.add_noise_model_requirement(NoiseModelRequirement("ref", 5))
         assert "Samplex" in str(samplex)
         assert "Inputs:" in str(samplex)
         assert "Outputs:" in str(samplex)

@@ -12,6 +12,8 @@
 
 """SliceRegisterNode"""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 
 import numpy as np
@@ -85,8 +87,8 @@ class SliceRegisterNode(EvaluationNode):
             slice_idxs = array_to_json(self._slice_idxs)
         return {
             "node_type": "8",
-            "input_type": self._input_type,
-            "output_type": self._output_type,
+            "input_type": self._input_type.value,
+            "output_type": self._output_type.value,
             "input_register_name": self._input_register_name,
             "output_register_name": self._output_register_name,
             "slice_idxs": slice_idxs,
@@ -94,7 +96,7 @@ class SliceRegisterNode(EvaluationNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "SliceRegisterNode":
+    def _from_json_dict(cls, data: dict[str, str]) -> SliceRegisterNode:
         slice_idxs = (
             slice_from_json(data["slice_idxs"])
             if data["is_slice"] == "true"

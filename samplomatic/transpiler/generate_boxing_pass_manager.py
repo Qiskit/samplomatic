@@ -30,10 +30,14 @@ from .passes.insert_noops import (
 )
 from .twirling_strategies import TwirlingStrategyLiteral
 
+SUPPORTED_MEASURE_ANNOTATIONS = ["twirl", "basis_transform", "all"]
+"""The supported values of ``measure_annotations``."""
+
 
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measure: bool = True,
+    measure_annotations: str = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active",
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
     remove_barriers: bool = True,
@@ -45,6 +49,13 @@ def generate_boxing_pass_manager(
             :class:`~.GroupGatesIntoBoxes` pass.
         enable_measure: Whether to collect measurements into boxes using the
             :class:`~.GroupMeasIntoBoxes` pass.
+        measure_annotations: The annotations placed on the measurement boxes by
+            :class:`~.GroupMeasIntoBoxes` when ``enable_measure`` is ``True``. The supported values
+            are:
+                * ``'twirl'`` for a :class:`~.Twirl` annotation.
+                * ``'basis_transform'`` for a :class:`~.BasisTransform` annotation with mode
+                    ``measure``.
+                * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
         twirling_strategy: The twirling strategy.
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
@@ -63,7 +74,7 @@ def generate_boxing_pass_manager(
         passes.append(GroupGatesIntoBoxes())
 
     if enable_measure:
-        passes.append(GroupMeasIntoBoxes())
+        passes.append(GroupMeasIntoBoxes(measure_annotations))
 
     if twirling_strategy == "active":
         pass

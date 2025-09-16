@@ -28,7 +28,7 @@ from .template_builder import TemplateState
 def _build_stream(
     stream: CircuitInstruction,
     template_builder: Builder[TemplateState, InstructionSpec],
-    samplex_builder: Builder[PreSamplex, InstructionSpec, None],
+    samplex_builder: Builder[PreSamplex, None],
 ) -> Iterator[CircuitInstruction]:
     """Build while iterating an instruction stream, but halting to yield each ``box``.
 
@@ -57,7 +57,7 @@ def _build_stream(
 def _build(
     stream: CircuitInstruction,
     template_builder: Builder[TemplateState, InstructionSpec],
-    samplex_builder: Builder[PreSamplex, InstructionSpec, None],
+    samplex_builder: Builder[PreSamplex, None],
 ):
     """Recursively builds from a stream of instructions.
 

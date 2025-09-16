@@ -12,6 +12,8 @@
 
 """AddNoops"""
 
+from __future__ import annotations
+
 from collections.abc import Iterable
 
 from qiskit.circuit import BoxOp, QuantumCircuit, Qubit

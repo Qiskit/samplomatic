@@ -13,17 +13,16 @@
 """Builder"""
 
 import abc
-from typing import Generic, Self, TypeVar, TypeVarTuple
+from typing import Generic, TypeVar
 
-from ..aliases import CircuitInstruction
+from ..aliases import CircuitInstruction, Self
 from ..exceptions import BuildError
 
 StateT = TypeVar("StateT")
-InTs = TypeVarTuple("InTs")
 OutT = TypeVar("OutT")
 
 
-class Builder(Generic[StateT, *InTs, OutT], abc.ABC):
+class Builder(Generic[StateT, OutT], abc.ABC):
     """Generic abstraction for parsing a :class:`~.QuantumCircuit` scope."""
 
     def __init__(self):
@@ -49,11 +48,11 @@ class Builder(Generic[StateT, *InTs, OutT], abc.ABC):
         return self._state
 
     @abc.abstractmethod
-    def parse(self, instr: CircuitInstruction, *args: *InTs) -> OutT:
+    def parse(self, instr: CircuitInstruction, *args) -> OutT:
         """Parse a single circuit instruction."""
 
     @abc.abstractmethod
-    def lhs(self, *args: *InTs) -> OutT:
+    def lhs(self, *args) -> OutT:
         """Perform some action before the current scope's stream is iterated.
 
         Args:
@@ -64,7 +63,7 @@ class Builder(Generic[StateT, *InTs, OutT], abc.ABC):
         """
 
     @abc.abstractmethod
-    def rhs(self, *args: *InTs) -> OutT:
+    def rhs(self, *args) -> OutT:
         """Perform some action after the current scope's stream is iterated.
 
         Args:
