@@ -17,11 +17,11 @@ from itertools import product
 import numpy as np
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
+from qiskit.transpiler import PassManager
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
-
-from ..utils import remove_boxes
+from samplomatic.transpiler.passes import InlineBoxes
 
 
 def make_circuits():
@@ -257,7 +257,7 @@ def test_sampling(circuit, save_plot):
     samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 
-    expected_op = Operator(remove_boxes(circuit))
+    expected_op = Operator(PassManager([InlineBoxes()]).run(circuit))
     for row in parameter_values:
         op = Operator(template.template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f
