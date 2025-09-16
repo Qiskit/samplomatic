@@ -33,7 +33,7 @@ class GroupMeasIntoBoxes(TransformationPass):
     box that they can fit.
 
     Args:
-        add_twirling: Whether to add left-dressed :class:`.Twirling` annotations to the resulting
+        add_twirling: Whether to add left-dressed :class:`.Twirl` annotations to the resulting
             boxes.
         add_basis_transform: Whether to add :class:`.BasisTransform` annotations with ``"measure"``
             mode to the resulting boxes.
