@@ -1103,7 +1103,7 @@ class PreSamplex:
                 TensorSpecification(
                     "parameter_values",
                     (max_param_idx + 1,),
-                    np.dtype(np.float64),
+                    np.dtype(np.float32),
                     "Parameter values for the template circuit.",
                 )
             )
