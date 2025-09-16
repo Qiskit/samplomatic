@@ -12,6 +12,8 @@
 
 """Utils for transpiler module."""
 
+from __future__ import annotations
+
 from collections.abc import Iterator
 
 from qiskit.circuit import Annotation, BoxOp, Clbit, QuantumCircuit, Qubit

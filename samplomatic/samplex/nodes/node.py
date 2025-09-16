@@ -12,12 +12,14 @@
 
 """Node"""
 
+from __future__ import annotations
+
 import abc
 import inspect
 from numbers import Number
-from typing import Literal, Self
+from typing import Literal
 
-from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
+from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, Self, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...visualization.hover_style import NodeStyle
@@ -40,7 +42,7 @@ class NodeType(abc.ABCMeta):
 class Node(metaclass=NodeType):
     """Parent class for samplex node operations."""
 
-    NODE_REGISTRY: set[type["Node"]] = set()
+    NODE_REGISTRY: set[type[Node]] = set()
 
     def __repr__(self):
         register_names = sorted(f"{register_name}(r)" for register_name in self.reads_from())
@@ -114,8 +116,8 @@ class Node(metaclass=NodeType):
             if register_type is not existing_register_type:
                 raise SamplexConstructionError(
                     f"Node {self} expected register '{register_name}' to have type "
-                    f"'{register_type}' for {read_or_write} access but found that it "
-                    f"has type '{existing_register_type}'."
+                    f"'{register_type.value}' for {read_or_write} access but found that it "
+                    f"has type '{existing_register_type.value}'."
                 )
 
     def validate_and_update(
