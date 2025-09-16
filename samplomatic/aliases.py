@@ -12,8 +12,19 @@
 
 """Type Aliases"""
 
+import sys
 from collections.abc import Hashable, Sequence
-from typing import Literal, Protocol, TypeAlias, TypeVar
+from typing import Literal, Protocol, TypeVar, Union
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
+
+if sys.version_info >= (3, 11):
+    from typing import Self  # noqa: F401
+else:
+    from typing_extensions import Self  # noqa: F401
 
 import numpy as np
 from qiskit.circuit import CircuitInstruction as _CircuitInstruction
@@ -38,8 +49,8 @@ InterfaceName: TypeAlias = str
 ParamIndex: TypeAlias = int
 ParamIndices: TypeAlias = np.ndarray[tuple[int, int], np.dtype[np.intp]]
 ParamName: TypeAlias = str
-ParamValues: TypeAlias = Sequence[float] | dict[Parameter, float]
-ParamSpec: TypeAlias = list[tuple[ParamIndex | None, ParameterExpression]]
+ParamValues: TypeAlias = Union[Sequence[float], dict[Parameter, float]]
+ParamSpec: TypeAlias = list[tuple[Union[ParamIndex, None], ParameterExpression]]
 QubitIndex: TypeAlias = int
 ClbitIndex: TypeAlias = int
 PauliBasisChange: TypeAlias = np.ndarray[tuple[int], np.dtype[np.uint8]]
@@ -60,7 +71,7 @@ The arrays need to have at least one entry so that there is somewhere to put the
 The arrays need not include the end-points; those are inferred from a node layout.
 """
 
-GraphLayout: TypeAlias = NodeLayout | tuple[NodeLayout, EdgeLayout]
+GraphLayout: TypeAlias = Union[NodeLayout, tuple[NodeLayout, EdgeLayout]]
 """A node layout, or a node layout and an edge layout.
 
 The graph plotter will infer linear edges in the former case.
@@ -80,7 +91,7 @@ class LayoutMethod(Protocol[T, S]):
     """A callable that accepts a graph and returns a coordinate layout."""
 
     def __call__(
-        self, graph: PyDiGraph[T, S], ranker: NodeRanker[T] | None = None
+        self, graph: PyDiGraph[T, S], ranker: Union[NodeRanker[T], None] = None
     ) -> GraphLayout: ...
 
 

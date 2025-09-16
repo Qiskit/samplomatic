@@ -12,9 +12,11 @@
 
 """Samplex"""
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
@@ -33,6 +35,7 @@ from ..aliases import (
     ParamIndex,
     ParamSpec,
     RegisterName,
+    Self,
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
@@ -75,9 +78,14 @@ class Samplex:
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
     def __str__(self):
+        noise_models = {
+            ref: QubitSparsePauliList.from_sparse_list([], num_qubits=requirement.num_qubits)
+            for ref, requirement in self._noise_model_requirements.items()
+        }
+        inputs = self.inputs(noise_models)
         return (
             f"Samplex(<{len(self.graph)} nodes>)\n"
-            f"  Inputs:\n{self.inputs().describe(prefix='    * ', width=100)}"
+            f"  Inputs:\n{inputs.describe(prefix='    * ', width=100)}"
             f"\n  Outputs:\n{self.outputs(123).describe(prefix='    * ', width=100)}".replace(
                 "[123", "[num_randomizations"
             )
@@ -271,7 +279,7 @@ class Samplex:
         noise_model_paulis = {} if noise_model_paulis is None else noise_model_paulis
         if noise_model_paulis.keys() != self._noise_model_requirements.keys():
             required_paulis = "\n".join(
-                f" * {ref}: '{req.num_qubits}' qubits."
+                f" * {ref}: A Pauli list on {req.num_qubits} qubits."
                 for ref, req in self._noise_model_requirements.items()
             )
             raise ValueError(
@@ -293,8 +301,9 @@ class Samplex:
                     f"noise_maps.rates.{name}",
                     (num_terms := (paulis.num_terms),),
                     np.dtype(np.float64),
-                    f"The rates of a noise map with ``{num_terms}`` terms acting on "
-                    f"``{noise_req.num_qubits}`` qubits.",
+                    f"The rates of a noise map with {num_terms} terms acting on "
+                    f"{noise_req.num_qubits} qubits. The order should match the order of the "
+                    "corresponding Pauli list.",
                 )
             )
 
@@ -313,7 +322,8 @@ class Samplex:
                         f"local_scales.{noise_modifier}",
                         (num_terms,),
                         np.dtype(np.float64),
-                        "An array of factors by which to scale individual rates of a noise map.",
+                        "An array of factors by which to scale individual rates of a noise map. "
+                        "The order should match the order of the corresponding Pauli list.",
                         optional=True,
                     )
                 )
@@ -387,7 +397,7 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
-        rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
+        rng = default_rng(rng) if isinstance(rng, (int, SeedSequence)) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
@@ -420,7 +430,7 @@ class Samplex:
         cols: int = 2,
         subgraph_idxs: None | int | Sequence[int] = None,
         layout_method: LayoutPresets | LayoutMethod = "auto",
-    ) -> "Figure":
+    ) -> Figure:
         """Draw the graph in this samplex using the :meth:`~plot_graph` method.
 
         Args:

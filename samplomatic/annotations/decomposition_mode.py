@@ -12,11 +12,15 @@
 
 """DecompositionMode"""
 
-from enum import StrEnum
-from typing import Literal, TypeAlias
+from __future__ import annotations
+
+from enum import Enum
+from typing import Literal, Union
+
+from ..aliases import TypeAlias
 
 
-class DecompositionMode(StrEnum):
+class DecompositionMode(str, Enum):
     """How to decompose arbitrary single-qubit gates."""
 
     RZSX = "rzsx"
@@ -26,7 +30,7 @@ class DecompositionMode(StrEnum):
     """Decompose as rz-rx-rz."""
 
 
-DecompositionLiteral: TypeAlias = DecompositionMode | Literal["rzsx", "rzrx"]
+DecompositionLiteral: TypeAlias = Union[DecompositionMode, Literal["rzsx", "rzrx"]]
 """Allowed box decomposition modes.
 
  * ``rzsx``: Box dressings are of the form

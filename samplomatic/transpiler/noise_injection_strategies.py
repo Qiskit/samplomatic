@@ -12,11 +12,15 @@
 
 """NoiseInjectionStrategy"""
 
-from enum import StrEnum
-from typing import Literal, TypeAlias
+from __future__ import annotations
+
+from enum import Enum
+from typing import Literal, Union
+
+from ..aliases import TypeAlias
 
 
-class NoiseInjectionStrategy(StrEnum):
+class NoiseInjectionStrategy(str, Enum):
     """The noise inejection strategies supported by the boxing pass manager."""
 
     NONE = "none"
@@ -25,10 +29,10 @@ class NoiseInjectionStrategy(StrEnum):
     INDIVIDUAL_MODIFICATION = "individual_modification"
 
 
-NoiseInjectionStrategyLiteral: TypeAlias = (
-    NoiseInjectionStrategy
-    | Literal["none", "no_modification", "uniform_modification", "individual_modification"]
-)
+NoiseInjectionStrategyLiteral: TypeAlias = Union[
+    NoiseInjectionStrategy,
+    Literal["none", "no_modification", "uniform_modification", "individual_modification"],
+]
 """The noise injection strategies supported by the :class:`~AddInjectNoise` pass.
 
 The following options are supported. In all these options, by "equivalent boxes" we mean boxes that
