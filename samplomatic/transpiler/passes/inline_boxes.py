@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""RemoveBoxes"""
+"""InlineBoxes"""
 
 from qiskit.circuit import Clbit, Qubit
 from qiskit.converters import circuit_to_dag
@@ -18,8 +18,8 @@ from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
 
 
-class RemoveBoxes(TransformationPass):
-    """Remove all boxes in the input circuit.
+class InlineBoxes(TransformationPass):
+    """Inline every box in the input circuit by replacing it with its content.
 
     Every annotation that is present in the boxes is ignored.
     """

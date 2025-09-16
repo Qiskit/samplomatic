@@ -10,12 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test RemoveBoxes"""
+"""Test InlineBoxes"""
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.transpiler import PassManager
 
-from samplomatic.transpiler.passes import RemoveBoxes
+from samplomatic.transpiler.passes import InlineBoxes
 
 
 def make_circuits():
@@ -89,13 +89,13 @@ def pytest_generate_tests(metafunc):
 
 
 def test_transpiled_circuits_are_correct(circuits_to_compare):
-    """Test `RemoveBoxes`.
+    """Test `InlineBoxes`.
 
     Args:
         circuits_to_compare: A tuple containing a ``(circuit, expected_circuit)`` pair.
     """
     circuit, expected_circuit = circuits_to_compare
-    pm = PassManager(passes=[RemoveBoxes()])
+    pm = PassManager(passes=[InlineBoxes()])
     transpiled_circuit = pm.run(circuit)
 
     assert transpiled_circuit == expected_circuit

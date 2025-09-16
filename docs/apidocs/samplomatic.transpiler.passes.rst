@@ -49,10 +49,10 @@ samplomatic.transpiler.passes.group\_meas\_into\_boxes module
    :show-inheritance:
    :undoc-members:
 
-samplomatic.transpiler.passes.remove\_boxes module
+samplomatic.transpiler.passes.inline\_boxes module
 --------------------------------------------------
 
-.. automodule:: samplomatic.transpiler.passes.remove_boxes
+.. automodule:: samplomatic.transpiler.passes.inline_boxes
    :members:
    :show-inheritance:
    :undoc-members:
