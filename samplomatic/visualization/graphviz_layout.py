@@ -12,6 +12,8 @@
 
 """graphviz_layout"""
 
+from __future__ import annotations
+
 import subprocess
 from collections import defaultdict
 from tempfile import NamedTemporaryFile

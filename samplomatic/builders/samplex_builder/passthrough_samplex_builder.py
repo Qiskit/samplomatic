@@ -18,7 +18,7 @@ from ..builder import Builder
 from ..specs import InstructionSpec
 
 
-class PassthroughSamplexBuilder(Builder[PreSamplex, InstructionSpec, None]):
+class PassthroughSamplexBuilder(Builder[PreSamplex, None]):
     """Samplex builder that passes all instructions through."""
 
     def parse(self, instr: CircuitInstruction, spec: InstructionSpec):

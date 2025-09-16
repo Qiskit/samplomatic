@@ -12,11 +12,9 @@
 
 """MultiplicationNode"""
 
-from typing import Self
-
 import orjson
 
-from ...aliases import RegisterName
+from ...aliases import RegisterName, Self
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...virtual_registers import GroupRegister, VirtualRegister, virtual_register_from_json

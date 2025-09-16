@@ -115,7 +115,7 @@ class CombineRegistersNode(EvaluationNode):
             value_list = []
             for v in values:
                 if isinstance(v, VirtualType):
-                    value_list.append({"type": str(v)})
+                    value_list.append({"type": v.value})
                 elif isinstance(v, CombineType):
                     continue
                 else:
@@ -124,7 +124,7 @@ class CombineRegistersNode(EvaluationNode):
 
         return {
             "node_type": "3",
-            "output_type": self._output_type,
+            "output_type": self._output_type.value,
             "output_register_name": self._output_register_name,
             "num_output_subsystems": str(self._num_output_subsystems),
             "operands": orjson.dumps(operands_dict).decode("utf-8"),
@@ -173,7 +173,7 @@ class CombineRegistersNode(EvaluationNode):
             if self._output_type not in VirtualRegister.select(found_type).CONVERTABLE_TYPES:
                 raise SamplexConstructionError(
                     f"{self} expects `{register_name}` to be convertable to type "
-                    f"'{self._output_type}' but found '{found_type}'."
+                    f"'{self._output_type.value}' but found '{found_type.value}'."
                 )
 
     def evaluate(self, registers, *_):
