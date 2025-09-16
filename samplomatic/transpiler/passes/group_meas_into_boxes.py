@@ -28,12 +28,12 @@ class GroupMeasIntoBoxes(TransformationPass):
     """Collect the measurements in a circuit inside boxes.
 
     This pass collects all of the measurements in the input circuit in boxes, together with the
-    single-qubit gates that preceed them. To assign the measurements to these boxes, it
+    single-qubit gates that precede them. To assign the measurements to these boxes, it
     uses a greedy collection strategy that tries to collect measurements in the earliest possible
     box that they can fit.
 
     Args:
-        add_twirling: Whether to add left-dressed :class:`.Twirling` annotations to the resulting
+        add_twirling: Whether to add left-dressed :class:`.Twirl` annotations to the resulting
             boxes.
         add_basis_transform: Whether to add :class:`.BasisTransform` annotations with ``"measure"``
             mode to the resulting boxes.
