@@ -17,8 +17,9 @@ from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 
-from samplomatic import Twirl
+from samplomatic import BasisTransform, Twirl
 from samplomatic.transpiler.passes import GroupMeasIntoBoxes
+from samplomatic.utils import get_annotation
 
 
 def make_circuits():
@@ -199,6 +200,31 @@ def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
     transpiled_circuit = pm.run(circuit)
 
     assert transpiled_circuit == expected_circuit
+
+
+@pytest.mark.parametrize("annotations", ["twirl", "basis_transform", "all"])
+def test_annotations(annotations):
+    """Test that `GroupMeasIntoBoxes` attaches the correct annotations."""
+    circuit = QuantumCircuit(1, 1)
+    circuit.measure(0, 0)
+
+    pm = PassManager(passes=[GroupMeasIntoBoxes(annotations, "ciao")])
+    box = pm.run(circuit).data[0].operation
+    twirl = get_annotation(box, Twirl)
+    basis_transform = get_annotation(box, BasisTransform)
+
+    assert (twirl is not None) == (annotations in ["twirl", "all"])
+    assert (basis_transform is not None) == (annotations in ["basis_transform", "all"])
+
+    if basis_transform:
+        assert basis_transform.mode == "measure"
+        assert basis_transform.ref.startswith("ciao")
+
+
+def test_annotations_raise():
+    """Test that `GroupMeasIntoBoxes` raises for incorrect annotations."""
+    with pytest.raises(ValueError, match="none is not a valid input"):
+        GroupMeasIntoBoxes("none")
 
 
 def test_raises_when_measurements_overwrite_clbit():
