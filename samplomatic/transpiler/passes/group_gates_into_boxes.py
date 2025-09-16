@@ -63,7 +63,7 @@ class GroupGatesIntoBoxes(TransformationPass):
             *   Group together single- and two-qubit gate nodes that need to be placed in the same
                 box.
             *   Whenever a node can be placed in more than one group, place it in the earliest
-                possible group--where "earliest" is with reference to opological ordering.
+                possible group--where "earliest" is with reference to topological ordering.
             *   When looping is complete, replace each group with a box.
         """
         # A map to temporarily store single-qubit gate nodes before inserting them into a group
