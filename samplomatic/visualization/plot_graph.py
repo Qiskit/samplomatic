@@ -12,6 +12,8 @@
 
 """plot_graph"""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from functools import partial
 from typing import TYPE_CHECKING, TypeVar
@@ -79,7 +81,7 @@ def plot_graph(
     subgraph_idxs: None | int | Sequence[int] = None,
     layout_method: LayoutPresets | LayoutMethod[T, S] = "auto",
     ranker: NodeRanker[T] | None = None,
-) -> "Figure":
+) -> Figure:
     """Visualize the disconnected subgraphs of a graph.
 
     This function identifies all disconnected subgraphs within the given ``graph`` using

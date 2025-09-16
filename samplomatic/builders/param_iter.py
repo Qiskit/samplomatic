@@ -12,9 +12,7 @@
 
 """ParamIter"""
 
-from typing import Self
-
-from ..aliases import Parameter
+from ..aliases import Parameter, Self
 
 
 class ParamIter:

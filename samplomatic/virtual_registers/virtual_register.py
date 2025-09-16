@@ -36,7 +36,7 @@ class VirtualRegisterMeta(abc.ABCMeta):
                 raise ValueError("VirtualRegister.TYPE must be a VirtualType.")
             if new_cls.TYPE in mcs._TYPE_MAP:
                 raise ValueError(
-                    f"TYPE '{new_cls.TYPE} has already been registered by "
+                    f"TYPE '{new_cls.TYPE.value} has already been registered by "
                     f"{mcs._TYPE_MAP[new_cls.TYPE]}'"
                 )
             mcs._TYPE_MAP[new_cls.TYPE] = new_cls

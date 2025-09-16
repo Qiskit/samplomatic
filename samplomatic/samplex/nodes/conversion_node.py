@@ -60,9 +60,9 @@ class ConversionNode(EvaluationNode):
         return {
             "node_type": "4",
             "existing_name": self.existing_name,
-            "existing_type": self.existing_type,
+            "existing_type": self.existing_type.value,
             "new_name": self.new_name,
-            "new_type": self.new_type,
+            "new_type": self.new_type.value,
             "num_subsystems": self.num_subsystems,
             "remove_existing": str(self.remove_existing),
         }
@@ -105,7 +105,7 @@ class ConversionNode(EvaluationNode):
             if self.new_type not in VirtualRegister.select(existing_type).CONVERTABLE_TYPES:
                 raise SamplexConstructionError(
                     f"When validating {self}, the register '{self.existing_name}' of type "
-                    f"'{existing_type}' should be convertable to '{self.new_type}' "
+                    f"'{existing_type.value}' should be convertable to '{self.new_type.value}' "
                     "but is not."
                 )
 
