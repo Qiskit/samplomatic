@@ -28,7 +28,7 @@ class NoiseModelRequirement:
     num_qubits: int
     """The number of qubits this model acts on."""
 
-    noise_modifiers: set = field(default=set)
+    noise_modifiers: set[str] = field(default_factory=set)
     """The set of modifiers that act on this noise model."""
 
     def _to_json_dict(self) -> dict[str, str]:
