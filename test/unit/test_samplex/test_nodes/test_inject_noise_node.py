@@ -13,11 +13,9 @@
 """Test the InjectNoiseNode class"""
 
 import numpy as np
-import pytest
-from qiskit.quantum_info import PauliLindbladMap
+from qiskit.quantum_info import QubitSparsePauliList
 
 from samplomatic.annotations import VirtualType
-from samplomatic.exceptions import SamplexRuntimeError
 from samplomatic.samplex.nodes import InjectNoiseNode
 from samplomatic.tensor_interface import (
     Specification,
@@ -46,21 +44,31 @@ def test_sample(rng):
     samplex_input = (
         TensorInterface(
             [
-                Specification("my_noise", ValueType.LINDBLAD),
-                Specification("num_randomizations", ValueType.INT),
+                Specification("noise_maps.paulis.my_noise", ValueType.PAULIS),
+                TensorSpecification("noise_maps.rates.my_noise", (1,), np.float64),
                 TensorSpecification("noise_scales.my_modifier", (), np.float64),
                 TensorSpecification("local_scales.my_modifier", (1,), np.float64),
             ]
         )
         .bind(noise_scales={"my_modifier": 1.0})
         .bind(local_scales={"my_modifier": [1.0]})
-        .bind(my_noise=PauliLindbladMap.from_list([("III", 0)]))
+        .bind(
+            noise_maps={
+                "paulis.my_noise": QubitSparsePauliList.from_list(["III"]),
+                "rates.my_noise": [0.0],
+            }
+        )
     )
     node.sample(registers, rng, samplex_input, 5)
     assert registers["injection"] == PauliRegister(np.zeros(15, dtype=np.uint8).reshape(3, 5))
     assert registers["the_sign"] == Z2Register(np.ones((1, 5), dtype=np.uint8))
 
-    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("XXX", -100)]))
+    samplex_input.bind(
+        noise_maps={
+            "paulis.my_noise": QubitSparsePauliList.from_list(["XXX"]),
+            "rates.my_noise": [-100.0],
+        }
+    )
     node.sample(registers, rng, samplex_input, num_randomizations=100)
     assert (~registers["the_sign"].virtual_gates).any()
 
@@ -71,26 +79,3 @@ def test_sample(rng):
     samplex_input.bind(noise_scales={"my_modifier": 1.0}, local_scales={"my_modifier": [0.0]})
     node.sample(registers, rng, samplex_input, 100)
     assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
-
-
-def test_sample_raises(rng):
-    """Test the raises for the sample method."""
-    registers = {}
-    node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
-
-    samplex_input = TensorInterface(
-        [
-            Specification("num_randomizations", ValueType.INT),
-            Specification("my_noise", ValueType.LINDBLAD),
-            Specification("local_scales.my_modifier", ValueType.NUMPY_ARRAY),
-        ]
-    ).bind(local_scales={"my_modifier": [1.0]})
-
-    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("II", 0)]))
-    with pytest.raises(SamplexRuntimeError, match="Received a noise map acting on `2`"):
-        node.sample(registers, rng, samplex_input, 5)
-
-    samplex_input.bind(my_noise=PauliLindbladMap.from_list([("III", 0)]))
-    samplex_input.bind(local_scales={"my_modifier": [1.0, 2.0]})
-    with pytest.raises(SamplexRuntimeError, match="a local scale from reference 'my_modifier'"):
-        node.sample(registers, rng, samplex_input, 5)

@@ -14,11 +14,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING
 
+import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
+from qiskit.quantum_info import QubitSparsePauliList
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -37,11 +39,12 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification
+from ..tensor_interface import Specification, TensorInterface, TensorSpecification, ValueType
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
+from .noise_model_requirement import NoiseModelRequirement
 from .parameter_expression_table import ParameterExpressionTable
 
 if TYPE_CHECKING:
@@ -70,13 +73,19 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
+        self._noise_model_requirements: dict[str, NoiseModelRequirement] = {}
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
     def __str__(self):
+        noise_models = {
+            ref: QubitSparsePauliList.from_sparse_list([], num_qubits=requirement.num_qubits)
+            for ref, requirement in self._noise_model_requirements.items()
+        }
+        inputs = self.inputs(noise_models)
         return (
             f"Samplex(<{len(self.graph)} nodes>)\n"
-            f"  Inputs:\n{self.inputs().describe(prefix='    * ', width=100)}"
+            f"  Inputs:\n{inputs.describe(prefix='    * ', width=100)}"
             f"\n  Outputs:\n{self.outputs(123).describe(prefix='    * ', width=100)}".replace(
                 "[123", "[num_randomizations"
             )
@@ -86,6 +95,11 @@ class Samplex:
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
         return self._param_table.parameters
+
+    @property
+    def noise_model_requirements(self) -> dict[str, NoiseModelRequirement]:
+        """The noise models required at sampling time."""
+        return self._noise_model_requirements
 
     @property
     def num_parameters(self) -> int:
@@ -153,6 +167,18 @@ class Samplex:
         if (name := specification.name) in self._output_specifications:
             raise SamplexConstructionError(f"An output with name '{name}' already exists.")
         self._output_specifications[name] = specification
+
+    def add_noise_model_requirement(self, noise_model: NoiseModelRequirement):
+        """Add a noise model requirement to this samplex.
+
+        Args:
+            noise_model: The requirement to add.
+        """
+        if (noise_ref := noise_model.noise_ref) in self._noise_model_requirements:
+            raise SamplexConstructionError(
+                f"A noise model requirement with reference '{noise_ref}' already exists."
+            )
+        self._noise_model_requirements[noise_ref] = noise_model
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -232,13 +258,79 @@ class Samplex:
 
         return self
 
-    def inputs(self) -> TensorInterface:
+    def inputs(
+        self, noise_model_paulis: Mapping[str, QubitSparsePauliList] | None = None
+    ) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
+
+        Args:
+            noise_model_paulis: The Pauli terms contained in the noise models. Each element of
+                :meth:`~noise_model_requirements` should be specified.
+
+        Raises:
+            ValueError: If ``noise_model_paulis`` has different keys than
+                :meth:`~noise_model_requirements`.
+            ValueError: If any of the ``noise_model_paulis`` has a different number of qubits than
+                its requirement.
 
         Returns:
             The input for this samplex.
         """
-        return TensorInterface(self._input_specifications.values())
+        noise_model_paulis = {} if noise_model_paulis is None else noise_model_paulis
+        if noise_model_paulis.keys() != self._noise_model_requirements.keys():
+            required_paulis = "\n".join(
+                f" * {ref}: A Pauli list on {req.num_qubits} qubits."
+                for ref, req in self._noise_model_requirements.items()
+            )
+            raise ValueError(
+                f"The samplex input requires the following noise models:\n{required_paulis}"
+            )
+
+        specs = [*self._input_specifications.values()]
+        for name, noise_req in self._noise_model_requirements.items():
+            noise_req.validate_noise_model(paulis := noise_model_paulis[name])
+            specs.append(
+                Specification(
+                    f"noise_maps.paulis.{name}",
+                    ValueType.PAULIS,
+                    "The Pauli operators present in a noise map.",
+                )
+            )
+            specs.append(
+                TensorSpecification(
+                    f"noise_maps.rates.{name}",
+                    (num_terms := (paulis.num_terms),),
+                    np.dtype(np.float64),
+                    f"The rates of a noise map with {num_terms} terms acting on "
+                    f"{noise_req.num_qubits} qubits. The order should match the order of the "
+                    "corresponding Pauli list.",
+                )
+            )
+
+            for noise_modifier in noise_req.noise_modifiers:
+                specs.append(
+                    TensorSpecification(
+                        f"noise_scales.{noise_modifier}",
+                        (),
+                        np.dtype(np.float64),
+                        "A factor by which to scale a noise map.",
+                        optional=True,
+                    )
+                )
+                specs.append(
+                    TensorSpecification(
+                        f"local_scales.{noise_modifier}",
+                        (num_terms,),
+                        np.dtype(np.float64),
+                        "An array of factors by which to scale individual rates of a noise map. "
+                        "The order should match the order of the corresponding Pauli list.",
+                        optional=True,
+                    )
+                )
+
+        return TensorInterface(specs).bind(
+            **{f"noise_maps.paulis.{name}": paulis for name, paulis in noise_model_paulis.items()}
+        )
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
         """Returns an object that specifies the promised outputs of :meth:`~sample`.

@@ -13,7 +13,7 @@ from copy import deepcopy
 
 import numpy as np
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
-from qiskit.quantum_info import PauliLindbladMap
+from qiskit.quantum_info import QubitSparsePauliList
 
 from samplomatic import build
 from samplomatic.annotations import BasisTransform, InjectNoise, Twirl
@@ -75,19 +75,23 @@ class TestSamplexSerialization:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(range(2))
 
-        noise_map = PauliLindbladMap.from_list([("XX", 0.5)])
-
         _, samplex = build(circuit)
         samplex_new = samplex_from_json(samplex_to_json(samplex))
 
         samplex.finalize()
         samplex_new.finalize()
 
-        samplex_input = samplex.inputs().bind(noise_maps={"my_noise": noise_map})
+        paulis = QubitSparsePauliList.from_list(["XX"])
+        samplex_input = samplex.inputs({"my_noise": paulis}).bind(
+            noise_maps={"rates.my_noise": [0.5]}
+        )
+        samplex_new_input = samplex_new.inputs({"my_noise": paulis}).bind(
+            noise_maps={"rates.my_noise": [0.5]}
+        )
         copy_rng = deepcopy(rng)
 
         samplex_output = samplex.sample(samplex_input, rng=rng)
-        samplex_new_output = samplex_new.sample(samplex_input, rng=copy_rng)
+        samplex_new_output = samplex_new.sample(samplex_new_input, rng=copy_rng)
         np.testing.assert_allclose(
             samplex_output["parameter_values"], samplex_new_output["parameter_values"]
         )
