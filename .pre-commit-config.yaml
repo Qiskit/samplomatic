@@ -39,6 +39,8 @@ repos:
     hooks:
       # Run the linter.
       - id: ruff
+        target_version: python3.9 # lowest supported version
         args: [ --fix ]
       # Run the formatter.
       - id: ruff-format
+        target_version: python3.9 # lowest supported version

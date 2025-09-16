@@ -29,7 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install ".[dev,vis]"
     - name: Pre-commit checks (linting)
-      if: matrix.python-version == '3.11' || matrix.python-version == '3.12'
+      if: matrix.python-version == '3.12'
       run: |
         pre-commit run --all-files
     - name: Test with pytest
