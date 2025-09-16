@@ -17,7 +17,7 @@ from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic import build
 from samplomatic.annotations import BasisTransform, InjectNoise, Twirl
-from samplomatic.noise_source.static_noise_source import StaticNoiseSource
+from samplomatic.noise_source import StaticNoiseSource
 from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
 
 

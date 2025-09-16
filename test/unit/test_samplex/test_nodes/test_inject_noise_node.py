@@ -16,7 +16,7 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic.annotations import VirtualType
-from samplomatic.noise_source.static_noise_source import StaticNoiseSource
+from samplomatic.noise_source import StaticNoiseSource
 from samplomatic.samplex.nodes import InjectNoiseNode
 from samplomatic.tensor_interface import (
     TensorInterface,

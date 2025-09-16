@@ -265,6 +265,18 @@ class Samplex:
         return self
 
     def set_noise_source(self, noise_source: NoiseSource) -> Self:
+        """Set the noise source to use during sampling.
+
+        Args:
+            noise_source: The noise source to set. This should follow the :class:`~.NoiseSource`
+                protocol.
+
+        Raises:
+            ValueError: If any of the required noise models are missing from `noise_source`.
+
+        Returns:
+            The same instance, for chaining.
+        """
         if any(key not in noise_source for key in self._noise_model_requirements.keys()):
             required_paulis = "\n".join(
                 f" * {ref}: A Pauli list on {req.num_qubits} qubits."

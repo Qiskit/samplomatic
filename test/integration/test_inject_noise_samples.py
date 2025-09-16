@@ -24,7 +24,7 @@ from qiskit.quantum_info import (
 
 from samplomatic.annotations import InjectNoise, Twirl
 from samplomatic.builders import pre_build
-from samplomatic.noise_source.static_noise_source import StaticNoiseSource
+from samplomatic.noise_source import StaticNoiseSource
 
 
 def make_circuits():
