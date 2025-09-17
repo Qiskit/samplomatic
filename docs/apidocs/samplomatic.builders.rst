@@ -6,17 +6,16 @@ samplomatic.builders package
    :show-inheritance:
    :undoc-members:
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   samplomatic.builders.samplex_builder
-   samplomatic.builders.template_builder
-
 Submodules
 ----------
+
+samplomatic.builders.box\_builder module
+----------------------------------------
+
+.. automodule:: samplomatic.builders.box_builder
+   :members:
+   :show-inheritance:
+   :undoc-members:
 
 samplomatic.builders.build module
 ---------------------------------
@@ -34,10 +33,10 @@ samplomatic.builders.builder module
    :show-inheritance:
    :undoc-members:
 
-samplomatic.builders.get\_builders module
------------------------------------------
+samplomatic.builders.get\_builder module
+----------------------------------------
 
-.. automodule:: samplomatic.builders.get_builders
+.. automodule:: samplomatic.builders.get_builder
    :members:
    :show-inheritance:
    :undoc-members:
@@ -50,10 +49,26 @@ samplomatic.builders.param\_iter module
    :show-inheritance:
    :undoc-members:
 
+samplomatic.builders.passthrough\_builder module
+------------------------------------------------
+
+.. automodule:: samplomatic.builders.passthrough_builder
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 samplomatic.builders.specs module
 ---------------------------------
 
 .. automodule:: samplomatic.builders.specs
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+samplomatic.builders.template\_state module
+-------------------------------------------
+
+.. automodule:: samplomatic.builders.template_state
    :members:
    :show-inheritance:
    :undoc-members:
