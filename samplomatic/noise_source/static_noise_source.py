@@ -22,11 +22,12 @@ class StaticNoiseSource(Mapping):
     """A static noise source that implements the :class:`~.NoiseSource` protocol.
 
     Args:
-        noise_maps: A map from noise references to :class:`qiskit.quantum_info.PauliLindbladMap`s.
+        pauli_lindblad_maps: A map from noise references to
+        :class:`qiskit.quantum_info.PauliLindbladMap`s.
     """
 
-    def __init__(self, noise_maps: dict[str, PauliLindbladMap]):
-        self._noise_maps = noise_maps
+    def __init__(self, pauli_lindblad_maps: dict[str, PauliLindbladMap]):
+        self._pauli_lindblad_maps = pauli_lindblad_maps
 
     def get_paulis(self, noise_ref: str) -> QubitSparsePauliList:
         """Return the Paulis associated with the given noise reference.
@@ -37,9 +38,10 @@ class StaticNoiseSource(Mapping):
         Returns:
             A qubit sparse Pauli list.
         """
-        noise_map = self[noise_ref]
+        pauli_lindblad_map = self[noise_ref]
         return QubitSparsePauliList.from_sparse_list(
-            [(pauli, idx) for pauli, idx, _ in noise_map.to_sparse_list()], noise_map.num_qubits
+            [(pauli, idx) for pauli, idx, _ in pauli_lindblad_map.to_sparse_list()],
+            pauli_lindblad_map.num_qubits,
         )
 
     def get_rates(self, noise_ref: str) -> np.ndarray[np.float64]:
@@ -54,15 +56,15 @@ class StaticNoiseSource(Mapping):
         return self[noise_ref].rates
 
     def __contains__(self, noise_ref: str) -> bool:
-        return noise_ref in self._noise_maps
+        return noise_ref in self._pauli_lindblad_maps
 
     def __getitem__(self, noise_ref: str) -> PauliLindbladMap:
-        if (noise_map := self._noise_maps.get(noise_ref)) is None:
+        if (pauli_lindblad_map := self._pauli_lindblad_maps.get(noise_ref)) is None:
             raise ValueError(f"'{noise_ref}' is not present in this noise source.")
-        return noise_map
+        return pauli_lindblad_map
 
     def __iter__(self):
-        return iter(self._noise_maps)
+        return iter(self._pauli_lindblad_maps)
 
     def __len__(self):
-        return len(self._noise_maps)
+        return len(self._pauli_lindblad_maps)

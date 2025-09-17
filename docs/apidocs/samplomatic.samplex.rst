@@ -25,10 +25,10 @@ samplomatic.samplex.interfaces module
    :show-inheritance:
    :undoc-members:
 
-samplomatic.samplex.noise\_model\_requirement module
-----------------------------------------------------
+samplomatic.samplex.noise\_requirement module
+---------------------------------------------
 
-.. automodule:: samplomatic.samplex.noise_model_requirement
+.. automodule:: samplomatic.samplex.noise_requirement
    :members:
    :show-inheritance:
    :undoc-members:

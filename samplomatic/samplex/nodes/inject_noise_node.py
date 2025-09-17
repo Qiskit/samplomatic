@@ -37,9 +37,10 @@ class InjectNoiseNode(SamplingNode):
     Args:
         register_name: The name of the register to store the samples.
         sign_register_name: The name of the register to store the signs.
-        noise_ref: Unique identifier of the noise map to draw samples from.
+        noise_ref: Unique identifier of the Pauli Lindblad map to draw samples from.
         num_subsystems: The number of subsystems this node generates gates for.
-        modifier_ref: Unique identifier for modifiers applied to the noise map before sampling.
+        modifier_ref: Unique identifier for modifiers applied to the Pauli Lindblad map before
+            sampling.
     """
 
     def __init__(
@@ -95,11 +96,13 @@ class InjectNoiseNode(SamplingNode):
                 "local_scales." + self._modifier_ref, np.ones(paulis.num_terms)
             )
             rates = rates * scale * local_scale
-        noise_map = PauliLindbladMap.from_sparse_list(
+        pauli_lindblad_map = PauliLindbladMap.from_sparse_list(
             [(pauli, idxs, rate) for (pauli, idxs), rate in zip(paulis.to_sparse_list(), rates)],
             num_qubits=paulis.num_qubits,
         )
-        signs, samples = noise_map.signed_sample(num_randomizations, rng.bit_generator.random_raw())
+        signs, samples = pauli_lindblad_map.signed_sample(
+            num_randomizations, rng.bit_generator.random_raw()
+        )
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
 

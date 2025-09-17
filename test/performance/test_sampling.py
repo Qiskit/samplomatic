@@ -17,7 +17,7 @@ import pytest
 from samplomatic import build
 from samplomatic.noise_source import StaticNoiseSource
 
-from .utils import make_layered_circuit, make_noise_maps
+from .utils import make_layered_circuit, make_pauli_lindblad_maps
 
 
 class TestSample:
@@ -86,10 +86,10 @@ class TestSample:
     def test_sampling_noisy_circuit(
         self, rng, benchmark, num_qubits, num_gates, num_randomizations, scale
     ):
-        """Test the sample function using ``noise_maps``."""
+        """Test the sample function using ``pauli_lindblad_map``."""
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
-        even_noise, odd_noise = make_noise_maps(num_qubits)
+        even_noise, odd_noise = make_pauli_lindblad_maps(num_qubits)
         noise_source = StaticNoiseSource({"even": even_noise, "odd": odd_noise})
 
         template, samplex = build(circuit)
@@ -138,10 +138,10 @@ class TestSample:
     def test_sampling_masked_noisy_circuit(
         self, rng, benchmark, num_qubits, num_gates, num_randomizations, local_scale
     ):
-        """Test the sample function using ``noise_maps`` with ``local_scale``."""
+        """Test the sample function using ``pauli_lindblad_map`` with ``local_scale``."""
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
-        even_noise, odd_noise = make_noise_maps(num_qubits)
+        even_noise, odd_noise = make_pauli_lindblad_maps(num_qubits)
         noise_source = StaticNoiseSource({"even": even_noise, "odd": odd_noise})
 
         local_scales = {

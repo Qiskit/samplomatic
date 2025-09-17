@@ -44,7 +44,7 @@ from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
-from .noise_model_requirement import NoiseModelRequirement
+from .noise_requirement import NoiseRequirement
 from .parameter_expression_table import ParameterExpressionTable
 
 if TYPE_CHECKING:
@@ -73,7 +73,7 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
-        self._noise_model_requirements: dict[str, NoiseModelRequirement] = {}
+        self._noise_requirements: dict[str, NoiseRequirement] = {}
         self._noise_source: NoiseSource | None = None
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
@@ -98,9 +98,9 @@ class Samplex:
         return self._param_table.parameters
 
     @property
-    def noise_model_requirements(self) -> dict[str, NoiseModelRequirement]:
-        """The noise models required at sampling time."""
-        return self._noise_model_requirements
+    def noise_requirements(self) -> dict[str, NoiseRequirement]:
+        """The noise required at sampling time."""
+        return self._noise_requirements
 
     @property
     def noise_source(self) -> NoiseSource | None:
@@ -174,17 +174,17 @@ class Samplex:
             raise SamplexConstructionError(f"An output with name '{name}' already exists.")
         self._output_specifications[name] = specification
 
-    def add_noise_model_requirement(self, noise_model: NoiseModelRequirement):
-        """Add a noise model requirement to this samplex.
+    def add_noise_requirement(self, noise_requirement: NoiseRequirement):
+        """Add a noise requirement to this samplex.
 
         Args:
-            noise_model: The requirement to add.
+            noise_requirementl: The requirement to add.
         """
-        if (noise_ref := noise_model.noise_ref) in self._noise_model_requirements:
+        if (noise_ref := noise_requirement.noise_ref) in self._noise_requirements:
             raise SamplexConstructionError(
-                f"A noise model requirement with reference '{noise_ref}' already exists."
+                f"A noise requirement with reference '{noise_ref}' already exists."
             )
-        self._noise_model_requirements[noise_ref] = noise_model
+        self._noise_requirements[noise_ref] = noise_requirement
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -272,21 +272,21 @@ class Samplex:
                 protocol.
 
         Raises:
-            ValueError: If any of the required noise models are missing from `noise_source`.
+            ValueError: If any of the required noise is missing from `noise_source`.
 
         Returns:
             The same instance, for chaining.
         """
-        if any(key not in noise_source for key in self._noise_model_requirements.keys()):
+        if any(key not in noise_source for key in self._noise_requirements.keys()):
             required_paulis = "\n".join(
                 f" * {ref}: A Pauli list on {req.num_qubits} qubits."
-                for ref, req in self._noise_model_requirements.items()
+                for ref, req in self._noise_requirements.items()
             )
             raise ValueError(
-                f"The samplex input requires the following noise models:\n{required_paulis}"
+                f"The samplex input requires a noise source with the following:\n{required_paulis}"
             )
-        for ref, req in self._noise_model_requirements.items():
-            req.validate_noise_model(noise_source.get_paulis(ref))
+        for ref, req in self._noise_requirements.items():
+            req.validate_num_qubits(noise_source.get_paulis(ref))
         self._noise_source = noise_source
 
         return self
@@ -295,17 +295,17 @@ class Samplex:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Raises:
-            ValueError: If the samplex has :meth:`~noise_model_requirements` and the noise source
+            ValueError: If the samplex has :meth:`~noise_requirements` and the noise source
                 has not been set.
 
         Returns:
             The input for this samplex.
         """
-        if self._noise_model_requirements and self._noise_source is None:
+        if self._noise_requirements and self._noise_source is None:
             raise ValueError("Samplex input requires a noise source, call `set_noise_source()`.")
 
         specs = [*self._input_specifications.values()]
-        for name, noise_req in self._noise_model_requirements.items():
+        for name, noise_req in self._noise_requirements.items():
             num_terms = self._noise_source[name].num_terms
             for noise_modifier in noise_req.noise_modifiers:
                 specs.append(
@@ -313,7 +313,7 @@ class Samplex:
                         f"noise_scales.{noise_modifier}",
                         (),
                         np.dtype(np.float64),
-                        "A factor by which to scale a noise map.",
+                        "A factor by which to scale rates of a Pauli Lindblad map.",
                         optional=True,
                     )
                 )
@@ -322,8 +322,8 @@ class Samplex:
                         f"local_scales.{noise_modifier}",
                         (num_terms,),
                         np.dtype(np.float64),
-                        "An array of factors by which to scale individual rates of a noise map. "
-                        "The order should match the order of the corresponding Pauli list.",
+                        "An array of factors by which to scale individual rates of a Pauli Lindblad"
+                        " map. The order should match the order of the corresponding Pauli list.",
                         optional=True,
                     )
                 )
