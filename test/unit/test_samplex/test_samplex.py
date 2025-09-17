@@ -22,7 +22,7 @@ from qiskit.circuit import Parameter
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.samplex import Samplex
-from samplomatic.samplex.noise_model_requirement import NoiseRequirement
+from samplomatic.samplex.noise_requirement import NoiseRequirement
 from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import Specification, TensorSpecification, ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
