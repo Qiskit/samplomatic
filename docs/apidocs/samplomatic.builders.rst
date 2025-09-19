@@ -33,6 +33,14 @@ samplomatic.builders.builder module
    :show-inheritance:
    :undoc-members:
 
+samplomatic.builders.dynamic\_builder module
+--------------------------------------------
+
+.. automodule:: samplomatic.builders.dynamic_builder
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 samplomatic.builders.get\_builder module
 ----------------------------------------
 

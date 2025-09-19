@@ -169,6 +169,11 @@ class PreEmit(PreNode):
 
 
 @dataclass
+class PreCopy(PreEmit):
+    """ """
+
+
+@dataclass
 class PrePropagate(PreNode):
     """The propagation node type used during samplex building."""
 

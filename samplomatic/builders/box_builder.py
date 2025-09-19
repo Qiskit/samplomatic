@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BoxTemplateBuilder"""
+"""BoxBuilder"""
 
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ from ..exceptions import SamplexBuildError, TemplateBuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
+from .dynamic_builder import BoxLeftIfElseBuilder, BoxRightIfElseBuilder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode, InstructionSpec, VirtualType
 from .template_state import TemplateState
 
@@ -106,6 +107,19 @@ class LeftBoxBuilder(BoxBuilder):
             )
             return
 
+        if name.startswith("if_else"):
+            builder = BoxLeftIfElseBuilder(
+                instr,
+                self.collection.synth,
+                self.template_state.param_iter,
+                self.template_state.qubit_map,
+            )
+            if_else, graph = builder.build()
+            new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
+            self.template_state.template.append(if_else, new_qubits, instr.clbits)
+            self.samplex_state.add_if_else_subgraph(graph)
+            return
+
         if (num_qubits := instr.operation.num_qubits) == 1:
             if self.measured_qubits.overlaps_with(instr.qubits):
                 raise RuntimeError(
@@ -178,8 +192,22 @@ class RightBoxBuilder(BoxBuilder):
 
         if name == "barrier":
             spec = InstructionSpec(params=self.template_state.append_remapped_gate(instr))
+            return
 
-        elif (num_qubits := instr.operation.num_qubits) == 1:
+        if name.startswith("if_else"):
+            builder = BoxRightIfElseBuilder(
+                instr,
+                self.collection.synth,
+                self.template_state.param_iter,
+                self.template_state.qubit_map,
+            )
+            if_else, graph = builder.build()
+            new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
+            self.template_state.template.append(if_else, new_qubits, instr.clbits)
+            self.samplex_state.add_if_else_subgraph(graph)
+            return
+
+        if (num_qubits := instr.operation.num_qubits) == 1:
             self.entangled_qubits.update(instr.qubits)
             # the action of this single-qubit gate will be absorbed into the dressing
             params = []
