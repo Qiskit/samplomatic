@@ -84,6 +84,7 @@ from ..visualization import plot_graph
 from .graph_data import (
     PreBasisTransform,
     PreCollect,
+    PreCombine,
     PreCopy,
     PreEdge,
     PreEmit,
@@ -136,7 +137,10 @@ class DanglerMatch:
     def match_node(self, node: PreNode) -> bool:
         """Check if a node matches the conditions specified in the object"""
         return (self.direction is None or node.direction in (self.direction, Direction.BOTH)) and (
-            self.node_types is None or isinstance(node, self.node_types) or type(node) is PreNode
+            self.node_types is None
+            or isinstance(node, self.node_types)
+            or type(node) is PreCombine
+            or type(node) is PreCopy
         )
 
 
@@ -602,7 +606,7 @@ class PreSamplex:
         return node_idx
 
     def add_copy(self, qubits: QubitPartition, direction: Direction) -> NodeIndex:
-        node = PreCopy(self.qubits_to_indices(qubits), direction, None)
+        node = PreCopy(self.qubits_to_indices(qubits), direction)
         if direction is Direction.LEFT:
             return self._add_left(node)
         return self._add_right(node)

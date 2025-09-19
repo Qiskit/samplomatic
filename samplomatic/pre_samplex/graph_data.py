@@ -43,6 +43,16 @@ class PreNode:
 
 
 @dataclass
+class PreCombine(PreNode):
+    """"""
+
+
+@dataclass
+class PreCopy(PreNode):
+    """"""
+
+
+@dataclass
 class PreEdge:
     """Edge data on a samplex builder's graph."""
 
@@ -166,11 +176,6 @@ class PreEmit(PreNode):
             and self.subsystems == other.subsystems
             and self.register_type is other.register_type
         )
-
-
-@dataclass
-class PreCopy(PreEmit):
-    """ """
 
 
 @dataclass

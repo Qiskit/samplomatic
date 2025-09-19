@@ -14,12 +14,11 @@
 
 import numpy as np
 from qiskit.circuit import IfElseOp, QuantumCircuit
-from rustworkx import PyDiGraph
 
 from ..aliases import ParamIndices, Qubit, QubitIndex
 from ..partition import QubitIndicesPartition, QubitPartition
 from ..pre_samplex import PreSamplex
-from ..pre_samplex.graph_data import Direction, PreEdge, PreNode
+from ..pre_samplex.graph_data import Direction, PreCombine, PreEdge
 from ..synths import Synth
 from .param_iter import ParamIter
 from .specs import InstructionMode, InstructionSpec
@@ -63,7 +62,7 @@ class BoxIfElseBuilder:
 
 
 class BoxRightIfElseBuilder(BoxIfElseBuilder):
-    def build_block(self, block):
+    def build_block(self, block, pre_samplex: PreSamplex):
         block = (
             block
             if block is not None
@@ -73,11 +72,15 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
         )
 
         new_block = QuantumCircuit(block.qubits, block.clbits)
-        qubit_map = self.block_qubit_map(block)
-        pre_samplex = PreSamplex(qubit_map=qubit_map)
-        pre_samplex.add_copy(
+        pre_samplex = pre_samplex.remap(qubit_map=self.block_qubit_map(block))
+        copy_idx = pre_samplex.add_copy(
             qubits := QubitPartition.from_elements(new_block.qubits), Direction.RIGHT
         )
+
+        base_node = pre_samplex.graph.nodes()[0]
+        pre_edge = PreEdge(base_node.subsystems, base_node.direction)
+        pre_samplex.graph.add_edge(0, copy_idx, pre_edge)
+
         self.append_propagate(block, new_block, pre_samplex)
         params = self.append_template(block, new_block)
         pre_samplex.add_collect(qubits, self.synth, params)
@@ -85,38 +88,21 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
         return new_block, pre_samplex
 
     def build(self):
-        if_block, if_samplex = self.build_block(self.op.params[0])
-        else_block, else_samplex = self.build_block(self.op.params[1])
-
-        if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
-
-        graph = PyDiGraph(multigraph=True)
         qubits = QubitIndicesPartition.from_elements(
             v for k, v in self.qubit_map.items() if k in self.op.qubits
         )
+        pre_samplex = PreSamplex()
+        pre_samplex.graph.add_node(PreCombine(qubits, Direction.RIGHT))
+        if_block, if_samplex = self.build_block(self.op.params[0], pre_samplex)
+        else_block, else_samplex = self.build_block(self.op.params[1], pre_samplex)
 
-        base_idx = graph.add_node(PreNode(qubits, Direction.RIGHT))
-        if_idx = graph.add_node(PreNode(qubits, Direction.RIGHT))
-        graph.add_edge(base_idx, if_idx, PreEdge(qubits, Direction.RIGHT))
-        graph.substitute_node_with_subgraph(
-            if_idx,
-            if_samplex.graph,
-            lambda source, target, weight: if_samplex.graph.node_indices()[0],
-        )
+        if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
-        else_idx = graph.add_node(PreNode(qubits, Direction.RIGHT))
-        graph.add_edge(base_idx, else_idx, PreEdge(qubits, Direction.RIGHT))
-        graph.substitute_node_with_subgraph(
-            else_idx,
-            else_samplex.graph,
-            lambda source, target, weight: else_samplex.graph.node_indices()[0],
-        )
-
-        return if_else_op, graph
+        return if_else_op, pre_samplex.graph
 
 
 class BoxLeftIfElseBuilder(BoxIfElseBuilder):
-    def build_block(self, block):
+    def build_block(self, block, pre_samplex: PreSamplex):
         block = (
             block
             if block is not None
@@ -127,42 +113,29 @@ class BoxLeftIfElseBuilder(BoxIfElseBuilder):
 
         new_block = QuantumCircuit(block.qubits, block.clbits)
         params = self.append_template(block, new_block)
-        pre_samplex = PreSamplex(qubit_map=self.block_qubit_map(block))
+        pre_samplex = pre_samplex.remap(qubit_map=self.block_qubit_map(block))
 
         pre_samplex.add_collect(
             qubits := QubitPartition.from_elements(new_block.qubits), self.synth, params
         )
         self.append_propagate(block, new_block, pre_samplex)
-        pre_samplex.add_copy(qubits, Direction.LEFT)
+        copy_idx = pre_samplex.add_copy(qubits, Direction.LEFT)
+
+        base_node = pre_samplex.graph.nodes()[0]
+        pre_edge = PreEdge(base_node.subsystems, base_node.direction)
+        pre_samplex.graph.add_edge(0, copy_idx, pre_edge)
 
         return new_block, pre_samplex
 
     def build(self):
-        if_block, if_samplex = self.build_block(self.op.params[0])
-        else_block, else_samplex = self.build_block(self.op.params[1])
-
-        if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
-
-        graph = PyDiGraph(multigraph=True)
         qubits = QubitIndicesPartition.from_elements(
             v for k, v in self.qubit_map.items() if k in self.op.qubits
         )
+        pre_samplex = PreSamplex()
+        pre_samplex.graph.add_node(PreCombine(qubits, Direction.LEFT))
+        if_block, if_samplex = self.build_block(self.op.params[0], pre_samplex)
+        else_block, else_samplex = self.build_block(self.op.params[1], pre_samplex)
 
-        base_idx = graph.add_node(PreNode(qubits, Direction.LEFT))
-        if_idx = graph.add_node(PreNode(qubits, Direction.LEFT))
-        graph.add_edge(base_idx, if_idx, PreEdge(qubits, Direction.LEFT))
-        graph.substitute_node_with_subgraph(
-            if_idx,
-            if_samplex.graph,
-            lambda source, target, weight: if_samplex.graph.node_indices()[-1],
-        )
+        if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
-        else_idx = graph.add_node(PreNode(qubits, Direction.LEFT))
-        graph.add_edge(base_idx, else_idx, PreEdge(qubits, Direction.LEFT))
-        graph.substitute_node_with_subgraph(
-            else_idx,
-            else_samplex.graph,
-            lambda source, target, weight: else_samplex.graph.node_indices()[-1],
-        )
-
-        return if_else_op, graph
+        return if_else_op, pre_samplex.graph
