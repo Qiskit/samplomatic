@@ -17,9 +17,10 @@ from __future__ import annotations
 from collections.abc import Iterator
 
 from qiskit.circuit import Annotation, BoxOp, QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.exceptions import TranspilerError
 
+from ...aliases import DAGOpNode
 from ...annotations import Twirl
 
 

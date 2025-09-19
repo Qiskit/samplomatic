@@ -31,6 +31,7 @@ from qiskit.circuit import CircuitInstruction as _CircuitInstruction
 from qiskit.circuit import Parameter as _Parameter
 from qiskit.circuit import ParameterExpression as _ParameterExpression
 from qiskit.circuit import Qubit as _Qubit
+from qiskit.dagcircuit import DAGOpNode as _DAGOpNode
 from rustworkx.rustworkx import PyDiGraph
 
 T = TypeVar("T")
@@ -38,6 +39,7 @@ S = TypeVar("S")
 
 # this alias patches a qiskit/pyo3 typing bug, it can be removed when fixed in qiskit
 CircuitInstruction: TypeAlias = _CircuitInstruction  #  type: ignore
+DAGOpNode: TypeAlias = _DAGOpNode  # type: ignore
 Parameter: TypeAlias = _Parameter  #  type: ignore
 ParameterExpression: TypeAlias = _ParameterExpression  #  type: ignore
 Qubit: TypeAlias = _Qubit  # type:ignore

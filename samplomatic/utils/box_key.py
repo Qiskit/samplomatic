@@ -16,9 +16,8 @@ from collections.abc import Hashable
 
 from qiskit.circuit import Clbit, Qubit
 from qiskit.converters import circuit_to_dag
-from qiskit.dagcircuit import DAGOpNode
 
-from ..aliases import CircuitInstruction
+from ..aliases import CircuitInstruction, DAGOpNode
 from ..constants import SYMMETRIC_2Q_GATES
 
 
