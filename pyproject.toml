@@ -27,7 +27,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "qiskit==2.2.0rc1",
+    "qiskit==2.2.0",
     "numpy>=1.26",
     "rustworkx>=0.16.0",
     "pybase64>=1.4.0",
