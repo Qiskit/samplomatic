@@ -14,8 +14,10 @@
 
 from qiskit.circuit import Clbit, Qubit
 from qiskit.converters import circuit_to_dag
-from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
+
+from ...aliases import DAGOpNode
 
 
 class InlineBoxes(TransformationPass):

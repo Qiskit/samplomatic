@@ -19,10 +19,11 @@ from collections import defaultdict
 from typing import Literal
 
 from qiskit.circuit import Annotation, Bit, Qubit
-from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
 
+from ...aliases import DAGOpNode
 from ...annotations import BasisTransform, Twirl
 from .utils import make_and_insert_box, validate_op_is_supported
 
