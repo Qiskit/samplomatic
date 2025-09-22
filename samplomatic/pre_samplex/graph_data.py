@@ -98,7 +98,7 @@ class PreCollect(PreNode):
             and self.subsystems == other.subsystems
             and self.direction == other.direction
             and type(self.synth) is type(other.synth)
-            and self.param_idxs == other.param_idxs
+            and np.array_equal(self.param_idxs, other.param_idxs)
         )
 
     def add_subsystems(self, new_subsystems: QubitIndicesPartition, new_param_idxs: ParamIndices):
