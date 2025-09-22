@@ -14,6 +14,7 @@
 
 import hashlib
 import html
+import os
 from collections import defaultdict
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
 
 
 def pytest_addoption(parser):
-    """Add pytest options"""
+    """Add pytest options."""
     parser.addoption("--seed", action="store", default=None, help="Set a global random seed")
     parser.addoption(
         "--save-plots",
@@ -40,6 +41,12 @@ def pytest_addoption(parser):
         default=False,
         help="Use lighter version of the performance tests for smoke test purposes.",
     )
+
+
+def pytest_configure(config):
+    """Add pytest configuration."""
+    # suppress beta warning for the entire test session
+    os.environ["SAMPLOMATIC_SUPPRESS_BETA_WARNING"] = "1"
 
 
 @pytest.fixture(scope="session", autouse=True)

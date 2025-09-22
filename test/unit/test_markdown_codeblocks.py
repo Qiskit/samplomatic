@@ -18,9 +18,9 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.parametrize("filename", ["README.md"])
+@pytest.mark.parametrize("filename", ["README.md", "DEPRECATION.md"])
 def test_markdown_codeblocks(tmp_path, filename):
-    """Test python snippets in README.md"""
+    """Test python snippets in base-level markdown files."""
     readme = Path(__file__).parent.parent.parent / filename
     text = readme.read_text()
 
