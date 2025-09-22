@@ -20,8 +20,8 @@ from .annotations import BasisTransform, InjectNoise, Twirl
 from .builders import build
 
 _warnings.warn(
-    f"\nYou have imported samplomatic=={__version__} which is an \n"
-    "experimental project. Please expect breaking changes between \n"
-    "minor versions.",
+    f"\nYou have imported samplomatic=={__version__} which is in \n"
+    "beta development. Please expect breaking changes between \n"
+    "minor versions and pin your dependencies accordingly.",
     stacklevel=2,
 )
