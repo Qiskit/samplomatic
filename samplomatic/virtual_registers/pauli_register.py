@@ -23,6 +23,8 @@ from .group_register import GroupRegister
 from .u2_register import U2Register
 from .z2_register import Z2Register
 
+PAULI_OPERATION_NAMES = set(["x", "y", "z"])
+
 PAULI_TO_U2 = np.array(
     [np.diag([1, 1]), np.diag([1, -1]), np.diag([1, 1])[::-1], np.diag([-1j, 1j])[::-1]],
     dtype=U2Register.DTYPE,
@@ -59,6 +61,15 @@ class PauliRegister(GroupRegister):
     @classmethod
     def identity(cls, num_subsystems, num_samples):
         return cls(np.zeros((num_subsystems, num_samples), dtype=np.uint8))
+
+    @classmethod
+    def from_operation(cls, op):
+        if op.name.startswith("z"):
+            return cls(np.array([1], dtype=np.uint8).reshape(1, 1))
+        if op.name.startswith("x"):
+            return cls(np.array([2], dtype=np.uint8).reshape(1, 1))
+        if op.name.startswith("y"):
+            return cls(np.array([3], dtype=np.uint8).reshape(1, 1))
 
     def convert_to(self, register_type):
         if register_type is VirtualType.U2:
