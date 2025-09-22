@@ -85,7 +85,7 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
         params = self.append_template(block, new_block)
         pre_samplex.add_collect(qubits, self.synth, params)
 
-        return new_block, pre_samplex
+        return new_block
 
     def build(self):
         qubits = QubitIndicesPartition.from_elements(
@@ -93,8 +93,8 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
         )
         pre_samplex = PreSamplex()
         pre_samplex.graph.add_node(PreCombine(qubits, Direction.RIGHT))
-        if_block, if_samplex = self.build_block(self.op.params[0], pre_samplex)
-        else_block, else_samplex = self.build_block(self.op.params[1], pre_samplex)
+        if_block = self.build_block(self.op.params[0], pre_samplex)
+        else_block = self.build_block(self.op.params[1], pre_samplex)
 
         if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
@@ -125,7 +125,7 @@ class BoxLeftIfElseBuilder(BoxIfElseBuilder):
         pre_edge = PreEdge(base_node.subsystems, base_node.direction)
         pre_samplex.graph.add_edge(0, copy_idx, pre_edge)
 
-        return new_block, pre_samplex
+        return new_block
 
     def build(self):
         qubits = QubitIndicesPartition.from_elements(
@@ -133,8 +133,8 @@ class BoxLeftIfElseBuilder(BoxIfElseBuilder):
         )
         pre_samplex = PreSamplex()
         pre_samplex.graph.add_node(PreCombine(qubits, Direction.LEFT))
-        if_block, if_samplex = self.build_block(self.op.params[0], pre_samplex)
-        else_block, else_samplex = self.build_block(self.op.params[1], pre_samplex)
+        if_block = self.build_block(self.op.params[0], pre_samplex)
+        else_block = self.build_block(self.op.params[1], pre_samplex)
 
         if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
