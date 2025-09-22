@@ -1,7 +1,7 @@
 # Deprecation Policy
 
 This library is in a beta stage of development.
-Certain core desgin decisions have not yet been finalized as the core team learns about what works best.
+Certain core design decisions have not yet been finalized as the development team learns about what works best.
 Therefore, the deprecation policy described here is designed to enable rapid iteration of ideas.
 This comes at the cost of inter-version stability.
 
@@ -18,12 +18,12 @@ Once the beta stage is completed, this and other documents will be updated, and 
 In particular, the new deprecation policy will come with a certain amount of backwards compatibility.
 
 
-## Stability warnings
+## Beta Stability warnings
 
 This library raises a beta stability `UserWarning` on import to highlight the current beta status.
 This is intended to catch the eye of those who may not notice the status in the `README.md`, `CONTRIBUTING.md`, or `DEPRECATION.md` files.
 The warning will only be raised once per installed version of samplomatic, even in separate Python sessions.
-This is implemented by storing some non-essential runtime state in your state directory, for example, in ``~/.local/state/samplomatic`.
+This is implemented by storing some non-essential runtime state in your state directory.
 Run
 
 ```python
