@@ -5,6 +5,12 @@ _Serving all of your circuit sampling needs since 2025._
 
 ## Development
 
+### Contributions during the Beta phase
+
+This library is in a beta stage of development.
+During this phase, the project would benefit greatly from bug report issues, or PRs that solve bugs.
+Additionally, the core team is very interested in feature request issues that will help us better understand the needs of the community. However, it will have limited capacity to work on them, and will likewise have limited capacity to review PRs that implement new feature requests that are large in scope.
+
 ### Installation
 
 Developers should install in editable mode with the development requirements:
