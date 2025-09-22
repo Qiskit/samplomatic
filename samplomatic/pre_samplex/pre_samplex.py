@@ -305,7 +305,7 @@ class PreSamplex:
         match: DanglerMatch,
         subsystems: QubitIndicesPartition,
     ) -> Iterator[tuple[NodeIndex, QubitIndicesPartition]]:
-        """Extend :meth:`~.find_danglers` to also removes the dangling nodes.
+        """Extend :meth:`~.find_danglers` to also remove dangling nodes.
 
         .. note::
            Nodes are removed only after all of them have been yielded.

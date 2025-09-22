@@ -123,7 +123,7 @@ class Node(metaclass=NodeType):
     def validate_and_update(
         self, register_descriptions: dict[RegisterName, tuple[NumSubsystems, VirtualType]]
     ):
-        """Validate provided register descriptions are compatible, updates with changes.
+        """Validate provided register descriptions are compatible, update with changes.
 
         This method can be used by a samplex to determine when a node execution order has
         well-defined dependencies before sampling begins.
