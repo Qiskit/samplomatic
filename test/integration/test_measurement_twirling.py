@@ -87,7 +87,7 @@ class TestWithSimulation:
         circuit = QuantumCircuit(QuantumRegister(size=2), ClassicalRegister(name="meas", size=2))
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 1)
-            circuit.noop(1)
+            circuit.x(1)
         with circuit.box([Twirl(dressing="right")]):
             circuit.measure(1, 0)
 

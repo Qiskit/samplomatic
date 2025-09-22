@@ -80,7 +80,7 @@ from ..samplex.noise_model_requirement import NoiseModelRequirement
 from ..synths import Synth
 from ..tensor_interface import TensorSpecification
 from ..virtual_registers import PauliRegister, U2Register
-from ..virtual_registers.pauli_register import PAULI_OPERATION_NAMES
+from ..virtual_registers.pauli_register import PAULI_GATE_NAMES
 from ..visualization import plot_graph
 from .graph_data import (
     PreBasisTransform,
@@ -1369,10 +1369,10 @@ class PreSamplex:
             else:
                 if (
                     incoming == {VirtualType.PAULI}
-                    and pre_propagate.operation.name in PAULI_OPERATION_NAMES
+                    and (name := pre_propagate.operation.name) in PAULI_GATE_NAMES
                 ):
                     combined_register_type = VirtualType.PAULI
-                    register = PauliRegister.from_operation(pre_propagate.operation)
+                    register = PauliRegister.from_name(name)
                 else:
                     combined_register_type = VirtualType.U2
                     register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
