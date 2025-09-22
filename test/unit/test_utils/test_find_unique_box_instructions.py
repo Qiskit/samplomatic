@@ -188,7 +188,5 @@ def test_annotation_handling():
 
 
 def test_continue():
-    """
-    Test that ``find_unique_box_instructions`` continues if it finds anything other than a box.
-    """
+    """Test that ``find_unique_box_instructions`` continues if it finds non-boxes."""
     assert find_unique_box_instructions([CXGate()]) == []

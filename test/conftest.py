@@ -96,7 +96,6 @@ TEST_STATUSES = defaultdict(dict)
 @pytest.fixture
 def save_plot(request, maybe_clear_assets):
     """Fixture that saves a figure to disk in an assets folder local to the test."""
-
     if not request.config.getoption("--save-plots"):
         # early exit if the user has not opted into saving plots to disk
         return lambda *_, **__: None

@@ -24,7 +24,8 @@ class TestRightBoxBuilder:
     def test_if_else(self):
         """Test the build result of if-else.
 
-        Because it is a bit difficult to do by hand, we use the full pre_build."""
+        Because it is a bit difficult to do by hand, we use the full pre_build.
+        """
         circuit = QuantumCircuit(1, 1)
         circuit.measure(0, 0)
         with circuit.box([Twirl(dressing="left")]):

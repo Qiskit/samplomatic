@@ -13,7 +13,8 @@
 """Testing of error raising during building process.
 
 Some build errors are hard to replicate without going through the entire build process.
-This file is meant for such cases."""
+This file is meant for such cases.
+"""
 
 import pytest
 from qiskit.circuit import QuantumCircuit
@@ -38,8 +39,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_bad_order_right_box(self):
-        """Verify that an error is raised if a gate follows a conditional in a right
-        dressed box."""
+        """Verify an error is raised if a gate follows a conditional in a right dressed box."""
         circuit = QuantumCircuit(2, 3)
         with circuit.box([Twirl(dressing="left")]):
             circuit.noop(1)
@@ -54,8 +54,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_bad_order_left_box(self):
-        """Verify that an error is raised if a conditional follows a gate in a left
-        dressed box."""
+        """Verify an error is raised if a conditional follows a gate in a left dressed box."""
         circuit = QuantumCircuit(2, 3)
         with circuit.box([Twirl(dressing="left")]):
             circuit.x(1)
@@ -97,8 +96,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_clbit_in_passthroguh_condition_error(self):
-        """Test that an error is raised if a passthrough conditional depends on a twirled
-        classical bit."""
+        """Test for error if a passthrough conditional depends on a twirled classical bit."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)
@@ -115,8 +113,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_clregister_in_passthrough_condition_error(self):
-        """Test that an error is raised if a passthrough conditional depends on a twirled
-        classical register."""
+        """Test for error if a passthrough conditional depends on a twirled classical register."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)
@@ -133,8 +130,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_clbit_in_right_condition_error(self):
-        """Test that an error is raised if a right-box conditional depends on a twirled
-        classical bit."""
+        """Test for error if a right-box conditional depends on a twirled classical bit."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)
@@ -150,8 +146,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_clregister_in_right_condition_error(self):
-        """Test that an error is raised if a right-box conditional depends on a twirled
-        classical register."""
+        """Test for error if a right-box conditional depends on a twirled classical register."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)
@@ -167,8 +162,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_clbit_in_left_condition_error(self):
-        """Test that an error is raised if a left-box conditional depends on a twirled
-        classical bit."""
+        """Test for error if a left-box conditional depends on a twirled classical bit."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)
@@ -182,8 +176,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_clregister_in_left_condition_error(self):
-        """Test that an error is raised if a left-box conditional depends on a twirled
-        classical register."""
+        """Test for error if a left-box conditional depends on a twirled classical register."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)
@@ -197,8 +190,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_twirled_expr_in_left_condition_error(self):
-        """Test that an error is raised if a left-box conditional depends on a twirled
-        classical expression."""
+        """Test for an error if a left-box conditional depends on a twirled classical expression."""
         circuit = QuantumCircuit(2, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)

@@ -27,8 +27,9 @@ NUM_RANDOMIZATIONS_PER_CIRCUIT = 10
 
 
 def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
-    """Helper function that builds the Samplex, samples using Qiskit Aer, and compares the counts
-    against the original circuit, including Z2 corrections.
+    """Build the Samplex, sample using Qiskit Aer, and compare the counts.
+
+    Counts are compared against the original circuit, including Z2 corrections.
 
     While in many cases comparing the operators is sufficient to validate the sampling process,
     in some cases a simulation is needed (measurements, dynamic circuits). This function uses
