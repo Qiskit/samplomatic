@@ -75,7 +75,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             dag.apply_operation_back(measure_node.op, measure_node.qargs, measure_node.cargs)
 
     def _update_uncollected_qubits_for_box(self, node, uncollected_qubits) -> set[Qubit]:
-        """Updates ``uncollected_qubits`` for box nodes.
+        """Update ``uncollected_qubits`` for box nodes.
 
         Right-dressed boxes act as collectors, and the uncollected qubits are updated accordingly.
         On the contrary, left-dressed boxes act as collectors only on the qubits that they measure.

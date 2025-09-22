@@ -156,7 +156,14 @@ class SliceRegisterNode(EvaluationNode):
 
 
 def get_slice_from_idxs(slice_idxs: ArrayLike) -> ArrayLike | slice:
-    """A helper function that returns a slice object, if indices permit."""
+    """Return a :class:`slice` object if the given indices are stridable.
+
+    Args:
+        slice_idxs: The indices to check.
+
+    Returns:
+        The provided indices, or an equivalent :class:`slice` object.
+    """
     if len(slice_idxs) == 1:
         return slice(slice_idxs[0], slice_idxs[0] + 1, 1)
     else:

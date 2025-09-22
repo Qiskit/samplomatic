@@ -167,7 +167,7 @@ class Partition(Generic[ElementT]):
 
     @classmethod
     def from_elements(cls: type[T], elements: Iterable[ElementT]) -> T:
-        """Convenience constructor when :attr:`~.num_elements_per_part` is one.
+        """Construct a new instance in the special case that :attr:`~.num_elements_per_part` is one.
 
         Args:
             elements: The elements for each subsystem.

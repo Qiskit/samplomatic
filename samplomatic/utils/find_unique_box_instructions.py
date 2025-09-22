@@ -25,7 +25,7 @@ from .undress_box import undress_box
 
 def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Annotation]:
     """
-    Normalizes annotations by discarding every annotation not of type ``Twirl`` and ``InjectNoise``.
+    Normalize annotations by discarding every annotation not of type ``Twirl`` and ``InjectNoise``.
 
     For ``Twirl`` annotations, it creates a new instance with the same group, dressing, and
     decomposition. For ``InjectNoise`` annotations, it creates a new instance with the same

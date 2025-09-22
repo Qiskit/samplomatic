@@ -57,7 +57,7 @@ LAYOUT_METHODS: dict[str, LayoutMethod] = {
 
 
 def _add_edge_layout(graph: PyDiGraph, layout: GraphLayout) -> tuple[NodeLayout, EdgeLayout]:
-    r"""Adds an edge layout to :class:`GraphLayout`\s that only has a node layout."""
+    r"""Add an edge layout to :class:`GraphLayout`\s that only has a node layout."""
     if isinstance(layout, tuple):
         return layout
 

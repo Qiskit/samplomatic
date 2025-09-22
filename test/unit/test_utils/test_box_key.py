@@ -16,13 +16,7 @@ from copy import deepcopy
 from itertools import combinations
 
 import pytest
-from qiskit.circuit import (
-    BoxOp,
-    CircuitInstruction,
-    Parameter,
-    QuantumCircuit,
-    QuantumRegister,
-)
+from qiskit.circuit import BoxOp, CircuitInstruction, Parameter, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import CXGate
 
 from samplomatic.annotations import InjectNoise, Twirl
@@ -30,7 +24,7 @@ from samplomatic.utils import BoxKey
 
 
 def make_instructions_with_different_specs():
-    """A function to generate instructions that are expected to have different box keys."""
+    """Generate instructions that are expected to have different box keys."""
     body = QuantumCircuit(2)
     body.rz(Parameter("theta"), 0)
     body.cx(0, 1)

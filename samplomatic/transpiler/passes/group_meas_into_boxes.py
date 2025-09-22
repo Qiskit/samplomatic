@@ -75,7 +75,7 @@ class GroupMeasIntoBoxes(TransformationPass):
         self.prefix_ref = prefix_ref
 
     def _make_annotations(self) -> list[Annotation]:
-        """A helper function to make annotations for the boxes created by this pass."""
+        """Make annotations for the boxes created by this pass."""
         if self.annotations == "twirl":
             return [Twirl()]
         if self.annotations == "basis_transform":

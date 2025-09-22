@@ -41,7 +41,7 @@ class BoxTemplateBuilder(Builder[TemplateState, InstructionSpec]):
     def _append_dressed_layer(
         self, target_circuit: QuantumCircuit | None = None, qubits: QubitPartition | None = None
     ) -> ParamIndices:
-        """A helper function to add a collection dressing layer.
+        """Add a collection dressing layer.
 
         Args:
             target_circuit: The `QuantumCircuit` to which the dressing is added. Defaults to the
@@ -90,7 +90,7 @@ class BoxTemplateBuilder(Builder[TemplateState, InstructionSpec]):
     def _remap_subcircuit(
         self, sub_circuit: QuantumCircuit, target_circuit: QuantumCircuit | None = None
     ) -> tuple[QuantumCircuit, list[InstructionSpec]]:
-        """A helper function to remap a subcircuit"""
+        """Remap a subcircuit."""
         # TODO: TemplateState has a similar function. Are both needed?
         if target_circuit is None:
             target_circuit = QuantumCircuit(sub_circuit.qubits, sub_circuit.clbits)

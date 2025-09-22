@@ -333,7 +333,7 @@ class Samplex:
         )
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
-        """Returns an object that specifies the promised outputs of :meth:`~sample`.
+        """Return an object that specifies the promised outputs of :meth:`~sample`.
 
         Args:
             num_randomizations: The number of randomizations requested.

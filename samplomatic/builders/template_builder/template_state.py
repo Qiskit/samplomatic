@@ -66,7 +66,7 @@ class TemplateState:
 
     @classmethod
     def construct_for_circuit(cls, circuit: QuantumCircuit) -> Self:
-        """Convenience constructor.
+        """Construct a new instance from a quantum circuit.
 
         Use this method when you need a to parse the entirety of a particular circuit.
 
