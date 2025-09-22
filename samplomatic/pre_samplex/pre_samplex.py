@@ -79,7 +79,8 @@ from ..samplex.nodes.pauli_past_clifford_node import (
 from ..samplex.noise_model_requirement import NoiseModelRequirement
 from ..synths import Synth
 from ..tensor_interface import TensorSpecification
-from ..virtual_registers import U2Register
+from ..virtual_registers import PauliRegister, U2Register
+from ..virtual_registers.pauli_register import PAULI_GATE_NAMES
 from ..visualization import plot_graph
 from .graph_data import (
     PreBasisTransform,
@@ -1351,8 +1352,8 @@ class PreSamplex:
         for predecssor_idx in self.graph.predecessor_indices(pre_propagate_idx):
             incoming.add(samplex.graph[pre_nodes_to_nodes[predecssor_idx]].outgoing_register_type)
         if mode is InstructionMode.MULTIPLY and pre_propagate.operation.num_qubits == 1:
-            combined_register_type = VirtualType.U2
             if pre_propagate.operation.is_parameterized():
+                combined_register_type = VirtualType.U2
                 param_idxs = [
                     samplex.append_parameter_expression(param)
                     for _, param in pre_propagate.spec.params
@@ -1366,7 +1367,15 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
+                if (
+                    incoming == {VirtualType.PAULI}
+                    and (name := pre_propagate.operation.name) in PAULI_GATE_NAMES
+                ):
+                    combined_register_type = VirtualType.PAULI
+                    register = PauliRegister.from_name(name)
+                else:
+                    combined_register_type = VirtualType.U2
+                    register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
                 if pre_propagate.direction is Direction.LEFT:
                     propagate_node = RightMultiplicationNode(register, combined_register_name)
                 else:
