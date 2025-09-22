@@ -2,10 +2,8 @@
 
 ### Added
 
-- - Added ``add_twirling``, ``add_basis_transform``, and ``prefix_ref`` arguments to ``GroupMeasIntoBoxes`` to allow specifying what annotations should be placed on the boxes containing measurements.
-  - Added ``measure_annotations`` argument to the boxing passmanager to allow specifying what annotations should be placed on the boxes containing measurements.
-
-  ([#96](https://github.com/Qiskit/samplomatic/issues/96))
+- Added ``add_twirling``, ``add_basis_transform``, and ``prefix_ref`` arguments to ``GroupMeasIntoBoxes`` to allow specifying what annotations should be placed on the boxes containing measurements.
+  Added ``measure_annotations`` argument to the boxing passmanager to allow specifying what annotations should be placed on the boxes containing measurements. ([#96](https://github.com/Qiskit/samplomatic/issues/96))
 - Added `InlineBoxes` pass to inline every box in the input circuit, replacing it with its content. ([#123](https://github.com/Qiskit/samplomatic/issues/123))
 
 ### Changed
