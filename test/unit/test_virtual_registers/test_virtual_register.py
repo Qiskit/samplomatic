@@ -48,7 +48,6 @@ def test_construction_and_attributes():
 
 def test_failed_construction():
     """Test that the constructor fails when expected."""
-
     with pytest.raises(VirtualGateError, match="2 leading axes followed by"):
         DummyRegister(np.empty(()))
 
@@ -168,7 +167,6 @@ def test_setitem_from_register():
 
 def test_type_registration():
     """Test the type registration system."""
-
     with pytest.raises(ValueError, match="VirtualRegister.TYPE must be a VirtualType"):
 
         class _(DummyRegister):

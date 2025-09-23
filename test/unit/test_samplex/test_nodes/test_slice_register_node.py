@@ -138,8 +138,7 @@ def test_get_slice_helper_function(sliced_idxs):
 
 
 def test_get_slice_helper_function_no_slice():
-    """Test that the helper function get_slice_from_idxs doesn't return a slice when
-    it's impossible."""
+    """Test thatget_slice_from_idxs doesn't return a slice when it's impossible."""
     sliced_idxs = [0, 1, 6, 3]
     a = np.arange(max(sliced_idxs) + 1)
     res = a[get_slice_from_idxs(sliced_idxs)]

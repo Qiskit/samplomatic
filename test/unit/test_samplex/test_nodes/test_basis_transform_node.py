@@ -34,7 +34,6 @@ class TestBasisChange:
 
     def test_construction_fails(self):
         """Test the construction fails when expected."""
-
         with pytest.raises(ValueError, match="basis elements is not equal .* symbols"):
             BasisChange("ABC", PauliRegister([[0], [1]]))
 

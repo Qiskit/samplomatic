@@ -16,19 +16,19 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 
-from qiskit.circuit import Annotation, CircuitInstruction
+from qiskit.circuit import Annotation
 
+from ..aliases import CircuitInstruction
 from ..annotations import InjectNoise, Twirl
 from .box_key import BoxKey
 from .undress_box import undress_box
 
 
 def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Annotation]:
-    """
-    Normalize annotations by discarding every annotation not of type ``Twirl`` and ``InjectNoise``.
+    """Keep only ``Twirl`` and ``InjectNoise`` annotations and returned normalized forms.
 
-    For ``Twirl`` annotations, it creates a new instance with the same group, dressing, and
-    decomposition. For ``InjectNoise`` annotations, it creates a new instance with the same
+    For :class:`Twirl` annotations, it creates a new instance with the same group, dressing, and
+    decomposition. For :class:`InjectNoise` annotations, it creates a new instance with the same
     ``ref`` and default ``modifier_ref``.
 
     Args:
@@ -53,8 +53,7 @@ def find_unique_box_instructions(
     undress_boxes: bool = True,
     normalize_annotations: Callable[[Iterable[Annotation]], list[Annotation]] | None = None,
 ) -> list[CircuitInstruction]:
-    """
-    Return instructions that contains unique boxes.
+    """Return instructions that contains unique boxes.
 
     This function iterates through the given ``instructions``, identifying those that contain a
     :class:`.~BoxOp` operation and comparing them based on their content and annotations. It

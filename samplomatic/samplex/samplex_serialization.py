@@ -223,6 +223,7 @@ def samplex_from_json(json_data: str) -> Samplex:
         filename: The json string.
 
     Returns:
-        The loaded samplex."""
+        The loaded samplex.
+    """
     samplex_graph = parse_node_link_json(json_data, node_attrs=_parse_node)
     return _samplex_from_graph(samplex_graph)

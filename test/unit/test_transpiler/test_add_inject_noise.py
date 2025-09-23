@@ -288,9 +288,7 @@ def test_some_boxes_are_left_alone(inject_noise_strategy):
 
 
 def test_boxes_with_same_qubits_in_different_orders():
-    """
-    Test that `AddInjectNoise` returns the same keys when the order of qubits in boxes is different.
-    """
+    """Test that `AddInjectNoise` returns the same keys when the order of qubits differs."""
     circuit = QuantumCircuit(4)
     with circuit.box([Twirl()]):
         circuit.cx(0, 1)
