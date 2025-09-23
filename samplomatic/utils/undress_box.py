@@ -23,8 +23,7 @@ from .get_annotation import get_annotation
 
 
 def undress_box(box: BoxOp) -> BoxOp:
-    """
-    Return a box equivalent to ``box``, stripped of the single-qubit gates on the dressing side.
+    """Return a box equivalent to ``box``, stripped of the single-qubit gates on the dressing side.
 
     This function removes all the single-qubit gates that can be pushed to the side indicated by its
     dressing (left or right) without encountering any other operation. If the input box contains no
@@ -46,8 +45,7 @@ def undress_box(box: BoxOp) -> BoxOp:
 
 
 def undress_left_dressed_box(box: BoxOp) -> BoxOp:
-    """
-    Return a box equivalent to ``box``, stripped of the single-qubit gates on the left side.
+    """Return a box equivalent to ``box``, stripped of the single-qubit gates on the left side.
 
     This function removes all the single-qubit gates that can be pushed to the left-hand side of
     the given box without encountering any other operation.
@@ -71,8 +69,7 @@ def undress_left_dressed_box(box: BoxOp) -> BoxOp:
 
 
 def undress_right_dressed_box(box: BoxOp) -> BoxOp:
-    """
-    Return a box equivalent to ``box``, stripped of the single-qubit gates on the right side.
+    """Return a box equivalent to ``box``, stripped of the single-qubit gates on the right side.
 
     This function removes all the single-qubit gates that can be pushed to the right-hand side of
     the given box without encountering any other operation.

@@ -70,7 +70,6 @@ def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
 )
 def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     """Test the speed of deserializing a samplex."""
-
     num_boxes = num_gates // (num_qubits // 2)
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 

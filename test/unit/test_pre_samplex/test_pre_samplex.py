@@ -217,8 +217,7 @@ class TestBuildPreSamplex:
             pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
 
     def test_add_propagate_measurement(self):
-        """Test that add_propagate on a measurement works when the measurement doesn't meet
-        a virtual gate"""
+        """Test that add_propagate on a measurement works when no virtual gate is met."""
         qreg = QuantumRegister(1)
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
