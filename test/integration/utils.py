@@ -86,7 +86,7 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
 
 
 def _simulate(circuit: QuantumCircuit, circuit_params):
-    """Helper function that runs the Aer simulator and returns the result."""
+    """Run the Aer simulator and returns the result."""
     sampler = SamplerV2()
     print(circuit_params.shape)
     print(len(circuit.parameters))

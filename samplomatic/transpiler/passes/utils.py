@@ -77,7 +77,7 @@ def make_and_insert_box(
 
 
 def validate_op_is_supported(node: DAGOpNode):
-    """Raises if the given node contains an operation that is not supported by the transpiler.
+    """Raise if the given node contains an operation that is not supported by the transpiler.
 
     Args:
         node: The node to validate.

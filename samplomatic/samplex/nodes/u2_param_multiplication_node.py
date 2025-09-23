@@ -86,11 +86,10 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         return VirtualType.U2
 
     def writes_to(self) -> dict[RegisterName, tuple[set[SubsystemIndex], type[VirtualType]]]:
-        """A manifest of which virtual register values this node needs to write to."""
         return {self._register_name: (set(range(self.num_parameters)), VirtualType.U2)}
 
     def _get_operation(self, parameter_values: np.ndarray) -> U2Register:
-        """Helper function to generate the U2Register for the evaluated operation"""
+        """Generate the U2Register for the evaluated operation"""
         result = np.empty((len(parameter_values), 1, 2, 2), dtype=U2Register.DTYPE)
 
         if self._operand == "rx":

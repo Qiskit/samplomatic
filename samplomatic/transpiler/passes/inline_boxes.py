@@ -39,7 +39,7 @@ class InlineBoxes(TransformationPass):
         return inlined_dag
 
     def _inline_box(self, node: DAGOpNode) -> DAGCircuit:
-        """Helper function to inline the content of a box with the rest of the circuit.
+        """Inline the content of a box with the rest of the circuit.
 
         It is called recursively for boxes that contain boxes.
 

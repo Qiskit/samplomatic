@@ -97,7 +97,7 @@ class ParameterExpressionTable:
         return len(self._expressions)
 
     def evaluate(self, parameter_values: ParamValues) -> np.ndarray:
-        """Returns one numeric value for each expression.
+        """Return one numeric value for each expression.
 
         Args:
             parameter_values: The parameter values, either as a map from parameters to their values,

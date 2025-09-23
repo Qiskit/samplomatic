@@ -63,8 +63,8 @@ vis = [
 
 [tool.ruff]
 lint.select = [
-    "D100",      # pydocstyle
-    "D2",
+    "D100", "D401",     # pydocstyle
+    "D2",               # pydocstyle
     "E",      # pycodestyle
     "F",      # pyflake
     "I",      # isort

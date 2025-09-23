@@ -34,7 +34,7 @@ class TestLeftBoxBuilder:
     """Test Box Builders"""
 
     def get_builder(self, qreg, creg=None):
-        """Helper function to return left box builder with empty PreSamplex."""
+        """Return left box builder with empty PreSamplex."""
         cregs = [ClassicalRegister(len(qreg)) if creg is None else creg]
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(qreg)}, cregs=cregs)
         qubits = QubitPartition.from_elements(qreg)
