@@ -109,15 +109,11 @@ class LeftBoxBuilder(BoxBuilder):
 
         if name.startswith("if_else"):
             builder = BoxLeftIfElseBuilder(
-                instr,
-                self.collection.synth,
-                self.template_state.param_iter,
-                self.template_state.qubit_map,
+                instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
             )
-            if_else, graph = builder.build()
+            if_else = builder.build()
             new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
             self.template_state.template.append(if_else, new_qubits, instr.clbits)
-            self.samplex_state.add_if_else_subgraph(graph)
             return
 
         if (num_qubits := instr.operation.num_qubits) == 1:
@@ -196,15 +192,11 @@ class RightBoxBuilder(BoxBuilder):
 
         if name.startswith("if_else"):
             builder = BoxRightIfElseBuilder(
-                instr,
-                self.collection.synth,
-                self.template_state.param_iter,
-                self.template_state.qubit_map,
+                instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
             )
-            if_else, graph = builder.build()
+            if_else = builder.build()
             new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
             self.template_state.template.append(if_else, new_qubits, instr.clbits)
-            self.samplex_state.add_if_else_subgraph(graph)
             return
 
         if (num_qubits := instr.operation.num_qubits) == 1:

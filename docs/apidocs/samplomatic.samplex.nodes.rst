@@ -57,6 +57,14 @@ samplomatic.samplex.nodes.conversion\_node module
    :show-inheritance:
    :undoc-members:
 
+samplomatic.samplex.nodes.copy\_node module
+-------------------------------------------
+
+.. automodule:: samplomatic.samplex.nodes.copy_node
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 samplomatic.samplex.nodes.evaluation\_node module
 -------------------------------------------------
 
@@ -101,6 +109,14 @@ samplomatic.samplex.nodes.sampling\_node module
 -----------------------------------------------
 
 .. automodule:: samplomatic.samplex.nodes.sampling_node
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+samplomatic.samplex.nodes.scope\_node module
+--------------------------------------------
+
+.. automodule:: samplomatic.samplex.nodes.scope_node
    :members:
    :show-inheritance:
    :undoc-members:

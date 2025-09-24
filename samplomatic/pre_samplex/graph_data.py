@@ -43,11 +43,6 @@ class PreNode:
 
 
 @dataclass
-class PreCombine(PreNode):
-    """"""
-
-
-@dataclass
 class PreCopy(PreNode):
     """"""
 

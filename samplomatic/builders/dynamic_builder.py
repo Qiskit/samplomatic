@@ -12,32 +12,39 @@
 
 """BoxIfElseBuilder"""
 
+from copy import deepcopy
+
 import numpy as np
 from qiskit.circuit import IfElseOp, QuantumCircuit
 
 from ..aliases import ParamIndices, Qubit, QubitIndex
-from ..partition import QubitIndicesPartition, QubitPartition
-from ..pre_samplex import PreSamplex
-from ..pre_samplex.graph_data import Direction, PreCombine, PreEdge
+from ..partition import QubitPartition
+from ..pre_samplex import DanglerMatch, PreSamplex
+from ..pre_samplex.graph_data import Direction, PreCollect, PreCopy, PreEdge, PreEmit, PrePropagate
 from ..synths import Synth
 from .param_iter import ParamIter
 from .specs import InstructionMode, InstructionSpec
 
 
 class BoxIfElseBuilder:
-    def __init__(self, op, synth: Synth, param_iter: ParamIter, qubit_map: dict[Qubit, QubitIndex]):
+    def __init__(
+        self,
+        op,
+        pre_samplex: PreSamplex,
+        synth: Synth,
+        param_iter: ParamIter,
+    ):
         self.op = op
+        self.pre_samplex = pre_samplex
         self.synth = synth
         self.param_iter = param_iter
-        self.qubit_map = qubit_map
 
     def block_qubit_map(self, block) -> dict[Qubit, QubitIndex]:
         block_map = {i_q: b_q for i_q, b_q in zip(self.op.qubits, block.qubits)}
-        return {block_map[i_q]: self.qubit_map[i_q] for i_q in self.qubit_map if i_q in block_map}
+        qubit_map = self.pre_samplex.qubit_map
+        return {block_map[i_q]: qubit_map[i_q] for i_q in qubit_map if i_q in block_map}
 
-    def append_propagate(
-        self, block: QuantumCircuit, new_block: QuantumCircuit, pre_samplex: PreSamplex
-    ):
+    def append_propagate(self, block: QuantumCircuit, new_block: QuantumCircuit):
         for instr in block:
             new_params = []
             param_mapping = []
@@ -47,7 +54,7 @@ class BoxIfElseBuilder:
 
             new_op = type(instr.operation)(*new_params) if new_params else instr.operation
             new_block.append(new_op, instr.qubits, instr.clbits)
-            pre_samplex.add_propagate(
+            self.pre_samplex.add_propagate(
                 instr, InstructionSpec(params=new_params, mode=InstructionMode.PROPAGATE)
             )
 
@@ -62,7 +69,7 @@ class BoxIfElseBuilder:
 
 
 class BoxRightIfElseBuilder(BoxIfElseBuilder):
-    def build_block(self, block, pre_samplex: PreSamplex):
+    def build_block(self, block):
         block = (
             block
             if block is not None
@@ -72,37 +79,47 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
         )
 
         new_block = QuantumCircuit(block.qubits, block.clbits)
-        pre_samplex = pre_samplex.remap(qubit_map=self.block_qubit_map(block))
-        copy_idx = pre_samplex.add_copy(
-            qubits := QubitPartition.from_elements(new_block.qubits), Direction.RIGHT
-        )
+        pre_samplex = self.pre_samplex.remap(qubit_map=self.block_qubit_map(block))
 
-        base_node = pre_samplex.graph.nodes()[0]
-        pre_edge = PreEdge(base_node.subsystems, base_node.direction)
-        pre_samplex.graph.add_edge(0, copy_idx, pre_edge)
+        qubits = QubitPartition.from_elements(new_block.qubits)
+        subsystems = pre_samplex.qubits_to_indices(qubits)
+        dangler_match = DanglerMatch(node_types=(PreEmit, PrePropagate))
 
-        self.append_propagate(block, new_block, pre_samplex)
+        new_danglers = []
+        for node_idx, partition in pre_samplex.find_then_remove_danglers(dangler_match, subsystems):
+            copy_idx = pre_samplex.graph.add_node(PreCopy(partition, Direction.RIGHT))
+            edge = PreEdge(partition, Direction.RIGHT)
+            pre_samplex.graph.add_edge(node_idx, copy_idx, edge)
+            new_danglers.append((copy_idx, partition))
+
+        for node_idx, partition in new_danglers:
+            pre_samplex.add_dangler(partition.all_elements, node_idx)
+
+        self.append_propagate(block, new_block)
         params = self.append_template(block, new_block)
-        pre_samplex.add_collect(qubits, self.synth, params)
+        collect_idx = pre_samplex.add_collect(qubits, self.synth, params)
 
-        return new_block
+        return new_block, (collect_idx, subsystems)
 
     def build(self):
-        qubits = QubitIndicesPartition.from_elements(
-            v for k, v in self.qubit_map.items() if k in self.op.qubits
-        )
-        pre_samplex = PreSamplex()
-        pre_samplex.graph.add_node(PreCombine(qubits, Direction.RIGHT))
-        if_block = self.build_block(self.op.params[0], pre_samplex)
-        else_block = self.build_block(self.op.params[1], pre_samplex)
+        original_danglers = deepcopy(self.pre_samplex.get_all_danglers())
+        if_block, if_dangler = self.build_block(self.op.params[0])
+        self.pre_samplex.set_all_danglers(*original_danglers)
+        else_block, else_dangler = self.build_block(self.op.params[1])
+
+        for node_idx, subsystems in [if_dangler, else_dangler]:
+            self.pre_samplex.add_dangler(
+                subsystems.all_elements,
+                node_idx,
+            )
 
         if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
-        return if_else_op, pre_samplex.graph
+        return if_else_op
 
 
 class BoxLeftIfElseBuilder(BoxIfElseBuilder):
-    def build_block(self, block, pre_samplex: PreSamplex):
+    def build_block(self, block):
         block = (
             block
             if block is not None
@@ -113,29 +130,37 @@ class BoxLeftIfElseBuilder(BoxIfElseBuilder):
 
         new_block = QuantumCircuit(block.qubits, block.clbits)
         params = self.append_template(block, new_block)
-        pre_samplex = pre_samplex.remap(qubit_map=self.block_qubit_map(block))
 
-        pre_samplex.add_collect(
-            qubits := QubitPartition.from_elements(new_block.qubits), self.synth, params
-        )
-        self.append_propagate(block, new_block, pre_samplex)
-        copy_idx = pre_samplex.add_copy(qubits, Direction.LEFT)
+        pre_samplex = self.pre_samplex.remap(qubit_map=self.block_qubit_map(block))
+        qubits = QubitPartition.from_elements(new_block.qubits)
+        subsystems = pre_samplex.qubits_to_indices(qubits)
+        dangler_match = DanglerMatch(node_types=(PreCollect, PrePropagate))
 
-        base_node = pre_samplex.graph.nodes()[0]
-        pre_edge = PreEdge(base_node.subsystems, base_node.direction)
-        pre_samplex.graph.add_edge(0, copy_idx, pre_edge)
+        list(pre_samplex.find_then_remove_danglers(dangler_match, subsystems))
+        pre_samplex.add_collect(qubits, self.synth, params)
+        self.append_propagate(block, new_block)
 
-        return new_block
+        copy_idxs = []
+        for node_idx, partition in pre_samplex.find_then_remove_danglers(dangler_match, subsystems):
+            copy_idx = pre_samplex.graph.add_node(PreCopy(partition, Direction.LEFT))
+            copy_idxs.append((copy_idx, partition))
+            edge = PreEdge(partition, Direction.LEFT)
+            pre_samplex.graph.add_edge(copy_idx, node_idx, edge)
+
+        return new_block, copy_idxs
 
     def build(self):
-        qubits = QubitIndicesPartition.from_elements(
-            v for k, v in self.qubit_map.items() if k in self.op.qubits
-        )
-        pre_samplex = PreSamplex()
-        pre_samplex.graph.add_node(PreCombine(qubits, Direction.LEFT))
-        if_block = self.build_block(self.op.params[0], pre_samplex)
-        else_block = self.build_block(self.op.params[1], pre_samplex)
+        original_danglers = deepcopy(self.pre_samplex.get_all_danglers())
+        if_block, if_danglers = self.build_block(self.op.params[0])
+        self.pre_samplex.set_all_danglers(*original_danglers)
+        else_block, else_danglers = self.build_block(self.op.params[1])
+
+        for node_idx, subsystems in [*if_danglers, *else_danglers]:
+            self.pre_samplex.add_dangler(
+                subsystems.all_elements,
+                node_idx,
+            )
 
         if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
-        return if_else_op, pre_samplex.graph
+        return if_else_op

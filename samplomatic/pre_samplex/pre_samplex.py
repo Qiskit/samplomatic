@@ -84,7 +84,6 @@ from ..visualization import plot_graph
 from .graph_data import (
     PreBasisTransform,
     PreCollect,
-    PreCombine,
     PreCopy,
     PreEdge,
     PreEmit,
@@ -137,10 +136,7 @@ class DanglerMatch:
     def match_node(self, node: PreNode) -> bool:
         """Check if a node matches the conditions specified in the object"""
         return (self.direction is None or node.direction in (self.direction, Direction.BOTH)) and (
-            self.node_types is None
-            or isinstance(node, self.node_types)
-            or type(node) is PreCombine
-            or type(node) is PreCopy
+            self.node_types is None or isinstance(node, self.node_types) or type(node) is PreCopy
         )
 
 
@@ -605,25 +601,6 @@ class PreSamplex:
 
         return node_idx
 
-    def add_copy(self, qubits: QubitPartition, direction: Direction) -> NodeIndex:
-        node = PreCopy(self.qubits_to_indices(qubits), direction)
-        if direction is Direction.LEFT:
-            return self._add_left(node)
-        return self._add_right(node)
-
-    def add_if_else_subgraph(self, graph: PyDiGraph):
-        node = cast(PreNode, graph.nodes()[0])
-        graph_start_idx = self.graph.add_node(PreNode(node.subsystems, node.direction))
-
-        for node_idx, subsystems in self.find_then_remove_danglers(DanglerMatch(), node.subsystems):
-            if node.direction == Direction.RIGHT:
-                edge = PreEdge(subsystems, node.direction)
-                self.graph.add_edge(node_idx, graph_start_idx, edge)
-        ret = self.graph.substitute_node_with_subgraph(
-            graph_start_idx, graph, lambda source, target, weight: 0
-        )
-        self.add_dangler(node.subsystems.all_elements, ret[0])
-
     def add_emit_noise_left(
         self, qubits: QubitPartition, noise_ref: StrRef, modifier_ref: StrRef = ""
     ) -> NodeIndex:
@@ -1079,6 +1056,14 @@ class PreSamplex:
                 )
             elif isinstance(pre_node, PreZ2Collect):
                 self.add_collect_z2_to_output_node(
+                    samplex,
+                    pre_node_idx,
+                    pre_nodes_to_nodes,
+                    order,
+                    register_names,
+                )
+            elif isinstance(pre_node, PreCopy):
+                self.add_copy_node(
                     samplex,
                     pre_node_idx,
                     pre_nodes_to_nodes,
