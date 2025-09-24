@@ -24,7 +24,7 @@ from .collection_node import CollectionNode
 
 
 class CollectZ2ToOutputNode(CollectionNode):
-    """Reads from :class:`~.Z2Register`\\s and writes to :class:`~.SamplexOutput`.
+    r"""Reads from :class:`~.Z2Register`\s and writes to :class:`~.SamplexOutput`.
 
     Args:
         register_name: The name of the register to read from.
