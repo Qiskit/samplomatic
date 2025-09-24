@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test PreSamplex"""
+"""Test PreSamplex."""
 
 import numpy as np
 import pytest
@@ -31,7 +31,7 @@ from samplomatic.synths.rzsx_synth import RzSxSynth
 
 
 class TestLeftBoxBuilder:
-    """Test Box Builders"""
+    """Test Box Builders."""
 
     def get_builder(self, qreg, creg=None):
         """Return left box builder with empty PreSamplex."""
@@ -46,7 +46,7 @@ class TestLeftBoxBuilder:
         return builder
 
     def test_parse_measurement(self):
-        """Test parsing of measurement"""
+        """Test parsing of measurement."""
         qreg = QuantumRegister(2)
         builder = self.get_builder(qreg)
         builder.parse(CircuitInstruction(Measure(), [qreg[0]]), InstructionSpec())
@@ -56,7 +56,7 @@ class TestLeftBoxBuilder:
         assert builder.measured_qubits.overlaps_with([qreg[0]])
 
     def test_rhs_with_measurements(self):
-        """Test rhs of left box with measurements"""
+        """Test rhs of left box with measurements."""
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(3)
         builder = self.get_builder(qreg, creg)
@@ -82,7 +82,7 @@ class TestLeftBoxBuilder:
         )
 
     def test_rhs_no_measurements(self):
-        """Test rhs of left box with no measurements"""
+        """Test rhs of left box with no measurements."""
         qreg = QuantumRegister(2)
         builder = self.get_builder(qreg)
         builder.lhs(InstructionSpec())
@@ -99,7 +99,7 @@ class TestLeftBoxBuilder:
         )
 
     def test_gate_after_measurement_error(self):
-        """Test that error is raised if a gate is encountered after a measurement"""
+        """Test that error is raised if a gate is encountered after a measurement."""
         qreg = QuantumRegister(2)
         builder = self.get_builder(qreg)
         builder.parse(CircuitInstruction(Measure(), qreg), InstructionSpec())
@@ -108,7 +108,7 @@ class TestLeftBoxBuilder:
             builder.parse(CircuitInstruction(XGate(), [qreg[0]]), InstructionSpec())
 
     def test_wrong_twirl_type_for_measurement(self):
-        """Test that error is raised if a measurement exists, but the twirl type is wrong"""
+        """Test that error is raised if a measurement exists, but the twirl type is wrong."""
         qreg = QuantumRegister(2)
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(qreg)})
         qubits = QubitPartition.from_elements(qreg)
@@ -126,7 +126,7 @@ class TestLeftBoxBuilder:
             builder.rhs(InstructionSpec())
 
     def test_two_measurements_on_the_same_qubit_error(self):
-        """Test that error is raised if the same qubit is measured twice in the box"""
+        """Test that error is raised if the same qubit is measured twice in the box."""
         qreg = QuantumRegister(2)
         builder = self.get_builder(qreg)
         builder.parse(CircuitInstruction(Measure(), qreg), InstructionSpec())

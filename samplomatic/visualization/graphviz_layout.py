@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""graphviz_layout"""
+"""graphviz_layout."""
 
 from __future__ import annotations
 

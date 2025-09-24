@@ -64,12 +64,15 @@ vis = [
 [tool.ruff]
 lint.select = [
     "D100", "D401",     # pydocstyle
-    "D2",               # pydocstyle
+    "D2", "D4",         # pydocstyle
     "E",      # pycodestyle
     "F",      # pyflake
     "I",      # isort
     "SLF",    # private member access rules
     "UP",     # pyupgrade
+]
+lint.ignore = [
+    "D413",   # missing-blank-line-after-last-section results in excessive empty lines
 ]
 line-length = 100
 target-version = "py39"

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for `get_annotation`"""
+"""Tests for `get_annotation`."""
 
 from qiskit.circuit import BoxOp, QuantumCircuit
 

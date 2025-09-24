@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for BoxKey"""
+"""Tests for BoxKey."""
 
 from copy import deepcopy
 from itertools import combinations

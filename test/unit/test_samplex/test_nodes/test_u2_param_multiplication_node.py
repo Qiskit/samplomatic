@@ -30,7 +30,7 @@ Z_MATRIX = np.array([[1, 0], [0, -1]])
 
 class TestLeftU2ParamMultiplicationNode:
     def test_instantiation_errors(self):
-        """Test that errors are properly raised during instantiation"""
+        """Test that errors are properly raised during instantiation."""
         with pytest.raises(
             SamplexConstructionError,
             match="Expected at least one element in param_idxs",
@@ -44,7 +44,7 @@ class TestLeftU2ParamMultiplicationNode:
             LeftU2ParametricMultiplicationNode("rzz", "a", [0])
 
     def test_evaluation_errors(self):
-        """Test that errors are properly raised during evaluation"""
+        """Test that errors are properly raised during evaluation."""
         node = LeftU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
         registers = {}
         with pytest.raises(
@@ -54,7 +54,7 @@ class TestLeftU2ParamMultiplicationNode:
 
     @pytest.mark.parametrize("gate,matrix", [("rx", X_MATRIX), ("rz", Z_MATRIX)])
     def test_left_multiply(self, gate, matrix, rng):
-        """Test left multiply"""
+        """Test left multiply."""
         register_shape = [5, 2]
 
         params = rng.random(register_shape[0]) * 2 * np.pi
@@ -77,7 +77,7 @@ class TestLeftU2ParamMultiplicationNode:
 
 class TestRightU2ParamMultiplicationNode:
     def test_instantiation_errors(self):
-        """Test that errors are properly raised during instantiation"""
+        """Test that errors are properly raised during instantiation."""
         with pytest.raises(
             SamplexConstructionError,
             match="Expected at least one element in param_idxs",
@@ -85,7 +85,7 @@ class TestRightU2ParamMultiplicationNode:
             RightU2ParametricMultiplicationNode("rz", "a", [])
 
     def test_evaluation_errors(self):
-        """Test that errors are properly raised during evaluation"""
+        """Test that errors are properly raised during evaluation."""
         node = RightU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
         registers = {}
         with pytest.raises(
@@ -95,7 +95,7 @@ class TestRightU2ParamMultiplicationNode:
 
     @pytest.mark.parametrize("gate,matrix", [("rx", X_MATRIX), ("rz", Z_MATRIX)])
     def test_left_multiply(self, gate, matrix, rng):
-        """Test left multiply"""
+        """Test left multiply."""
         register_shape = [5, 2]
 
         params = rng.random(register_shape[0]) * 2 * np.pi

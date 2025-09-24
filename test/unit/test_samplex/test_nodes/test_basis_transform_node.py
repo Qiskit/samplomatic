@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for BasisTransformNode"""
+"""Tests for BasisTransformNode."""
 
 import numpy as np
 import pytest
@@ -24,7 +24,7 @@ from samplomatic.virtual_registers import PauliRegister, U2Register
 
 
 class TestBasisChange:
-    """Test the BasisChange class"""
+    """Test the BasisChange class."""
 
     def test_construction(self):
         basis_change = BasisChange("ABC", PauliRegister([[0], [1], [2]]))
@@ -47,7 +47,7 @@ class TestBasisChange:
 
 
 class TestBasisTransformNode:
-    """Tests for BasisTransformNode"""
+    """Tests for BasisTransformNode."""
 
     def test_construction(self):
         """Test attributes from construction."""

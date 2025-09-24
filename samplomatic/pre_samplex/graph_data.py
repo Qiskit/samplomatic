@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Graph Data"""
+"""Graph Data."""
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -67,7 +67,7 @@ class PreEdge:
         )
 
     def add_subsystems(self, new_subsystems: QubitIndicesPartition):
-        """Add subsystems to an existing ``PreEdge``"""
+        """Add subsystems to an existing ``PreEdge``."""
         for new_subsystem in new_subsystems:
             self.subsystems.add(new_subsystem)
 

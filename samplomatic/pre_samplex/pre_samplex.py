@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""PreSamplex"""
+"""PreSamplex."""
 
 from __future__ import annotations
 
@@ -133,7 +133,7 @@ class DanglerMatch:
     Set to `None` to get both required and optional danglers."""
 
     def match_node(self, node: PreNode) -> bool:
-        """Check if a node matches the conditions specified in the object"""
+        """Check if a node matches the conditions specified in the object."""
         return (self.direction is None or node.direction in (self.direction, Direction.BOTH)) and (
             self.node_types is None or isinstance(node, self.node_types)
         )
@@ -363,7 +363,7 @@ class PreSamplex:
     def get_all_danglers(
         self,
     ) -> tuple[dict[QubitIndex, set[NodeIndex]], dict[QubitIndex, set[NodeIndex]]]:
-        """Return the danglers information"""
+        """Return the danglers information."""
         return (self._dangling, self._optional_dangling)
 
     def set_all_danglers(
@@ -371,7 +371,7 @@ class PreSamplex:
         dangling: dict[QubitIndex, set[NodeIndex]],
         optional_dangling: dict[QubitIndex, set[NodeIndex]],
     ):
-        """Set the danglers information in place"""
+        """Set the danglers information in place."""
         self._dangling.clear()
         self._dangling.update(dangling)
         self._optional_dangling.clear()

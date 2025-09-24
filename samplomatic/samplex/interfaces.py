@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 
-"""Interfaces"""
+"""Interfaces."""
 
 from __future__ import annotations
 

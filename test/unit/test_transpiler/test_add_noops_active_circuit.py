@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the AddNoopsActiveCircuit pass"""
+"""Test the AddNoopsActiveCircuit pass."""
 
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager

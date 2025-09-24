@@ -10,6 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Builders"""
+"""Builders."""
 
 from .build import build, pre_build

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""ConversionNode"""
+"""ConversionNode."""
 
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType

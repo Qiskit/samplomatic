@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 
-"""Interfaces"""
+"""Interfaces."""
 
 import textwrap
 from collections.abc import Iterable, MutableMapping

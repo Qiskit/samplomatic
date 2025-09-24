@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""InlineBoxes"""
+"""InlineBoxes."""
 
 from qiskit.circuit import Clbit, Qubit
 from qiskit.converters import circuit_to_dag
@@ -47,7 +47,7 @@ class InlineBoxes(TransformationPass):
             This function assumes, but does not check, that ``node`` contains a box.
 
         Args:
-            A node that contains a box.
+            node: A node that contains a box.
 
         Return:
             A DAG circuit containing the operation in the box.

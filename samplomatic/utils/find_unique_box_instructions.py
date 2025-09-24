@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""find_unique_box_instructions"""
+"""find_unique_box_instructions."""
 
 from __future__ import annotations
 

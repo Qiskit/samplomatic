@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the GroupMeasIntoBoxes"""
+"""Test the GroupMeasIntoBoxes."""
 
 import pytest
 from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister

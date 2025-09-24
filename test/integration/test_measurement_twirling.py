@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests measurement twirling by simulating the circuits"""
+"""Tests measurement twirling by simulating the circuits."""
 
 import numpy as np
 import pytest
@@ -23,10 +23,10 @@ from .utils import sample_simulate_and_compare_counts
 
 
 class TestWithoutSimulation:
-    """Test measurement twirling without simulation"""
+    """Test measurement twirling without simulation."""
 
     def test_non_twirled_measurements(self):
-        """Verify that non twirled measurements don't get a correction"""
+        """Verify that non twirled measurements don't get a correction."""
         circuit = QuantumCircuit(2, 3)
         circuit.x(0)
         with circuit.box([Twirl(dressing="left")]):
@@ -64,7 +64,7 @@ class TestWithSimulation:
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_separate_measures(self, save_plot):
-        """Test separate measurement instructions, with non-standard cbit associations"""
+        """Test separate measurement instructions, with non-standard cbit associations."""
         circuit = QuantumCircuit(QuantumRegister(size=3), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         circuit.h(1)
@@ -77,7 +77,7 @@ class TestWithSimulation:
 
     @pytest.mark.skip(reason="QiskitAer bug #2367")
     def test_separate_measure_boxes(self, save_plot):
-        """Test separate measurement boxes, with non-standard cbit associations"""
+        """Test separate measurement boxes, with non-standard cbit associations."""
         circuit = QuantumCircuit(QuantumRegister(size=3), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         circuit.h(1)
@@ -91,7 +91,7 @@ class TestWithSimulation:
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_measure_to_different_registers(self, save_plot):
-        """Test separate measurement instructions with several classical registers"""
+        """Test separate measurement instructions with several classical registers."""
         creg1 = ClassicalRegister(3, "c1")
         creg2 = ClassicalRegister(3, "c2")
         qreg = QuantumRegister(3, "q1")
@@ -106,7 +106,7 @@ class TestWithSimulation:
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_mid_circuit_measurements(self, save_plot):
-        """Test separate measurement boxes, with repeated twirled measurements on the same qubit"""
+        """Test separate measurement boxes, with repeated twirled measurements on the same qubit."""
         circuit = QuantumCircuit(QuantumRegister(size=1), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         circuit.h(0)
@@ -121,7 +121,7 @@ class TestWithSimulation:
         reason="Mid-circuit measurements followed by non twirled measurements are not supported yet"
     )
     def test_mid_circuit_measurements_followed_by_non_twirled_measurement(self, save_plot):
-        """Test a twirled measurement followed by a non twirled measurement on the same qubit"""
+        """Test a twirled measurement followed by a non twirled measurement on the same qubit."""
         circuit = QuantumCircuit(1, 3)
         circuit.x(0)
         circuit.h(0)
@@ -134,7 +134,7 @@ class TestWithSimulation:
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_partially_twirled_measurements(self, save_plot):
-        """Verify that twirling only some of the measurements works"""
+        """Verify that twirling only some of the measurements works."""
         circuit = QuantumCircuit(QuantumRegister(size=2), ClassicalRegister(name="meas", size=3))
         circuit.x(0)
         with circuit.box([Twirl(dressing="left")]):

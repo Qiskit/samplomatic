@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""generate_boxing_pass_manager"""
+"""generate_boxing_pass_manager."""
 
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError

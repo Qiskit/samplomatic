@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the HaarU2 distribution"""
+"""Test the HaarU2 distribution."""
 
 import numpy as np
 

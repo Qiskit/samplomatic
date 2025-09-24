@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Hover Styles for Graphs"""
+"""Hover Styles for Graphs."""
 
 from __future__ import annotations
 
@@ -108,7 +108,7 @@ class DictDatum(ListDatum):
 
 
 class Divider(Datum):
-    """A datum that is just a divider"""
+    """A datum that is just a divider."""
 
     def __init__(self):
         super().__init__(name="", bullet="────────────────────────────")

@@ -57,7 +57,7 @@ def test_swapping_two_subsystems():
 
 @pytest.mark.parametrize("slice_idxs", [[0, 1], [1, 2], [0, 2], [1, 0]])
 def test_slicing(slice_idxs):
-    """Test slicing registers using a ``SliceRegisterNode``"""
+    """Test slicing registers using a ``SliceRegisterNode``."""
     registers = {"reg_in": PauliRegister([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1]])}
     node = SliceRegisterNode(
         VirtualType.PAULI,

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""get_synth"""
+"""get_synth."""
 
 from ..annotations import DecompositionMode
 from ..exceptions import SynthError

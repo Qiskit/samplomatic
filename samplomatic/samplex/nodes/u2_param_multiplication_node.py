@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""U2ParametricMultiplicationNode"""
+"""U2ParametricMultiplicationNode."""
 
 from typing import Literal
 
@@ -89,7 +89,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         return {self._register_name: (set(range(self.num_parameters)), VirtualType.U2)}
 
     def _get_operation(self, parameter_values: np.ndarray) -> U2Register:
-        """Generate the U2Register for the evaluated operation"""
+        """Generate the U2Register for the evaluated operation."""
         result = np.empty((len(parameter_values), 1, 2, 2), dtype=U2Register.DTYPE)
 
         if self._operand == "rx":

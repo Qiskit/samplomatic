@@ -50,7 +50,7 @@ def test_swapping_two_subsystems():
 
 
 def test_tensoring():
-    """Test tensoring two subsystems using a ``CombineRegistersNode``"""
+    """Test tensoring two subsystems using a ``CombineRegistersNode``."""
     registers = {
         "reg_1q": PauliRegister([[0, 1, 2, 3]]),
         "reg_2q": PauliRegister([[1, 1, 1, 1], [2, 2, 2, 2]]),
@@ -68,7 +68,7 @@ def test_tensoring():
 
 
 def test_slicing():
-    """Test slicing registers using a ``CombineRegistersNode``"""
+    """Test slicing registers using a ``CombineRegistersNode``."""
     registers = {
         "reg1": PauliRegister([[0, 0, 0, 0], [3, 3, 3, 3]]),
         "reg2": PauliRegister([[1, 1, 1, 1], [2, 2, 2, 2]]),

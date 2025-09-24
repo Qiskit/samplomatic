@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Synths"""
+"""Synths."""
 
 from .get_synth import get_synth
 from .rzrx_synth import RzRxSynth

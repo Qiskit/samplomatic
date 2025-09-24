@@ -206,7 +206,7 @@ class TestGeneralBuildErrors:
             pre_build(circuit)
 
     def test_repeated_twirled_clbit_error(self):
-        """Verify that an error is raised if the same clbit is used more than once for twirling"""
+        """Verify that an error is raised if the same clbit is used more than once for twirling."""
         circuit = QuantumCircuit(2, 3)
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(0, 0)

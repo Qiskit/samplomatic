@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""AddNoopsActiveAccum"""
+"""AddNoopsActiveAccum."""
 
 from qiskit.circuit import BoxOp, QuantumCircuit, Qubit
 from qiskit.dagcircuit import DAGCircuit

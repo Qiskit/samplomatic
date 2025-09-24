@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test PreSamplex"""
+"""Test PreSamplex."""
 
 import numpy as np
 import pytest
@@ -34,10 +34,10 @@ from samplomatic.virtual_registers import PauliRegister
 
 
 class TestDanglers:
-    """Test danglers handling"""
+    """Test danglers handling."""
 
     def test_add_then_find_danglers(self):
-        """Test that added danglers are then found"""
+        """Test that added danglers are then found."""
         qreg = QuantumRegister(2)
         qubit_idxs = QubitIndicesPartition.from_elements([0, 1])
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
@@ -62,7 +62,7 @@ class TestDanglers:
         assert list(pre_samplex.find_danglers(match, qubit_idxs)) == [(node_id, qubit_idxs)]
 
     def test_add_then_find_remove_danglers(self):
-        """Test that added danglers are then found and removed"""
+        """Test that added danglers are then found and removed."""
         qreg = QuantumRegister(2)
         qubit_idxs = QubitIndicesPartition.from_elements([0, 1])
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
@@ -197,7 +197,7 @@ class TestBuildPreSamplex:
             pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionSpec())
 
     def test_error_right_propagate_through_measurement(self):
-        """Test that propagation through measurement to the right raises an error"""
+        """Test that propagation through measurement to the right raises an error."""
         qreg = QuantumRegister(1)
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
@@ -207,7 +207,7 @@ class TestBuildPreSamplex:
             pre_samplex.add_propagate(CircuitInstruction(Measure(), qreg), InstructionSpec())
 
     def test_error_left_propagate_through_measurement(self):
-        """Test that propagation through measurement to the left raises an error"""
+        """Test that propagation through measurement to the left raises an error."""
         qreg = QuantumRegister(1)
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
@@ -357,7 +357,7 @@ class TestPrePropagateClustering:
     """Test the `_cluster_pre_propagate_nodes` function."""
 
     def test_nodes_clustered(self):
-        """Test that nodes are clustered"""
+        """Test that nodes are clustered."""
         circ = QuantumCircuit(6)
         circ.cx(0, 1)
         circ.cx(2, 3)
@@ -375,7 +375,7 @@ class TestPrePropagateClustering:
         assert clusters == [[1, 2], [3, 4]]
 
     def test_nodes_different_modes(self):
-        """Test that nodes are not clustered if the mode is different"""
+        """Test that nodes are not clustered if the mode is different."""
         circ = QuantumCircuit(4)
         circ.cx(0, 1)
         circ.cx(2, 3)

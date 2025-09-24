@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test InlineBoxes"""
+"""Test InlineBoxes."""
 
 from qiskit.circuit import QuantumCircuit
 from qiskit.transpiler import PassManager

@@ -88,11 +88,7 @@ def pytest_generate_tests(metafunc):
 def test_generate_boxing_pass_manager_makes_buildable_circuits(
     circuit, enable_gates, enable_measure, measure_annotations, twirling_strategy, remove_barriers
 ):
-    """Test `generate_boxing_pass_manager`.
-
-    Args:
-        circuit: The circuit to try and build
-    """
+    """Test `generate_boxing_pass_manager`."""
     pm = generate_boxing_pass_manager(
         enable_gates=enable_gates,
         enable_measure=enable_measure,

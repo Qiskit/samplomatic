@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the PauliRegister"""
+"""Test the PauliRegister."""
 
 import numpy as np
 
@@ -83,7 +83,7 @@ def test_multiply():
 
 
 def test_multiply_with_subinds():
-    """Test the multiply() method with sub indices"""
+    """Test the multiply() method with sub indices."""
     lhs = PauliRegister([[0, 1, 2], [2, 2, 1]])
     rhs = PauliRegister([[1, 1, 1]])
 
@@ -103,7 +103,7 @@ def test_inplace_multiply():
 
 
 def test_inplace_multiply_with_subinds():
-    """Test the inplace_multiply() method with sub indices"""
+    """Test the inplace_multiply() method with sub indices."""
     lhs = PauliRegister([[0, 1, 2], [2, 2, 1]])
     rhs = PauliRegister([[1, 1, 1]])
 
@@ -143,7 +143,7 @@ def test_left_inplace_multiply():
 
 
 def test_left_inplace_multiply_with_subinds():
-    """Test the left_inplace_multiply() method with sub indices"""
+    """Test the left_inplace_multiply() method with sub indices."""
     rhs = PauliRegister([[0, 1, 2], [2, 2, 1]])
     lhs = PauliRegister([[1, 1, 1]])
 

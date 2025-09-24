@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 
 
-"""Samplex serialization"""
+"""Samplex serialization."""
 
 from __future__ import annotations
 
@@ -180,6 +180,7 @@ def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None
     """Dump a samplex to json.
 
     Args:
+        samplex: The samplex to dump.
         filename: An optional path to write the json to.
 
     Returns:
@@ -220,7 +221,7 @@ def samplex_from_json(json_data: str) -> Samplex:
     """Load a samplex from a json string.
 
     Args:
-        filename: The json string.
+        json_data: The json string.
 
     Returns:
         The loaded samplex.

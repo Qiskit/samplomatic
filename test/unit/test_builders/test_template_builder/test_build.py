@@ -161,7 +161,7 @@ class TestTemplateBuilder:
             assert instr.operation.name == name, f"Instruction {idx}"
 
     def test_general_5q_static_circuit(self):
-        """Test with a general static circuit of 5 qubits"""
+        """Test with a general static circuit of 5 qubits."""
         circuit = QuantumCircuit(5)
         with circuit.box([Twirl()]):
             circuit.rz(0.5, 0)

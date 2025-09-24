@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""prune_unreachable_nodes"""
+"""prune_unreachable_nodes."""
 
 from collections.abc import Sequence
 

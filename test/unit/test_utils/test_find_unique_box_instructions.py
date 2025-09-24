@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for `find_unique_box_instructions`"""
+"""Tests for `find_unique_box_instructions`."""
 
 from qiskit.circuit import BoxOp, CircuitInstruction, Parameter, QuantumCircuit
 from qiskit.circuit.library import CXGate

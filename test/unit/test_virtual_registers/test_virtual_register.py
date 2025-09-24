@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the VirtualRegister base class"""
+"""Test the VirtualRegister base class."""
 
 import numpy as np
 import pytest

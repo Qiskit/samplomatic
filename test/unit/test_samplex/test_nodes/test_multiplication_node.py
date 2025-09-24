@@ -24,7 +24,7 @@ from samplomatic.virtual_registers import U2Register
 
 class TestLeftMultiplicationNode:
     def test_instantiation_errors(self):
-        """Test that errors are properly raised during instantiation"""
+        """Test that errors are properly raised during instantiation."""
         with pytest.raises(
             SamplexConstructionError,
             match=re.escape("Expected fixed operand to have only one sample but it has 7"),
@@ -33,7 +33,7 @@ class TestLeftMultiplicationNode:
 
     @pytest.mark.parametrize("distribution_type", [HaarU2, UniformPauli])
     def test_multiply(self, distribution_type, rng):
-        """Test left multiply"""
+        """Test left multiply."""
         operand = distribution_type(5).sample(1, rng)
         register = distribution_type(5).sample(7, rng)
         node = LeftMultiplicationNode(operand, "a")
@@ -46,7 +46,7 @@ class TestLeftMultiplicationNode:
         assert np.allclose(operand.multiply(register).virtual_gates, registers["a"].virtual_gates)
 
     def test_writes_to(self):
-        """Test writes to"""
+        """Test writes to."""
         node = LeftMultiplicationNode(U2Register.identity(3, 1), "a")
         assert node.writes_to() == {"a": ({0, 1, 2}, VirtualType.U2)}
         assert node.outgoing_register_type is VirtualType.U2
@@ -54,7 +54,7 @@ class TestLeftMultiplicationNode:
 
 class TestRightMultiplicationNode:
     def test_instantiation_errors(self):
-        """Test that errors are properly raised during instantiation"""
+        """Test that errors are properly raised during instantiation."""
         with pytest.raises(
             SamplexConstructionError,
             match=re.escape("Expected fixed operand to have only one sample but it has 7"),
@@ -63,7 +63,7 @@ class TestRightMultiplicationNode:
 
     @pytest.mark.parametrize("distribution_type", [HaarU2, UniformPauli])
     def test_multiply(self, distribution_type, rng):
-        """Test left multiply"""
+        """Test left multiply."""
         operand = distribution_type(5).sample(1, rng)
         register = distribution_type(5).sample(7, rng)
         node = RightMultiplicationNode(operand, "a")
@@ -76,7 +76,7 @@ class TestRightMultiplicationNode:
         assert np.allclose(register.multiply(operand).virtual_gates, registers["a"].virtual_gates)
 
     def test_writes_to(self):
-        """Test writes to"""
+        """Test writes to."""
         node = RightMultiplicationNode(U2Register.identity(3, 1), "a")
         assert node.writes_to() == {"a": ({0, 1, 2}, VirtualType.U2)}
         assert node.outgoing_register_type is VirtualType.U2

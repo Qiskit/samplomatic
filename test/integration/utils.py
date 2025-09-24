@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Integration tests utilities"""
+"""Integration tests utilities."""
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""replace_nodes_with_one_node"""
+"""replace_nodes_with_one_node."""
 
 from collections.abc import Iterable
 from typing import TypeVar

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplomatic"""
+"""Samplomatic."""
 
 from . import builders
 from ._beta_warning import warn_once_per_version as _warn_once_per_version

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the plot_graph function"""
+"""Test the plot_graph function."""
 
 import pytest
 from rustworkx.rustworkx import PyDiGraph
@@ -36,15 +36,15 @@ def disconnected_graph():
 
 @pytest.mark.skipif(not HAS_PLOTLY, reason="plotly is not installed")
 class TestPlotGraph:
-    """Test the plot_graph function"""
+    """Test the plot_graph function."""
 
     def test_empty_graph(self, save_plot):
-        """Test that empty graph is plotted without error"""
+        """Test that empty graph is plotted without error."""
         save_plot(plot_graph(PyDiGraph()))
 
     @pytest.mark.parametrize("add_hover_data", [True, False])
     def test_basic_graph(self, save_plot, add_hover_data, disconnected_graph):
-        """Test that a basic graph is plotted without error"""
+        """Test that a basic graph is plotted without error."""
         if add_hover_data:
             for a, b in disconnected_graph.edge_list():
                 disconnected_graph.update_edge(a, b, EdgeStyle(title=f"{a} -> {b}"))

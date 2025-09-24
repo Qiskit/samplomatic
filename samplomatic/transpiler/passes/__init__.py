@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Transpiler passes"""
+"""Transpiler passes."""
 
 from .add_inject_noise import AddInjectNoise
 from .add_terminal_right_dressed_boxes import AddTerminalRightDressedBoxes

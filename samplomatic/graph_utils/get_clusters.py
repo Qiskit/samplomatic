@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""get_clusters"""
+"""get_clusters."""
 
 from collections.abc import Callable, Iterator
 from typing import TypeVar

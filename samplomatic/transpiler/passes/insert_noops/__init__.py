@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Twirling strategy passes"""
+"""Twirling strategy passes."""
 
 from .add_noops import AddNoops
 from .add_noops_active_accum import AddNoopsActiveAccum

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BasisTransformNode"""
+"""BasisTransformNode."""
 
 from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar

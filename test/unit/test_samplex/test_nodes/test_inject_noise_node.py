@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the InjectNoiseNode class"""
+"""Test the InjectNoiseNode class."""
 
 import numpy as np
 from qiskit.quantum_info import QubitSparsePauliList

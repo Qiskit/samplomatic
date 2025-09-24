@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Builders"""
+"""Builders."""
 
 from .box_samplex_builder import LeftBoxSamplexBuilder, RightBoxSamplexBuilder
 from .passthrough_samplex_builder import PassthroughSamplexBuilder

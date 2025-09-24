@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the U2Register"""
+"""Test the U2Register."""
 
 import numpy as np
 from qiskit.quantum_info import random_unitary
@@ -38,7 +38,7 @@ def test_multiply():
 
 
 def test_multiply_with_subinds():
-    """Test the multiply() method with sub indices"""
+    """Test the multiply() method with sub indices."""
     u0, u1, u2 = map(np.array, (random_unitary(2) for _ in range(3)))
     lhs = U2Register([[u0, u1, u2], [u2, u2, u1]])
     rhs = U2Register([[u1, u1, u1]])
@@ -60,7 +60,7 @@ def test_inplace_multiply():
 
 
 def test_inplace_multiply_with_subinds():
-    """Test the inplace_multiply() method with sub indices"""
+    """Test the inplace_multiply() method with sub indices."""
     u0, u1, u2 = map(np.array, (random_unitary(2) for _ in range(3)))
     lhs = U2Register([[u0, u1, u2], [u2, u2, u1]])
     rhs = U2Register([[u1, u1, u1]])
@@ -84,7 +84,7 @@ def test_left_multiply():
 
 
 def test_left_multiply_with_subinds():
-    """Test the multiply() method with subindices"""
+    """Test the multiply() method with subindices."""
     u0, u1, u2 = map(np.array, (random_unitary(2) for _ in range(3)))
     rhs = U2Register([[u0, u1, u2], [u2, u2, u1]])
     lhs = U2Register([[u1, u1, u1]])
@@ -106,7 +106,7 @@ def test_left_inplace_multiply():
 
 
 def test_left_inplace_multiply_with_subinds():
-    """Test the inplace_multiply() method with sub indices"""
+    """Test the inplace_multiply() method with sub indices."""
     u0, u1, u2 = map(np.array, (random_unitary(2) for _ in range(3)))
     rhs = U2Register([[u0, u1, u2], [u2, u2, u1]])
     lhs = U2Register([[u1, u1, u1]])

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test RightBoxSamplexBuilder"""
+"""Test RightBoxSamplexBuilder."""
 
 from qiskit.circuit import QuantumCircuit
 
@@ -19,7 +19,7 @@ from samplomatic.builders import pre_build
 
 
 class TestRightBoxBuilder:
-    """Test Box Builders"""
+    """Test Box Builders."""
 
     def test_if_else(self):
         """Test the build result of if-else.

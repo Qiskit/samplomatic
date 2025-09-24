@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Distributions"""
+"""Distributions."""
 
 from .distribution import Distribution
 from .haar_u2 import HaarU2
