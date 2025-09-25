@@ -12,10 +12,6 @@ BUILDDIR      = _build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-
-apidocstubs:
-	sphinx-apidoc -o apidocs --force --remove-old --no-toc --module-first ../samplomatic
-
 .PHONY: help Makefile apidocstubs
 
 # Catch-all target: route all unknown targets to Sphinx using the new
