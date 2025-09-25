@@ -100,10 +100,10 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
 
     @staticmethod
     def select(register_type: VirtualType) -> type["VirtualRegister"]:
-        """Select a :class:`~.VirtualRegister` subclass based on a :class:`~.VirtualType` enum.
+        r"""Select a :class:`~.VirtualRegister` subclass based on a :class:`~.VirtualType` enum.
 
         ..note::
-            Not all :class:`~.VirtualRegister`\\s need to define a :attr:`TYPE`, though they will
+            Not all :class:`~.VirtualRegister`\s need to define a :attr:`TYPE`, though they will
             need to if they want to participate in many types of :class:`~.Node` actions.
             Conversely, not every :class:`~.VirtualType` must correspond to a
             :class:`~.VirtualRegister`, most notably intermediate abstractions like
