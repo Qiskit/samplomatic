@@ -1,5 +1,5 @@
 <!--pytest-codeblocks:skipfile-->
-![Samplomatic](assets/fig/samplomatic.svg)
+![Samplomatic](docs/_static/img/samplomatic.svg)
 
 _Serving all of your circuit sampling needs since 2025._
 
