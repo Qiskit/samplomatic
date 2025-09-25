@@ -117,14 +117,8 @@ Optionally, paste these into your `.vscode/settings.json` to set up ruff (you al
 documentation:
 
 1. Install samplomatic with the [development requirements](#installation)
-2. Regenerate the API stubs:
-    ```bash
-    $ cd docs/
-    docs$ make apidocstubs
-    ```
-3. Update the API documentation index at `docs/index.rst` if you added a new module (the contents
-   of the toc tree should match the listing of the `docs/apidocs` directory).
-4. Build the documentation:
+2. Update the API documentation in `docs/api/` if you added or removed a module.
+3. Build the documentation:
     ```bash
     docs$ make html
     ```
