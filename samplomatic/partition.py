@@ -26,6 +26,8 @@ from .exceptions import BuildError
 T = TypeVar("T", bound="Partition")
 ElementT = TypeVar("ElementT")
 
+__all__ = ["Partition"]
+
 
 class Partition(Generic[ElementT]):
     """A partition of a sequence of elements into equally-sized, non-overlapping subsets.

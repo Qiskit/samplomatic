@@ -23,6 +23,8 @@ from qiskit.quantum_info import QubitSparsePauliList
 
 from .aliases import InterfaceName, Self
 
+__all__ = ["ValueType", "Specification", "TensorSpecification", "TensorInterface"]
+
 
 class ValueType(str, Enum):
     """Valid types for an interface value."""
