@@ -97,6 +97,14 @@ class CollectionSpec:
     synth: Synth[Qubit, Parameter, CircuitInstruction] | None = None
     """How to synthesize collection gates."""
 
+    if_else_qubits: QubitPartition | None = None
+
+    @property
+    def collect_qubits(self):
+        if self.if_else_qubits is None:
+            return self.qubits
+        return self.qubits.difference(self.if_else_qubits.all_elements)
+
 
 @dataclass
 class InstructionSpec:

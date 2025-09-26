@@ -22,8 +22,10 @@ class CopyNode(EvaluationNode):
     """Copies a register.
 
     Args:
-        copy_registers:
-        copy_prefix:
+        regoster_name:
+        output_name:
+        register_type:
+        num_subsystems:
     """
 
     def __init__(
@@ -31,18 +33,22 @@ class CopyNode(EvaluationNode):
         register_name: str,
         output_name: str,
         output_type: VirtualType,
-        num_output_subsystems: int,
+        num_subsystems: int,
     ):
         self._register_name = register_name
         self._output_name = output_name
         self._output_type = output_type
-        self._num_output_subsystems = num_output_subsystems
+        self._num_subsystems = num_subsystems
+
+    @property
+    def outgoing_register_type(self):
+        return self._output_type
 
     def instantiates(self):
-        return {self._output_name: (self._num_output_subsystems, self._output_type)}
+        return {self._output_name: (self._num_subsystems, self._output_type)}
 
     def reads_from(self):
-        return {self._register_name: (self._num_output_subsystems, self._output_type)}
+        return {self._register_name: (set(range(self._num_subsystems)), self._output_type)}
 
     def evaluate(self, registers, *_):
         registers[self._output_name] = deepcopy(registers[self._register_name])
@@ -53,5 +59,5 @@ class CopyNode(EvaluationNode):
             .get_style()
             .append_data("Copies", self._register_name)
             .append_data("Output Type", self._output_type.name)
-            .append_data("Output Num Subsystems", self._num_output_subsystems)
+            .append_data("Output Num Subsystems", self._num_subsystems)
         )

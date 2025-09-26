@@ -40,7 +40,9 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
 
     def _append_dressed_layer(self) -> ParamIndices:
         """A helper function to add a collection dressing layer."""
-        qubits = self.collection.qubits
+        qubits = self.collection.collect_qubits
+        if len(qubits) == 0:
+            return
         try:
             remapped_qubits = [
                 list(map(lambda k: self.template_state.qubit_map[k], subsys)) for subsys in qubits
@@ -69,9 +71,13 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
 
         return param_idxs.reshape(len(qubits), -1)
 
-    def _append_barrier(self, label: str):
+    def _append_barrier(self, label: str, qubits=None):
         label = f"{label}{'_'.join(map(str, self.template_state.scope_idx))}"
-        all_qubits = self.template_state.qubit_map.values()
+        all_qubits = (
+            self.template_state.qubit_map.values()
+            if qubits is None
+            else [v for k, v in self.template_state.qubit_map.items() if (k,) in qubits]
+        )
         barrier = CircuitInstruction(Barrier(len(all_qubits), label), all_qubits)
         self.template_state.template.append(barrier)
 
@@ -155,8 +161,9 @@ class LeftBoxBuilder(BoxBuilder):
     def lhs(self):
         self._append_barrier("L")
         param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
-        self._append_barrier("M")
+        collect_qubits = self.collection.collect_qubits
+        self.samplex_state.add_collect(collect_qubits, self.collection.synth, param_idxs)
+        self._append_barrier("M", collect_qubits)
 
     def rhs(self):
         self._append_barrier("R")
@@ -238,7 +245,8 @@ class RightBoxBuilder(BoxBuilder):
             )
 
     def rhs(self):
-        self._append_barrier("M")
+        collect_qubits = self.collection.collect_qubits
+        self._append_barrier("M", collect_qubits)
         param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
+        self.samplex_state.add_collect(collect_qubits, self.collection.synth, param_idxs)
         self._append_barrier("R")

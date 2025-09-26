@@ -23,7 +23,6 @@ from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
 from .sampling_node import SamplingNode
-from .scope_node import ScopeNode
 from .slice_register_node import SliceRegisterNode
 from .twirl_sampling_node import TwirlSamplingNode
 from .u2_param_multiplication_node import (

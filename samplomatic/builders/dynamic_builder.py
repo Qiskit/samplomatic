@@ -54,9 +54,8 @@ class BoxIfElseBuilder:
 
             new_op = type(instr.operation)(*new_params) if new_params else instr.operation
             new_block.append(new_op, instr.qubits, instr.clbits)
-            self.pre_samplex.add_propagate(
-                instr, InstructionSpec(params=new_params, mode=InstructionMode.PROPAGATE)
-            )
+            mode = InstructionMode.MULTIPLY if len(instr.qubits) == 1 else InstructionMode.PROPAGATE
+            self.pre_samplex.add_propagate(instr, InstructionSpec(params=new_params, mode=mode))
 
     def append_template(self, block: QuantumCircuit, new_block: QuantumCircuit) -> ParamIndices:
         start = self.param_iter.idx
@@ -65,7 +64,7 @@ class BoxIfElseBuilder:
         for qubit in new_block.qubits:
             for instr in self.synth.make_template([qubit], self.param_iter):
                 new_block.append(instr)
-        return params
+        return params.reshape(len(block.qubits), -1)
 
 
 class BoxRightIfElseBuilder(BoxIfElseBuilder):

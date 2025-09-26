@@ -113,14 +113,6 @@ samplomatic.samplex.nodes.sampling\_node module
    :show-inheritance:
    :undoc-members:
 
-samplomatic.samplex.nodes.scope\_node module
---------------------------------------------
-
-.. automodule:: samplomatic.samplex.nodes.scope_node
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 samplomatic.samplex.nodes.slice\_register\_node module
 ------------------------------------------------------
 

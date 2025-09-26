@@ -62,6 +62,7 @@ from ..samplex.nodes import (
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
+    CopyNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
@@ -1174,6 +1175,38 @@ class PreSamplex:
 
         for pre_successor_idx in self.graph.successor_indices(pre_basis_idx):
             register_names[pre_successor_idx][pre_basis_idx] = reg_name
+
+    def add_copy_node(
+        self,
+        samplex: Samplex,
+        pre_copy_idx: NodeIndex,
+        pre_nodes_to_nodes: dict[NodeIndex, NodeIndex],
+        order: dict[NodeIndex, int],
+        register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
+    ) -> None:
+        reg_idx = order[pre_copy_idx]
+        pre_pred_idx = next(iter(self.sorted_predecessor_idxs(pre_copy_idx, order)))
+        register_name = register_names[pre_copy_idx][pre_pred_idx]
+
+        node_predecessor = samplex.graph[pred_idx := pre_nodes_to_nodes[pre_pred_idx]]
+        if register_name in node_predecessor.writes_to():
+            virtual_type = node_predecessor.writes_to()[register_name][1]
+        else:
+            virtual_type = node_predecessor.instantiates()[register_name][1]
+
+        copy_node = CopyNode(
+            register_name,
+            copy_name := f"copy_{reg_idx}",
+            virtual_type,
+            len(self.graph[pre_copy_idx].subsystems),
+        )
+
+        node_idx = samplex.add_node(copy_node)
+        samplex.add_edge(pred_idx, node_idx)
+        pre_nodes_to_nodes[pre_copy_idx] = node_idx
+
+        for pre_successor_idx in self.graph.successor_indices(pre_copy_idx):
+            register_names[pre_successor_idx][pre_copy_idx] = copy_name
 
     def add_inject_noise_node(
         self,
