@@ -14,6 +14,8 @@
 
 from enum import IntEnum
 
+__all__ = ["Direction", "SYMMETRIC_2Q_GATES"]
+
 
 class Direction(IntEnum):
     """The direction that a virtual gate is traveling."""

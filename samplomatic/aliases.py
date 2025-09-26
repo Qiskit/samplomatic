@@ -12,16 +12,20 @@
 
 """Type Aliases"""
 
-import sys
-from collections.abc import Hashable, Sequence
-from typing import Literal, Protocol, TypeVar, Union
+import sys as _sys
+from collections.abc import Hashable as _Hashable
+from collections.abc import Sequence as _Sequence
+from typing import Literal as _Literal
+from typing import Protocol as _Protocol
+from typing import TypeVar as _TypeVar
+from typing import Union as _Union
 
-if sys.version_info >= (3, 10):
+if _sys.version_info >= (3, 10):
     from typing import TypeAlias
 else:
     from typing_extensions import TypeAlias
 
-if sys.version_info >= (3, 11):
+if _sys.version_info >= (3, 11):
     from typing import Self  # noqa: F401
 else:
     from typing_extensions import Self  # noqa: F401
@@ -32,10 +36,10 @@ from qiskit.circuit import Parameter as _Parameter
 from qiskit.circuit import ParameterExpression as _ParameterExpression
 from qiskit.circuit import Qubit as _Qubit
 from qiskit.dagcircuit import DAGOpNode as _DAGOpNode
-from rustworkx.rustworkx import PyDiGraph
+from rustworkx.rustworkx import PyDiGraph as _PyDiGraph
 
-T = TypeVar("T")
-S = TypeVar("S")
+T = _TypeVar("T")
+S = _TypeVar("S")
 
 # this alias patches a qiskit/pyo3 typing bug, it can be removed when fixed in qiskit
 CircuitInstruction: TypeAlias = _CircuitInstruction  #  type: ignore
@@ -51,8 +55,8 @@ InterfaceName: TypeAlias = str
 ParamIndex: TypeAlias = int
 ParamIndices: TypeAlias = np.ndarray[tuple[int, int], np.dtype[np.intp]]
 ParamName: TypeAlias = str
-ParamValues: TypeAlias = Union[Sequence[float], dict[Parameter, float]]
-ParamSpec: TypeAlias = list[tuple[Union[ParamIndex, None], ParameterExpression]]
+ParamValues: TypeAlias = _Union[_Sequence[float], dict[Parameter, float]]
+ParamSpec: TypeAlias = list[tuple[_Union[ParamIndex, None], ParameterExpression]]
 QubitIndex: TypeAlias = int
 ClbitIndex: TypeAlias = int
 PauliBasisChange: TypeAlias = np.ndarray[tuple[int], np.dtype[np.uint8]]
@@ -73,31 +77,31 @@ The arrays need to have at least one entry so that there is somewhere to put the
 The arrays need not include the end-points; those are inferred from a node layout.
 """
 
-GraphLayout: TypeAlias = Union[NodeLayout, tuple[NodeLayout, EdgeLayout]]
+GraphLayout: TypeAlias = _Union[NodeLayout, tuple[NodeLayout, EdgeLayout]]
 """A node layout, or a node layout and an edge layout.
 
 The graph plotter will infer linear edges in the former case.
 """
 
 
-class NodeRanker(Protocol[T]):
+class NodeRanker(_Protocol[T]):
     """Specifies a node ranking that can be used by layout methods to group nodes topologically.
 
     A return value of ``None`` signifies no rank specified.
     """
 
-    def __call__(self, node: T) -> Hashable: ...
+    def __call__(self, node: T) -> _Hashable: ...
 
 
-class LayoutMethod(Protocol[T, S]):
+class LayoutMethod(_Protocol[T, S]):
     """A callable that accepts a graph and returns a coordinate layout."""
 
     def __call__(
-        self, graph: PyDiGraph[T, S], ranker: Union[NodeRanker[T], None] = None
+        self, graph: _PyDiGraph[T, S], ranker: _Union[NodeRanker[T], None] = None
     ) -> GraphLayout: ...
 
 
-LayoutPresets: TypeAlias = Literal[
+LayoutPresets: TypeAlias = _Literal[
     "auto",
     "spring",
     "graphviz",

@@ -1,5 +1,5 @@
 <!--pytest-codeblocks:skipfile-->
-![Samplomatic](assets/fig/samplomatic.svg)
+![Samplomatic](docs/_static/img/samplomatic.svg)
 
 _Serving all of your circuit sampling needs since 2025._
 
@@ -111,26 +111,28 @@ Optionally, paste these into your `.vscode/settings.json` to set up ruff (you al
 }
 ```
 
-### Generating `sphinx` documentation
+### Sphinx documentation
 
 `samplomatic` documentation can be rendered via `sphinx`. In order to produce the rendered
 documentation:
 
 1. Install samplomatic with the [development requirements](#installation)
-2. Regenerate the API stubs:
-    ```bash
-    $ cd docs/
-    docs$ make apidocstubs
-    ```
-3. Update the API documentation index at `docs/index.rst` if you added a new module (the contents
-   of the toc tree should match the listing of the `docs/apidocs` directory).
-4. Build the documentation:
+2. Update the API documentation in `docs/api/` if you added or removed a module.
+3. Build the documentation:
     ```bash
     docs$ make html
     ```
 
 The `.html` documentation will be rendered at `docs/_build` (with the index being available at
 `docs/_build/html/index.html`).
+
+The documentation content doesn't yet promise to reflect the final state of the public interface of the project, and is liable to change.
+Presently, these are the guidelines for what is included:
+
+ * All top-level modules, with members defined by their `__all__` or, if absent, `dir()`
+ * All top-level packages, with members as defined by the their `__init__`
+ * Manual inclusion of hand-picked second level packages / modules (e.g. `samplomatic.samplex.node`)
+ * Manual handling of promoted members
 
 ### Adding to the changelog
 

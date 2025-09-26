@@ -23,11 +23,7 @@ from .passes import (
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
 )
-from .passes.insert_noops import (
-    AddNoopsActiveAccum,
-    AddNoopsActiveCircuit,
-    AddNoopsAll,
-)
+from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 from .twirling_strategies import TwirlingStrategyLiteral
 
 SUPPORTED_MEASURE_ANNOTATIONS = ["twirl", "basis_transform", "all"]
@@ -52,10 +48,12 @@ def generate_boxing_pass_manager(
         measure_annotations: The annotations placed on the measurement boxes by
             :class:`~.GroupMeasIntoBoxes` when ``enable_measure`` is ``True``. The supported values
             are:
+
                 * ``'twirl'`` for a :class:`~.Twirl` annotation.
                 * ``'basis_transform'`` for a :class:`~.BasisTransform` annotation with mode
-                    ``measure``.
+                  ``measure``.
                 * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
+
         twirling_strategy: The twirling strategy.
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
