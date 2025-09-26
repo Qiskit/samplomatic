@@ -111,7 +111,7 @@ Optionally, paste these into your `.vscode/settings.json` to set up ruff (you al
 }
 ```
 
-### Generating `sphinx` documentation
+### Sphinx documentation
 
 `samplomatic` documentation can be rendered via `sphinx`. In order to produce the rendered
 documentation:
@@ -125,6 +125,14 @@ documentation:
 
 The `.html` documentation will be rendered at `docs/_build` (with the index being available at
 `docs/_build/html/index.html`).
+
+The documentation content doesn't yet promise to reflect the final state of the public interface of the project, and is liable to change.
+Presently, these are the guidelines for what is included:
+
+ * All top-level modules, with members defined by their `__all__` or, if absent, `dir()`
+ * All top-level packages, with members as defined by the their `__init__`
+ * Manual inclusion of hand-picked second level packages / modules (e.g. `samplomatic.samplex.node`)
+ * Manual handling of promoted members
 
 ### Adding to the changelog
 
