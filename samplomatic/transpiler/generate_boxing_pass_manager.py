@@ -58,14 +58,14 @@ def generate_boxing_pass_manager(
                 * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
 
         twirling_strategy: The twirling strategy.
-        inject_noise_targets: The class of twirled-annotated boxes to target with the
-            :class:`~.AddInjectNoise` pass. The supported values are:
+        inject_noise_targets: The class of boxes to target with the :class:`~.AddInjectNoise` pass.
+            The supported values are:
 
-                * ``'gates'`` to target only the boxes created by the :class:`~.GroupGatesIntoBoxes`
-                    pass.
-                * ``'measures'`` to target only the boxes created by the
+                * ``'gates'`` to target only the twirled-annotated boxes created by the
+                    :class:`~.GroupGatesIntoBoxes` pass.
+                * ``'measures'`` to target only the twirled-annotated boxes created by the
                     :class:`~.GroupMeasIntoBoxes` pass.
-                * ``'all'`` to target the boxes created by either of those passes.
+                * ``'all'`` to target the twirled-annotated boxes created by either of those passes.
 
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
