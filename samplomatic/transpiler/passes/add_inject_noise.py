@@ -19,6 +19,7 @@ from typing import Callable, Literal
 from qiskit.circuit import CircuitInstruction
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
+from qiskit.transpiler.exceptions import TranspilerError
 
 from ...annotations import InjectNoise, Twirl
 from ...utils import BoxKey, get_annotation, undress_box
@@ -70,15 +71,20 @@ class AddInjectNoise(TransformationPass):
         self.targets = targets
 
     def _skip_undressed_box(self) -> Callable[[DAGOpNode], bool]:
-        if self.targets == "gates":
-            return lambda undressed_box: undressed_box.body.num_nonlocal_gates() == 0
-        elif self.targets == "measures":
-            return lambda undressed_box: not undressed_box.body.clbits
-        else:
+        if self.targets == "all":
             # Skip boxes that do not contain entanglers or measurements
             return (
                 lambda undressed_box: undressed_box.body.num_nonlocal_gates() == 0
                 and not undressed_box.body.clbits
+            )
+        elif self.targets == "gates":
+            return lambda undressed_box: undressed_box.body.num_nonlocal_gates() == 0
+        elif self.targets == "measures":
+            return lambda undressed_box: not undressed_box.body.clbits
+        else:
+            raise TranspilerError(
+                f"Targets '{self.targets}' is invalid, choose one of 'all', 'gates',"
+                " and 'measures'."
             )
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
