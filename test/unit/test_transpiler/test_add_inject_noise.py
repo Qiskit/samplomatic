@@ -309,3 +309,23 @@ def test_boxes_with_same_qubits_in_different_orders():
 
     refs = [get_annotation(datum.operation, InjectNoise).ref for datum in transpiled_circuit.data]
     assert len(set(refs)) == 1
+
+
+@pytest.mark.parametrize("targets", ["gates", "measures", "all"])
+def test_targets(targets):
+    """Test the `target` input of `AddInjectNoise`."""
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl()]):
+        circuit.h(0)
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
+
+    pm = PassManager([AddInjectNoise("uniform_modification", targets=targets)])
+    transpiled_circuit = pm.run(circuit)
+
+    gate_annotation = get_annotation(transpiled_circuit.data[0].operation, InjectNoise)
+    assert (gate_annotation is None) == (targets in {"measures"})
+
+    measure_annotation = get_annotation(transpiled_circuit.data[1].operation, InjectNoise)
+    assert (measure_annotation is None) == (targets in {"gates"})

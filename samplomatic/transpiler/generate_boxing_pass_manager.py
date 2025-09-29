@@ -12,6 +12,8 @@
 
 """generate_boxing_pass_manager"""
 
+from typing import Literal
+
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
@@ -35,6 +37,7 @@ def generate_boxing_pass_manager(
     enable_measure: bool = True,
     measure_annotations: str = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active",
+    inject_noise_targets: Literal["gates", "measures", "all"] = "all",
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
     remove_barriers: bool = True,
 ) -> PassManager:
@@ -55,6 +58,15 @@ def generate_boxing_pass_manager(
                 * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
 
         twirling_strategy: The twirling strategy.
+        inject_noise_targets: The class of annotated boxes to target with the
+            :class:`~.AddInjectNoise` pass. The supported values are:
+
+                * ``'gates'`` to target only the boxes created by the :class:`~.GroupGatesIntoBoxes`
+                    pass.
+                * ``'measures'`` to target only the boxes created by the
+                    :class:`~.GroupMeasIntoBoxes` pass.
+                * ``'all'`` to target the boxes created by either of those passes.
+
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
             before beginning to group gates and measurements into boxes. Setting this to ``True``
@@ -90,6 +102,6 @@ def generate_boxing_pass_manager(
         )
 
     passes.append(AddTerminalRightDressedBoxes())
-    passes.append(AddInjectNoise(inject_noise_strategy))
+    passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
 
     return PassManager(passes)
