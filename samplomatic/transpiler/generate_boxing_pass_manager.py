@@ -28,17 +28,14 @@ from .passes import (
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 from .twirling_strategies import TwirlingStrategyLiteral
 
-SUPPORTED_MEASURE_ANNOTATIONS = ["twirl", "basis_transform", "all"]
-"""The supported values of ``measure_annotations``."""
-
 
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measure: bool = True,
     measure_annotations: str = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active",
-    inject_noise_targets: Literal["gates", "measures", "all"] = "all",
-    inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
+    inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
+    inject_noise_strategy: NoiseInjectionStrategyLiteral = "no_modification",
     remove_barriers: bool = True,
 ) -> PassManager:
     """Generate a pass manager to group the operations in a circuit into boxes.
@@ -58,14 +55,15 @@ def generate_boxing_pass_manager(
                 * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
 
         twirling_strategy: The twirling strategy.
-        inject_noise_targets: The class of boxes to target with the :class:`~.AddInjectNoise` pass.
-            The supported values are:
+        inject_noise_targets: The class of boxes to annotate with an :class:`~.InjectNoise`
+            annotation using the :class:`~.AddInjectNoise` pass. The supported values are:
 
-                * ``'gates'`` to target only the twirled-annotated boxes created by the
-                    :class:`~.GroupGatesIntoBoxes` pass.
-                * ``'measures'`` to target only the twirled-annotated boxes created by the
-                    :class:`~.GroupMeasIntoBoxes` pass.
-                * ``'all'`` to target the twirled-annotated boxes created by either of those passes.
+                * ``'none'`` to avoid annotating boxes of any kind.
+                * ``'gates'`` to annotate all the boxes created by the
+                    :class:`~.GroupGatesIntoBoxes` pass, and avoid annotating all the other boxes.
+                * ``'measures'`` to annotate all the twirled-annotated boxes created by the
+                    :class:`~.GroupMeasIntoBoxes` pass, and avoid annotating all the other boxes.
+                * ``'all'`` to target all the twirled-annotated boxes.
 
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit

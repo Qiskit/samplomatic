@@ -57,11 +57,11 @@ class AddInjectNoise(TransformationPass):
 
     def __init__(
         self,
-        strategy: NoiseInjectionStrategyLiteral = "none",
+        strategy: NoiseInjectionStrategyLiteral = "no_modification",
         overwrite: bool = False,
         prefix_ref: str = "r",
         prefix_modifier_ref: str = "m",
-        targets: Literal["gates", "measures", "all"] = "all",
+        targets: Literal["none", "gates", "measures", "all"] = "none",
     ):
         TransformationPass.__init__(self)
         self.strategy = NoiseInjectionStrategy(strategy)
@@ -71,24 +71,26 @@ class AddInjectNoise(TransformationPass):
         self.targets = targets
 
     def _skip_undressed_box(self) -> Callable[[DAGOpNode], bool]:
+        if self.targets == "none":
+            return True
         if self.targets == "all":
             # Skip boxes that do not contain entanglers or measurements
             return (
                 lambda undressed_box: undressed_box.body.num_nonlocal_gates() == 0
                 and not undressed_box.body.clbits
             )
-        elif self.targets == "gates":
+        if self.targets == "gates":
             return lambda undressed_box: undressed_box.body.num_nonlocal_gates() == 0
-        elif self.targets == "measures":
+        if self.targets == "measures":
             return lambda undressed_box: not undressed_box.body.clbits
-        else:
-            raise TranspilerError(
-                f"Targets '{self.targets}' is invalid, choose one of 'all', 'gates',"
-                " and 'measures'."
-            )
+
+        raise TranspilerError(
+            f"Targets '{self.targets}' is invalid, choose one of 'none', 'all', 'gates',"
+            " and 'measures'."
+        )
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
-        if self.strategy == NoiseInjectionStrategy.NONE:
+        if self.targets == "none":
             return dag
 
         # A dictionary to map unique boxes to their ``ref``
