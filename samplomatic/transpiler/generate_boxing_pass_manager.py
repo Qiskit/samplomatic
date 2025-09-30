@@ -12,6 +12,8 @@
 
 """generate_boxing_pass_manager"""
 
+from typing import Literal
+
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
@@ -26,16 +28,14 @@ from .passes import (
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 from .twirling_strategies import TwirlingStrategyLiteral
 
-SUPPORTED_MEASURE_ANNOTATIONS = ["twirl", "basis_transform", "all"]
-"""The supported values of ``measure_annotations``."""
-
 
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measure: bool = True,
     measure_annotations: str = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active",
-    inject_noise_strategy: NoiseInjectionStrategyLiteral = "none",
+    inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
+    inject_noise_strategy: NoiseInjectionStrategyLiteral = "no_modification",
     remove_barriers: bool = True,
 ) -> PassManager:
     """Generate a pass manager to group the operations in a circuit into boxes.
@@ -55,6 +55,19 @@ def generate_boxing_pass_manager(
                 * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
 
         twirling_strategy: The twirling strategy.
+        inject_noise_targets: The boxes to annotate with an :class:`~.InjectNoise` annotation
+            using the :class:`~.AddInjectNoise` pass. The supported values are:
+
+                * ``'none'`` to avoid annotating boxes of any kind.
+                * ``'gates'`` to annotate all the twirled boxes that contain entanglers, such as
+                    those created by the :class:`~.GroupGatesIntoBoxes` pass, and avoid annotating
+                    all the other boxes.
+                * ``'measures'`` to annotate all the twirled boxes that own a classical register,
+                    such as those created by the :class:`~.GroupMeasIntoBoxes` pass, and avoid
+                    annotating all the other boxes.
+                * ``'all'`` to target all the twirl-annotated boxes that contain entanglers
+                    and/or own classical registers.
+
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
             before beginning to group gates and measurements into boxes. Setting this to ``True``
@@ -90,6 +103,6 @@ def generate_boxing_pass_manager(
         )
 
     passes.append(AddTerminalRightDressedBoxes())
-    passes.append(AddInjectNoise(inject_noise_strategy))
+    passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
 
     return PassManager(passes)

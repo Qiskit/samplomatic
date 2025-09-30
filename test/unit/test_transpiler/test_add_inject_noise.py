@@ -21,40 +21,6 @@ from samplomatic.transpiler.passes import AddInjectNoise
 from samplomatic.utils import get_annotation
 
 
-def test_none_strategy():
-    """Test `AddInjectNoise` with the ``"none"`` strategy."""
-    circuit = QuantumCircuit(2)
-    with circuit.box([Twirl()]):
-        circuit.h(0)
-        circuit.cx(0, 1)
-    with circuit.box([Twirl(dressing="right")]):
-        circuit.z(0)
-        circuit.cx(0, 1)
-    with circuit.box([Twirl()]):
-        circuit.rz(th := Parameter("theta"), 0)
-        circuit.cx(0, 1)
-    with circuit.box([Twirl()]):
-        circuit.measure_all()
-
-    pm = PassManager([AddInjectNoise("none")])
-    transpiled_circuit = pm.run(circuit)
-
-    expected_circuit = QuantumCircuit(2)
-    with expected_circuit.box([Twirl()]):
-        expected_circuit.h(0)
-        expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(dressing="right")]):
-        expected_circuit.z(0)
-        expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl()]):
-        expected_circuit.rz(th, 0)
-        expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl()]):
-        expected_circuit.measure_all()
-
-    assert transpiled_circuit == expected_circuit
-
-
 def test_no_modification_strategy():
     """Test `AddInjectNoise` with the ``"no_modification"`` strategy."""
     circuit = QuantumCircuit(2)
@@ -70,7 +36,7 @@ def test_no_modification_strategy():
     with circuit.box([Twirl()]):
         circuit.measure_all()
 
-    pm = PassManager([AddInjectNoise("no_modification")])
+    pm = PassManager([AddInjectNoise("no_modification", targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref
@@ -112,7 +78,7 @@ def test_uniform_modification_strategy():
     with circuit.box([Twirl()]):
         circuit.measure_all()
 
-    pm = PassManager([AddInjectNoise("uniform_modification")])
+    pm = PassManager([AddInjectNoise("uniform_modification", targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref
@@ -154,7 +120,7 @@ def test_individual_modification_strategy():
     with circuit.box([Twirl()]):
         circuit.measure_all()
 
-    pm = PassManager([AddInjectNoise("individual_modification")])
+    pm = PassManager([AddInjectNoise("individual_modification", targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     ref1 = get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref
@@ -200,7 +166,7 @@ def test_overwrite(overwrite):
     with circuit.box([Twirl()]):
         circuit.measure_all()
 
-    pm = PassManager([AddInjectNoise("no_modification", overwrite)])
+    pm = PassManager([AddInjectNoise("no_modification", overwrite, targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     noise_annotations = [
@@ -225,7 +191,7 @@ def test_overwrite_when_the_box_is_encountered_for_the_first_time(overwrite):
         circuit.z(0)
         circuit.cx(0, 1)
 
-    pm = PassManager([AddInjectNoise("no_modification", overwrite)])
+    pm = PassManager([AddInjectNoise("no_modification", overwrite, targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     noise_annotations = [
@@ -253,7 +219,7 @@ def test_prefixes(inject_noise_strategy):
         circuit.rz(Parameter("theta"), 0)
         circuit.ecr(0, 1)
 
-    pm = PassManager([AddInjectNoise(inject_noise_strategy)])
+    pm = PassManager([AddInjectNoise(inject_noise_strategy, targets="all")])
     transpiled_circuit = pm.run(circuit)
     for idx in range(3):
         annotation = get_annotation(transpiled_circuit.data[idx].operation, InjectNoise)
@@ -268,8 +234,7 @@ def test_prefixes(inject_noise_strategy):
 
 
 @pytest.mark.parametrize(
-    "inject_noise_strategy",
-    ["none", "no_modification", "uniform_modification", "individual_modification"],
+    "inject_noise_strategy", ["no_modification", "uniform_modification", "individual_modification"]
 )
 def test_some_boxes_are_left_alone(inject_noise_strategy):
     """Tests that empty boxes are left alone, as well as boxes with no twirl annotation."""
@@ -280,7 +245,7 @@ def test_some_boxes_are_left_alone(inject_noise_strategy):
     with circuit.box([Twirl()]):
         circuit.z(0)
 
-    pm = PassManager([AddInjectNoise(inject_noise_strategy)])
+    pm = PassManager([AddInjectNoise(inject_noise_strategy, targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     for idx in range(2):
@@ -304,8 +269,28 @@ def test_boxes_with_same_qubits_in_different_orders():
         circuit.cx(2, 3)
         circuit.cx(0, 1)
 
-    pm = PassManager([AddInjectNoise("uniform_modification")])
+    pm = PassManager([AddInjectNoise("uniform_modification", targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     refs = [get_annotation(datum.operation, InjectNoise).ref for datum in transpiled_circuit.data]
     assert len(set(refs)) == 1
+
+
+@pytest.mark.parametrize("targets", ["none", "gates", "measures", "all"])
+def test_targets(targets):
+    """Test the `target` input of `AddInjectNoise`."""
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl()]):
+        circuit.h(0)
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure_all()
+
+    pm = PassManager([AddInjectNoise("uniform_modification", targets=targets)])
+    transpiled_circuit = pm.run(circuit)
+
+    gate_annotation = get_annotation(transpiled_circuit.data[0].operation, InjectNoise)
+    assert (gate_annotation is None) == (targets in {"none", "measures"})
+
+    measure_annotation = get_annotation(transpiled_circuit.data[1].operation, InjectNoise)
+    assert (measure_annotation is None) == (targets in {"none", "gates"})
