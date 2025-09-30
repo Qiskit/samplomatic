@@ -65,7 +65,7 @@ def generate_boxing_pass_manager(
                 * ``'measures'`` to annotate all the twirled boxes that own a classical register,
                     such as those created by the :class:`~.GroupMeasIntoBoxes` pass, and avoid
                     annotating all the other boxes.
-                * ``'all'`` to target all the twirled-annotated boxes that contain entanglers
+                * ``'all'`` to target all the twirl-annotated boxes that contain entanglers
                     and/or own classical registers.
 
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
