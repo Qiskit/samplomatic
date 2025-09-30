@@ -112,7 +112,7 @@ def run_snippet(tmp_path):
         )
 
         assert (
-            proc.returncode != 0
+            proc.returncode == 0
         ), f"Snippet {name} failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
 
     return run
