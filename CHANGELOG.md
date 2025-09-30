@@ -3,7 +3,7 @@
 ### Added
 
 - Added the `targets` input to the `AddInjectNoise` pass to specify boxes to add an `InjectNoise` annotation to.
-  Added the `inject_noise_targets` input to `generate_boxing_pass_manager` to trigger this ability in the boxing transpiler. ([#143](https://github.com/Qiskit/samplomatic/issues/143))
+- Added the `inject_noise_targets` input to `generate_boxing_pass_manager()` to trigger this ability in the boxing transpiler. ([#143](https://github.com/Qiskit/samplomatic/issues/143))
 - Added a warning at import time about the beta status of this project. The warning should only be raised once per version, see the [contribution guidelines](CONTRIBUTING.md) for details. ([#132](https://github.com/Qiskit/samplomatic/issues/132))
 
 ### Changed
