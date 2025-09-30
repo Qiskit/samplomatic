@@ -55,15 +55,18 @@ def generate_boxing_pass_manager(
                 * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
 
         twirling_strategy: The twirling strategy.
-        inject_noise_targets: The class of boxes to annotate with an :class:`~.InjectNoise`
-            annotation using the :class:`~.AddInjectNoise` pass. The supported values are:
+        inject_noise_targets: The boxes to annotate with an :class:`~.InjectNoise` annotation
+            using the :class:`~.AddInjectNoise` pass. The supported values are:
 
                 * ``'none'`` to avoid annotating boxes of any kind.
-                * ``'gates'`` to annotate all the boxes created by the
-                    :class:`~.GroupGatesIntoBoxes` pass, and avoid annotating all the other boxes.
-                * ``'measures'`` to annotate all the twirled-annotated boxes created by the
-                    :class:`~.GroupMeasIntoBoxes` pass, and avoid annotating all the other boxes.
-                * ``'all'`` to target all the twirled-annotated boxes.
+                * ``'gates'`` to annotate all the twirled boxes that contain entanglers, such as
+                    those created by the :class:`~.GroupGatesIntoBoxes` pass, and avoid annotating
+                    all the other boxes.
+                * ``'measures'`` to annotate all the twirled boxes that own a classical register,
+                    such as those created by the :class:`~.GroupMeasIntoBoxes` pass, and avoid
+                    annotating all the other boxes.
+                * ``'all'`` to target all the twirled-annotated boxes that contain entanglers
+                    and/or own classical registers.
 
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
         remove_barriers: Whether to apply the :class:`~.RemoveBarriers` pass to the input circuit
