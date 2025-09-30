@@ -1,3 +1,8 @@
+## [0.9.0](https://github.com/Qiskit/samplomatic/tree/0.9.0) - 2025-09-30
+
+No significant changes.
+
+
 ## [0.8.0](https://github.com/Qiskit/samplomatic/tree/0.8.0) - 2025-09-22
 
 ### Added
