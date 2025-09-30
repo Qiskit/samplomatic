@@ -12,7 +12,7 @@
 
 ### Fixed
 
-- RFixed a bug where `Samplex.__str__()` would raise an error for samplexes that require a noise model. ([#124](https://github.com/Qiskit/samplomatic/issues/124))
+- Fixed a bug where `Samplex.__str__()` would raise an error for samplexes that require a noise model. ([#124](https://github.com/Qiskit/samplomatic/issues/124))
 
 
 ## [0.8.0](https://github.com/Qiskit/samplomatic/tree/0.8.0) - 2025-09-22
