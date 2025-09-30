@@ -15,16 +15,14 @@
 import hashlib
 import html
 import os
+import subprocess
+import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import pytest
 from numpy.random import Generator, SeedSequence, default_rng
-
-if TYPE_CHECKING:
-    pass
 
 
 def pytest_addoption(parser):
@@ -86,6 +84,38 @@ def maybe_clear_assets():
             cleared_folders.add(test_dir)
 
     return _clear_assets
+
+
+@pytest.fixture
+def run_snippet(tmp_path):
+    """Return a function that runs a snippet of Python in a subprocess."""
+
+    def run(name: str, snippet: str):
+        """Run a Python snippet in a new Python subprocess.
+
+        Args:
+            name: A name for the snippet.
+            snippet: A self-contained snippet of Python.
+
+        Raises:
+            AssertionError: If executing the snippet has a non-zero return code.
+        """
+        # write snippet to temp file
+        script = tmp_path / f"{name}.py"
+        script.write_text(snippet)
+
+        # run it as a subprocess
+        proc = subprocess.run(
+            [sys.executable, str(script)],
+            capture_output=True,
+            text=True,
+        )
+
+        assert (
+            proc.returncode == 0
+        ), f"Snippet {name} failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
+
+    return run
 
 
 # Track plots and test outcomes globally, where the outer dict is by folder
