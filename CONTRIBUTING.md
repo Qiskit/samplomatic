@@ -144,7 +144,7 @@ Instead, please use the `.. plot::` directive implemented by the [matplotlib sph
 Code inside of this directive is run when documentation is built and will result in a documentation build failure if the snippet fails to run.
 Additionally, using [doctest](https://docs.python.org/3/library/doctest.html) syntax inside of the `.. plot::` directives will cause the code to be run during `pytest`, which is often a more convenient way to catch and debug problems.
 
-See the docstring of (generate_boxing_pass_manager())(samplomatic/transpiler/generate_boxing_pass_manager.py) for an example of combining these tools.
+See the docstring of [generate_boxing_pass_manager()](samplomatic/transpiler/generate_boxing_pass_manager.py) for a comprehensive example of combining these tools.
 
 ### Adding to the changelog
 
