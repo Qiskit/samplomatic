@@ -43,7 +43,6 @@ def generate_boxing_pass_manager(
     .. plot::
         :include-source:
         :context:
-        :format: python
 
         >>> from samplomatic.transpiler import generate_boxing_pass_manager
         >>> from qiskit.circuit import QuantumCircuit
