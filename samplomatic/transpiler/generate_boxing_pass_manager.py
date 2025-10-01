@@ -38,7 +38,35 @@ def generate_boxing_pass_manager(
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "no_modification",
     remove_barriers: bool = True,
 ) -> PassManager:
-    """Generate a pass manager to group the operations in a circuit into boxes.
+    """Construct a pass manager to group the operations in a circuit into boxes.
+
+    Supposing we start with the following simple circuit,
+
+    .. plot::
+        :include-source:
+        :context:
+
+        from samplomatic.transpiler import generate_boxing_pass_manager
+        from qiskit.circuit import QuantumCircuit
+
+        circuit = QuantumCircuit(3)
+        circuit.cz(0, 1)
+        circuit.cz(1, 2)
+        circuit.measure_all()
+
+        circuit.draw("mpl")
+
+    Then we can use this function to construct a new :class:`qiskit.transpiler.PassManager` that
+    puts the instructions of the circuit into annotated boxes.
+
+    .. plot::
+        :include-source:
+        :context: close-figs
+
+        pm = generate_boxing_pass_manager()
+
+        boxed_circuit = pm.run(circuit)
+        boxed_circuit.draw("mpl")
 
     Args:
         enable_gates: Whether to collect single- and multi-qubit gates into boxes using the

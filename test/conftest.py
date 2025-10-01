@@ -17,14 +17,16 @@ import html
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import pytest
 from numpy.random import Generator, SeedSequence, default_rng
 
-if TYPE_CHECKING:
-    pass
+# configure doctests to use the scipy extension
+# pytest_plugins = "scipy_doctest"
+
+
+# DTConfig.stopwords = frozenset({"# boogaloo"})
 
 
 def pytest_addoption(parser):

@@ -86,7 +86,7 @@ target-version = "py39"
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=test/performance"
+addopts = "--ignore=test/performance --doctest-modules"
 pythonpath = ["."]
 
 [tool.towncrier]
