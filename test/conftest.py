@@ -24,6 +24,9 @@ import matplotlib.pyplot as plt
 import pytest
 from numpy.random import Generator, SeedSequence, default_rng
 
+# enable scipy-style doctests
+pytest_plugins = "scipy_doctest"
+
 
 def pytest_addoption(parser):
     """Add pytest options."""

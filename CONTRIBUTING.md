@@ -120,6 +120,7 @@ documentation:
 2. Update the API documentation in `docs/api/` if you added or removed a module.
 3. Build the documentation:
     ```bash
+    docs$ make clean  # cleaning is usually unecessary
     docs$ make html
     ```
 
@@ -133,6 +134,18 @@ Presently, these are the guidelines for what is included:
  * All top-level packages, with members as defined by the their `__init__`
  * Manual inclusion of hand-picked second level packages / modules (e.g. `samplomatic.samplex.node`)
  * Manual handling of promoted members
+
+#### Writing Code Examples In Documentation
+
+All code examples in documentation (including docstrings) should be testable to prevent them from going stale.
+This rules out using `.. code-block:: python`.
+
+Instead, please use the `.. plot::` directive implemented by the [matplotlib sphinx extension](https://matplotlib.org/stable/api/sphinxext_plot_directive_api.html).
+Code inside of this directive is run when documentation is built and will result in a documentation build failure if the snippet fails to run.
+Additionally, using [doctest](https://docs.python.org/3/library/doctest.html) syntax inside of the `.. plot::` directives will cause the code to be run during `pytest`, which is often a more convenient way to catch and debug problems.
+We use [SciPy-style doctests](https://github.com/scipy/scipy_doctest) to get around some of the every-line-must-assert issues of doctest, which would, for example, require us to provide an expected `InstructionSet` output everytime `circuit.rz` is called.
+
+See the docstring of [generate_boxing_pass_manager()](samplomatic/transpiler/generate_boxing_pass_manager.py) for a comprehensive example of combining these tools.
 
 ### Adding to the changelog
 
