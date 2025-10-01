@@ -134,6 +134,10 @@ def determine_github_branch() -> str:
 
 
 def linkcode_resolve(domain, info):
+    """Resolve a GitHub link for the given object.
+
+    See https://www.sphinx-doc.org/en/master/usage/extensions/linkcode.html.
+    """
     if domain != "py":
         return None
 
