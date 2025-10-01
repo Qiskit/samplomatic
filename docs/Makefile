@@ -4,7 +4,6 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
-AUTODIR       = api/auto
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -18,4 +17,4 @@ help:
 
 # Custom clean target
 clean:
-	rm -rf "$(BUILDDIR)" "$(AUTODIR)"
+	rm -rf "$(BUILDDIR)" api/auto release_notes/
