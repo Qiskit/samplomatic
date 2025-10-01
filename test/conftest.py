@@ -22,12 +22,6 @@ import matplotlib.pyplot as plt
 import pytest
 from numpy.random import Generator, SeedSequence, default_rng
 
-# configure doctests to use the scipy extension
-# pytest_plugins = "scipy_doctest"
-
-
-# DTConfig.stopwords = frozenset({"# boogaloo"})
-
 
 def pytest_addoption(parser):
     """Add pytest options."""

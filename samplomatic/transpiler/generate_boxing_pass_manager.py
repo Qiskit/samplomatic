@@ -40,33 +40,34 @@ def generate_boxing_pass_manager(
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
-    Supposing we start with the following simple circuit,
-
     .. plot::
         :include-source:
         :context:
+        :format: python
 
-        from samplomatic.transpiler import generate_boxing_pass_manager
-        from qiskit.circuit import QuantumCircuit
+        >>> from samplomatic.transpiler import generate_boxing_pass_manager
+        >>> from qiskit.circuit import QuantumCircuit
+        >>> import matplotlib.pyplot as plt
+        >>>
+        >>> # Create a simple circuit to test with
+        >>> circuit = QuantumCircuit(3)
+        >>> circuit.cz(0, 1)
+        >>> circuit.cz(1, 2)
+        >>> circuit.measure_all()
+        >>>
+        >>> circuit.draw("mpl") # doctest: +SKIP
 
-        circuit = QuantumCircuit(3)
-        circuit.cz(0, 1)
-        circuit.cz(1, 2)
-        circuit.measure_all()
-
-        circuit.draw("mpl")
-
-    Then we can use this function to construct a new :class:`qiskit.transpiler.PassManager` that
+    This function can be used to construct a new :class:`qiskit.transpiler.PassManager` that
     puts the instructions of the circuit into annotated boxes.
 
     .. plot::
         :include-source:
         :context: close-figs
 
-        pm = generate_boxing_pass_manager()
-
-        boxed_circuit = pm.run(circuit)
-        boxed_circuit.draw("mpl")
+        >>> pm = generate_boxing_pass_manager()
+        >>>
+        >>> boxed_circuit = pm.run(circuit)
+        >>> boxed_circuit.draw("mpl") # doctest: +SKIP
 
     Args:
         enable_gates: Whether to collect single- and multi-qubit gates into boxes using the
