@@ -102,6 +102,7 @@ docs_url_prefix = "samplomatic"
 
 
 # -- Source code links ---------------------------------------------------
+# See https://github.com/Qiskit/qiskit-ibm-runtime/blob/main/docs/conf.py
 
 
 @lru_cache(2)
