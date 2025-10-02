@@ -55,7 +55,8 @@ dev = [
     "sphinx>=2.2",                # For building documentation
     "qiskit-sphinx-theme~=2.0.0", # Qiskit Sphinx theme
     "sphinx-automodapi",          # Helps generate stubs in documentation
-    "scipy-doctest",              # SciPy's style of doctesting
+    "scipy-doctest>=2.0",         # SciPy's style of doctesting
+    "myst-parser>=2.0",           # For rendering markdown in sphinx
 ]
 vis = [
     "nbformat>=4.2.0",
