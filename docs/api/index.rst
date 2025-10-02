@@ -1,5 +1,5 @@
-API
-===
+API Reference
+=============
 
 .. automodapi:: samplomatic
    :no-inheritance-diagram:
