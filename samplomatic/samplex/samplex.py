@@ -90,6 +90,7 @@ class Samplex:
 
     .. plotly::
         :include-source:
+        :context:
 
         from samplomatic import build, Twirl
         from qiskit import QuantumCircuit
@@ -103,13 +104,18 @@ class Samplex:
         template, samplex = build(circuit)
         samplex.draw()
 
-    Although the DAG is the main portion of the data model of a samplex, there are other important
-    components too:
+    Although the DAG is the main portion of the data model of a samplex, other information is also
+    stored:
 
-    * Samplexes themselves can be parametric, and the :class:`~.ParameterExpressionTable` is
-      responsible
-
-
+    * Samplexes themselves can be parametric (see :attr:`~.add:attr:`~parameters`) and evaluate
+      parameter expressions, all of which is stored by the samplex. For example, when constructed
+      via :func:`~.build`, a samplex will accept values for all of the parameters accepted by the
+      base circuit.
+    * Input and output specifcations that describe exactly what values are expected as input at
+      :meth:`~.sample` time, and what values will be returned, see :meth:`~.inputs` and
+      :meth:`~.outputs`.
+    * Noise model requirements that specify what types of noise models are compatible with the
+      sampling needs of a samplex.
     """
 
     _RESERVED_INPUTS: frozenset[InterfaceName] = frozenset()
@@ -160,12 +166,14 @@ class Samplex:
         """Add a parameter expression to the samplex.
 
         An expression needs to be added to a samplex before a node can be added that references it.
+        An entry will be inserted into :attr:`~.parameters` in sorted order for every new parameter
+        appearing in the given parameter expression.
 
         Args:
             expression: A parameter or parameter expression.
 
         Returns:
-            An index that parametric nodes can reference.
+            An index that parametric nodes can use to referenced the evaluated expression.
         """
         return self._param_table.append(expression)
 
