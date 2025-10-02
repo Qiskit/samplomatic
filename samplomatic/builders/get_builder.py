@@ -63,17 +63,6 @@ def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Bu
     collection = CollectionSpec(qubits)
     emission = EmissionSpec(qubits)
 
-    # TODO: if BoxOp contained a DAG we could look at the first topological generation and look at
-    # that?
-    if_else_qubits = QubitPartition(1)
-    for box_instr in instr.operation.body:
-        if box_instr.operation.name.startswith("if_else"):
-            for q in box_instr.qubits:
-                if_else_qubits.add((q,))
-
-    if len(if_else_qubits):
-        collection.if_else_qubits = if_else_qubits
-
     seen_annotations: set[type[Annotation]] = set()
     for annotation in annotations:
         if (parser := SUPPORTED_ANNOTATIONS.get(annotation_type := type(annotation))) is None:
@@ -88,7 +77,13 @@ def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Bu
     if emission.noise_ref and not emission.twirl_register_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
+    collection.if_else_qubits = QubitPartition(1)
     if collection.dressing is DressingMode.LEFT:
+        # TODO: if BoxOp contained a DAG we could look at the first topological generation
+        for box_instr in instr.operation.body:
+            if box_instr.operation.name.startswith("if_else"):
+                for q in box_instr.qubits:
+                    collection.if_else_qubits.add((q,))
         return LeftBoxBuilder(collection, emission)
     return RightBoxBuilder(collection, emission)
 

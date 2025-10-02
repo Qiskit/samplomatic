@@ -198,6 +198,8 @@ class RightBoxBuilder(BoxBuilder):
             return
 
         if name.startswith("if_else"):
+            for qubit in instr.qubits:
+                self.collection.if_else_qubits.add((qubit,))
             builder = BoxRightIfElseBuilder(
                 instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
             )

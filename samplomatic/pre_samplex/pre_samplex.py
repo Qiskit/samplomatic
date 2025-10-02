@@ -393,14 +393,6 @@ class PreSamplex:
             qubits.num_elements_per_part, [tuple(self.qubit_map[q] for q in sys) for sys in qubits]
         )
 
-    def add_force_copy_nodes(self, node_idxs: Iterable[NodeIndex]):
-        """Add node indices for which a register will be forced to copy."""
-        self._forced_copy_node_idxs.update(node_idxs)
-
-    def remove_force_copy_nodes(self, node_idxs: Iterable[NodeIndex]):
-        """Remove node indices for which a register will be forced to copy."""
-        self._forced_copy_node_idxs.difference_update(node_idxs)
-
     def add_collect(
         self,
         qubits: QubitPartition,
@@ -1188,11 +1180,21 @@ class PreSamplex:
         pre_pred_idx = next(iter(self.sorted_predecessor_idxs(pre_copy_idx, order)))
         register_name = register_names[pre_copy_idx][pre_pred_idx]
 
-        node_predecessor = samplex.graph[pred_idx := pre_nodes_to_nodes[pre_pred_idx]]
+        node_predecessor = samplex.graph[pre_nodes_to_nodes[pre_pred_idx]]
         if register_name in node_predecessor.writes_to():
             virtual_type = node_predecessor.writes_to()[register_name][1]
         else:
             virtual_type = node_predecessor.instantiates()[register_name][1]
+
+        combine_node_idx = self.add_combine_node(
+            samplex,
+            pre_copy_idx,
+            pre_nodes_to_nodes,
+            order,
+            register_names,
+            f"combine_{reg_idx}",
+            virtual_type,
+        )
 
         copy_node = CopyNode(
             register_name,
@@ -1202,7 +1204,7 @@ class PreSamplex:
         )
 
         node_idx = samplex.add_node(copy_node)
-        samplex.add_edge(pred_idx, node_idx)
+        samplex.add_edge(combine_node_idx, node_idx)
         pre_nodes_to_nodes[pre_copy_idx] = node_idx
 
         for pre_successor_idx in self.graph.successor_indices(pre_copy_idx):
@@ -1345,7 +1347,6 @@ class PreSamplex:
                 input_register_name=input_register_name,
                 output_register_name=combined_register_name,
                 slice_idxs=slice_idxs,
-                force_copy=pre_edge.force_register_copy,
             )
         else:
             combine_node = CombineRegistersNode(

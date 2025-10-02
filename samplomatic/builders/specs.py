@@ -98,9 +98,11 @@ class CollectionSpec:
     """How to synthesize collection gates."""
 
     if_else_qubits: QubitPartition | None = None
+    """The subset of 'qubits' collected in conditional operations."""
 
     @property
     def collect_qubits(self):
+        """The subset of 'qubits' collected in the box boundary."""
         if self.if_else_qubits is None:
             return self.qubits
         return self.qubits.difference(self.if_else_qubits.all_elements)

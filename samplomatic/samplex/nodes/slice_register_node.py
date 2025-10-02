@@ -17,7 +17,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import numpy as np
-from numpy.typing import ArrayLike
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -42,8 +41,6 @@ class SliceRegisterNode(EvaluationNode):
         input_register_name: The name of the input register.
         output_register_name: The name of the output register.
         slice_idxs: The indices used to slice the register.
-        force_copy: Whether or not to force output register to be a copy instead of a view of
-            the input register.
 
     Raises:
         SamplexConstructionError: If ``slice_idxs`` has the wrong shape.
@@ -56,7 +53,6 @@ class SliceRegisterNode(EvaluationNode):
         input_register_name: RegisterName,
         output_register_name: RegisterName,
         slice_idxs: slice | Sequence[SubsystemIndex],
-        force_copy: bool = False,
     ):
         self._input_type = input_type
         self._output_type = output_type
@@ -72,9 +68,6 @@ class SliceRegisterNode(EvaluationNode):
                     f"'slice_idxs' for '{input_register_name}' has a shape {slice_idxs.shape}, "
                     "but a shape with a single axes is required."
                 )
-            # Check if indices could be converted to a slice
-            elif not force_copy:
-                self._slice_idxs = get_slice_from_idxs(slice_idxs)
             else:
                 self._slice_idxs = slice_idxs
 
@@ -153,20 +146,3 @@ class SliceRegisterNode(EvaluationNode):
     def evaluate(self, registers, *_):
         converted_register = registers[self._input_register_name].convert_to(self._output_type)
         registers[self._output_register_name] = converted_register[self._slice_idxs]
-
-
-def get_slice_from_idxs(slice_idxs: ArrayLike) -> ArrayLike | slice:
-    """A helper function that returns a slice object, if indices permit."""
-    if len(slice_idxs) == 1:
-        return slice(slice_idxs[0], slice_idxs[0] + 1, 1)
-    else:
-        step = slice_idxs[1] - slice_idxs[0]
-        expected = slice_idxs[0] + step * np.arange(len(slice_idxs))
-
-        if np.array_equal(slice_idxs, expected):
-            return slice(
-                int(slice_idxs[0]),
-                int(slice_idxs[-1] + step) if slice_idxs[-1] + step >= 0 else None,
-                int(step),
-            )
-    return slice_idxs

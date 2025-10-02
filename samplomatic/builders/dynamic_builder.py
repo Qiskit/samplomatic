@@ -46,16 +46,22 @@ class BoxIfElseBuilder:
 
     def append_propagate(self, block: QuantumCircuit, new_block: QuantumCircuit):
         for instr in block:
-            new_params = []
-            param_mapping = []
-            for param in instr.operation.params:
-                param_mapping.append([self.param_iter.idx, param])
-                new_params.append(next(self.param_iter))
+            if len(instr.qubits) == 1:
+                mode = InstructionMode.MULTIPLY
+                params = []
+                if instr.operation.is_parameterized():
+                    params.extend((None, param) for param in instr.operation.params)
+            else:
+                params = []
+                param_mapping = []
+                for param in instr.operation.params:
+                    param_mapping.append([self.param_iter.idx, param])
+                    params.append(next(self.param_iter))
 
-            new_op = type(instr.operation)(*new_params) if new_params else instr.operation
-            new_block.append(new_op, instr.qubits, instr.clbits)
-            mode = InstructionMode.MULTIPLY if len(instr.qubits) == 1 else InstructionMode.PROPAGATE
-            self.pre_samplex.add_propagate(instr, InstructionSpec(params=new_params, mode=mode))
+                new_op = type(instr.operation)(*params) if params else instr.operation
+                new_block.append(new_op, instr.qubits, instr.clbits)
+                mode = InstructionMode.PROPAGATE
+            self.pre_samplex.add_propagate(instr, InstructionSpec(params=params, mode=mode))
 
     def append_template(self, block: QuantumCircuit, new_block: QuantumCircuit) -> ParamIndices:
         start = self.param_iter.idx
