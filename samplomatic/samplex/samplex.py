@@ -111,7 +111,7 @@ class Samplex:
         >>> template, samplex = build(circuit)
         >>> samplex.draw() # doctest: +SKIP
 
-    Although the DAG is the main portion of the data model of a samplex, other information is also
+    Although the DAG is the main component of the data model this object, other information is also
     stored:
 
     * Samplexes themselves can be parametric (see :attr:`~.add:attr:`~parameters`) and evaluate
