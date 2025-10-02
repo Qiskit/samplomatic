@@ -182,7 +182,7 @@ def linkcode_resolve(domain, info):
         linespec = f"#L{lineno}-L{ending_lineno}"
     return (
         "https://github.com/Qiskit/samplomatic/tree/"
-        f"{determine_github_branch()}/{file_name}{linespec}"
+        f"{determine_github_branch()}/samplomatic/{file_name}{linespec}"
     )
 
 
