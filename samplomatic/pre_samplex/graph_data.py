@@ -44,7 +44,7 @@ class PreNode:
 
 @dataclass
 class PreCopy(PreNode):
-    """"""
+    """The copy node type used during building."""
 
 
 @dataclass
@@ -57,9 +57,6 @@ class PreEdge:
     direction: Direction
     """Whether the edge is moving forwards or backwards in circuit-time."""
 
-    force_register_copy: bool = False
-    """Whether the edge should force the receiving node to get a copy of the register."""
-
     def get_style(self) -> EdgeStyle:
         """Summarizes the style of this node when plotted via :func:`~.plot_graph`."""
         return (
@@ -68,7 +65,6 @@ class PreEdge:
             )
             .append_data("Subsystems", list(self.subsystems))
             .append_data("Direction", self.direction.name)
-            .append_data("Force copy", self.force_register_copy)
         )
 
     def add_subsystems(self, new_subsystems: QubitIndicesPartition):

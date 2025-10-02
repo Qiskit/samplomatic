@@ -128,12 +128,3 @@ class InstructionSpec:
 
     clbit_idxs: list[ClbitIndex] = field(default_factory=list)
     """The mode of an added instruction."""
-
-    if_else: tuple[list[InstructionSpec], ParamIndices, list[InstructionSpec], ParamIndices] = (
-        field(default_factory=lambda: ([], EMPTY_IDXS, [], EMPTY_IDXS))
-    )
-    """The specs for an `IfElseOp`.
-
-    Each branch of the operation is represented by two fields: a list of `InstructionSpec` for
-    the branch's instructions, followed by `ParamIndices` for the collectors of the branch. The
-    true branch is first in the tuple, and the else branch is second."""

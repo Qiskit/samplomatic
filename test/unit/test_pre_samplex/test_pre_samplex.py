@@ -18,9 +18,7 @@ from qiskit.circuit import CircuitInstruction, ClassicalRegister, QuantumCircuit
 from qiskit.circuit.library import CXGate, Measure, XGate
 from rustworkx import topological_sort
 
-from samplomatic import Twirl
 from samplomatic.annotations import VirtualType
-from samplomatic.builders import pre_build
 from samplomatic.builders.specs import InstructionMode, InstructionSpec
 from samplomatic.constants import Direction
 from samplomatic.exceptions import SamplexBuildError
@@ -612,33 +610,6 @@ class TestMergeParallelPrePropagateNodes:
             match="Encountered unsupported cx propragation with mode InstructionMode.MULTIPLY.",
         ):
             pre_samplex.finalize()
-
-    def test_if_else_with_mergable_preedges(self):
-        """Test that merging of PreEdges maintains their force_register_copy property.
-
-        Because it is a bit difficult to do by hand, we use the full pre_build.
-        """
-        circuit = QuantumCircuit(2, 1)
-        circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            with circuit.if_test((circuit.clbits[0], 1)) as _else:
-                circuit.x(0)
-                circuit.x(1)
-            with _else:
-                circuit.sx(0)
-                circuit.sx(1)
-        with circuit.box([Twirl(dressing="right")]):
-            circuit.noop(0, 1)
-
-        _, pre_samplex = pre_build(circuit)
-        pre_samplex.merge_parallel_pre_propagate_nodes()
-        graph = pre_samplex.graph
-        for emit_node in [6, 7]:
-            assert not graph.get_edge_data(emit_node, 4).force_register_copy
-            assert graph.get_edge_data(emit_node, 9).force_register_copy
-        assert graph[4].operation.name == "x"
-        assert graph[9].operation.name == "sx"
-        assert graph[9].subsystems.all_elements == {0, 1}
 
 
 class TestDraw:
