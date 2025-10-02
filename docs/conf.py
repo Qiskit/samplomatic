@@ -17,7 +17,6 @@
 
 """Sphinx Configuration"""
 
-# -- Path setup --------------------------------------------------------------
 import inspect
 import logging
 import os
@@ -28,7 +27,6 @@ from importlib.metadata import version as metadata_version
 from pathlib import Path
 
 sys.path.insert(0, os.path.abspath("../"))
-
 logger = logging.getLogger(__name__)
 
 # -- Project information -----------------------------------------------------
