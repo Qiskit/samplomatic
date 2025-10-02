@@ -40,6 +40,9 @@ def generate_boxing_pass_manager(
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
+    The :meth:`~generate_boxing_pass_manager` is designed to provide a flexible and convenient
+    way of grouping operations into annotated boxes. By selecting
+
     .. plot::
         :include-source:
         :context:
