@@ -62,7 +62,7 @@ class Samplex:
 
     In abstract terms, a samplex represents a parametric probability distribution over the
     parameters of some template circuit, as well as other array-valued fields to use in
-    post-processing data collected from executing the bound circuit. In practical terms, it
+    post-processing data collected from executing the bound template circuit. In practical terms, it
     implements a :meth:`~.Samplex.sample` method that draws from this distribution to produce a
     collection of arrays that include at least an array of (random) angles valid for the template
     circuit. For example, a samplex instance might implement Pauli-twirling all the layers of some
