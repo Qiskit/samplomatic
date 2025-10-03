@@ -9,8 +9,8 @@ alternative to grouping and annotating by hand, the :meth:`samplomatic.transpile
 has you covered.
 
 This guide illustrates how to use :meth:`samplomatic.transpiler.generate_boxing_pass_manager` to box up quantum
-circuits. To highlight the effects of each of the function's arguments, we will mainly target the following circuit,
-which contains single- and two-qubit gates as well as mid-circuit and terminal measurements.
+circuits. To highlight the effects of each of the function's arguments, in the sections that follow we will apply
+different pass managers to the circuit below.
 
 .. plot::
    :include-source:
@@ -18,14 +18,14 @@ which contains single- and two-qubit gates as well as mid-circuit and terminal m
 
    >>> from qiskit.circuit import QuantumCircuit, Parameter
    >>>
-   >>> circuit = QuantumCircuit(4, 4)
+   >>> circuit = QuantumCircuit(4, 7)
    >>> circuit.h(1)
    >>> circuit.h(2)
    >>> circuit.cz(1, 2)
    >>> circuit.h(1)
    >>> circuit.cx(1, 0)
    >>> circuit.cx(2, 3)
-   >>> circuit.measure(range(1, 4), range(1, 4))
+   >>> circuit.measure(range(1, 4), range(3))
    >>> circuit.cx(0, 1)
    >>> circuit.cx(1, 2)
    >>> circuit.cx(2, 3)
@@ -33,15 +33,15 @@ which contains single- and two-qubit gates as well as mid-circuit and terminal m
    >>>   circuit.rz(Parameter(f"th_{qubit}"), qubit)
    >>>   circuit.rx(Parameter(f"phi_{qubit}"), qubit)
    >>>   circuit.rz(Parameter(f"lam_{qubit}"), qubit)
-   >>> circuit.measure(range(4), range(4))
+   >>> circuit.measure(range(4), range(3, 7))
    >>>
    >>> circuit.draw("mpl", scale=0.8)
 
-Grouping operations into boxes
-------------------------------
+Group operations into boxes
+---------------------------
 
 The argument ``enable_gates`` can be set to ``True`` or ``False`` to specify whether the two-qubit gates should be grouped into
-boxes. Similarly, ``enable_measure`` allows specifying whether or not measurements should be grouped. The following
+boxes. Similarly, ``enable_measures`` allows specifying whether or not measurements should be grouped. The following
 snippet shows an example where both gates and measurements are grouped.
 
 .. plot::
@@ -52,7 +52,7 @@ snippet shows an example where both gates and measurements are grouped.
    >>>
    >>> pm = generate_boxing_pass_manager(
    >>>   enable_gates=True,
-   >>>   enable_measure=True,
+   >>>   enable_measures=True,
    >>> )
    >>> transpiled_circuit = pm.run(circuit)
    >>> transpiled_circuit.draw("mpl", scale=0.8)
@@ -63,54 +63,190 @@ in noise learning and mitigation protocols, which usually target layers of homog
 and measurements are placed in the leftmost box that can accommodate them, and every single-qubit gates is placed in
 the same box as the two-qubit gate or measurement they preceed.
 
-By default, the barrier is removed from the circuit prior to grouping the operations, but setting ``remove_barriers``
-to ``False`` preserves it.
+The following snippet shows another example where ``enable_gates`` is set to ``False``. As can be seen, the two-qubit
+gates are not grouped into boxes, nor are the single-qubit gates that preceed them.
 
 .. plot::
    :include-source:
    :context: close-figs
 
-   >>> from samplomatic.transpiler import generate_boxing_pass_manager
-   >>>
    >>> pm = generate_boxing_pass_manager(
-   >>>   enable_gates=True,
-   >>>   enable_measure=True,
-   >>>   remove_barriers=False,
+   >>>   enable_gates=False,
+   >>>   enable_measures=True,
    >>> )
    >>> transpiled_circuit = pm.run(circuit)
    >>> transpiled_circuit.draw("mpl", scale=0.8)
 
-The following snippet shows an example where ``enable_measure`` is set to ``False``. As can be seen, the measurements
-are not grouped into boxes, nor are the single-qubit gates that preceed them.
+Choose how to dress your boxes
+------------------------------
+
+All the two-qubit gates and measurement boxes in the returned circuit own left-dressed annotations. In particular,
+all the boxes that contain two-qubit gates are annotated with a ``Twirl``, while for measurement boxes, users can
+choose between ``Twirl``, ``BasisTranform`` (with ``BasisTranform.mode="measure"``), or both. The following code
+generates a circuit where the all the boxes are twirled, and the measurement boxes are additionally annotated with
+``BasisTranform``.
 
 .. plot::
    :include-source:
    :context: close-figs
 
-   >>> from samplomatic.transpiler import generate_boxing_pass_manager
-   >>>
    >>> pm = generate_boxing_pass_manager(
    >>>   enable_gates=True,
-   >>>   enable_measure=False,
-   >>>   remove_barriers=False,
+   >>>   enable_measures=True,
+   >>>   measure_annotations="all",
    >>> )
    >>> transpiled_circuit = pm.run(circuit)
+
+Prepare your circuit for noise injection
+----------------------------------------
+
+The ``inject_noise_targets`` allows specifying what boxes should receive an ``InjectNoise`` annotation. As an example,
+the following snippet generates a circuit where the two-qubit gates boxes own an ``InjectNoise`` annotation but the
+measurement boxes do not.
+
+.. plot::
+   :include-source:
+   :context: close-figs
+
+   >>> pm = generate_boxing_pass_manager(
+   >>>   enable_gates=True,
+   >>>   enable_measures=True,
+   >>>   inject_noise_targets="gates",
+   >>> )
+   >>> transpiled_circuit = pm.run(circuit)
+
+If a circuit contains two or more boxes that are equivalent up to one-qubit gates, all of them are annotated with
+an ``InjectNoise`` annotation with the same ``ref``. Thus, the number of unique ``InjectNoise.ref``\s in the returned
+circuit is equal to the number of unique boxes (where uniqueness is defined up to one-qubit gates).
+
+By selecting the appropriate value for ``inject_noise_strategy``, users can decide whether the ``InjectNoise`` annotations
+should have:
+
+* ``modifier_ref=''``, recommended when modifying the noise maps prior to injecting them is not required,
+* ``modifier_ref=ref``, recommended when all the noise maps need to be scaled uniformly by the same factor, or
+* a unique value of ``modifier_ref``, recommended when every noise map needs to be scaled by a different factor.
+
+The following code generates a circuit where the two-qubit gates boxes own an ``InjectNoise`` annotation with unique
+values of ``modifier_ref``.
+
+.. plot::
+   :include-source:
+   :context: close-figs
+
+   >>> pm = generate_boxing_pass_manager(
+   >>>   enable_gates=True,
+   >>>   enable_measures=True,
+   >>>   inject_noise_targets="gates",
+   >>>   inject_noise_strategy="individual_modification",
+   >>> )
+   >>> transpiled_circuit = pm.run(circuit)
+
+Specify how to treat barriers
+-----------------------------
+
+By default, barriers are removed from the circuit prior to grouping the operations, as shown in the following
+snippet.
+
+.. plot::
+   :include-source:
+   :context: close-figs
+
+   >>> circuit_with_barrier = QuantumCircuit(4)
+   >>> circuit_with_barrier.cz(0, 1)
+   >>> circuit_with_barrier.barrier()
+   >>> circuit_with_barrier.cz(2, 3)
+   >>> circuit_with_barrier.measure_all()
+   >>>
+   >>> pm = generate_boxing_pass_manager()
+   >>> transpiled_circuit = pm.run(circuit_with_barrier)
    >>> transpiled_circuit.draw("mpl", scale=0.8)
 
-Annotating boxes
-----------------
-
-When ``enable_gates`` is ``True``, by default every box containing two-qubit gates is annotated with a
+Setting ``remove_barriers`` to ``False`` allows preserving the barriers. As can be seen in the figure below,
+if two gates are separated by a barrier, they are placed into separate boxes.
 
 .. plot::
    :include-source:
    :context: close-figs
 
-   >>> from samplomatic.transpiler import generate_boxing_pass_manager
+   >>> pm = generate_boxing_pass_manager(
+   >>>   remove_barriers=False,
+   >>> )
+   >>>
+   >>> transpiled_circuit = pm.run(circuit_with_barrier)
+   >>> transpiled_circuit.draw("mpl", scale=0.8)
+
+All in all, choosing to barriers guarantees that the alignment and schedule of gates in the input
+circuit is respected, but it generally results in deeper circuits.
+
+Build your circuit
+------------------
+
+Every pass manager produced by :meth:`samplomatic.transpiler.generate_boxing_pass_manager` is guaranteed to
+return circuits that can be successfully turned into a template/samplex pair by :meth:`samplomatic.build`. As an
+example, the following code calls the :meth:`samplomatic.build` method on a circuit produced by a boxing pass
+manager.
+
+.. plot::
+   :include-source:
+   :context:
+
+   >>> from samplomatic import build
    >>>
    >>> pm = generate_boxing_pass_manager(
    >>>   enable_gates=True,
-   >>>   enable_measure=False,
+   >>>   enable_measures=True,
    >>> )
    >>> transpiled_circuit = pm.run(circuit)
-   >>> print(transpiled_circuit[0])
+   >>>
+   >>> template, samplex = build(transpiled_circuit)
+
+In order to guarantee that any transpiled circuit can be successfully built, the pass managers know how to
+include additional boxes when they are needed. As an example, consider the circuit below, which ends with an
+unmeasured qubit.
+
+.. plot::
+   :include-source:
+   :context: close-figs
+
+   >>> circuit_with_unmeasured_qubit = QuantumCircuit(4, 3)
+   >>> circuit_with_unmeasured_qubit.cz(0, 1)
+   >>> circuit_with_unmeasured_qubit.cz(2, 3)
+   >>> for qubit in range(4):
+   >>>   circuit_with_unmeasured_qubit.rz(Parameter(f"th_{qubit}"), qubit)
+   >>>   circuit_with_unmeasured_qubit.rx(Parameter(f"phi_{qubit}"), qubit)
+   >>>   circuit_with_unmeasured_qubit.rz(Parameter(f"lam_{qubit}"), qubit)
+   >>> circuit_with_unmeasured_qubit.measure(range(1, 4), range(3))
+   >>>
+   >>> circuit_with_unmeasured_qubit.draw("mpl", scale=0.8)
+
+Drawing left-dressed boxes around the gates and the measurements would result in a circuit that has uncollected
+virtual gates on qubit ``0``, and calling :meth:`samplomatic.build` on this circuit would result in an error. To
+avoid this, the pass managers returned by :meth:`samplomatic.transpiler.generate_boxing_pass_manager` are allowed
+to add right-dressed boxes to act as collectors. As an example, in the following snippet qubit ``0`` is
+terminated by a right-dressed box that picks up the uncollected virtual gate. The single-qubit gates acting on qubit
+``0`` are also placed inside the box, in order to minimise the depth of the resulting circuit.
+
+.. plot::
+   :include-source:
+   :context: close-figs
+
+   >>> pm = generate_boxing_pass_manager(
+   >>>   enable_gates=True,
+   >>>   enable_measures=True,
+   >>> )
+   >>> transpiled_circuit = pm.run(circuit_with_unmeasured_qubit)
+   >>> transpiled_circuit.draw("mpl", scale=0.8)
+
+In another example, a right-dressed box is added to collect the virtual gates that would otherwise remain
+uncollected due to the unboxed measurements.
+
+.. plot::
+   :include-source:
+   :context: close-figs
+
+   >>> pm = generate_boxing_pass_manager(
+   >>>   enable_gates=True,
+   >>>   enable_measures=False,
+   >>> )
+   >>> transpiled_circuit = pm.run(circuit_with_unmeasured_qubit)
+   >>> transpiled_circuit.draw("mpl", scale=0.8)
