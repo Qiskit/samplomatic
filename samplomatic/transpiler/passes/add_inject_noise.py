@@ -93,7 +93,6 @@ class AddInjectNoise(TransformationPass):
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         if self.targets == "none":
-            print("hey")
             return dag
 
         # A dictionary to map unique boxes to their ``ref``
