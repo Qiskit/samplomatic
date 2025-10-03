@@ -65,8 +65,8 @@ class Samplex:
     post-processing data collected from executing the bound template circuit. In practical terms, it
     implements a :meth:`~.Samplex.sample` method that draws from this distribution to produce a
     collection of arrays that include at least an array of (random) angles valid for the template
-    circuit. For example, a samplex instance might implement Pauli twirling on all the layers of some
-    base circuit including final measurements, so that the angles returned by sampling from it
+    circuit. For example, a samplex instance might implement Pauli twirling on all the layers of
+    some base circuit including final measurements, so that the angles returned by sampling from it
     correspond to Pauli gates composed with whatever single-qubit gates exist in the base circuit,
     along with bool arrays that describe how to invert those measurement results flipped by
     measurement twirling. However, its semantics are not limited to this, and its structure is
