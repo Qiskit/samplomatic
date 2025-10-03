@@ -183,14 +183,14 @@ with larger depths.
 Build your circuit
 ------------------
 
-Every pass manager produced by :meth:`samplomatic.transpiler.generate_boxing_pass_manager` is guaranteed to
-return circuits that can be successfully turned into a template/samplex pair by :meth:`samplomatic.build`. As an
+Every pass manager produced by :meth:`samplomatic.transpiler.generate_boxing_pass_manager` returns
+circuits that can be successfully turned into a template/samplex pair by :meth:`samplomatic.build`. As an
 example, the following code calls the :meth:`samplomatic.build` function on a circuit produced by a boxing pass
 manager.
 
 .. plot::
    :include-source:
-   :context:
+   :context: close-figs
 
    >>> from samplomatic import build
    >>>
@@ -202,7 +202,7 @@ manager.
    >>>
    >>> template, samplex = build(transpiled_circuit)
 
-In order to guarantee that any transpiled circuit can be successfully built, the pass managers know how to
+In order to ensure that any transpiled circuit can be successfully built, the pass managers know how to
 include additional boxes when they are needed. As an example, consider the circuit below, which ends with an
 unmeasured qubit.
 
