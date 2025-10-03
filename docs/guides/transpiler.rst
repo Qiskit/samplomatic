@@ -2,15 +2,15 @@
 Transpiler
 ==========
 
-The :meth:`samplomatic.transpiler.generate_boxing_pass_manager` is designed to provide a flexible and convenient
-way of grouping the operations of a circuit into annotated boxes. Whether you want to automate your workflow, you
-are interested in trying different boxing strategies for your circuits, or you simply want a quick and easy
-alternative to grouping and annotating by hand, the :meth:`samplomatic.transpiler.generate_boxing_pass_manager`
-has you covered.
+The :meth:`samplomatic.transpiler.generate_boxing_pass_manager` is a flexible and convenient function that
+builds :class:`qiskit.transpiler.PassManager`\s able to group the circuit instructions into annotated boxes.
+Whether you want to automate your workflow, you are interested in trying different boxing strategies for your
+circuits, or you simply want a quick and easy alternative to grouping and annotating by hand,
+:meth:`samplomatic.transpiler.generate_boxing_pass_manager` has you covered.
 
-This guide illustrates how to use :meth:`samplomatic.transpiler.generate_boxing_pass_manager` to box up quantum
-circuits. To highlight the effects of each of the function's arguments, in the sections that follow we will apply
-different pass managers to the circuit below.
+This guide illustrates how to use :meth:`samplomatic.transpiler.generate_boxing_pass_manager` and its aguments.
+To highlight the effects of each of the function's arguments, in the sections that follow we will mainly target
+the circuit below.
 
 .. plot::
    :include-source:
@@ -183,7 +183,7 @@ Build your circuit
 
 Every pass manager produced by :meth:`samplomatic.transpiler.generate_boxing_pass_manager` is guaranteed to
 return circuits that can be successfully turned into a template/samplex pair by :meth:`samplomatic.build`. As an
-example, the following code calls the :meth:`samplomatic.build` method on a circuit produced by a boxing pass
+example, the following code calls the :meth:`samplomatic.build` function on a circuit produced by a boxing pass
 manager.
 
 .. plot::
