@@ -58,6 +58,7 @@ dev = [
     "scipy-doctest>=2.0",         # SciPy's style of doctesting
     "sphinx-plotly-directive",    # For embedding plotly figures in docs
     "myst-parser>=2.0",           # For rendering markdown in sphinx
+    "myst-nb",                    # For rendering notebooks as doc pages
 ]
 vis = [
     "nbformat>=4.2.0",
