@@ -161,8 +161,7 @@ snippet.
    >>> transpiled_circuit = pm.run(circuit_with_barrier)
    >>> transpiled_circuit.draw("mpl", scale=0.8)
 
-Setting ``remove_barriers`` to ``False`` allows preserving the barriers. As can be seen in the figure below,
-if two gates are separated by a barrier, they are placed into separate boxes.
+Setting ``remove_barriers`` to ``False`` allows preserving the barriers.
 
 .. plot::
    :include-source:
@@ -175,8 +174,11 @@ if two gates are separated by a barrier, they are placed into separate boxes.
    >>> transpiled_circuit = pm.run(circuit_with_barrier)
    >>> transpiled_circuit.draw("mpl", scale=0.8)
 
-All in all, choosing to barriers guarantees that the alignment and schedule of gates in the input
-circuit is respected, but it generally results in deeper circuits.
+Notice that when two gates are separated by a barrier, setting ``remove_barriers`` to ``True`` potentially
+allows them to be placed into the same box. However, if ``remove_barriers`` is set to ``False``, they are
+sure to be placed into different boxes. Thus, choosing to preserve the barriers guarantees that the
+alignment and schedule of gates in the input circuit are respected, but it generally results in circuits
+with larger depths.
 
 Build your circuit
 ------------------
