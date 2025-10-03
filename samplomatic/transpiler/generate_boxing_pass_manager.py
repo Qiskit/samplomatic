@@ -12,6 +12,8 @@
 
 """generate_boxing_pass_manager"""
 
+from __future__ import annotations
+
 from typing import Literal
 
 from qiskit.transpiler import PassManager
