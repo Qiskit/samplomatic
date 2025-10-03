@@ -81,10 +81,10 @@ Choose how to dress your boxes
 ------------------------------
 
 All the two-qubit gates and measurement boxes in the returned circuit own left-dressed annotations. In particular,
-all the boxes that contain two-qubit gates are annotated with a ``Twirl``, while for measurement boxes, users can
-choose between ``Twirl``, ``BasisTranform`` (with ``BasisTranform.mode="measure"``), or both. The following code
+all the boxes that contain two-qubit gates are annotated with a :class:`.~Twirl`, while for measurement boxes, users can
+choose between :class:`.~Twirl`, :class:`.~BasisTranform` (with ``mode="measure"``), or both. The following code
 generates a circuit where the all the boxes are twirled, and the measurement boxes are additionally annotated with
-``BasisTranform``.
+:class:`.~BasisTranform`.
 
 .. plot::
    :include-source:
@@ -100,8 +100,8 @@ generates a circuit where the all the boxes are twirled, and the measurement box
 Prepare your circuit for noise injection
 ----------------------------------------
 
-The ``inject_noise_targets`` allows specifying what boxes should receive an ``InjectNoise`` annotation. As an example,
-the following snippet generates a circuit where the two-qubit gates boxes own an ``InjectNoise`` annotation but the
+The ``inject_noise_targets`` allows specifying what boxes should receive an :class:`.~InjectNoise` annotation. As an example,
+the following snippet generates a circuit where the two-qubit gates boxes own an :class:`.~InjectNoise` annotation but the
 measurement boxes do not.
 
 .. plot::
@@ -116,17 +116,17 @@ measurement boxes do not.
    >>> transpiled_circuit = pm.run(circuit)
 
 If a circuit contains two or more boxes that are equivalent up to one-qubit gates, all of them are annotated with
-an ``InjectNoise`` annotation with the same ``ref``. Thus, the number of unique ``InjectNoise.ref``\s in the returned
+an :class:`.~InjectNoise` annotation with the same ``ref``. Thus, the number of unique ``InjectNoise.ref``\s in the returned
 circuit is equal to the number of unique boxes (where uniqueness is defined up to one-qubit gates).
 
-By selecting the appropriate value for ``inject_noise_strategy``, users can decide whether the ``InjectNoise`` annotations
+By selecting the appropriate value for ``inject_noise_strategy``, users can decide whether the :class:`.~InjectNoise` annotations
 should have:
 
 * ``modifier_ref=''``, recommended when modifying the noise maps prior to sampling from them is not required,
 * ``modifier_ref=ref``, recommended when all the noise maps need to be scaled uniformly by the same factor, or
 * a unique value of ``modifier_ref``, recommended when every noise map needs to be scaled by a different factor.
 
-The following code generates a circuit where the two-qubit gates boxes own an ``InjectNoise`` annotation with unique
+The following code generates a circuit where the two-qubit gates boxes own an :class:`.~InjectNoise` annotation with unique
 values of ``modifier_ref``.
 
 .. plot::
