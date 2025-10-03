@@ -61,7 +61,7 @@ def generate_boxing_pass_manager(
         >>> boxed_circuit = pm.run(circuit)
         >>> boxed_circuit.draw("mpl") # doctest: +SKIP
 
-    To group instructions into boxes, it takes the following steps in order:
+    To group instructions into boxes, a pass manager returned by this function takes the following steps in order:
 
     * If ``remove_barriers`` is ``True``, it removes all the barriers in the input circuit
       using the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
