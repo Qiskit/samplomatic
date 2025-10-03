@@ -15,5 +15,5 @@
 from .add_inject_noise import AddInjectNoise
 from .add_terminal_right_dressed_boxes import AddTerminalRightDressedBoxes
 from .group_gates_into_boxes import GroupGatesIntoBoxes
-from .group_meas_into_boxes import GroupMeasIntoBoxes
+from .group_meas_into_boxes import GroupMeasIntoBoxes, SupportedAnnotations
 from .inline_boxes import InlineBoxes
