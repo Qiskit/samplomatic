@@ -31,7 +31,7 @@ from .twirling_strategies import TwirlingStrategyLiteral
 
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
-    enable_measure: bool = True,
+    enable_measures: bool = True,
     measure_annotations: str = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
@@ -71,10 +71,10 @@ def generate_boxing_pass_manager(
     Args:
         enable_gates: Whether to collect single- and multi-qubit gates into boxes using the
             :class:`~.GroupGatesIntoBoxes` pass.
-        enable_measure: Whether to collect measurements into boxes using the
+        enable_measures: Whether to collect measurements into boxes using the
             :class:`~.GroupMeasIntoBoxes` pass.
         measure_annotations: The annotations placed on the measurement boxes by
-            :class:`~.GroupMeasIntoBoxes` when ``enable_measure`` is ``True``. The supported values
+            :class:`~.GroupMeasIntoBoxes` when ``enable_measures`` is ``True``. The supported values
             are:
 
                 * ``'twirl'`` for a :class:`~.Twirl` annotation.
@@ -112,7 +112,7 @@ def generate_boxing_pass_manager(
     if enable_gates:
         passes.append(GroupGatesIntoBoxes())
 
-    if enable_measure:
+    if enable_measures:
         passes.append(GroupMeasIntoBoxes(measure_annotations))
 
     if twirling_strategy == "active":
