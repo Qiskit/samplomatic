@@ -51,6 +51,7 @@ extensions = [
     "sphinx_automodapi.automodapi",
     "qiskit_sphinx_theme",
     "matplotlib.sphinxext.plot_directive",
+    "sphinx_plotly_directive",
     "myst_parser",
 ]
 
@@ -73,6 +74,9 @@ exclude_patterns = [
 plot_html_show_source_link = False  # don't show links to source of .. plot:: directives
 plot_html_show_formats = False  # don't show links to image files
 plot_formats = ["png"]  # only render as png, instead of default pdf+png
+
+plotly_html_show_source_link = False  # don't show links to source of .. plotly:: directives
+plotly_html_show_formats = False  # don't show links to image files
 
 intersphinx_mapping = {
     "qiskit": ("https://quantum.cloud.ibm.com/docs/api/qiskit/", None),
