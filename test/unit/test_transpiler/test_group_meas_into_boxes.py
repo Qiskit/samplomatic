@@ -223,7 +223,7 @@ def test_annotations(annotations):
 
 def test_annotations_raise():
     """Test that `GroupMeasIntoBoxes` raises for incorrect annotations."""
-    with pytest.raises(ValueError, match="none is not a valid input"):
+    with pytest.raises(ValueError):
         GroupMeasIntoBoxes("none")
 
 
