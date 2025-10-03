@@ -122,7 +122,7 @@ circuit is equal to the number of unique boxes (where uniqueness is defined up t
 By selecting the appropriate value for ``inject_noise_strategy``, users can decide whether the ``InjectNoise`` annotations
 should have:
 
-* ``modifier_ref=''``, recommended when modifying the noise maps prior to injecting them is not required,
+* ``modifier_ref=''``, recommended when modifying the noise maps prior to sampling from them is not required,
 * ``modifier_ref=ref``, recommended when all the noise maps need to be scaled uniformly by the same factor, or
 * a unique value of ``modifier_ref``, recommended when every noise map needs to be scaled by a different factor.
 
