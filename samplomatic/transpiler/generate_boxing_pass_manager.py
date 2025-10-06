@@ -133,9 +133,9 @@ def generate_boxing_pass_manager(
 
     if twirling_strategy == "active":
         pass
-    elif twirling_strategy == "active-accum":
+    elif twirling_strategy == "active_accum":
         passes.append(AddNoopsActiveAccum())
-    elif twirling_strategy == "active-circuit":
+    elif twirling_strategy == "active_circuit":
         passes.append(AddNoopsActiveCircuit())
     elif twirling_strategy == "all":
         passes.append(AddNoopsAll())
