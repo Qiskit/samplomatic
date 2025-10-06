@@ -28,7 +28,7 @@ from .passes import (
     GroupMeasIntoBoxes,
 )
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
-from .twirling_strategies import TwirlingStrategyLiteral
+from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral
 
 
 def generate_boxing_pass_manager(
@@ -133,17 +133,17 @@ def generate_boxing_pass_manager(
 
     if twirling_strategy == "active":
         pass
-    elif twirling_strategy == "active-accum":
+    elif twirling_strategy == "active_accum":
         passes.append(AddNoopsActiveAccum())
-    elif twirling_strategy == "active-circuit":
+    elif twirling_strategy == "active_circuit":
         passes.append(AddNoopsActiveCircuit())
     elif twirling_strategy == "all":
         passes.append(AddNoopsAll())
     else:
         raise TranspilerError(
-            f"``twirling_strategy = '{twirling_strategy}'`` is not supported."
+            f"``twirling_strategy = '{twirling_strategy}'`` is not supported. "
             "The supported values are "
-            f"{[strategy.name.lower() for strategy in TwirlingStrategyLiteral]}."
+            f"{[strategy.name.lower() for strategy in TwirlingStrategy]}."
         )
 
     passes.append(AddTerminalRightDressedBoxes())
