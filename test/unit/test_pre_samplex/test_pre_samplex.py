@@ -608,7 +608,7 @@ class TestMergeParallelPrePropagateNodes:
 
         with pytest.raises(
             SamplexBuildError,
-            match="Encountered unsupported cx propragation with mode InstructionMode.MULTIPLY.",
+            match="Encountered unsupported cx propagation with mode InstructionMode.MULTIPLY.",
         ):
             pre_samplex.finalize()
 

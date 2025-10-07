@@ -1393,7 +1393,7 @@ class PreSamplex:
             )
         else:
             raise SamplexBuildError(
-                f"Encountered unsupported {op_name} propragation with mode {mode} and "
+                f"Encountered unsupported {op_name} propagation with mode {mode} and "
                 f"incoming virtual gates {incoming}."
             )
 
