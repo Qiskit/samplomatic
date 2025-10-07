@@ -167,7 +167,7 @@ class Samplex:
 
     @property
     def noise_oracle(self) -> NoiseOracle | None:
-        """The noise source to use at sampling time."""
+        """The noise oracle to use at sampling time."""
         return self._noise_oracle
 
     @property
@@ -330,10 +330,10 @@ class Samplex:
         return self
 
     def set_noise_oracle(self, noise_oracle: NoiseOracle) -> Self:
-        """Set the noise source to use during sampling.
+        """Set the noise oracle to use during sampling.
 
         Args:
-            noise_oracle: The noise source to set. This should follow the :class:`~.NoiseOracle`
+            noise_oracle: The noise oracle to set. This should follow the :class:`~.NoiseOracle`
                 protocol.
 
         Raises:
@@ -348,7 +348,7 @@ class Samplex:
                 for ref, req in self._noise_requirements.items()
             )
             raise ValueError(
-                f"The samplex input requires a noise source with the following:\n{required_paulis}"
+                f"The samplex input requires a noise oracle with the following:\n{required_paulis}"
             )
         for ref, req in self._noise_requirements.items():
             req.validate_num_qubits(noise_oracle.get_paulis(ref))
@@ -360,14 +360,14 @@ class Samplex:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
         Raises:
-            ValueError: If the samplex has :meth:`~noise_requirements` and the noise source
+            ValueError: If the samplex has :meth:`~noise_requirements` and the noise oracle
                 has not been set.
 
         Returns:
             The input for this samplex.
         """
         if self._noise_requirements and self._noise_oracle is None:
-            raise ValueError("Samplex input requires a noise source, call `set_noise_oracle()`.")
+            raise ValueError("Samplex input requires a noise oracle, call `set_noise_oracle()`.")
 
         specs = [*self._input_specifications.values()]
         for name, noise_req in self._noise_requirements.items():

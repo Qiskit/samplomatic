@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""NoiseSource"""
+"""NoiseOracle"""
 
 from typing import Protocol
 
@@ -18,12 +18,12 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap, QubitSparsePauliList
 
 
-class NoiseSource(Protocol):
-    """A noise source for use with a :class:`~.Samplex`.
+class NoiseOracle(Protocol):
+    """A noise oracle for use with a :class:`~.Samplex`.
 
     This protocol defines methods to retrieve rates and Paulis to construct
     :class:`qiskit.quantum_info.PauliLindbladMap` to use for injecting noise. For a given
-    :class:`~.Samplex`, the noise source should include all of its noise requirements.
+    :class:`~.Samplex`, the noise oracle should include all of its noise requirements.
     """
 
     def get_rates(self, noise_ref: str) -> np.ndarray[np.float64]: ...

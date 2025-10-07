@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""StaticNoiseSource"""
+"""StaticNoiseOracle"""
 
 from collections.abc import Mapping
 
@@ -18,8 +18,8 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap, QubitSparsePauliList
 
 
-class StaticNoiseSource(Mapping):
-    """A static noise source that implements the :class:`~.NoiseSource` protocol.
+class StaticNoiseOracle(Mapping):
+    """A static noise oracle that implements the :class:`~.NoiseOracle` protocol.
 
     Args:
         pauli_lindblad_maps: A map from noise references to
@@ -60,7 +60,7 @@ class StaticNoiseSource(Mapping):
 
     def __getitem__(self, noise_ref: str) -> PauliLindbladMap:
         if (pauli_lindblad_map := self._pauli_lindblad_maps.get(noise_ref)) is None:
-            raise ValueError(f"'{noise_ref}' is not present in this noise source.")
+            raise ValueError(f"'{noise_ref}' is not present in this noise oracle.")
         return pauli_lindblad_map
 
     def __iter__(self):

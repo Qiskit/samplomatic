@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Noise sources"""
+"""noise oracles"""
 
 from .noise_oracle import NoiseOracle
 from .static_noise_oracle import StaticNoiseOracle

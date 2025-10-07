@@ -44,7 +44,7 @@ class SamplingNode(abc.ABC, Node):
             rng: A randomness generator.
             inputs: Inputs of the sampling program.
             num_randomizations: How many randomizations to draw.
-            noise_oracle: Noise sources to draw samples from.
+            noise_oracle: noise oracles to draw samples from.
         """
 
     def get_style(self):
