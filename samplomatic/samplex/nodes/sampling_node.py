@@ -19,7 +19,7 @@ import abc
 from numpy.random import Generator
 
 from ...aliases import RegisterName
-from ...noise_source import NoiseSource
+from ...noise_oracle import NoiseOracle
 from ...tensor_interface import TensorInterface
 from ...virtual_registers import VirtualRegister
 from .node import Node
@@ -35,7 +35,7 @@ class SamplingNode(abc.ABC, Node):
         rng: Generator,
         inputs: TensorInterface,
         num_randomizations: int,
-        noise_source: NoiseSource | None,
+        noise_oracle: NoiseOracle | None,
     ):
         """Sample this node.
 
@@ -44,7 +44,7 @@ class SamplingNode(abc.ABC, Node):
             rng: A randomness generator.
             inputs: Inputs of the sampling program.
             num_randomizations: How many randomizations to draw.
-            noise_source: Noise sources to draw samples from.
+            noise_oracle: Noise sources to draw samples from.
         """
 
     def get_style(self):

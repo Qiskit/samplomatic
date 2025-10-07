@@ -14,48 +14,48 @@ import numpy as np
 import pytest
 from qiskit.quantum_info import PauliLindbladMap, QubitSparsePauliList
 
-from samplomatic.noise_source import StaticNoiseSource
+from samplomatic.noise_oracle import StaticNoiseOracle
 
 
-class TestStaticNoiseSource:
+class TestStaticNoiseOracle:
     def test_dunders(self):
         """Test some dunders: contains, getitem and len."""
-        assert len(StaticNoiseSource({})) == 0
+        assert len(StaticNoiseOracle({})) == 0
 
         noise0 = PauliLindbladMap.from_list([("IXI", 0.5)])
         noise1 = PauliLindbladMap.from_list([("YZ", 1.0)])
-        noise_source = StaticNoiseSource({"noise0": noise0, "noise1": noise1})
+        noise_oracle = StaticNoiseOracle({"noise0": noise0, "noise1": noise1})
 
-        assert len(noise_source) == 2
-        assert "noise0" in noise_source
-        assert "noise1" in noise_source
-        assert "noise2" not in noise_source
-        assert noise_source["noise0"] == noise0
-        assert noise_source["noise1"] == noise1
+        assert len(noise_oracle) == 2
+        assert "noise0" in noise_oracle
+        assert "noise1" in noise_oracle
+        assert "noise2" not in noise_oracle
+        assert noise_oracle["noise0"] == noise0
+        assert noise_oracle["noise1"] == noise1
 
         with pytest.raises(ValueError, match="'noise2' is not present"):
-            noise_source["noise2"]
+            noise_oracle["noise2"]
 
     def test_get_rates(self):
         """Test the `get_rates` method."""
         noise0 = PauliLindbladMap.from_list([("IXI", 0.5)])
         noise1 = PauliLindbladMap.from_list([("YZ", 1.0), ("IX", 0.3)])
-        noise_source = StaticNoiseSource({"noise0": noise0, "noise1": noise1})
+        noise_oracle = StaticNoiseOracle({"noise0": noise0, "noise1": noise1})
 
-        assert np.array_equal(noise_source.get_rates("noise0"), [0.5])
-        assert np.array_equal(noise_source.get_rates("noise1"), [1.0, 0.3])
+        assert np.array_equal(noise_oracle.get_rates("noise0"), [0.5])
+        assert np.array_equal(noise_oracle.get_rates("noise1"), [1.0, 0.3])
 
         with pytest.raises(ValueError, match="'noise2' is not present"):
-            noise_source.get_rates("noise2")
+            noise_oracle.get_rates("noise2")
 
     def test_get_paulis(self):
         """Test the `get_paulis` method."""
         noise0 = PauliLindbladMap.from_list([("IXI", 0.5)])
         noise1 = PauliLindbladMap.from_list([("YZ", 1.0), ("IX", 0.3)])
-        noise_source = StaticNoiseSource({"noise0": noise0, "noise1": noise1})
+        noise_oracle = StaticNoiseOracle({"noise0": noise0, "noise1": noise1})
 
-        assert noise_source.get_paulis("noise0") == QubitSparsePauliList.from_list(["IXI"])
-        assert noise_source.get_paulis("noise1") == QubitSparsePauliList.from_list(["YZ", "IX"])
+        assert noise_oracle.get_paulis("noise0") == QubitSparsePauliList.from_list(["IXI"])
+        assert noise_oracle.get_paulis("noise1") == QubitSparsePauliList.from_list(["YZ", "IX"])
 
         with pytest.raises(ValueError, match="'noise2' is not present"):
-            noise_source.get_paulis("noise2")
+            noise_oracle.get_paulis("noise2")

@@ -23,7 +23,8 @@ class NoiseSource(Protocol):
 
     This protocol defines methods to retrieve rates and Paulis to construct
     :class:`qiskit.quantum_info.PauliLindbladMap` to use for injecting noise. For a given
-    :class:`~.Samplex`, the noise source should include all of its noise requirements."""
+    :class:`~.Samplex`, the noise source should include all of its noise requirements.
+    """
 
     def get_rates(self, noise_ref: str) -> np.ndarray[np.float64]: ...
     def get_paulis(self, noise_ref: str) -> QubitSparsePauliList: ...

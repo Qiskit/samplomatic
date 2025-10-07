@@ -31,7 +31,7 @@ from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, Du
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, rng, inputs, num_randomizations, noise_source):
+    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
         raise SamplexRuntimeError("This node cannot sample.")
 
 

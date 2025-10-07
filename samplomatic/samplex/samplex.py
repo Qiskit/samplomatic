@@ -38,7 +38,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..noise_source import NoiseSource
+from ..noise_oracle import NoiseOracle
 from ..tensor_interface import Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
@@ -137,14 +137,14 @@ class Samplex:
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
         self._noise_requirements: dict[str, NoiseRequirement] = {}
-        self._noise_source: NoiseSource | None = None
+        self._noise_oracle: NoiseOracle | None = None
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
     def __str__(self):
         inputs = (
             TensorInterface(self._input_specifications.values())
-            if self.noise_source is None
+            if self.noise_oracle is None
             else self.inputs()
         )
         return (
@@ -166,9 +166,9 @@ class Samplex:
         return self._noise_requirements
 
     @property
-    def noise_source(self) -> NoiseSource | None:
+    def noise_oracle(self) -> NoiseOracle | None:
         """The noise source to use at sampling time."""
-        return self._noise_source
+        return self._noise_oracle
 
     @property
     def num_parameters(self) -> int:
@@ -329,20 +329,20 @@ class Samplex:
 
         return self
 
-    def set_noise_source(self, noise_source: NoiseSource) -> Self:
+    def set_noise_oracle(self, noise_oracle: NoiseOracle) -> Self:
         """Set the noise source to use during sampling.
 
         Args:
-            noise_source: The noise source to set. This should follow the :class:`~.NoiseSource`
+            noise_oracle: The noise source to set. This should follow the :class:`~.NoiseOracle`
                 protocol.
 
         Raises:
-            ValueError: If any of the required noise is missing from `noise_source`.
+            ValueError: If any of the required noise is missing from `noise_oracle`.
 
         Returns:
             The same instance, for chaining.
         """
-        if any(key not in noise_source for key in self._noise_requirements.keys()):
+        if any(key not in noise_oracle for key in self._noise_requirements.keys()):
             required_paulis = "\n".join(
                 f" * {ref}: A Pauli list on {req.num_qubits} qubits."
                 for ref, req in self._noise_requirements.items()
@@ -351,8 +351,8 @@ class Samplex:
                 f"The samplex input requires a noise source with the following:\n{required_paulis}"
             )
         for ref, req in self._noise_requirements.items():
-            req.validate_num_qubits(noise_source.get_paulis(ref))
-        self._noise_source = noise_source
+            req.validate_num_qubits(noise_oracle.get_paulis(ref))
+        self._noise_oracle = noise_oracle
 
         return self
 
@@ -366,12 +366,12 @@ class Samplex:
         Returns:
             The input for this samplex.
         """
-        if self._noise_requirements and self._noise_source is None:
-            raise ValueError("Samplex input requires a noise source, call `set_noise_source()`.")
+        if self._noise_requirements and self._noise_oracle is None:
+            raise ValueError("Samplex input requires a noise source, call `set_noise_oracle()`.")
 
         specs = [*self._input_specifications.values()]
         for name, noise_req in self._noise_requirements.items():
-            num_terms = self._noise_source[name].num_terms
+            num_terms = self._noise_oracle[name].num_terms
             for noise_modifier in noise_req.noise_modifiers:
                 specs.append(
                     TensorSpecification(
@@ -512,7 +512,7 @@ class Samplex:
                     child_rng,
                     samplex_input,
                     num_randomizations,
-                    self._noise_source,
+                    self._noise_oracle,
                 )
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes

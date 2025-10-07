@@ -12,5 +12,5 @@
 
 """Noise sources"""
 
-from .noise_source import NoiseSource
-from .static_noise_source import StaticNoiseSource
+from .noise_oracle import NoiseOracle
+from .static_noise_oracle import StaticNoiseOracle
