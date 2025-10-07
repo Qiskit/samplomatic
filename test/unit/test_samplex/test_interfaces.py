@@ -28,7 +28,6 @@ class TestSamplexOutput:
 
     def test_construction(self):
         """Test construction and simple attributes."""
-
         output = SamplexOutput(
             [
                 TensorSpecification("a", (5,), np.uint8, "desc_a"),

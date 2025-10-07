@@ -18,7 +18,6 @@ from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
-from samplomatic.exceptions import BuildError
 
 from .utils import sample_simulate_and_compare_counts
 
@@ -42,19 +41,6 @@ class TestWithoutSimulation:
         samplex_output = samplex.sample(samplex_input, num_randomizations=20)
         measurement_flips = samplex_output["measurement_flips.c"]
         assert not np.any(measurement_flips[:, 1:3])
-
-    def test_repeated_twirled_clbit_error(self):
-        """Verify that an error is raised if the same clbit is used more than once for twirling"""
-        circuit = QuantumCircuit(2, 3)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(1, 0)
-
-        with pytest.raises(
-            BuildError, match="Cannot twirl more than one measurement on the same classical bit"
-        ):
-            pre_build(circuit)
 
 
 class TestWithSimulation:

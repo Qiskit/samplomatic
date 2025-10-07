@@ -132,7 +132,7 @@ class CollectTemplateValues(CollectionNode):
         virtual_register = registers[self._register_name][self._subsystem_idxs]
 
         # shape (num_subsys, num_samples, num_params_per_subsys)
-        values = self._synth.generate_template_values(virtual_register)
+        values = self._synth.generate_template_values(virtual_register).astype(np.float32)
         # shape (num_samples, total_num_params)
         all_values = outputs[self._template_params_name]
         # (num_subsys * num_params_per_subsys)

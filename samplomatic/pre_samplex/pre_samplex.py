@@ -307,7 +307,7 @@ class PreSamplex:
         match: DanglerMatch,
         subsystems: QubitIndicesPartition,
     ) -> Iterator[tuple[NodeIndex, QubitIndicesPartition]]:
-        """A specialization of :meth:`~.find_danglers` that also removes the dangling nodes.
+        """Extend :meth:`~.find_danglers` to also remove dangling nodes.
 
         .. note::
            Nodes are removed only after all of them have been yielded.
@@ -874,7 +874,7 @@ class PreSamplex:
                     replace_edges_with_one_edge(self.graph, predecessor_idx, new_node_idx, new_edge)
 
     def _cluster_pre_propagate_nodes(self, generation: list[NodeIndex]) -> list[list[NodeIndex]]:
-        """A helper function to cluster ``PrePropagate`` nodes within a topological generation."""
+        """Cluster ``PrePropagate`` nodes within a topological generation."""
         clusters: dict[PrePropagateKey, list[dict[str, Any]]] = defaultdict(list)
 
         for node_idx in generation:
@@ -1105,7 +1105,7 @@ class PreSamplex:
                 TensorSpecification(
                     "parameter_values",
                     (max_param_idx + 1,),
-                    np.dtype(np.float64),
+                    np.dtype(np.float32),
                     "Parameter values for the template circuit.",
                 )
             )
@@ -1395,7 +1395,7 @@ class PreSamplex:
             )
         else:
             raise SamplexBuildError(
-                f"Encountered unsupported {op_name} propragation with mode {mode} and "
+                f"Encountered unsupported {op_name} propagation with mode {mode} and "
                 f"incoming virtual gates {incoming}."
             )
 
@@ -1510,7 +1510,7 @@ class PreSamplex:
             samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
 
     def subgraphs(self) -> list[PyDiGraph[PreNode, PreEdge]]:
-        """Returns a list of disconnected components."""
+        """Return a list of disconnected components."""
         return [
             self.graph.subgraph(list(node_idxs))
             for node_idxs in weakly_connected_components(self.graph)

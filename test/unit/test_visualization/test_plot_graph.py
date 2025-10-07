@@ -45,7 +45,6 @@ class TestPlotGraph:
     @pytest.mark.parametrize("add_hover_data", [True, False])
     def test_basic_graph(self, save_plot, add_hover_data, disconnected_graph):
         """Test that a basic graph is plotted without error"""
-
         if add_hover_data:
             for a, b in disconnected_graph.edge_list():
                 disconnected_graph.update_edge(a, b, EdgeStyle(title=f"{a} -> {b}"))
@@ -84,7 +83,6 @@ class TestPlotGraph:
     @pytest.mark.parametrize("layout", ["auto", "graphviz", "spring"])
     def test_layouts(self, layout, save_plot, disconnected_graph):
         """Test all layout methods."""
-
         if "graphviz" in layout and not HAS_GRAPHVIZ:
             pytest.skip("graphviz is not installed")
 

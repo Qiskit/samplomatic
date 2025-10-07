@@ -29,7 +29,8 @@ def array_to_json(array: np.ndarray) -> str:
         The json string.
 
     Raises:
-        ValueError: If the type of the array is unsupported."""
+        ValueError: If the type of the array is unsupported.
+    """
     if array.dtype == np.dtype(np.complex128):
         dtype = "c128"
         data = pybase64.b64encode_as_string(array.astype("<c16").tobytes())

@@ -260,6 +260,65 @@ def make_circuits():
 
     yield circuit, expected_circuit, "circuit_with_measurements"
 
+    circuit = QuantumCircuit(7)
+    for _ in range(2):
+        circuit.cz(2, 3)
+        circuit.cz(4, 5)
+        circuit.cz(1, 6)
+        circuit.cz(0, 1)
+        circuit.cz(3, 4)
+        circuit.cz(5, 6)
+        circuit.sx([3, 5])
+        circuit.sx([3, 5])
+
+    expected_circuit = QuantumCircuit(7)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cz(2, 3)
+        expected_circuit.cz(4, 5)
+        expected_circuit.cz(1, 6)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cz(0, 1)
+        expected_circuit.cz(3, 4)
+        expected_circuit.cz(5, 6)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.sx([3, 5])
+        expected_circuit.sx([3, 5])
+        expected_circuit.cz(2, 3)
+        expected_circuit.cz(4, 5)
+        expected_circuit.cz(1, 6)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cz(0, 1)
+        expected_circuit.cz(3, 4)
+        expected_circuit.cz(5, 6)
+    expected_circuit.sx([3, 5])
+    expected_circuit.sx([3, 5])
+
+    yield circuit, expected_circuit, "circuit_with_long_range_czs"
+
+    circuit = QuantumCircuit(4, 3)
+    circuit.cx(0, 1)
+    circuit.measure([1, 2], [0, 0])  # two meas on the same bit
+    circuit.cx(2, 3)
+    circuit.barrier()
+    circuit.cx(0, 1)
+    circuit.measure([1, 2], [1, 2])  # two meas on two different bits
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4, 3)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.measure([1, 2], [0, 0])
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    expected_circuit.barrier()
+    expected_circuit.measure(2, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.cx(2, 3)
+    expected_circuit.measure(1, 1)
+
+    yield circuit, expected_circuit, "circuit_with_measurements_on_same_bit"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:

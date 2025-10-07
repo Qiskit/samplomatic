@@ -134,10 +134,7 @@ def test_combine_three_registers_of_different_sizes():
 
 
 def test_combine_three_registers_in_correct_order():
-    """
-    Test that ``CombineRegistersNode`` combines registers in standard matrix multiplication order.
-    """
-
+    """Test that ``CombineRegistersNode`` combines registers in standard operator order."""
     h_mat = HGate().to_matrix()
     sx_mat = SXGate().to_matrix()
 

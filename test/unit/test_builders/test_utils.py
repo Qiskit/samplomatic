@@ -98,9 +98,7 @@ class TestPrePropagateNodesAreMergeable:
         assert not pre_propagate_nodes_are_mergeable(graph, 2, 1)
 
     def test_two_connected_pre_propagates_with_different_directions(self):
-        """
-        Test with a graph that contains two non-mergeable (different direction) pre-propagate nodes.
-        """
+        """Test with a graph with two non-mergeable (different direction) pre-propagate nodes."""
         graph = PyDiGraph()
         n0 = graph.add_node(
             PreEmit(PauliRegister, Direction.BOTH, QubitIndicesPartition(2, [(0, 1)]))
@@ -130,9 +128,7 @@ class TestPrePropagateNodesAreMergeable:
         assert not pre_propagate_nodes_are_mergeable(graph, 2, 1)
 
     def test_two_connected_pre_propagates_with_different_operations(self):
-        """
-        Test with a graph that contains two non-mergeable (different operations) pre-propagates.
-        """
+        """Test with a graph with two non-mergeable (different operations) pre-propagates."""
         graph = PyDiGraph()
         n0 = graph.add_node(
             PreEmit(PauliRegister, Direction.BOTH, QubitIndicesPartition(2, [(0, 1)]))
@@ -166,9 +162,7 @@ class TestMergePreEdges:
     """Test the `merge_pre_edges` method."""
 
     def test_merge_single_edge(self):
-        """
-        Test `merge_pre_edges` when there is a single edge between source and destination nodes.
-        """
+        """Test `merge_pre_edges` when there is a single edge between source and dest nodes."""
         graph = PyDiGraph()
         source_idx = graph.add_node("source")
         destination_idx = graph.add_node("destination")
@@ -180,9 +174,7 @@ class TestMergePreEdges:
 
     @pytest.mark.parametrize("direction", [Direction.LEFT, Direction.RIGHT])
     def test_merge_multiple_edges(self, direction):
-        """
-        Test `merge_pre_edges` when there are multiple edges between source and destination nodes.
-        """
+        """Test `merge_pre_edges` when there are multiple edges between source and dest nodes."""
         graph = PyDiGraph()
         source_idx = graph.add_node("source")
         destination_idx = graph.add_node("destination")

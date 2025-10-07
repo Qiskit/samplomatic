@@ -1,10 +1,12 @@
-![Samplomatic](assets/fig/samplomatic.svg)
+![Samplomatic](docs/_static/img/samplomatic.svg)
 
 _Serving all of your circuit sampling needs since 2025._
 
 > [!NOTE]
-> This library is in an early stage of development where things are changing fast and in breaking ways.
-> While the major version is `0`, please expect breaking changes between minor versions and pin your dependencies accordingly. We do not issue deprecation warnings presently, but we will document breaking changes in the changelog.
+> This library is in a beta stage of development where things are changing fast and in breaking ways.
+> Although each version of this library is well-tested, while the major version is `0`, please expect breaking changes between minor versions and pin your dependencies accordingly. We do not issue deprecation warnings presently, but we will document breaking changes in the changelog.
+> Please see the [deprecation policy](DEPRECATION.md) for details.
+> The location of this project may also move from https://github.com/Qiskit/samplomatic, where timelines are not yet determined.
 
 Samplomatic is a library that helps you sample randomizations of your quantum circuits in exactly the way that you specify.
 Pauli twirling a static circuit is the simplest example, but the types of randomization available are extensible by design—we hope that you will contribute your own weird groups!
@@ -24,11 +26,7 @@ For visualization support, include the visualization dependencies:
 pip install samplomatic[vis]
 ```
 
-Or, you can clone this repo and install in editable mode, in this example with both visualization and development optional dependencies:
-
-```bash
-pip install -e ".[dev,vis]"
-```
+See the [contribution guidelines](CONTRIBUTING.md) for details on developer dependencies and editable installations.
 
 ## Hello World
 

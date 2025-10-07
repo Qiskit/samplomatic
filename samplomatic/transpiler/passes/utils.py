@@ -16,10 +16,11 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from qiskit.circuit import Annotation, BoxOp, Clbit, QuantumCircuit, Qubit
-from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.circuit import Annotation, BoxOp, QuantumCircuit
+from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.exceptions import TranspilerError
 
+from ...aliases import DAGOpNode
 from ...annotations import Twirl
 
 
@@ -42,8 +43,6 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
 def make_and_insert_box(
     dag: DAGCircuit,
     nodes: list[DAGOpNode],
-    active_qubits: set[Qubit],
-    clbits: set[Clbit] = set(),
     annotations: list[Annotation] = [Twirl()],
 ) -> None:
     """Make a box and insert it into a dag.
@@ -59,10 +58,13 @@ def make_and_insert_box(
     if not nodes:
         return
 
-    qubit_map = {qubit: idx for (idx, qubit) in enumerate(active_qubits)}
+    qubits = set(qarg for node in nodes for qarg in node.qargs)
+    qubit_map = {qubit: idx for (idx, qubit) in enumerate(qubits)}
+
+    clbits = set(carg for node in nodes for carg in node.cargs)
     clbit_map = {clbit: idx for (idx, clbit) in enumerate(clbits)}
 
-    content = QuantumCircuit(list(active_qubits), list(clbits))
+    content = QuantumCircuit(list(qubits), list(clbits))
     for node in nodes:
         content.append(
             node.op,
@@ -75,7 +77,7 @@ def make_and_insert_box(
 
 
 def validate_op_is_supported(node: DAGOpNode):
-    """Raises if the given node contains an operation that is not supported by the transpiler.
+    """Raise if the given node contains an operation that is not supported by the transpiler.
 
     Args:
         node: The node to validate.

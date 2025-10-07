@@ -11,38 +11,19 @@
 # that they have been altered from the originals.
 
 import re
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
 
-@pytest.mark.parametrize("filename", ["README.md"])
-def test_markdown_codeblocks(tmp_path, filename):
-    """Test python snippets in README.md"""
-    readme = Path(__file__).parent.parent.parent / filename
-    text = readme.read_text()
+@pytest.mark.parametrize("filename", ["README.md", "DEPRECATION.md"])
+def test_markdown_codeblocks(run_snippet, filename):
+    """Test python snippets in base-level markdown files."""
+    markdown_text = (Path(__file__).parent.parent.parent / filename).read_text()
 
-    # Extract fenced code blocks
-    blocks = re.findall(r"```python\n(.*?)```", text, re.DOTALL)
+    # extract fenced code blocks
+    blocks = re.findall(r"```python\n(.*?)```", markdown_text, re.DOTALL)
     if not blocks:
         raise AssertionError(f"No python code blocks found in {filename}")
 
-    merged_code = "\n\n".join(blocks)
-
-    # Write merged code to a temp file
-    script = tmp_path / f"{filename.split('.')[0]}_examples.py"
-    script.write_text(merged_code)
-
-    # Run it as a subprocess
-    proc = subprocess.run(
-        [sys.executable, str(script)],
-        capture_output=True,
-        text=True,
-    )
-
-    if proc.returncode != 0:
-        raise AssertionError(
-            f"README example failed (see {script}):\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
-        )
+    run_snippet(filename.split(".")[0], "\n\n".join(blocks))

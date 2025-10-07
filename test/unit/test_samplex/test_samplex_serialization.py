@@ -26,7 +26,6 @@ class TestSamplexSerialization:
 
     def test_general_5q_static_circuit(self, rng):
         """Test with a general static circuit of 5 qubits."""
-
         circuit = QuantumCircuit(5)
         with circuit.box([Twirl()]):
             circuit.rz(0.5, 0)

@@ -42,9 +42,9 @@ supported:
 
  * ``'active'``: No idling qubit is added to the boxes, meaning that every box only twirls the
     qubits that are active within the box.
- * ``'active-accum'``: Idling qubits are added so that each individual box twirls the union of the
+ * ``'active_accum'``: Idling qubits are added so that each individual box twirls the union of the
     instructions qubits in the circuit up to the current twirled box.
- * ``'active-circuit'``: Idling qubits are added so that each individual box twirls all of the
+ * ``'active_circuit'``: Idling qubits are added so that each individual box twirls all of the
     instructions qubits in the circuit.
  * ``'all'``: Idling qubits are added so that each individual box twirls all of the qubits in
     the circuit.
