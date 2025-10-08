@@ -19,7 +19,7 @@ from qiskit.quantum_info import PauliLindbladMap, QubitSparsePauliList
 
 
 class StaticNoiseOracle(Mapping):
-    """A static noise oracle that implements the :class:`~.NoiseOracle` protocol.
+    """A :class:`~.NoiseOracle` implementation that just stores a collection of fixed Pauli Lindblad maps.
 
     Args:
         pauli_lindblad_maps: A map from noise references to
