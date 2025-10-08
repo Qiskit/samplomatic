@@ -38,7 +38,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..noise_oracle import NoiseOracle
+from ..noise_oracle import NoiseOracle, StaticNoiseOracle
 from ..tensor_interface import Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
@@ -499,6 +499,7 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
+        noise_oracle = StaticNoiseOracle({}) if self._noise_oracle is None else self._noise_oracle
         rng = default_rng(rng) if isinstance(rng, (int, SeedSequence)) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
@@ -512,7 +513,7 @@ class Samplex:
                     child_rng,
                     samplex_input,
                     num_randomizations,
-                    self._noise_oracle,
+                    noise_oracle,
                 )
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
