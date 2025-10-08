@@ -10,4 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .layered_circuits import make_layered_circuit, make_pauli_lindblad_maps
+"""noise oracles"""
+
+from .noise_oracle import NoiseOracle
+from .static_noise_oracle import StaticNoiseOracle

@@ -33,6 +33,6 @@ def test_sample(rng):
     node = TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
     samplex_input = TensorInterface([])
 
-    node.sample(registers, rng, samplex_input, 5)
+    node.sample(registers, rng, samplex_input, 5, None)
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)

@@ -251,10 +251,10 @@ class PreInjectNoise(PreEmit):
     """The inject noise emit node type used during samplex building."""
 
     ref: StrRef
-    """Unique identifier of this noise map."""
+    """Unique identifier of the Pauli Lindblad map to use for noise injection."""
 
     modifier_ref: StrRef
-    """Unique identifier for modifiers applied to this noise map."""
+    """Unique identifier for modifiers to apply to the Pauli Lindblad map on this node."""
 
     sign_idx: OutputIndex
     """The index of the output array to write the sign to."""

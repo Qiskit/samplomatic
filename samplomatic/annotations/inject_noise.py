@@ -26,8 +26,9 @@ class InjectNoise(Annotation):
     outer-most circuit, restricted to those used by the box.
 
     Args:
-        ref: A unique identifier of the map from which to inject noise.
-        modifier_ref: A unique identifer for modifiers to apply to the noise map before injection.
+        ref: A unique identifier of the Pauli Lindblad map from which to inject noise.
+        modifier_ref: A unique identifer for modifiers to apply to the Pauli Lindblad map before
+            injection.
     """
 
     namespace = "samplomatic.inject_noise"

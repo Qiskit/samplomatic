@@ -14,13 +14,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
-from qiskit.quantum_info import QubitSparsePauliList
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -39,12 +38,13 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification, ValueType
+from ..noise_oracle import NoiseOracle, StaticNoiseOracle
+from ..tensor_interface import Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
-from .noise_model_requirement import NoiseModelRequirement
+from .noise_requirement import NoiseRequirement
 from .parameter_expression_table import ParameterExpressionTable
 
 if TYPE_CHECKING:
@@ -136,16 +136,17 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
-        self._noise_model_requirements: dict[str, NoiseModelRequirement] = {}
+        self._noise_requirements: dict[str, NoiseRequirement] = {}
+        self._noise_oracle: NoiseOracle | None = None
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
     def __str__(self):
-        noise_models = {
-            ref: QubitSparsePauliList.from_sparse_list([], num_qubits=requirement.num_qubits)
-            for ref, requirement in self._noise_model_requirements.items()
-        }
-        inputs = self.inputs(noise_models)
+        inputs = (
+            TensorInterface(self._input_specifications.values())
+            if self.noise_oracle is None
+            else self.inputs()
+        )
         return (
             f"Samplex(<{len(self.graph)} nodes>)\n"
             f"  Inputs:\n{inputs.describe(prefix='    * ', width=100)}"
@@ -160,9 +161,14 @@ class Samplex:
         return self._param_table.parameters
 
     @property
-    def noise_model_requirements(self) -> dict[str, NoiseModelRequirement]:
-        """The noise models required at sampling time."""
-        return self._noise_model_requirements
+    def noise_requirements(self) -> dict[str, NoiseRequirement]:
+        """The noise required at sampling time."""
+        return self._noise_requirements
+
+    @property
+    def noise_oracle(self) -> NoiseOracle | None:
+        """The noise oracle to use at sampling time."""
+        return self._noise_oracle
 
     @property
     def num_parameters(self) -> int:
@@ -233,17 +239,17 @@ class Samplex:
             raise SamplexConstructionError(f"An output with name '{name}' already exists.")
         self._output_specifications[name] = specification
 
-    def add_noise_model_requirement(self, noise_model: NoiseModelRequirement):
-        """Add a noise model requirement to this samplex.
+    def add_noise_requirement(self, noise_requirement: NoiseRequirement):
+        """Add a noise requirement to this samplex.
 
         Args:
-            noise_model: The requirement to add.
+            noise_requirementl: The requirement to add.
         """
-        if (noise_ref := noise_model.noise_ref) in self._noise_model_requirements:
+        if (noise_ref := noise_requirement.noise_ref) in self._noise_requirements:
             raise SamplexConstructionError(
-                f"A noise model requirement with reference '{noise_ref}' already exists."
+                f"A noise requirement with reference '{noise_ref}' already exists."
             )
-        self._noise_model_requirements[noise_ref] = noise_model
+        self._noise_requirements[noise_ref] = noise_requirement
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -323,62 +329,56 @@ class Samplex:
 
         return self
 
-    def inputs(
-        self, noise_model_paulis: Mapping[str, QubitSparsePauliList] | None = None
-    ) -> TensorInterface:
-        """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
+    def set_noise_oracle(self, noise_oracle: NoiseOracle) -> Self:
+        """Set the noise oracle to use during sampling.
 
         Args:
-            noise_model_paulis: The Pauli terms contained in the noise models. Each element of
-                :meth:`~noise_model_requirements` should be specified.
+            noise_oracle: The noise oracle to set. This should follow the :class:`~.NoiseOracle`
+                protocol.
 
         Raises:
-            ValueError: If ``noise_model_paulis`` has different keys than
-                :meth:`~noise_model_requirements`.
-            ValueError: If any of the ``noise_model_paulis`` has a different number of qubits than
-                its requirement.
+            ValueError: If any of the required noise is missing from `noise_oracle`.
+
+        Returns:
+            The same instance, for chaining.
+        """
+        if any(key not in noise_oracle for key in self._noise_requirements.keys()):
+            required_paulis = "\n".join(
+                f" * {ref}: A Pauli list on {req.num_qubits} qubits."
+                for ref, req in self._noise_requirements.items()
+            )
+            raise ValueError(
+                f"The samplex input requires a noise oracle with the following:\n{required_paulis}"
+            )
+        for ref, req in self._noise_requirements.items():
+            req.validate_num_qubits(noise_oracle.get_paulis(ref))
+        self._noise_oracle = noise_oracle
+
+        return self
+
+    def inputs(self) -> TensorInterface:
+        """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
+
+        Raises:
+            ValueError: If the samplex has :meth:`~noise_requirements` and the noise oracle
+                has not been set.
 
         Returns:
             The input for this samplex.
         """
-        noise_model_paulis = {} if noise_model_paulis is None else noise_model_paulis
-        if noise_model_paulis.keys() != self._noise_model_requirements.keys():
-            required_paulis = "\n".join(
-                f" * {ref}: A Pauli list on {req.num_qubits} qubits."
-                for ref, req in self._noise_model_requirements.items()
-            )
-            raise ValueError(
-                f"The samplex input requires the following noise models:\n{required_paulis}"
-            )
+        if self._noise_requirements and self._noise_oracle is None:
+            raise ValueError("Samplex input requires a noise oracle, call `set_noise_oracle()`.")
 
         specs = [*self._input_specifications.values()]
-        for name, noise_req in self._noise_model_requirements.items():
-            noise_req.validate_noise_model(paulis := noise_model_paulis[name])
-            specs.append(
-                Specification(
-                    f"noise_maps.paulis.{name}",
-                    ValueType.PAULIS,
-                    "The Pauli operators present in a noise map.",
-                )
-            )
-            specs.append(
-                TensorSpecification(
-                    f"noise_maps.rates.{name}",
-                    (num_terms := (paulis.num_terms),),
-                    np.dtype(np.float64),
-                    f"The rates of a noise map with {num_terms} terms acting on "
-                    f"{noise_req.num_qubits} qubits. The order should match the order of the "
-                    "corresponding Pauli list.",
-                )
-            )
-
+        for name, noise_req in self._noise_requirements.items():
+            num_terms = self._noise_oracle[name].num_terms
             for noise_modifier in noise_req.noise_modifiers:
                 specs.append(
                     TensorSpecification(
                         f"noise_scales.{noise_modifier}",
                         (),
                         np.dtype(np.float64),
-                        "A factor by which to scale a noise map.",
+                        "A factor by which to scale rates of a Pauli Lindblad map.",
                         optional=True,
                     )
                 )
@@ -387,15 +387,13 @@ class Samplex:
                         f"local_scales.{noise_modifier}",
                         (num_terms,),
                         np.dtype(np.float64),
-                        "An array of factors by which to scale individual rates of a noise map. "
-                        "The order should match the order of the corresponding Pauli list.",
+                        "An array of factors by which to scale individual rates of a Pauli Lindblad"
+                        " map. The order should match the order of the corresponding Pauli list.",
                         optional=True,
                     )
                 )
 
-        return TensorInterface(specs).bind(
-            **{f"noise_maps.paulis.{name}": paulis for name, paulis in noise_model_paulis.items()}
-        )
+        return TensorInterface(specs)
 
     def outputs(self, num_randomizations: int) -> SamplexOutput:
         """Return an object that specifies the promised outputs of :meth:`~sample`.
@@ -501,6 +499,7 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
+        noise_oracle = StaticNoiseOracle({}) if self._noise_oracle is None else self._noise_oracle
         rng = default_rng(rng) if isinstance(rng, (int, SeedSequence)) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
@@ -508,7 +507,14 @@ class Samplex:
         with ThreadPoolExecutor(max_workers) as pool:
             # use rng.spawn() to ensure determinism of PRNG even when there is a thread pool
             wait_with_raise(
-                pool.submit(node.sample, registers, child_rng, samplex_input, num_randomizations)
+                pool.submit(
+                    node.sample,
+                    registers,
+                    child_rng,
+                    samplex_input,
+                    num_randomizations,
+                    noise_oracle,
+                )
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
                 )
