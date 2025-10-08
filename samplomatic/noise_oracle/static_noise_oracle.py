@@ -23,7 +23,7 @@ class StaticNoiseOracle(Mapping):
 
     Args:
         pauli_lindblad_maps: A map from noise references to
-        :class:`qiskit.quantum_info.PauliLindbladMap`s.
+            :class:`qiskit.quantum_info.PauliLindbladMap`s.
     """
 
     def __init__(self, pauli_lindblad_maps: dict[str, PauliLindbladMap]):
