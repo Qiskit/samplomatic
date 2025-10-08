@@ -19,11 +19,13 @@ from qiskit.quantum_info import PauliLindbladMap, QubitSparsePauliList
 
 
 class StaticNoiseOracle(Mapping):
-    """A :class:`~.NoiseOracle` implementation that just stores a collection of fixed Pauli Lindblad maps.
+    """A noise oracle implementation that just stores a collection of fixed Pauli Lindblad maps.
+
+    See :class:`~.NoiseOracle` for more information.
 
     Args:
         pauli_lindblad_maps: A map from noise references to
-            :class:`qiskit.quantum_info.PauliLindbladMap`s.
+            :class:`qiskit.quantum_info.PauliLindbladMap` objects.
     """
 
     def __init__(self, pauli_lindblad_maps: dict[str, PauliLindbladMap]):
