@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""NoiseModelRequirement"""
+"""NoiseRequirement"""
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -19,17 +19,17 @@ from qiskit.quantum_info import QubitSparsePauliList
 
 
 @dataclass
-class NoiseModelRequirement:
-    """A class that represents a noise model required for sampling."""
+class NoiseRequirement:
+    """A class that represents a required noise for sampling."""
 
     noise_ref: str
-    """A unique reference to this handle."""
+    """A unique reference to this requirement."""
 
     num_qubits: int
-    """The number of qubits this model acts on."""
+    """The number of qubits this requirement expects the noise to act on."""
 
     noise_modifiers: set[str] = field(default_factory=set)
-    """The set of modifiers that act on this noise model."""
+    """The set of modifiers that are associated with this requirement."""
 
     def _to_json_dict(self) -> dict[str, str]:
         return {
@@ -39,13 +39,21 @@ class NoiseModelRequirement:
         }
 
     @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "NoiseModelRequirement":
+    def _from_json(cls, data: dict[str, Any]) -> "NoiseRequirement":
         data["noise_modifiers"] = set(data["noise_modifiers"])
         return cls(**data)
 
-    def validate_noise_model(self, value: QubitSparsePauliList):
-        if self.num_qubits != value.num_qubits:
+    def validate_num_qubits(self, paulis: QubitSparsePauliList):
+        """Validate the number of qubits of 'paulis' against this requirement.
+
+        Args:
+            paulis: The Paulis to validate.
+
+        Raises:
+            ValueError: If 'paulis.num_qubits' is not equal to 'num_qubits' of this instance.
+        """
+        if self.num_qubits != paulis.num_qubits:
             raise ValueError(
-                f"Noise model for '{self.noise_ref}' is expected to act on '{self.num_qubits}` "
-                f"systems, not '{value.num_qubits}'."
+                f"The Paullis for '{self.noise_ref}' are expected to act on '{self.num_qubits}` "
+                f"systems, received '{paulis.num_qubits}'."
             )
