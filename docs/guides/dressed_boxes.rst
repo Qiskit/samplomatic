@@ -6,12 +6,14 @@ When applying operations on disjoint qubits simultaneously, the noise profile of
 Similarly, for operations that ideally commute on the same qubits, the noise profile associated with the individual operations may not commute and could be different altogether if the order of the operations changed.
 Further, different operations within the same circuit may require altogether different techniques to reign in their errors.
 Protocols for suppressing, mitigating, and correcting noise therefore need to know the context in which it arises.
-Samplomatic uses dressed boxes and directives to capture and control these noise contexts transparently.
+Samplomatic uses annotated boxes to capture and control these noise contexts transparently.
 
-*Dressed boxes* are scopes that own a set of qubits, operations that act on them and a dressing.
-The dressing is a collection of parameterized gates that are added to one side of the box.
-*Directives* specify how to implement the contents of a dressed box–twirl the operations with a specific group, inject additional noise, or add basis changing gates.
-This is done by varying the parameters of the dressings of a given box and its neighbors.
+Every box is a scope that owns a set of qubits and operations that act on those qubits, and a list of annotations.
+Samplomatic annotations specify *dressings* and a *directives*.
+A dressing is a group of parameterized gates to add to the left- or right-side of the box.
+It also incorporates compatible gates on the same side from the box.
+A directive specifies what to do with the box.
+This could be to randomize its content (via twirling or noise injection) or to perform user-specified unitary transformations (for example, a change of basis), and is accomplished by choosing the parameters of the box's dressing and adjacent dressings accordingly.
 
 A guiding example
 -----------------
@@ -45,7 +47,7 @@ When interpreted, the layer of entangling gates is surrounded by layers of rando
 The random Pauli layer between the entangling gates and single-qubit gates is composed into the layer of single-qubit gates and implemented together in its dressing.
 The other random Pauli layer will be composed into the dressing of the next dressed box.
 The random Pauli gates are *virtual* in the same spirit as a virtual Z gate–they do not add additional operations to the circuit, but instead act as a directive to alter how other operations are implemented.
-Recast in this light, the left (right) twirl directive can be understood as implement a random Pauli in this box's dressing and apply the Pauli that undoes it in the next (previous) box's dressing.
+Recast in this light, the left (right) twirl directive is to implement a random Pauli in this box's dressing and apply the Pauli that undoes it in the next (previous) box's dressing.
 
 Composing dressed boxes
 -----------------------
