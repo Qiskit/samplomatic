@@ -1,7 +1,7 @@
 Dressed boxes
 =============
 
-Noise in physical quantum circuits is contextual.
+Physical noise mechanisms that occur during the execution of quantum circuits are contextual.
 When applying operations on disjoint qubits simultaneously, the noise profile of the overall operation may not be equal to that of the constituent parts.
 Similarly, for operations that ideally commute on the same qubits, the noise profile associated with the individual operations may not commute and could be different altogether if the order of the operations changed.
 Further, different operations within the same circuit may require altogether different techniques to reign in their errors.
