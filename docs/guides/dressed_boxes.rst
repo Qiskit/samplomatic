@@ -17,7 +17,7 @@ This could be to randomize its content (via twirling or noise injection) or to p
 A guiding example
 -----------------
 
-Consider Pauli twirling a static circuit.
+Suppose we would like to Pauli twirl the following circuit during execution, that is, suppose we want to add random Pauli gates before and after the parallel entangling gates that don't change the logical content of the circuit, but that do change the effective noise model.
 
 .. figure:: ../figs/undressed_pauli.drawio.png
 
