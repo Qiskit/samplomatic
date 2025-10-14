@@ -38,7 +38,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
         self.entangled_qubits = set()
 
     def _append_dressed_layer(self) -> ParamIndices:
-        """A helper function to add a collection dressing layer."""
+        """Add a dressed layer."""
         qubits = self.collection.qubits
         try:
             remapped_qubits = [
