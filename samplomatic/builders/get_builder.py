@@ -18,7 +18,7 @@ from collections.abc import Callable, Sequence
 
 from qiskit.circuit import Annotation, Qubit
 
-from ..aliases import CircuitInstruction, TypeAlias
+from ..aliases import CircuitInstruction
 from ..annotations import (
     BasisTransform,
     BasisTransformMode,
@@ -29,16 +29,11 @@ from ..annotations import (
 )
 from ..exceptions import BuildError
 from ..partition import QubitPartition
-from ..pre_samplex import PreSamplex
 from ..synths import get_synth
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
-from .specs import CollectionSpec, EmissionSpec, InstructionSpec
-from .template_state import TemplateState
-
-SamplexBuilder: TypeAlias = Builder[PreSamplex, None]
-TemplateBuilder: TypeAlias = Builder[TemplateState, InstructionSpec]
+from .specs import CollectionSpec, EmissionSpec
 
 
 def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Builder:

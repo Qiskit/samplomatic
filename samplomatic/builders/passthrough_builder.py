@@ -17,7 +17,7 @@ from qiskit.circuit import Barrier, IfElseOp
 from ..aliases import CircuitInstruction
 from ..pre_samplex import PreSamplex
 from .builder import Builder
-from .specs import InstructionMode, InstructionSpec
+from .specs import InstructionMode
 from .template_state import TemplateState
 
 
@@ -52,12 +52,9 @@ class PassthroughBuilder(Builder[TemplateState, PreSamplex]):
             )
             self.samplex_state.passthrough_params.extend(true_params + false_params)
         else:
-            spec = InstructionSpec(
-                params=self.template_state.append_remapped_gate(instr),
-                mode=InstructionMode.PROPAGATE,
-            )
-
-            self.samplex_state.add_propagate(instr, spec)
+            mode = InstructionMode.PROPAGATE
+            params = self.template_state.append_remapped_gate(instr)
+            self.samplex_state.add_propagate(instr, mode, params)
 
     def _append_barrier(self, label: str):
         if self.template_state.scope_idx:
@@ -66,10 +63,8 @@ class PassthroughBuilder(Builder[TemplateState, PreSamplex]):
             barrier = CircuitInstruction(Barrier(len(all_qubits), label), all_qubits)
             self.template_state.template.append(barrier)
 
-    def lhs(self) -> InstructionSpec:
+    def lhs(self):
         self._append_barrier("L")
-        return InstructionSpec()
 
-    def rhs(self) -> InstructionSpec:
+    def rhs(self):
         self._append_barrier("R")
-        return InstructionSpec()

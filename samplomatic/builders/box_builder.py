@@ -18,11 +18,11 @@ import numpy as np
 from qiskit.circuit import Barrier
 
 from ..aliases import CircuitInstruction, ParamIndices
-from ..exceptions import SamplexBuildError, TemplateBuildError
+from ..exceptions import BuildError, SamplexBuildError, TemplateBuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
-from .specs import CollectionSpec, EmissionSpec, InstructionMode, InstructionSpec, VirtualType
+from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
 from .template_state import TemplateState
 
 
@@ -85,9 +85,6 @@ class LeftBoxBuilder(BoxBuilder):
         self.clbit_idxs = []
 
     def parse(self, instr: CircuitInstruction):
-        name = instr.operation.name
-        param_idxs = np.empty((0, 0), dtype=np.intp)
-
         if (name := instr.operation.name) == "barrier":
             self.template_state.append_remapped_gate(instr)
             return
@@ -97,9 +94,7 @@ class LeftBoxBuilder(BoxBuilder):
                 if (qubit,) not in self.measured_qubits:
                     self.measured_qubits.add((qubit,))
                 else:
-                    raise SamplexBuildError(
-                        "Cannot measure the same qubit twice in a twirling box."
-                    )
+                    raise SamplexBuildError("Cannot measure the same qubit twice in a dressed box.")
             self.template_state.append_remapped_gate(instr)
             self.clbit_idxs.extend(
                 [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
@@ -117,20 +112,15 @@ class LeftBoxBuilder(BoxBuilder):
                     "Cannot handle single-qubit gate to the right of entangler when dressing=left."
                 )
             # the action of this single-qubit gate will be absorbed into the dressing
+            mode = InstructionMode.MULTIPLY
             params = []
             if instr.operation.is_parameterized():
                 params.extend((None, param) for param in instr.operation.params)
-            spec = InstructionSpec(
-                params=params, mode=InstructionMode.MULTIPLY, param_idxs=param_idxs
-            )
 
         elif num_qubits > 1:
             self.entangled_qubits.update(instr.qubits)
-            spec = InstructionSpec(
-                params=self.template_state.append_remapped_gate(instr),
-                mode=InstructionMode.PROPAGATE,
-                param_idxs=param_idxs,
-            )
+            params = self.template_state.append_remapped_gate(instr)
+            mode = InstructionMode.PROPAGATE
         else:
             raise RuntimeError(f"Instruction {instr} could not be parsed.")
 
@@ -138,9 +128,9 @@ class LeftBoxBuilder(BoxBuilder):
             # TODO: What about delays? barriers?
             raise SamplexBuildError(
                 f"Instruction {instr} happens after a measurement. No operations allowed "
-                "after a measurement in a measurement twirling box."
+                "after a measurement in a dressed box."
             )
-        self.samplex_state.add_propagate(instr, spec)
+        self.samplex_state.add_propagate(instr, mode, params)
 
     def lhs(self):
         self._append_barrier("L")
@@ -180,22 +170,11 @@ class RightBoxBuilder(BoxBuilder):
 
     def parse(self, instr: CircuitInstruction):
         if (name := instr.operation.name).startswith("barrier"):
-            spec = InstructionSpec(params=self.template_state.append_remapped_gate(instr))
+            params = self.template_state.append_remapped_gate(instr)
             return
 
         if name.startswith("meas"):
-            for qubit in instr.qubits:
-                if (qubit,) not in self.measured_qubits:
-                    self.measured_qubits.add((qubit,))
-                else:
-                    raise SamplexBuildError(
-                        "Cannot measure the same qubit twice in a twirling box."
-                    )
-            self.template_state.append_remapped_gate(instr)
-            self.clbit_idxs.extend(
-                [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
-            )
-            return
+            raise BuildError("Cannot measure the same qubit twice in a dressed box.")
 
         elif (num_qubits := instr.operation.num_qubits) == 1:
             self.entangled_qubits.update(instr.qubits)
@@ -203,21 +182,19 @@ class RightBoxBuilder(BoxBuilder):
             params = []
             if instr.operation.is_parameterized():
                 params.extend((None, param) for param in instr.operation.params)
-            spec = InstructionSpec(mode=InstructionMode.MULTIPLY, params=params)
+            mode = InstructionMode.MULTIPLY
 
         elif num_qubits > 1:
             if not self.entangled_qubits.isdisjoint(instr.qubits):
                 raise RuntimeError(
                     "Cannot handle single-qubit gate to the left of entangler when dressing=right."
                 )
-            spec = InstructionSpec(
-                params=self.template_state.append_remapped_gate(instr),
-                mode=InstructionMode.PROPAGATE,
-            )
+            params = self.template_state.append_remapped_gate(instr)
+            mode = InstructionMode.PROPAGATE
         else:
             raise RuntimeError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, spec)
+        self.samplex_state.add_propagate(instr, mode, params)
 
     def lhs(self):
         self._append_barrier("L")
@@ -238,12 +215,5 @@ class RightBoxBuilder(BoxBuilder):
     def rhs(self):
         self._append_barrier("M")
         param_idxs = self._append_dressed_layer()
-        if twirl_type := self.emission.twirl_register_type:
-            if len(self.measured_qubits) != 0:
-                if twirl_type != VirtualType.PAULI:
-                    raise SamplexBuildError(
-                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
-                    )
-                self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
         self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
         self._append_barrier("R")
