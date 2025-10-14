@@ -22,7 +22,7 @@ from qiskit.circuit import Parameter
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.samplex import Samplex
-from samplomatic.samplex.noise_model_requirement import NoiseModelRequirement
+from samplomatic.samplex.noise_requirement import NoiseRequirement
 from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import Specification, TensorSpecification, ValueType
 from samplomatic.virtual_registers import PauliRegister, U2Register
@@ -31,7 +31,7 @@ from .test_nodes.dummy_nodes import DummyCollectionNode, DummyEvaluationNode, Du
 
 
 class DummySamplingErrorNode(DummySamplingNode):
-    def sample(self, registers, rng, inputs, num_randomizations):
+    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
         raise SamplexRuntimeError("This node cannot sample.")
 
 
@@ -47,7 +47,7 @@ class TestBasic:
     def test_str(self):
         """Test the string dunder is doing fancy stuff."""
         samplex = Samplex()
-        samplex.add_noise_model_requirement(NoiseModelRequirement("ref", 5))
+        samplex.add_noise_requirement(NoiseRequirement("ref", 5))
         assert "Samplex" in str(samplex)
         assert "Inputs:" in str(samplex)
         assert "Outputs:" in str(samplex)
@@ -137,7 +137,6 @@ class TestValidation:
 
     def test_use_of_uninitialized_in_evaluation(self):
         """Test for failure when an evaluation node attempts to use an uninitialized register."""
-
         samplex = Samplex()
         a = samplex.add_node(DummySamplingNode(instantiates={"x": (10, PauliRegister)}))
         b = samplex.add_node(DummyEvaluationNode(reads_from={"y": ({6}, PauliRegister)}))
@@ -151,7 +150,6 @@ class TestValidation:
 
     def test_use_of_uninitialized_in_collection(self):
         """Test for failure when a collection node attempts to use an uninitialized register."""
-
         samplex = Samplex()
         a = samplex.add_node(DummySamplingNode(instantiates={"x": (10, PauliRegister)}))
         b = samplex.add_node(DummyEvaluationNode(reads_from={"x": ({6}, PauliRegister)}))
@@ -181,7 +179,6 @@ class TestSample:
 
     def test_single_component(self):
         """Basic test with a simple linear graph and one component."""
-
         samplex = Samplex()
 
         samplex.add_output(TensorSpecification("out", (9,), float, "desc"))
@@ -224,7 +221,6 @@ class TestSample:
 
     def test_two_components(self):
         """Basic test with a simple linear graph and two components."""
-
         samplex = Samplex()
 
         a = samplex.add_node(DummyCollectionNode(reads_from={"x": ({8}, PauliRegister)}))
@@ -255,7 +251,6 @@ class TestSample:
 
     def test_parameter_evaluation(self):
         """Test the evaluation method when there are parameters."""
-
         samplex = Samplex()
         samplex.append_parameter_expression(a := Parameter("a"))
         samplex.append_parameter_expression(b := Parameter("b"))

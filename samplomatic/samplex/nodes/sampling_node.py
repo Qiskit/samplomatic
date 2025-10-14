@@ -12,11 +12,14 @@
 
 """SamplingNode"""
 
+from __future__ import annotations
+
 import abc
 
 from numpy.random import Generator
 
 from ...aliases import RegisterName
+from ...noise_oracle import NoiseOracle
 from ...tensor_interface import TensorInterface
 from ...virtual_registers import VirtualRegister
 from .node import Node
@@ -32,6 +35,7 @@ class SamplingNode(abc.ABC, Node):
         rng: Generator,
         inputs: TensorInterface,
         num_randomizations: int,
+        noise_oracle: NoiseOracle,
     ):
         """Sample this node.
 
@@ -40,6 +44,7 @@ class SamplingNode(abc.ABC, Node):
             rng: A randomness generator.
             inputs: Inputs of the sampling program.
             num_randomizations: How many randomizations to draw.
+            noise_oracle: A noise oracle from which to fetch Pauli Lindblad maps.
         """
 
     def get_style(self):

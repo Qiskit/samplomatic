@@ -14,20 +14,22 @@
 
 import hashlib
 import html
+import os
+import subprocess
+import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import pytest
 from numpy.random import Generator, SeedSequence, default_rng
 
-if TYPE_CHECKING:
-    pass
+# enable scipy-style doctests
+pytest_plugins = "scipy_doctest"
 
 
 def pytest_addoption(parser):
-    """Add pytest options"""
+    """Add pytest options."""
     parser.addoption("--seed", action="store", default=None, help="Set a global random seed")
     parser.addoption(
         "--save-plots",
@@ -40,6 +42,12 @@ def pytest_addoption(parser):
         default=False,
         help="Use lighter version of the performance tests for smoke test purposes.",
     )
+
+
+def pytest_configure(config):
+    """Add pytest configuration."""
+    # suppress beta warning for the entire test session
+    os.environ["SAMPLOMATIC_SUPPRESS_BETA_WARNING"] = "1"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -81,6 +89,38 @@ def maybe_clear_assets():
     return _clear_assets
 
 
+@pytest.fixture
+def run_snippet(tmp_path):
+    """Return a function that runs a snippet of Python in a subprocess."""
+
+    def run(name: str, snippet: str):
+        """Run a Python snippet in a new Python subprocess.
+
+        Args:
+            name: A name for the snippet.
+            snippet: A self-contained snippet of Python.
+
+        Raises:
+            AssertionError: If executing the snippet has a non-zero return code.
+        """
+        # write snippet to temp file
+        script = tmp_path / f"{name}.py"
+        script.write_text(snippet)
+
+        # run it as a subprocess
+        proc = subprocess.run(
+            [sys.executable, str(script)],
+            capture_output=True,
+            text=True,
+        )
+
+        assert (
+            proc.returncode == 0
+        ), f"Snippet {name} failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
+
+    return run
+
+
 # Track plots and test outcomes globally, where the outer dict is by folder
 SAVED_PLOTS = defaultdict(lambda: defaultdict(list))
 TEST_STATUSES = defaultdict(dict)
@@ -89,7 +129,6 @@ TEST_STATUSES = defaultdict(dict)
 @pytest.fixture
 def save_plot(request, maybe_clear_assets):
     """Fixture that saves a figure to disk in an assets folder local to the test."""
-
     if not request.config.getoption("--save-plots"):
         # early exit if the user has not opted into saving plots to disk
         return lambda *_, **__: None

@@ -17,10 +17,11 @@ from __future__ import annotations
 from collections import defaultdict
 
 from qiskit.circuit import Bit, Qubit
-from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
 
+from ...aliases import DAGOpNode
 from .utils import make_and_insert_box, validate_op_is_supported
 
 

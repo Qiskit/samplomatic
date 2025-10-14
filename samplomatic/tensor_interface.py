@@ -23,6 +23,8 @@ from qiskit.quantum_info import QubitSparsePauliList
 
 from .aliases import InterfaceName, Self
 
+__all__ = ["ValueType", "Specification", "TensorSpecification", "TensorInterface"]
+
 
 class ValueType(str, Enum):
     """Valid types for an interface value."""
@@ -332,6 +334,10 @@ class TensorInterface(MutableMapping):
             else spec
             for spec in self.specs
         ).bind(**self._data)
+
+    def __str__(self):
+        body = f"\n{self.describe(prefix='  * ', width=100)}" if self._specs else ""
+        return f"{type(self).__name__}(<{body}>)"
 
     def __repr__(self):
         return f"{type(self).__name__}({repr(self._specs)})"

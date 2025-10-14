@@ -23,7 +23,6 @@ from ..aliases import TypeAlias
 class NoiseInjectionStrategy(str, Enum):
     """The noise inejection strategies supported by the boxing pass manager."""
 
-    NONE = "none"
     NO_MODIFICATION = "no_modification"
     UNIFORM_MODIFICATION = "uniform_modification"
     INDIVIDUAL_MODIFICATION = "individual_modification"
@@ -31,14 +30,13 @@ class NoiseInjectionStrategy(str, Enum):
 
 NoiseInjectionStrategyLiteral: TypeAlias = Union[
     NoiseInjectionStrategy,
-    Literal["none", "no_modification", "uniform_modification", "individual_modification"],
+    Literal["no_modification", "uniform_modification", "individual_modification"],
 ]
 """The noise injection strategies supported by the :class:`~AddInjectNoise` pass.
 
 The following options are supported. In all these options, by "equivalent boxes" we mean boxes that
 are equal up to single-qubit qubit gates on the dressing side.
 
- * ``'none'``: No annotations are added.
  * ``'no_modification'``: All the equivalent boxes are assigned an inject noise annotation with the
     same ``ref`` and with ``modifier_ref=''``.
  * ``'uniform_modification'``: All the equivalent boxes are assigned an inject noise annotation

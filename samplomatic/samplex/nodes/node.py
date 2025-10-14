@@ -67,19 +67,19 @@ class Node(metaclass=NodeType):
         return None
 
     def outputs_to(self) -> set[InterfaceName]:
-        """Set of names of outputs this node mutates."""
+        """Return the set of names of outputs this node mutates."""
         return set()
 
     def reads_from(self) -> dict[RegisterName, tuple[set[SubsystemIndex], VirtualType]]:
-        """A manifest of which virtual register values this node needs to read from."""
+        """Return a manifest of which virtual register values this node needs to read from."""
         return {}
 
     def writes_to(self) -> dict[RegisterName, tuple[set[SubsystemIndex], VirtualType]]:
-        """A manifest of which virtual register values this node needs to write to."""
+        """Return a manifest of which virtual register values this node needs to write to."""
         return {}
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
-        """A manifest of new virtual registers that this node instantiates.
+        """Return a manifest of new virtual registers that this node instantiates.
 
         .. note::
             * To change the type or size of a register, both instantiate and remove it.
@@ -89,7 +89,7 @@ class Node(metaclass=NodeType):
         return {}
 
     def removes(self) -> set[RegisterName]:
-        """A manifest of virtual registers that this node removes.
+        """Return a manifest of virtual registers that this node removes.
 
         It is assumed that registers are removed as a last step; it is not ill-defined to read
         and write from a removed register.
@@ -123,7 +123,7 @@ class Node(metaclass=NodeType):
     def validate_and_update(
         self, register_descriptions: dict[RegisterName, tuple[NumSubsystems, VirtualType]]
     ):
-        """Validates provided register descriptions are compatible, updates with changes.
+        """Validate provided register descriptions are compatible, update with changes.
 
         This method can be used by a samplex to determine when a node execution order has
         well-defined dependencies before sampling begins.

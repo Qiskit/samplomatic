@@ -33,7 +33,6 @@ class TestTemplateBuilder:
 
     def test_no_box(self):
         """Test building a circuit with no boxes."""
-
         circuit = QuantumCircuit(2)
         circuit.h(0)
         circuit.rz(Parameter("a") + Parameter("b"), 0)
@@ -127,7 +126,6 @@ class TestTemplateBuilder:
 
     def test_box_decomposition(self):
         """Test decomposition modes of a box."""
-
         circuit = QuantumCircuit(2)
         circuit.h(0)
         with circuit.box([Twirl(decomposition="rzrx")]):
@@ -166,7 +164,6 @@ class TestTemplateBuilder:
 
     def test_general_5q_static_circuit(self):
         """Test with a general static circuit of 5 qubits"""
-
         circuit = QuantumCircuit(5)
         with circuit.box([Twirl()]):
             circuit.rz(0.5, 0)

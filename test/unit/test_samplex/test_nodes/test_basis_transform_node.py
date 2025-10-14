@@ -18,7 +18,11 @@ from qiskit.circuit.library import HGate, IGate
 
 from samplomatic.annotations import VirtualType
 from samplomatic.samplex.nodes import BasisTransformNode
-from samplomatic.samplex.nodes.basis_transform_node import MEAS_PAULI_BASIS, BasisChange
+from samplomatic.samplex.nodes.basis_transform_node import (
+    MEAS_PAULI_BASIS,
+    PREP_PAULI_BASIS,
+    BasisChange,
+)
 from samplomatic.tensor_interface import TensorInterface, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
@@ -34,7 +38,6 @@ class TestBasisChange:
 
     def test_construction_fails(self):
         """Test the construction fails when expected."""
-
         with pytest.raises(ValueError, match="basis elements is not equal .* symbols"):
             BasisChange("ABC", PauliRegister([[0], [1]]))
 
@@ -45,6 +48,20 @@ class TestBasisChange:
         """Test the get_transform() method."""
         basis_change = BasisChange("ABC", PauliRegister([[0], [1], [2]]))
         assert basis_change.get_transform("CAABA") == PauliRegister([[2], [0], [0], [1], [0]])
+
+    @pytest.mark.parametrize(
+        ("symp", "basis"),
+        [
+            (2, np.array([[1.0, 1.0], [1.0, -1.0]]) / np.sqrt(2)),
+            (3, np.array([[1.0, 1.0], [1.0j, -1.0j]]) / np.sqrt(2)),
+        ],
+    )
+    def test_pauli_basis(self, symp, basis):
+        prep_basis = PREP_PAULI_BASIS.get_transform([symp]).virtual_gates[0, 0]
+        assert np.allclose(np.absolute(prep_basis.conj().T @ basis), np.eye(2))
+
+        meas_basis = MEAS_PAULI_BASIS.get_transform([symp]).virtual_gates[0, 0]
+        assert np.allclose(np.absolute(meas_basis @ basis), np.eye(2))
 
 
 class TestBasisTransformNode:
@@ -62,13 +79,13 @@ class TestBasisTransformNode:
         samplex_input = TensorInterface([TensorSpecification("measure", (3,), np.uint8)])
         registers = {}
 
-        samplex_input.bind(measure=np.array([1, 1, 2], dtype=np.uint8))
-        basis_change.sample(registers, None, samplex_input, 1)
+        samplex_input.bind(measure=np.array([2, 2, 1], dtype=np.uint8))
+        basis_change.sample(registers, None, samplex_input, 1, None)
         expected_register = U2Register(np.array([[HGate(), HGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
 
-        samplex_input.bind(measure=np.array([1, 0, 0], dtype=np.uint8))
-        basis_change.sample(registers, None, samplex_input, 13)
+        samplex_input.bind(measure=np.array([2, 0, 0], dtype=np.uint8))
+        basis_change.sample(registers, None, samplex_input, 13, None)
         expected_register = U2Register(np.array([[HGate(), IGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
         assert registers["basis_change"] == expected_register

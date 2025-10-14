@@ -76,7 +76,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
-from ..samplex.noise_model_requirement import NoiseModelRequirement
+from ..samplex.noise_requirement import NoiseRequirement
 from ..synths import Synth
 from ..tensor_interface import TensorSpecification
 from ..virtual_registers import PauliRegister, U2Register
@@ -157,9 +157,9 @@ class PreSamplex:
             eligible to, but don't have to, receive edges at a further point in parsing the
             circuit being built.
         cregs: A list of classical registers in the order that they were added to the circuit.
-        noise_map_count: A count of the total number of noise maps.
-        noise_maps: A map from unique identifiers of noise maps to the number of systems the map
-            acts on.
+        pauli_lindblad_map_count: A count of the total number of Pauli Lindblad maps.
+        pauli_lindblad_maps: A map from unique identifiers of Pauli Lindblad maps to the number of
+            systems the map acts on.
         basis_transforms: A map from unique identifiers of basis transforms to the number of
             subsystems in that basis transform.
         twirled_clbits: A set of all classical bit indices which were previously twirled in the
@@ -179,8 +179,8 @@ class PreSamplex:
         dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         optional_dangling: dict[QubitIndex, set[NodeIndex]] | None = None,
         cregs: list[ClassicalRegister] | None = None,
-        noise_map_count: count | None = None,
-        noise_maps: dict[str, NumSubsystems] | None = None,
+        pauli_lindblad_map_count: count | None = None,
+        pauli_lindblad_maps: dict[str, NumSubsystems] | None = None,
         noise_modifiers: dict[str, set[str]] | None = None,
         basis_transforms: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
@@ -196,8 +196,10 @@ class PreSamplex:
             defaultdict(set) if optional_dangling is None else optional_dangling
         )
         self._cregs = cregs
-        self._noise_map_count = count() if noise_map_count is None else noise_map_count
-        self._noise_maps = {} if noise_maps is None else noise_maps
+        self._pauli_lindblad_map_count = (
+            count() if pauli_lindblad_map_count is None else pauli_lindblad_map_count
+        )
+        self._pauli_lindblad_maps = {} if pauli_lindblad_maps is None else pauli_lindblad_maps
         self._noise_modifiers = defaultdict(set) if noise_modifiers is None else noise_modifiers
         self._basis_transforms = {} if basis_transforms is None else basis_transforms
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
@@ -223,8 +225,8 @@ class PreSamplex:
             self._dangling,
             self._optional_dangling,
             self._cregs,
-            self._noise_map_count,
-            self._noise_maps,
+            self._pauli_lindblad_map_count,
+            self._pauli_lindblad_maps,
             self._noise_modifiers,
             self._basis_transforms,
             self._twirled_clbits,
@@ -306,7 +308,7 @@ class PreSamplex:
         match: DanglerMatch,
         subsystems: QubitIndicesPartition,
     ) -> Iterator[tuple[NodeIndex, QubitIndicesPartition]]:
-        """A specialization of :meth:`~.find_danglers` that also removes the dangling nodes.
+        """Extend :meth:`~.find_danglers` to also remove dangling nodes.
 
         .. note::
            Nodes are removed only after all of them have been yielded.
@@ -609,22 +611,22 @@ class PreSamplex:
         Args:
             qubits: The qubits to emit virtual gates on.
             noise_ref: Unique identifier of the noise to inject.
-            modifier_ref: Unique identifier for modifiers to apply to this noise map.
+            modifier_ref: Unique identifier for modifiers to apply to this Pauli Lindblad map.
 
         Raises:
-            SamplexBuildError: If a noise map with the same `noise_ref` but of different
+            SamplexBuildError: If a Pauli Lindblad map with the same `noise_ref` but of different
                 length has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._noise_maps.get(noise_ref)) and num_subsys != len(qubits):
+        if (num_subsys := self._pauli_lindblad_maps.get(noise_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add noise map `{noise_ref}` on `{qubits}` and a "
+                f"Cannot add Pauli Lindblad map with reference `{noise_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
-            self._noise_maps[noise_ref] = len(qubits)
+            self._pauli_lindblad_maps[noise_ref] = len(qubits)
 
         if modifier_ref:
             self._noise_modifiers[noise_ref].add(modifier_ref)
@@ -636,7 +638,7 @@ class PreSamplex:
             VirtualType.PAULI,
             noise_ref,
             modifier_ref,
-            next(self._noise_map_count),
+            next(self._pauli_lindblad_map_count),
         )
         return self._add_emit_left(node)
 
@@ -648,22 +650,22 @@ class PreSamplex:
         Args:
             qubits: The qubits to emit virtual gates on.
             noise_ref: Unique identifier of the noise to inject.
-            modifier_ref: Unique identifier for modifiers to apply to this noise map.
+            modifier_ref: Unique identifier for modifiers to apply to this Pauli Lindblad map.
 
         Raises:
-            SamplexBuildError: If a noise map with the same `noise_ref` but of different
+            SamplexBuildError: If a Pauli Lindblad map with the same `noise_ref` but of different
                 length has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._noise_maps.get(noise_ref)) and (num_subsys) != len(qubits):
+        if (num_subsys := self._pauli_lindblad_maps.get(noise_ref)) and (num_subsys) != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add noise map `{noise_ref}` on `{qubits}` and a "
+                f"Cannot add Pauli Lindblad map with reference `{noise_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
-            self._noise_maps[noise_ref] = len(qubits)
+            self._pauli_lindblad_maps[noise_ref] = len(qubits)
 
         if modifier_ref:
             self._noise_modifiers[noise_ref].add(modifier_ref)
@@ -675,7 +677,7 @@ class PreSamplex:
             VirtualType.PAULI,
             noise_ref,
             modifier_ref,
-            next(self._noise_map_count),
+            next(self._pauli_lindblad_map_count),
         )
         return self._add_emit_right(node)
 
@@ -873,7 +875,7 @@ class PreSamplex:
                     replace_edges_with_one_edge(self.graph, predecessor_idx, new_node_idx, new_edge)
 
     def _cluster_pre_propagate_nodes(self, generation: list[NodeIndex]) -> list[list[NodeIndex]]:
-        """A helper function to cluster ``PrePropagate`` nodes within a topological generation."""
+        """Cluster ``PrePropagate`` nodes within a topological generation."""
         clusters: dict[PrePropagateKey, list[dict[str, Any]]] = defaultdict(list)
 
         for node_idx in generation:
@@ -1094,9 +1096,9 @@ class PreSamplex:
                 )
             )
 
-        for noise_ref, num_qubits in self._noise_maps.items():
-            samplex.add_noise_model_requirement(
-                NoiseModelRequirement(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
+        for noise_ref, num_qubits in self._pauli_lindblad_maps.items():
+            samplex.add_noise_requirement(
+                NoiseRequirement(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
             )
 
         if max_param_idx is not None:
@@ -1120,14 +1122,14 @@ class PreSamplex:
                     )
                 )
 
-        if (num_signs := next(self._noise_map_count)) > 0:
+        if (num_signs := next(self._pauli_lindblad_map_count)) > 0:
             samplex.add_output(
                 TensorSpecification(
                     "pauli_signs",
                     (num_signs,),
                     np.dtype(np.bool_),
-                    "Signs from sampled noise maps. The order matches the iteration order of "
-                    "injected noise in the circuit.",
+                    "Signs from sampled Pauli Lindblad maps. The order matches the iteration order "
+                    "of injected noise in the circuit.",
                 )
             )
 
@@ -1402,7 +1404,7 @@ class PreSamplex:
             )
         else:
             raise SamplexBuildError(
-                f"Encountered unsupported {op_name} propragation with mode {mode} and "
+                f"Encountered unsupported {op_name} propagation with mode {mode} and "
                 f"incoming virtual gates {incoming}."
             )
 
@@ -1517,7 +1519,7 @@ class PreSamplex:
             samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
 
     def subgraphs(self) -> list[PyDiGraph[PreNode, PreEdge]]:
-        """Returns a list of disconnected components."""
+        """Return a list of disconnected components."""
         return [
             self.graph.subgraph(list(node_idxs))
             for node_idxs in weakly_connected_components(self.graph)

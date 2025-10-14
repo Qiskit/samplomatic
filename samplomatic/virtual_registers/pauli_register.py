@@ -37,14 +37,14 @@ respectively.
 
 
 class PauliRegister(GroupRegister):
-    """Virtual register of virtual projective Pauli gates.
+    r"""Virtual register of virtual projective Pauli gates.
 
     Here, projective means we are modding out the centralizer, in other words, ignoring phases.
 
     The Paulis I, X, Y, and Z correspond to 0, 2, 3, and 1 respectively.
     The non-alphabetical assignment of Y and Z is because it is more convenient
     in most calculations to have them in symplectic ordering. I.e., for a projective
-    Pauli operation :math:`P = X^x Z^z` with :math:`x,z\\in\\mathbb{Z}_2`, we
+    Pauli operation :math:`P = X^x Z^z` with :math:`x,z\in\mathbb{Z}_2`, we
     order according to binary number `zx`.
     """
 
@@ -64,7 +64,7 @@ class PauliRegister(GroupRegister):
 
     @classmethod
     def from_name(cls, name: str) -> PauliRegister:
-        """Returns a Pauli register given a its name.
+        """Return a Pauli register given a its name.
 
         Args:
             name: The name of the Pauli.
