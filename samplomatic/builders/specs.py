@@ -15,16 +15,13 @@
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 
 from ..aliases import (
     CircuitInstruction,
-    ClbitIndex,
     Parameter,
-    ParamIndices,
-    ParamSpec,
     Qubit,
     StrRef,
 )
@@ -97,34 +94,12 @@ class CollectionSpec:
     synth: Synth[Qubit, Parameter, CircuitInstruction] | None = None
     """How to synthesize collection gates."""
 
-    if_else_qubits: QubitPartition | None = None
+    dynamic_qubits: QubitPartition | None = None
     """The subset of 'qubits' collected in conditional operations."""
 
     @property
     def collect_qubits(self):
         """The subset of 'qubits' collected in the box boundary."""
-        if self.if_else_qubits is None:
+        if self.dynamic_qubits is None:
             return self.qubits
-        return self.qubits.difference(self.if_else_qubits.all_elements)
-
-
-@dataclass
-class InstructionSpec:
-    """Specification of an instruction."""
-
-    params: ParamSpec = field(default_factory=list)
-    """A list of tuples of parameter indices in the template circuit and corresponding expressions.
-
-    An index of ``None`` indicates that the expression is not added to the template."""
-
-    param_idxs: ParamIndices = field(default_factory=lambda: EMPTY_IDXS)
-    """A matrix of parameter indices specifing virtual gate synthesis locations in the template.
-
-    The first axis is over subsystems, the second over parameters in a synthesizer decomposition.
-    """
-
-    mode: InstructionMode = InstructionMode.NONE
-    """The mode of an added instruction."""
-
-    clbit_idxs: list[ClbitIndex] = field(default_factory=list)
-    """The mode of an added instruction."""
+        return self.qubits.difference(self.dynamic_qubits.all_elements)

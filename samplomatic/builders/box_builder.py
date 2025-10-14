@@ -18,7 +18,7 @@ import numpy as np
 from qiskit.circuit import Barrier, IfElseOp
 
 from ..aliases import CircuitInstruction, ParamIndices
-from ..exceptions import SamplexBuildError, TemplateBuildError
+from ..exceptions import BuildError, SamplexBuildError, TemplateBuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
@@ -35,7 +35,6 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
 
         self.collection = collection
         self.emission = emission
-        self.dynamic_qubits = set()
         self.entangled_qubits = set()
         self.measured_qubits = QubitPartition(1, [])
 
@@ -102,7 +101,17 @@ class LeftBoxBuilder(BoxBuilder):
             self.template_state.append_remapped_gate(instr)
             return
 
-        if not self.dynamic_qubits.isdisjoint(instr.qubits):
+        if name.startswith("if_else"):
+            self._validate_if_else(instr.operation)
+            builder = BoxLeftIfElseBuilder(
+                instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
+            )
+            if_else = builder.build()
+            new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
+            self.template_state.template.append(if_else, new_qubits, instr.clbits)
+            return
+
+        elif not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
             raise RuntimeError(
                 "Cannot handle a dynamic instruction and another instruction on "
                 f"qubits {instr.qubits} in the same dressed box."
@@ -113,24 +122,11 @@ class LeftBoxBuilder(BoxBuilder):
                 if (qubit,) not in self.measured_qubits:
                     self.measured_qubits.add((qubit,))
                 else:
-                    raise SamplexBuildError(
-                        "Cannot measure the same qubit twice in a twirling box."
-                    )
+                    raise SamplexBuildError("Cannot measure the same qubit twice in a dressed box.")
             self.template_state.append_remapped_gate(instr)
             self.clbit_idxs.extend(
                 [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
             )
-            return
-
-        if name.startswith("if_else"):
-            self.dynamic_qubits.update(instr.qubits)
-            self._validate_if_else(instr.operation)
-            builder = BoxLeftIfElseBuilder(
-                instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
-            )
-            if_else = builder.build()
-            new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
-            self.template_state.template.append(if_else, new_qubits, instr.clbits)
             return
 
         if (num_qubits := instr.operation.num_qubits) == 1:
@@ -161,7 +157,7 @@ class LeftBoxBuilder(BoxBuilder):
             # TODO: What about delays? barriers?
             raise SamplexBuildError(
                 f"Instruction {instr} happens after a measurement. No operations allowed "
-                "after a measurement in a measurement twirling box."
+                "after a measurement in a dressed box."
             )
         self.samplex_state.add_propagate(instr, mode, params)
 
@@ -207,31 +203,11 @@ class RightBoxBuilder(BoxBuilder):
             self.template_state.append_remapped_gate(instr)
             return
 
-        if not self.dynamic_qubits.isdisjoint(instr.qubits):
-            raise RuntimeError(
-                "Cannot handle a dynamic instruction and another instruction on "
-                f"qubits {instr.qubits} in the same dressed box."
-            )
-
         if name.startswith("meas"):
-            for qubit in instr.qubits:
-                if (qubit,) not in self.measured_qubits:
-                    self.measured_qubits.add((qubit,))
-                else:
-                    raise SamplexBuildError(
-                        "Cannot measure the same qubit twice in a twirling box."
-                    )
-            self.template_state.append_remapped_gate(instr)
-            self.clbit_idxs.extend(
-                [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
-            )
-            return
+            raise BuildError("Cannot measure the same qubit twice in a dressed box.")
 
         if name.startswith("if_else"):
-            self.dynamic_qubits.update(instr.qubits)
             self._validate_if_else(instr.operation)
-            for qubit in instr.qubits:
-                self.collection.if_else_qubits.add((qubit,))
             builder = BoxRightIfElseBuilder(
                 instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
             )
@@ -239,6 +215,12 @@ class RightBoxBuilder(BoxBuilder):
             new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
             self.template_state.template.append(if_else, new_qubits, instr.clbits)
             return
+
+        elif not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
+            raise RuntimeError(
+                "Cannot handle a dynamic instruction and another instruction on "
+                f"qubits {instr.qubits} in the same dressed box."
+            )
 
         if (num_qubits := instr.operation.num_qubits) == 1:
             self.entangled_qubits.update(instr.qubits)
@@ -253,8 +235,8 @@ class RightBoxBuilder(BoxBuilder):
                 raise RuntimeError(
                     "Cannot handle single-qubit gate to the left of entangler when dressing=right."
                 )
-            mode = InstructionMode.PROPAGATE
             params = self.template_state.append_remapped_gate(instr)
+            mode = InstructionMode.PROPAGATE
         else:
             raise RuntimeError(f"Instruction {instr} could not be parsed.")
 
@@ -280,12 +262,5 @@ class RightBoxBuilder(BoxBuilder):
         collect_qubits = self.collection.collect_qubits
         self._append_barrier("M", collect_qubits)
         param_idxs = self._append_dressed_layer()
-        if twirl_type := self.emission.twirl_register_type:
-            if len(self.measured_qubits) != 0:
-                if twirl_type != VirtualType.PAULI:
-                    raise SamplexBuildError(
-                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
-                    )
-                self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
         self.samplex_state.add_collect(collect_qubits, self.collection.synth, param_idxs)
         self._append_barrier("R")

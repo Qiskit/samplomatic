@@ -18,7 +18,7 @@ from collections.abc import Callable, Sequence
 
 from qiskit.circuit import Annotation, Qubit
 
-from ..aliases import CircuitInstruction, TypeAlias
+from ..aliases import CircuitInstruction
 from ..annotations import (
     BasisTransform,
     BasisTransformMode,
@@ -29,16 +29,11 @@ from ..annotations import (
 )
 from ..exceptions import BuildError
 from ..partition import QubitPartition
-from ..pre_samplex import PreSamplex
 from ..synths import get_synth
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
-from .specs import CollectionSpec, EmissionSpec, InstructionSpec
-from .template_state import TemplateState
-
-SamplexBuilder: TypeAlias = Builder[PreSamplex, None]
-TemplateBuilder: TypeAlias = Builder[TemplateState, InstructionSpec]
+from .specs import CollectionSpec, EmissionSpec
 
 
 def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Builder:
@@ -77,13 +72,13 @@ def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Bu
     if emission.noise_ref and not emission.twirl_register_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
-    collection.if_else_qubits = QubitPartition(1)
+    collection.dynamic_qubits = QubitPartition(1)
     if collection.dressing is DressingMode.LEFT:
         # TODO: if BoxOp contained a DAG we could look at the first topological generation
         for box_instr in instr.operation.body:
             if box_instr.operation.name.startswith("if_else"):
                 for q in box_instr.qubits:
-                    collection.if_else_qubits.add((q,))
+                    collection.dynamic_qubits.add((q,))
         return LeftBoxBuilder(collection, emission)
     return RightBoxBuilder(collection, emission)
 

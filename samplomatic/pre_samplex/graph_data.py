@@ -185,8 +185,10 @@ class PrePropagate(PreNode):
     """
 
     mode: InstructionMode
+    """How the operation acts on virtual gates."""
 
     params: ParamSpec
+    """The parameters required by the node."""
 
     def get_style(self):
         return (

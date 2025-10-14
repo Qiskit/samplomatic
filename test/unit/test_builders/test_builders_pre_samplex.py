@@ -33,14 +33,14 @@ class TestBoxBuilder:
     """Test Box Builders"""
 
     def get_builder(self, qreg, creg=None):
-        """Helper function to return left box builder with empty PreSamplex."""
+        """Return left box builder with empty PreSamplex."""
         creg = ClassicalRegister(len(qreg)) if creg is None else creg
         qubit_map = {q: idx for idx, q in enumerate(qreg)}
         template_state = TemplateState(QuantumCircuit(qreg, creg), qubit_map, ParamIter(), [0])
         pre_samplex = PreSamplex(qubit_map=qubit_map, cregs=[creg])
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxBuilder(
-            CollectionSpec(qubits, "Left", RzSxSynth()),
+            CollectionSpec(qubits, "Left", RzSxSynth(), QubitPartition.from_elements([])),
             EmissionSpec(qubits, "Right", VirtualType.PAULI),
         )
         builder.set_samplex_state(pre_samplex).set_template_state(template_state)
@@ -101,7 +101,7 @@ class TestBoxBuilder:
         pre_samplex = PreSamplex(qubit_map=qubit_map)
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxBuilder(
-            CollectionSpec(qubits, "Left", RzSxSynth()),
+            CollectionSpec(qubits, "Left", RzSxSynth(), QubitPartition.from_elements([])),
             EmissionSpec(qubits, "Right", VirtualType.U2),
         )
         builder.set_samplex_state(pre_samplex)
@@ -125,6 +125,6 @@ class TestBoxBuilder:
         builder.parse(CircuitInstruction(Measure(), qreg, creg))
 
         with pytest.raises(
-            SamplexBuildError, match="Cannot measure the same qubit twice in a twirling box"
+            SamplexBuildError, match="Cannot measure the same qubit twice in a dressed box"
         ):
             builder.parse(CircuitInstruction(Measure(), qreg, creg))
