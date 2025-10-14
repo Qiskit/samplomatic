@@ -79,7 +79,7 @@ class TestWithSimulation:
         circuit.h(1)
         circuit.measure_all()
 
-        # sample_simulate_and_compare_counts(circuit, save_plot)
+        sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_right_dressed_twirled_conditional_no_else(self, save_plot):
         """Test a conditional without else clause in a right-dressed twirl box."""
@@ -97,7 +97,7 @@ class TestWithSimulation:
         circuit.h(1)
         circuit.measure_all()
 
-        # sample_simulate_and_compare_counts(circuit, save_plot)
+        sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_right_dressed_parametric_twirled_conditional(self, save_plot):
         """Test a circuit with a parametric conditional in a right-dressed twirl box."""
@@ -126,7 +126,7 @@ class TestWithSimulation:
 
     def test_left_dressed_twirled_conditional(self, save_plot):
         """Test a circuit with a conditional in a left-dressed twirl box."""
-        circuit = QuantumCircuit(2, 2)
+        circuit = QuantumCircuit(3, 2)
         circuit.h(0)
         circuit.measure(0, 0)
 
@@ -137,15 +137,15 @@ class TestWithSimulation:
             with _else:
                 circuit.sx(0)
                 circuit.cx(1, 0)
-            circuit.cx(0, 1)
+            circuit.x(2)
         with circuit.box([Twirl(dressing="right")]):
-            circuit.noop(0, 1)
+            circuit.cx(0, 1)
+            circuit.h(1)
+            circuit.noop(0, 2)
 
-        circuit.h(1)
+        circuit.measure_all()
 
-        # circuit.measure_all()
-
-        # sample_simulate_and_compare_counts(circuit, save_plot)
+        sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_left_dressed_twirled_conditional_no_else(self, save_plot):
         """Test a conditional without else clause in a left-dressed twirl box."""
@@ -160,9 +160,9 @@ class TestWithSimulation:
             circuit.noop(0)
             circuit.h(1)
 
-        # circuit.measure_all()
+        circuit.measure_all()
 
-        # sample_simulate_and_compare_counts(circuit, save_plot)
+        sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_left_dressed_parametric_twirled_conditional(self, save_plot):
         """Test a circuit with a parametric conditional in a left-dressed twirl box."""

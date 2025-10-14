@@ -18,9 +18,9 @@ from typing import Any
 import numpy as np
 from qiskit.circuit.gate import Gate
 
-from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef, SubsystemIndex
+from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
 from ..annotations import VirtualType
-from ..builders.specs import InstructionMode, InstructionSpec
+from ..builders.specs import InstructionMode
 from ..constants import Direction
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
@@ -184,8 +184,9 @@ class PrePropagate(PreNode):
     each other.
     """
 
-    spec: InstructionSpec
-    """Specification for how the operation acts on virtual gates."""
+    mode: InstructionMode
+
+    params: ParamSpec
 
     def get_style(self):
         return (

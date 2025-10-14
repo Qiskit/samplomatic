@@ -52,12 +52,9 @@ class PassthroughBuilder(Builder[TemplateState, PreSamplex]):
             )
             self.samplex_state.passthrough_params.extend(true_params + false_params)
         else:
-            spec = InstructionSpec(
-                params=self.template_state.append_remapped_gate(instr),
-                mode=InstructionMode.PROPAGATE,
-            )
-
-            self.samplex_state.add_propagate(instr, spec)
+            mode = InstructionMode.PROPAGATE
+            params = self.template_state.append_remapped_gate(instr)
+            self.samplex_state.add_propagate(instr, mode, params)
 
     def _append_barrier(self, label: str):
         if self.template_state.scope_idx:

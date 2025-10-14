@@ -23,7 +23,7 @@ from ..pre_samplex import DanglerMatch, PreSamplex
 from ..pre_samplex.graph_data import Direction, PreCollect, PreCopy, PreEdge, PreEmit, PrePropagate
 from ..synths import Synth
 from .param_iter import ParamIter
-from .specs import InstructionMode, InstructionSpec
+from .specs import InstructionMode
 
 
 class BoxIfElseBuilder:
@@ -61,7 +61,7 @@ class BoxIfElseBuilder:
                 new_op = type(instr.operation)(*params) if params else instr.operation
                 new_block.append(new_op, instr.qubits, instr.clbits)
                 mode = InstructionMode.PROPAGATE
-            self.pre_samplex.add_propagate(instr, InstructionSpec(params=params, mode=mode))
+            self.pre_samplex.add_propagate(instr, params=params, mode=mode)
 
     def append_template(self, block: QuantumCircuit, new_block: QuantumCircuit) -> ParamIndices:
         start = self.param_iter.idx
@@ -118,9 +118,7 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
                 node_idx,
             )
 
-        if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
-
-        return if_else_op
+        return IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
 
 class BoxLeftIfElseBuilder(BoxIfElseBuilder):
@@ -166,6 +164,4 @@ class BoxLeftIfElseBuilder(BoxIfElseBuilder):
                 node_idx,
             )
 
-        if_else_op = IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
-
-        return if_else_op
+        return IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)

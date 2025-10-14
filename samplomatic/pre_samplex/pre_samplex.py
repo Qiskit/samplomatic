@@ -45,7 +45,7 @@ from ..aliases import (
     StrRef,
 )
 from ..annotations import VirtualType
-from ..builders.specs import InstructionMode, InstructionSpec
+from ..builders.specs import InstructionMode
 from ..constants import Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
@@ -715,7 +715,7 @@ class PreSamplex:
         node = PreBasisTransform(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
         return self._add_right(node)
 
-    def add_propagate(self, instr: CircuitInstruction, spec: InstructionSpec):
+    def add_propagate(self, instr: CircuitInstruction, mode: InstructionMode, params: ParamSpec):
         """Add a node that propagates virtual gates through an operation.
 
         This method deduces which direction to propagate virtual gates by inspecting the previous
@@ -723,7 +723,8 @@ class PreSamplex:
 
         Args:
             instr: The circuit instruction to propagate through.
-            spec: The specification for how to propagate with the instruction.
+            mode: What mode to use for propagation.
+            params: The parameters of the instruction.
 
         Raises:
             SamplexBuildError: If the qubits of ``instr`` have partial overlap with dangling qubits
@@ -747,8 +748,8 @@ class PreSamplex:
         # These parameters appear in the template (InstructionMode.PROPAGATE) and must
         # be accounted for during sampling, even though they might not take part in
         # virtual gate propagation.
-        if spec.mode == InstructionMode.PROPAGATE and spec.params is not None:
-            self.passthrough_params.extend(spec.params)
+        if mode == InstructionMode.PROPAGATE and params is not None:
+            self.passthrough_params.extend(params)
 
         # recall that this is indexing out of `subsystems`, not qubits
         num_qubits = instr.operation.num_qubits
@@ -756,7 +757,7 @@ class PreSamplex:
 
         # time ordering: (emit> | propagate>) --> new propagate>
         rightward_node_candidate = NodeCandidate(
-            self.graph, PrePropagate(subsystems, Direction.RIGHT, op, partition, spec)
+            self.graph, PrePropagate(subsystems, Direction.RIGHT, op, partition, mode, params)
         )
         match = DanglerMatch(node_types=(PreCopy, PreEmit, PrePropagate), direction=Direction.RIGHT)
         all_found_qubit_idxs = set()
@@ -775,7 +776,7 @@ class PreSamplex:
 
         # time ordering: (collect< | propagate<) <-- new propagate<
         leftward_node_candidate = NodeCandidate(
-            self.graph, PrePropagate(subsystems, Direction.LEFT, op, partition, spec)
+            self.graph, PrePropagate(subsystems, Direction.LEFT, op, partition, mode, params)
         )
         all_found_qubit_idxs = set()
         match = DanglerMatch(
@@ -831,7 +832,7 @@ class PreSamplex:
                     ],
                 )
 
-                params = [param for node in nodes for param in node.spec.params]
+                params = [param for node in nodes for param in node.params]
 
                 # This merges the node but not the edges
                 new_node_idx = replace_nodes_with_one_node(
@@ -842,7 +843,8 @@ class PreSamplex:
                         self.graph[node_idxs[0]].direction,  # all nodes have same direction
                         self.graph[node_idxs[0]].operation,  # all nodes have same operation
                         combined_partition,
-                        InstructionSpec(params=params, mode=nodes[0].spec.mode),
+                        nodes[0].mode,
+                        params,
                     ),
                 )
 
@@ -862,9 +864,7 @@ class PreSamplex:
             node = self.graph[node_idx]
             if isinstance(node, PrePropagate):
                 cluster_type_key = PrePropagateKey(
-                    mode=node.spec.mode,
-                    operation_name=node.operation.name,
-                    direction=node.direction,
+                    mode=node.mode, operation_name=node.operation.name, direction=node.direction
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -982,8 +982,8 @@ class PreSamplex:
         for node in self.graph.nodes():
             if isinstance(node, PreCollect) and node.param_idxs.size:
                 max_value = max(max_value or 0, node.param_idxs.max())
-            elif isinstance(node, PrePropagate) and node.spec.params:
-                max_value = max(max_value or 0, max(idx or 0 for idx, _ in node.spec.params))
+            elif isinstance(node, PrePropagate) and node.params:
+                max_value = max(max_value or 0, max(idx or 0 for idx, _ in node.params))
         return max_value
 
     def finalize(self):
@@ -1389,7 +1389,7 @@ class PreSamplex:
         combined_register_name = f"{prefix}_{order[pre_propagate_idx]}"
 
         op_name = pre_propagate.operation.name
-        mode = pre_propagate.spec.mode
+        mode = pre_propagate.mode
         incoming = set()
         for predecssor_idx in self.graph.predecessor_indices(pre_propagate_idx):
             incoming.add(samplex.graph[pre_nodes_to_nodes[predecssor_idx]].outgoing_register_type)
@@ -1397,8 +1397,7 @@ class PreSamplex:
             if pre_propagate.operation.is_parameterized():
                 combined_register_type = VirtualType.U2
                 param_idxs = [
-                    samplex.append_parameter_expression(param)
-                    for _, param in pre_propagate.spec.params
+                    samplex.append_parameter_expression(param) for _, param in pre_propagate.params
                 ]
                 if pre_propagate.direction is Direction.LEFT:
                     propagate_node = RightU2ParametricMultiplicationNode(

@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import numpy as np
-from qiskit.circuit import Barrier
+from qiskit.circuit import Barrier, IfElseOp
 
 from ..aliases import CircuitInstruction, ParamIndices
 from ..exceptions import SamplexBuildError, TemplateBuildError
@@ -23,7 +23,7 @@ from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
 from .dynamic_builder import BoxLeftIfElseBuilder, BoxRightIfElseBuilder
-from .specs import CollectionSpec, EmissionSpec, InstructionMode, InstructionSpec, VirtualType
+from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
 from .template_state import TemplateState
 
 
@@ -35,8 +35,9 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
 
         self.collection = collection
         self.emission = emission
-        self.measured_qubits = QubitPartition(1, [])
+        self.dynamic_qubits = set()
         self.entangled_qubits = set()
+        self.measured_qubits = QubitPartition(1, [])
 
     def _append_dressed_layer(self) -> ParamIndices:
         """Add a dressed layer."""
@@ -81,6 +82,11 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
         barrier = CircuitInstruction(Barrier(len(all_qubits), label), all_qubits)
         self.template_state.template.append(barrier)
 
+    def _validate_if_else(self, if_else: IfElseOp):
+        self.samplex_state.verify_no_twirled_clbits(
+            self.template_state.get_condition_clbits(if_else.condition)
+        )
+
 
 class LeftBoxBuilder(BoxBuilder):
     """Box builder for left dressings."""
@@ -92,12 +98,15 @@ class LeftBoxBuilder(BoxBuilder):
         self.clbit_idxs = []
 
     def parse(self, instr: CircuitInstruction):
-        name = instr.operation.name
-        param_idxs = np.empty((0, 0), dtype=np.intp)
-
         if (name := instr.operation.name) == "barrier":
             self.template_state.append_remapped_gate(instr)
             return
+
+        if not self.dynamic_qubits.isdisjoint(instr.qubits):
+            raise RuntimeError(
+                "Cannot handle a dynamic instruction and another instruction on "
+                f"qubits {instr.qubits} in the same dressed box."
+            )
 
         if name.startswith("meas"):
             for qubit in instr.qubits:
@@ -114,6 +123,8 @@ class LeftBoxBuilder(BoxBuilder):
             return
 
         if name.startswith("if_else"):
+            self.dynamic_qubits.update(instr.qubits)
+            self._validate_if_else(instr.operation)
             builder = BoxLeftIfElseBuilder(
                 instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
             )
@@ -133,20 +144,16 @@ class LeftBoxBuilder(BoxBuilder):
                     "Cannot handle single-qubit gate to the right of entangler when dressing=left."
                 )
             # the action of this single-qubit gate will be absorbed into the dressing
+            mode = InstructionMode.MULTIPLY
             params = []
             if instr.operation.is_parameterized():
                 params.extend((None, param) for param in instr.operation.params)
-            spec = InstructionSpec(
-                params=params, mode=InstructionMode.MULTIPLY, param_idxs=param_idxs
-            )
 
         elif num_qubits > 1:
             self.entangled_qubits.update(instr.qubits)
-            spec = InstructionSpec(
-                params=self.template_state.append_remapped_gate(instr),
-                mode=InstructionMode.PROPAGATE,
-                param_idxs=param_idxs,
-            )
+            mode = InstructionMode.PROPAGATE
+            params = self.template_state.append_remapped_gate(instr)
+
         else:
             raise RuntimeError(f"Instruction {instr} could not be parsed.")
 
@@ -156,7 +163,7 @@ class LeftBoxBuilder(BoxBuilder):
                 f"Instruction {instr} happens after a measurement. No operations allowed "
                 "after a measurement in a measurement twirling box."
             )
-        self.samplex_state.add_propagate(instr, spec)
+        self.samplex_state.add_propagate(instr, mode, params)
 
     def lhs(self):
         self._append_barrier("L")
@@ -197,8 +204,14 @@ class RightBoxBuilder(BoxBuilder):
 
     def parse(self, instr: CircuitInstruction):
         if (name := instr.operation.name).startswith("barrier"):
-            spec = InstructionSpec(params=self.template_state.append_remapped_gate(instr))
+            self.template_state.append_remapped_gate(instr)
             return
+
+        if not self.dynamic_qubits.isdisjoint(instr.qubits):
+            raise RuntimeError(
+                "Cannot handle a dynamic instruction and another instruction on "
+                f"qubits {instr.qubits} in the same dressed box."
+            )
 
         if name.startswith("meas"):
             for qubit in instr.qubits:
@@ -215,6 +228,8 @@ class RightBoxBuilder(BoxBuilder):
             return
 
         if name.startswith("if_else"):
+            self.dynamic_qubits.update(instr.qubits)
+            self._validate_if_else(instr.operation)
             for qubit in instr.qubits:
                 self.collection.if_else_qubits.add((qubit,))
             builder = BoxRightIfElseBuilder(
@@ -228,24 +243,22 @@ class RightBoxBuilder(BoxBuilder):
         if (num_qubits := instr.operation.num_qubits) == 1:
             self.entangled_qubits.update(instr.qubits)
             # the action of this single-qubit gate will be absorbed into the dressing
+            mode = InstructionMode.MULTIPLY
             params = []
             if instr.operation.is_parameterized():
                 params.extend((None, param) for param in instr.operation.params)
-            spec = InstructionSpec(mode=InstructionMode.MULTIPLY, params=params)
 
         elif num_qubits > 1:
             if not self.entangled_qubits.isdisjoint(instr.qubits):
                 raise RuntimeError(
                     "Cannot handle single-qubit gate to the left of entangler when dressing=right."
                 )
-            spec = InstructionSpec(
-                params=self.template_state.append_remapped_gate(instr),
-                mode=InstructionMode.PROPAGATE,
-            )
+            mode = InstructionMode.PROPAGATE
+            params = self.template_state.append_remapped_gate(instr)
         else:
             raise RuntimeError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, spec)
+        self.samplex_state.add_propagate(instr, mode, params)
 
     def lhs(self):
         self._append_barrier("L")
