@@ -26,10 +26,10 @@ def _sort_key(parameter: Parameter):
 
 
 class ParameterExpressionTable:
-    """Evaluates a list of parameter expressions given a list of parameter values.
+    r"""Evaluates a list of parameter expressions given a list of parameter values.
 
-    An instance of this class owns an ordered list of :math:`M` :class:`ParameterExpression`\\s
-    that together implicitly specify an ordered list of distinct :math:`N` :class:`Parameter`\\s.
+    An instance of this class owns an ordered list of :math:`M` :class:`ParameterExpression`\s
+    that together implicitly specify an ordered list of distinct :math:`N` :class:`Parameter`\s.
     Because parameter expressions can involve multiple parameters, because distinct parameter
     expressions can reference the same parameters, and because parameter expressions that are
     completely bound contain no parameters, there is in general no relationship between
@@ -49,7 +49,7 @@ class ParameterExpressionTable:
         self._sorted = True
 
     def append(self, expression: ParameterExpression) -> ParamIndex:
-        """Add a parameter expression to the table.
+        r"""Add a parameter expression to the table.
 
         Args:
             expression: The parameter expression to append.
@@ -60,7 +60,7 @@ class ParameterExpressionTable:
         Raises:
             ParameterError: If the expression contains a parameter that is not already in this table
                 but whose name conflicts with an existing parameter. Keep in mind that
-                :class:`Parameter`\\s use instance equality.
+                :class:`Parameter`\s use instance equality.
         """
         for parameter in expression.parameters:
             if self._parameters.get(name := parameter.name) not in (None, parameter):
@@ -97,11 +97,11 @@ class ParameterExpressionTable:
         return len(self._expressions)
 
     def evaluate(self, parameter_values: ParamValues) -> np.ndarray:
-        """Returns one numeric value for each expression.
+        r"""Return one numeric value for each expression.
 
         Args:
             parameter_values: The parameter values, either as a map from parameters to their values,
-                or just the values in parameter-sorted order (see :attr:`~parameters`\\).
+                or just the values in parameter-sorted order (see :attr:`~parameters`\).
 
         Returns:
             An array of evaluated expressions.

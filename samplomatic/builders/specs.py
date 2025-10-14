@@ -78,10 +78,10 @@ class EmissionSpec:
     """A unique identifier of the basis transformation."""
 
     noise_ref: StrRef = ""
-    """A unique identifier of the noise map."""
+    """A unique identifier of the Pauli Lindblad map to use for noise injection."""
 
     noise_modifier_ref: StrRef = ""
-    """A unique identifier of modifiers for the noise map."""
+    """A unique identifier for modifiers to apply to the Pauli Lindblad map."""
 
 
 @dataclass

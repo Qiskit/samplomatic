@@ -56,7 +56,7 @@ def pre_propagate_nodes_are_mergeable(
 def merge_pre_edges(
     graph: PyDiGraph[PreNode, PreEdge], source_idx: NodeIndex, destination_idx: NodeIndex
 ) -> PreEdge:
-    """Merges all pre-edges from two pre-nodes into one pre-edge.
+    """Merge all pre-edges from two pre-nodes into one pre-edge.
 
     Args:
         graph: A graph containing the two nodes whose edges are being merged.

@@ -1,9 +1,15 @@
 <!--pytest-codeblocks:skipfile-->
-![Samplomatic](assets/fig/samplomatic.svg)
+![Samplomatic](docs/_static/img/samplomatic.svg)
 
 _Serving all of your circuit sampling needs since 2025._
 
 ## Development
+
+### Contributions during the Beta phase
+
+This library is in a beta stage of development.
+During this phase, the project would benefit greatly from bug report issues, or PRs that solve bugs.
+Additionally, the core team is very interested in feature request issues that will help us better understand the needs of the community. However, it will have limited capacity to work on them, and will likewise have limited capacity to review PRs that implement new feature requests which are large in scope.
 
 ### Installation
 
@@ -105,26 +111,42 @@ Optionally, paste these into your `.vscode/settings.json` to set up ruff (you al
 }
 ```
 
-### Generating `sphinx` documentation
+### Sphinx documentation
 
 `samplomatic` documentation can be rendered via `sphinx`. In order to produce the rendered
 documentation:
 
 1. Install samplomatic with the [development requirements](#installation)
-2. Regenerate the API stubs:
+2. Update the API documentation in `docs/api/` if you added or removed a module.
+3. Build the documentation:
     ```bash
-    $ cd docs/
-    docs$ make apidocstubs
-    ```
-3. Update the API documentation index at `docs/index.rst` if you added a new module (the contents
-   of the toc tree should match the listing of the `docs/apidocs` directory).
-4. Build the documentation:
-    ```bash
+    docs$ make clean  # cleaning is usually unecessary
     docs$ make html
     ```
 
 The `.html` documentation will be rendered at `docs/_build` (with the index being available at
 `docs/_build/html/index.html`).
+
+The documentation content doesn't yet promise to reflect the final state of the public interface of the project, and is liable to change.
+Presently, these are the guidelines for what is included:
+
+ * All top-level modules, with members defined by their `__all__` or, if absent, `dir()`
+ * All top-level packages, with members as defined by the their `__init__`
+ * Manual inclusion of hand-picked second level packages / modules (e.g. `samplomatic.samplex.node`)
+ * Manual handling of promoted members
+
+#### Writing Code Examples In Documentation
+
+All code examples in documentation (including docstrings) should be testable to prevent them from going stale.
+This rules out using `.. code-block:: python`.
+
+Instead, please use the `.. plot::` directive implemented by the [matplotlib sphinx extension](https://matplotlib.org/stable/api/sphinxext_plot_directive_api.html), or the `.. plotly` directive implemented by the [sphinx plotly directive extension](https://sphinx-plotly-directive.readthedocs.io/en/latest/index.html).
+The former should be preferred whenever possible since it has better support in general.
+Code inside of these directives is run when documentation is built and will result in a documentation build failure if the snippet fails to run.
+Additionally, using [doctest](https://docs.python.org/3/library/doctest.html) syntax inside of the `.. plot::` directives will cause the code to be run during `pytest`, which is often a more convenient way to catch and debug problems.
+We use [SciPy-style doctests](https://github.com/scipy/scipy_doctest) to get around some of the every-line-must-assert issues of doctest, which would, for example, require us to provide an expected `InstructionSet` output everytime `circuit.rz` is called.
+
+See the docstring of [generate_boxing_pass_manager()](samplomatic/transpiler/generate_boxing_pass_manager.py) for a comprehensive example of combining these tools.
 
 ### Adding to the changelog
 

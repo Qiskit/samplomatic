@@ -93,7 +93,7 @@ def basis_transform_parser(
     collection: CollectionSpec,
     emission: EmissionSpec,
 ):
-    """Parses a basis transform annotation by mutating emission and collection specs.
+    """Parse a basis transform annotation by mutating emission and collection specs.
 
     Args:
         basis_transform: The basis transform annotation to parse.
@@ -137,7 +137,7 @@ def basis_transform_parser(
 def inject_noise_parser(
     inject_noise: InjectNoise, collection: CollectionSpec, emission: EmissionSpec
 ):
-    """Parses an inject noise annotation by mutating emission and collection specs.
+    """Parse an inject noise annotation by mutating emission and collection specs.
 
     Args:
         inject_noise: The inject noise annotation to parse.
@@ -149,7 +149,7 @@ def inject_noise_parser(
 
 
 def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpec):
-    """Parses a twirl annotation by mutating emission and collection specs.
+    """Parse a twirl annotation by mutating emission and collection specs.
 
     Args:
         twirl: The twirl annotation to parse.

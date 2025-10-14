@@ -17,7 +17,7 @@ from typing import Generic, TypeVar
 
 import numpy as np
 import orjson
-from qiskit.circuit.library import HGate, IGate, RYGate
+from qiskit.circuit.library import HGate, IGate, RXGate
 
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
@@ -101,13 +101,13 @@ class BasisChange(Generic[T]):
 
 MEAS_PAULI_BASIS = BasisChange[np.uint8](
     [0, 1, 2, 3],
-    U2Register(np.array([IGate(), HGate(), IGate(), RYGate(-np.pi / 2)]).reshape(4, 1, 2, 2)),
+    U2Register(np.array([IGate(), IGate(), HGate(), RXGate(np.pi / 2)]).reshape(4, 1, 2, 2)),
 )
 """A basis change from Pauli eigenstates into the computational basis."""
 
 PREP_PAULI_BASIS = BasisChange[np.uint8](
     [0, 1, 2, 3],
-    U2Register(np.array([IGate(), HGate(), IGate(), RYGate(np.pi / 2)]).reshape(4, 1, 2, 2)),
+    U2Register(np.array([IGate(), IGate(), HGate(), RXGate(-np.pi / 2)]).reshape(4, 1, 2, 2)),
 )
 """A basis change from the computational basis into Pauli eigenstates."""
 
@@ -141,7 +141,7 @@ class BasisTransformNode(SamplingNode):
     def instantiates(self):
         return {self._register_name: (self._num_subsystems, self._basis_change.action.TYPE)}
 
-    def sample(self, registers, rng, inputs, num_randomizations):
+    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
         basis = inputs[self._basis_ref]
         registers[self._register_name] = self._basis_change.get_transform(basis)
 

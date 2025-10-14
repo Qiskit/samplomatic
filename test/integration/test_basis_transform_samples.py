@@ -28,18 +28,18 @@ def make_circuits():
     expected = QuantumCircuit(1)
     expected.h(0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "x_basis_measure"
 
     expected = QuantumCircuit(1)
-    expected.ry(-np.pi / 2, 0)
+    expected.rx(np.pi / 2, 0)
 
     pauli = np.array([3], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "y_basis_measure"
 
     expected = QuantumCircuit(1)
 
-    pauli = np.array([2], dtype=np.uint8)
+    pauli = np.array([1], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "z_basis_measure"
 
     circuit = QuantumCircuit(1)
@@ -49,18 +49,18 @@ def make_circuits():
     expected = QuantumCircuit(1)
     expected.h(0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"prepare": pauli}), "x_basis_prepare"
 
     expected = QuantumCircuit(1)
-    expected.ry(np.pi / 2, 0)
+    expected.rx(-np.pi / 2, 0)
 
     pauli = np.array([3], dtype=np.uint8)
     yield (circuit, expected, {"prepare": pauli}), "y_basis_prepare"
 
     expected = QuantumCircuit(1)
 
-    pauli = np.array([2], dtype=np.uint8)
+    pauli = np.array([1], dtype=np.uint8)
     yield (circuit, expected, {"prepare": pauli}), "z_basis_prepare"
 
     circuit = QuantumCircuit(1)
@@ -72,7 +72,7 @@ def make_circuits():
     expected.rx(np.pi / 4, 0)
     expected.h(0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "x_basis_sq_gate_measure"
 
     circuit = QuantumCircuit(1)
@@ -83,7 +83,7 @@ def make_circuits():
     expected.h(0)
     expected.rx(np.pi / 4, 0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"prepare": pauli}), "x_basis_sq_gate_prepare"
 
     circuit = QuantumCircuit(1)
@@ -97,7 +97,7 @@ def make_circuits():
     expected.rx(np.pi / 4, 0)
     expected.h(0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "x_basis_twirl_measure"
 
     circuit = QuantumCircuit(1)
@@ -111,7 +111,7 @@ def make_circuits():
     expected.h(0)
     expected.rx(np.pi / 4, 0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare"
 
     circuit = QuantumCircuit(2)
@@ -122,7 +122,7 @@ def make_circuits():
     expected.h(0)
     expected.h(1)
 
-    pauli = np.array([1, 1], dtype=np.uint8)
+    pauli = np.array([2, 2], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "xx_basis"
 
     circuit = QuantumCircuit(2)
@@ -134,10 +134,10 @@ def make_circuits():
     expected = QuantumCircuit(2)
     expected.h(0)
     expected.h(1)
-    expected.ry(-np.pi / 2, 0)
-    expected.ry(-np.pi / 2, 1)
+    expected.rx(np.pi / 2, 0)
+    expected.rx(np.pi / 2, 1)
 
-    pauli_0 = np.array([1, 1], dtype=np.uint8)
+    pauli_0 = np.array([2, 2], dtype=np.uint8)
     pauli_1 = np.array([3, 3], dtype=np.uint8)
     yield (
         (circuit, expected, {"my_basis0": pauli_0, "my_basis1": pauli_1}),
@@ -156,10 +156,10 @@ def make_circuits():
     expected = QuantumCircuit(1)
     expected.x(0)
 
-    pauli = np.array([1], dtype=np.uint8)
+    pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"my_basis": pauli}), "z_to_x"
 
-    pauli = np.array([1, 0, 0], dtype=np.uint8)
+    pauli = np.array([2, 0, 0], dtype=np.uint8)
     expected = QuantumCircuit(3)
     expected.h(0)
     for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
@@ -168,7 +168,7 @@ def make_circuits():
             circuit.noop(*perm)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
 
-    pauli = np.array([1, 0, 0], dtype=np.uint8)
+    pauli = np.array([2, 0, 0], dtype=np.uint8)
     for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
         circuit = QuantumCircuit(3)
         box_op = BoxOp(QuantumCircuit(3), annotations=[BasisTransform(mode="prepare")])

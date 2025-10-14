@@ -127,10 +127,10 @@ def make_layered_circuit(
     return circuit
 
 
-def make_noise_maps(
+def make_pauli_lindblad_maps(
     num_qubits: int, avg_noise_rate: float = 0.0005
 ) -> tuple[PauliLindbladMap, PauliLindbladMap]:
-    """Generate a pair of noise maps.
+    """Generate a pair of Pauli Lindblad maps.
 
     The first corresponds to the even layers of :meth:`~.make_layered_circuit` while the
     second corresponds to the odd layers.

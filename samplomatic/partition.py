@@ -26,6 +26,8 @@ from .exceptions import BuildError
 T = TypeVar("T", bound="Partition")
 ElementT = TypeVar("ElementT")
 
+__all__ = ["Partition"]
+
 
 class Partition(Generic[ElementT]):
     """A partition of a sequence of elements into equally-sized, non-overlapping subsets.
@@ -167,7 +169,7 @@ class Partition(Generic[ElementT]):
 
     @classmethod
     def from_elements(cls: type[T], elements: Iterable[ElementT]) -> T:
-        """Convenience constructor when :attr:`~.num_elements_per_part` is one.
+        """Construct a new instance in the special case that :attr:`~.num_elements_per_part` is one.
 
         Args:
             elements: The elements for each subsystem.

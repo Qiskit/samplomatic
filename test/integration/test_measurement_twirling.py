@@ -54,6 +54,14 @@ class TestWithSimulation:
             circuit.measure_all()
         sample_simulate_and_compare_counts(circuit, save_plot)
 
+    def test_measure_all_right(self, save_plot):
+        circuit = QuantumCircuit(3)
+        with circuit.box([Twirl()]):
+            circuit.noop(*circuit.qubits)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.measure_all()
+        sample_simulate_and_compare_counts(circuit, save_plot)
+
     def test_gates_and_measure_all(self, save_plot):
         circuit = QuantumCircuit(3)
         with circuit.box([Twirl(dressing="left")]):
@@ -72,6 +80,16 @@ class TestWithSimulation:
             circuit.measure(0, 2)
             circuit.measure(1, 0)
             circuit.measure(2, 1)
+
+        sample_simulate_and_compare_counts(circuit, save_plot)
+
+    def test_measure_with_different_dressings(self, save_plot):
+        circuit = QuantumCircuit(QuantumRegister(size=2), ClassicalRegister(name="meas", size=2))
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.measure(0, 1)
+            circuit.x(1)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.measure(1, 0)
 
         sample_simulate_and_compare_counts(circuit, save_plot)
 

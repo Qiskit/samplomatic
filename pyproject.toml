@@ -27,7 +27,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "qiskit==2.2.0rc1",
+    "qiskit==2.2.0",
     "numpy>=1.26",
     "rustworkx>=0.16.0",
     "pybase64>=1.4.0",
@@ -45,14 +45,20 @@ BugTracker = "https://github.com/Qiskit/samplomatic/issues"
 
 [project.optional-dependencies]
 dev = [
-    "pytest",                 # For running tests
-    "pytest-benchmark",       # For running performance tests
-    "kaleido",                # For visualizing performance tests
-    "ruff",                   # Formatter and linter
-    "pre-commit",             # Pre-commit hooks
-    "towncrier",              # Changelog management
-    "qiskit-aer",             # For running tests
-    "sphinx"                  # For building documentation
+    "pytest",                     # For running tests
+    "pytest-benchmark",           # For running performance tests
+    "kaleido",                    # For visualizing performance tests
+    "ruff",                       # Formatter and linter
+    "pre-commit",                 # Pre-commit hooks
+    "towncrier",                  # Changelog management
+    "qiskit-aer",                 # For running tests
+    "sphinx>=2.2",                # For building documentation
+    "qiskit-sphinx-theme~=2.0.0", # Qiskit Sphinx theme
+    "sphinx-automodapi",          # Helps generate stubs in documentation
+    "scipy-doctest>=2.0",         # SciPy's style of doctesting
+    "sphinx-plotly-directive",    # For embedding plotly figures in docs
+    "myst-parser>=2.0",           # For rendering markdown in sphinx
+    "myst-nb",                    # For rendering notebooks as doc pages
 ]
 vis = [
     "nbformat>=4.2.0",
@@ -63,7 +69,8 @@ vis = [
 
 [tool.ruff]
 lint.select = [
-    "D100",      # pydocstyle
+    "D100", "D401",     # pydocstyle
+    "D2", "D3",         # pydocstyle
     "E",      # pycodestyle
     "F",      # pyflake
     "I",      # isort
@@ -83,7 +90,7 @@ target-version = "py39"
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=test/performance"
+addopts = "--ignore=test/performance --doctest-modules"
 pythonpath = ["."]
 
 [tool.towncrier]

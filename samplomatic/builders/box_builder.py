@@ -39,7 +39,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
         self.entangled_qubits = set()
 
     def _append_dressed_layer(self) -> ParamIndices:
-        """A helper function to add a collection dressing layer."""
+        """Add a dressed layer."""
         qubits = self.collection.collect_qubits
         if len(qubits) == 0:
             return
@@ -189,12 +189,29 @@ class LeftBoxBuilder(BoxBuilder):
 class RightBoxBuilder(BoxBuilder):
     """Box builder for right dressings."""
 
-    def parse(self, instr: CircuitInstruction):
-        if (name := instr.operation.name).startswith("meas"):
-            raise RuntimeError("Boxes with measurements cannot have dressing=right.")
+    def __init__(self, collection: CollectionSpec, emission: EmissionSpec):
+        super().__init__(collection=collection, emission=emission)
 
-        if name == "barrier":
+        self.measured_qubits = QubitPartition(1, [])
+        self.clbit_idxs = []
+
+    def parse(self, instr: CircuitInstruction):
+        if (name := instr.operation.name).startswith("barrier"):
             spec = InstructionSpec(params=self.template_state.append_remapped_gate(instr))
+            return
+
+        if name.startswith("meas"):
+            for qubit in instr.qubits:
+                if (qubit,) not in self.measured_qubits:
+                    self.measured_qubits.add((qubit,))
+                else:
+                    raise SamplexBuildError(
+                        "Cannot measure the same qubit twice in a twirling box."
+                    )
+            self.template_state.append_remapped_gate(instr)
+            self.clbit_idxs.extend(
+                [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
+            )
             return
 
         if name.startswith("if_else"):
@@ -250,5 +267,12 @@ class RightBoxBuilder(BoxBuilder):
         collect_qubits = self.collection.collect_qubits
         self._append_barrier("M", collect_qubits)
         param_idxs = self._append_dressed_layer()
+        if twirl_type := self.emission.twirl_register_type:
+            if len(self.measured_qubits) != 0:
+                if twirl_type != VirtualType.PAULI:
+                    raise SamplexBuildError(
+                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
+                    )
+                self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
         self.samplex_state.add_collect(collect_qubits, self.collection.synth, param_idxs)
         self._append_barrier("R")

@@ -10,4 +10,4 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .layered_circuits import make_layered_circuit, make_noise_maps
+from .layered_circuits import make_layered_circuit, make_pauli_lindblad_maps
