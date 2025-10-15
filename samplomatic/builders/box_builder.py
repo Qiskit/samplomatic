@@ -206,7 +206,15 @@ class RightBoxBuilder(BoxBuilder):
         if name.startswith("meas"):
             raise BuildError("Cannot measure the same qubit twice in a dressed box.")
 
+        if not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
+            raise RuntimeError(
+                "Cannot handle a dynamic instruction and another instruction on "
+                f"qubits {instr.qubits} in the same dressed box."
+            )
+
         if name.startswith("if_else"):
+            for q in instr.qubits:
+                self.collection.dynamic_qubits.add((q,))
             self._validate_if_else(instr.operation)
             builder = BoxRightIfElseBuilder(
                 instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
@@ -215,12 +223,6 @@ class RightBoxBuilder(BoxBuilder):
             new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
             self.template_state.template.append(if_else, new_qubits, instr.clbits)
             return
-
-        elif not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
-            raise RuntimeError(
-                "Cannot handle a dynamic instruction and another instruction on "
-                f"qubits {instr.qubits} in the same dressed box."
-            )
 
         if (num_qubits := instr.operation.num_qubits) == 1:
             self.entangled_qubits.update(instr.qubits)

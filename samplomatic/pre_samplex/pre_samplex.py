@@ -1192,12 +1192,12 @@ class PreSamplex:
             pre_nodes_to_nodes,
             order,
             register_names,
-            f"combine_{reg_idx}",
+            combine_name := f"combine_{reg_idx}",
             virtual_type,
         )
 
         copy_node = CopyNode(
-            register_name,
+            combine_name,
             copy_name := f"copy_{reg_idx}",
             virtual_type,
             len(self.graph[pre_copy_idx].subsystems),

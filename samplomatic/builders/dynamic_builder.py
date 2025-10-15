@@ -61,7 +61,7 @@ class BoxIfElseBuilder:
                 new_op = type(instr.operation)(*params) if params else instr.operation
                 new_block.append(new_op, instr.qubits, instr.clbits)
                 mode = InstructionMode.PROPAGATE
-            self.pre_samplex.add_propagate(instr, params=params, mode=mode)
+            self.pre_samplex.add_propagate(instr, mode=mode, params=params)
 
     def append_template(self, block: QuantumCircuit, new_block: QuantumCircuit) -> ParamIndices:
         start = self.param_iter.idx
@@ -88,7 +88,7 @@ class BoxRightIfElseBuilder(BoxIfElseBuilder):
 
         qubits = QubitPartition.from_elements(new_block.qubits)
         subsystems = pre_samplex.qubits_to_indices(qubits)
-        dangler_match = DanglerMatch(node_types=(PreEmit, PrePropagate))
+        dangler_match = DanglerMatch(Direction.RIGHT, node_types=(PreEmit, PrePropagate))
 
         new_danglers = []
         for node_idx, partition in pre_samplex.find_then_remove_danglers(dangler_match, subsystems):
@@ -137,7 +137,7 @@ class BoxLeftIfElseBuilder(BoxIfElseBuilder):
         pre_samplex = self.pre_samplex.remap(qubit_map=self.block_qubit_map(block))
         qubits = QubitPartition.from_elements(new_block.qubits)
         subsystems = pre_samplex.qubits_to_indices(qubits)
-        dangler_match = DanglerMatch(node_types=(PreCollect, PrePropagate))
+        dangler_match = DanglerMatch(Direction.LEFT, node_types=(PreCollect, PrePropagate))
 
         list(pre_samplex.find_then_remove_danglers(dangler_match, subsystems))
         pre_samplex.add_collect(qubits, self.synth, params)

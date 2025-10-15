@@ -68,7 +68,7 @@ class TestWithSimulation:
         circuit.measure(0, 0)
 
         with circuit.box([Twirl(dressing="left")]):
-            circuit.noop(0, 1)
+            circuit.cx(0, 1)
         with circuit.box([Twirl(dressing="right")]):
             with circuit.if_test((circuit.clbits[0], 1)) as _else:
                 circuit.cx(0, 1)
@@ -88,9 +88,8 @@ class TestWithSimulation:
         circuit.measure(0, 0)
 
         with circuit.box([Twirl(dressing="left")]):
-            circuit.noop(0, 1)
-        with circuit.box([Twirl(dressing="right")]):
             circuit.cx(0, 1)
+        with circuit.box([Twirl(dressing="right")]):
             with circuit.if_test((circuit.clbits[0], 1)):
                 circuit.cx(0, 1)
                 circuit.x(0)
@@ -107,10 +106,10 @@ class TestWithSimulation:
         circuit.measure(0, 0)
 
         with circuit.box([Twirl(dressing="left")]):
-            circuit.noop(0, 1, 2)
-        with circuit.box([Twirl(dressing="right")]):
             circuit.noop(2)
             circuit.cx(0, 1)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(2)
             with circuit.if_test((circuit.clbits[0], 1)) as _else:
                 circuit.cx(0, 1)
                 circuit.x(0)
@@ -138,9 +137,8 @@ class TestWithSimulation:
                 circuit.sx(0)
                 circuit.cx(1, 0)
             circuit.x(2)
-        with circuit.box([Twirl()]):
-            circuit.cx(0, 1)
         with circuit.box([Twirl(dressing="right")]):
+            circuit.cx(0, 1)
             circuit.h(1)
             circuit.noop(0, 2)
 
@@ -150,7 +148,7 @@ class TestWithSimulation:
 
     def test_left_dressed_twirled_conditional_no_else(self, save_plot):
         """Test a conditional without else clause in a left-dressed twirl box."""
-        circuit = QuantumCircuit(3, 2)
+        circuit = QuantumCircuit(2, 2)
         circuit.h(0)
         circuit.measure(0, 0)
 
@@ -158,11 +156,10 @@ class TestWithSimulation:
             with circuit.if_test((circuit.clbits[0], 1)):
                 circuit.x(0)
                 circuit.cx(0, 1)
-        with circuit.box([Twirl()]):
-            circuit.cx(0, 1)
         with circuit.box([Twirl(dressing="right")]):
-            circuit.noop(0)
+            circuit.cx(0, 1)
             circuit.h(1)
+            circuit.noop(0)
 
         circuit.measure_all()
 
@@ -185,9 +182,8 @@ class TestWithSimulation:
                 circuit.rx(2 * p, 0)
                 circuit.cx(1, 0)
             circuit.x(2)
-        with circuit.box([Twirl()]):
-            circuit.cx(0, 1)
         with circuit.box([Twirl(dressing="right")]):
+            circuit.cx(0, 1)
             circuit.h(1)
             circuit.noop(0, 2)
 
