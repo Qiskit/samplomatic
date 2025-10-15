@@ -18,7 +18,7 @@ import numpy as np
 from qiskit.circuit import Barrier, IfElseOp
 
 from ..aliases import CircuitInstruction, ParamIndices
-from ..exceptions import BuildError, SamplexBuildError, TemplateBuildError
+from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
@@ -54,7 +54,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
                 for qubit in subsys
                 if qubit not in self.template_state.qubit_map
             }
-            raise TemplateBuildError(
+            raise BuildError(
                 f"The qubits '{not_found}' could not be found when recursing into a box of the "
                 "input circuit."
             ) from KeyError
@@ -122,7 +122,9 @@ class LeftBoxBuilder(BoxBuilder):
                 if (qubit,) not in self.measured_qubits:
                     self.measured_qubits.add((qubit,))
                 else:
-                    raise SamplexBuildError("Cannot measure the same qubit twice in a dressed box.")
+                    raise BuildError(
+                        "Cannot measure the same qubit more than once in a dressed box."
+                    )
             self.template_state.append_remapped_gate(instr)
             self.clbit_idxs.extend(
                 [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
@@ -131,13 +133,14 @@ class LeftBoxBuilder(BoxBuilder):
 
         if (num_qubits := instr.operation.num_qubits) == 1:
             if self.measured_qubits.overlaps_with(instr.qubits):
-                raise RuntimeError(
-                    "Cannot handle single-qubit gate to the right of measurements when "
-                    "dressing=left."
+                raise BuildError(
+                    "Cannot handle single-qubit gate to the right of a measurement in a "
+                    "left-dressed box. "
                 )
             if not self.entangled_qubits.isdisjoint(instr.qubits):
-                raise RuntimeError(
-                    "Cannot handle single-qubit gate to the right of entangler when dressing=left."
+                raise BuildError(
+                    "Cannot handle single-qubit gate to the right of an entangler in a "
+                    "left-dressed box."
                 )
             # the action of this single-qubit gate will be absorbed into the dressing
             mode = InstructionMode.MULTIPLY
@@ -146,19 +149,18 @@ class LeftBoxBuilder(BoxBuilder):
                 params.extend((None, param) for param in instr.operation.params)
 
         elif num_qubits > 1:
+            if self.measured_qubits.overlaps_with(instr.qubits):
+                raise BuildError(
+                    f"Cannot handle instruction {name} to the right of a measurement in a "
+                    "left-dressed box."
+                )
             self.entangled_qubits.update(instr.qubits)
             mode = InstructionMode.PROPAGATE
             params = self.template_state.append_remapped_gate(instr)
 
         else:
-            raise RuntimeError(f"Instruction {instr} could not be parsed.")
+            raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        if self.measured_qubits.overlaps_with(instr.qubits):
-            # TODO: What about delays? barriers?
-            raise SamplexBuildError(
-                f"Instruction {instr} happens after a measurement. No operations allowed "
-                "after a measurement in a dressed box."
-            )
         self.samplex_state.add_propagate(instr, mode, params)
 
     def lhs(self):
@@ -183,7 +185,7 @@ class LeftBoxBuilder(BoxBuilder):
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
             if len(self.measured_qubits) != 0:
                 if twirl_type != VirtualType.PAULI:
-                    raise SamplexBuildError(
+                    raise BuildError(
                         f"Cannot use {twirl_type.value} twirl in a box with measurements."
                     )
                 self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
@@ -204,7 +206,7 @@ class RightBoxBuilder(BoxBuilder):
             return
 
         if name.startswith("meas"):
-            raise BuildError("Cannot measure the same qubit twice in a dressed box.")
+            raise BuildError("Measurements are not currently supported in right-dressed boxes.")
 
         if not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
             raise RuntimeError(
@@ -234,13 +236,14 @@ class RightBoxBuilder(BoxBuilder):
 
         elif num_qubits > 1:
             if not self.entangled_qubits.isdisjoint(instr.qubits):
-                raise RuntimeError(
-                    "Cannot handle single-qubit gate to the left of entangler when dressing=right."
+                raise BuildError(
+                    "Cannot handle single-qubit gate to the left of an entangler in a "
+                    "right-dressed box."
                 )
             params = self.template_state.append_remapped_gate(instr)
             mode = InstructionMode.PROPAGATE
         else:
-            raise RuntimeError(f"Instruction {instr} could not be parsed.")
+            raise BuildError(f"Instruction {instr} could not be parsed.")
 
         self.samplex_state.add_propagate(instr, mode, params)
 

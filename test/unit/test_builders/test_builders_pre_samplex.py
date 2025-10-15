@@ -22,7 +22,7 @@ from samplomatic.builders.param_iter import ParamIter
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec
 from samplomatic.builders.template_state import TemplateState
 from samplomatic.constants import Direction
-from samplomatic.exceptions import SamplexBuildError
+from samplomatic.exceptions import BuildError
 from samplomatic.partition import QubitIndicesPartition, QubitPartition
 from samplomatic.pre_samplex import PreSamplex
 from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PreZ2Collect
@@ -111,9 +111,7 @@ class TestBoxBuilder:
         builder.lhs()
         builder.parse(CircuitInstruction(Measure(), qreg, creg))
 
-        with pytest.raises(
-            SamplexBuildError, match="Cannot use u2 twirl in a box with measurements"
-        ):
+        with pytest.raises(BuildError, match="Cannot use u2 twirl in a box with measurements"):
             builder.rhs()
 
     def test_two_measurements_on_the_same_qubit_error(self):
@@ -125,6 +123,6 @@ class TestBoxBuilder:
         builder.parse(CircuitInstruction(Measure(), qreg, creg))
 
         with pytest.raises(
-            SamplexBuildError, match="Cannot measure the same qubit twice in a dressed box"
+            BuildError, match="Cannot measure the same qubit more than once in a dressed box"
         ):
             builder.parse(CircuitInstruction(Measure(), qreg, creg))
