@@ -18,9 +18,9 @@ from typing import Any
 import numpy as np
 from qiskit.circuit.gate import Gate
 
-from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef, SubsystemIndex
+from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
 from ..annotations import VirtualType
-from ..builders.specs import InstructionMode, InstructionSpec
+from ..builders.specs import InstructionMode
 from ..constants import Direction
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
@@ -98,7 +98,7 @@ class PreCollect(PreNode):
             and self.subsystems == other.subsystems
             and self.direction == other.direction
             and type(self.synth) is type(other.synth)
-            and self.param_idxs == other.param_idxs
+            and np.array_equal(self.param_idxs, other.param_idxs)
         )
 
     def add_subsystems(self, new_subsystems: QubitIndicesPartition, new_param_idxs: ParamIndices):
@@ -183,8 +183,11 @@ class PrePropagate(PreNode):
     each other.
     """
 
-    spec: InstructionSpec
-    """Specification for how the operation acts on virtual gates."""
+    mode: InstructionMode
+    """How the operation acts on virtual gates."""
+
+    params: ParamSpec
+    """The parameters required by the node."""
 
     def get_style(self):
         return (

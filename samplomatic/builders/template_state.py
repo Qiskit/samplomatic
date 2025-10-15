@@ -17,9 +17,9 @@ from __future__ import annotations
 from qiskit.circuit import ClassicalRegister, Clbit, QuantumCircuit, QuantumRegister, Qubit
 from qiskit.circuit.classical import expr
 
-from ...aliases import CircuitInstruction, ClbitIndex, ParamSpec, QubitIndex, Self
-from ...exceptions import TemplateBuildError
-from ..param_iter import ParamIter
+from ..aliases import CircuitInstruction, ClbitIndex, ParamSpec, QubitIndex, Self
+from ..exceptions import TemplateBuildError
+from .param_iter import ParamIter
 
 
 class TemplateState:

@@ -13,8 +13,10 @@
 """Test the PauliRegister"""
 
 import numpy as np
+import pytest
 
 from samplomatic.annotations import VirtualType
+from samplomatic.exceptions import VirtualGateError
 from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Register
 
 
@@ -160,3 +162,14 @@ def test_invert():
     assert paulis == inverted
     paulis[0, 0] = 2
     assert inverted.virtual_gates[0, 0] != 2
+
+
+def test_from_name():
+    """Test the from_name() method."""
+    assert PauliRegister.from_name("x") == PauliRegister(np.array(2, dtype=np.uint8).reshape(1, 1))
+    assert PauliRegister.from_name("y") == PauliRegister(np.array(3, dtype=np.uint8).reshape(1, 1))
+    assert PauliRegister.from_name("z") == PauliRegister(np.array(1, dtype=np.uint8).reshape(1, 1))
+    assert PauliRegister.from_name("id") == PauliRegister(np.zeros((1, 1), dtype=np.uint8))
+
+    with pytest.raises(VirtualGateError, match="'not-pauli' is not a valid Pauli"):
+        PauliRegister.from_name("not-pauli")

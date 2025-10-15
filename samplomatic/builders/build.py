@@ -20,66 +20,50 @@ from ..aliases import CircuitInstruction
 from ..pre_samplex import PreSamplex
 from ..samplex import Samplex
 from .builder import Builder
-from .get_builders import get_builders
-from .specs import InstructionSpec
-from .template_builder import TemplateState
+from .get_builder import get_builder
+from .template_state import TemplateState
 
 
-def _build_stream(
-    stream: CircuitInstruction,
-    template_builder: Builder[TemplateState, InstructionSpec],
-    samplex_builder: Builder[PreSamplex, None],
-) -> Iterator[CircuitInstruction]:
+def _build_stream(stream: CircuitInstruction, builder: Builder) -> Iterator[CircuitInstruction]:
     """Build while iterating an instruction stream, but halting to yield each ``box``.
 
     Args:
         stream: A stream of instructions to build from.
-        template_builder: The template builder to build with.
-        samplex_builder: The samplex builder to build with.
+        builder: The builder to build with.
 
     Yields:
         Box circuit instruction objects.
     """
-    instruction_spec = template_builder.lhs()
-    samplex_builder.lhs(instruction_spec)
+    builder.lhs()
 
     for instr in stream:
         if instr.operation.name == "box":
             yield instr
         else:
-            instruction_spec = template_builder.parse(instr)
-            samplex_builder.parse(instr, instruction_spec)
+            builder.parse(instr)
 
-    instruction_spec = template_builder.rhs()
-    samplex_builder.rhs(instruction_spec)
+    builder.rhs()
 
 
-def _build(
-    stream: CircuitInstruction,
-    template_builder: Builder[TemplateState, InstructionSpec],
-    samplex_builder: Builder[PreSamplex, None],
-):
+def _build(stream: CircuitInstruction, builder: Builder):
     """Recursively builds from a stream of instructions.
 
     Args:
         stream: A stream of instructions to build from.
-        template_builder: The template builder to build with.
-        samplex_builder: The samplex builder to build with.
+        builder: The builder to build with.
     """
-    for idx, nested_instr in enumerate(_build_stream(stream, template_builder, samplex_builder)):
+    for idx, nested_instr in enumerate(_build_stream(stream, builder)):
         # assume the nested instruction is a box for now, handle other control flow ops later
-        inner_template_builder, inner_samplex_builder = get_builders(
-            nested_instr, template_builder.state.qubit_map
-        )
+        inner_builder = get_builder(nested_instr, builder.template_state.qubit_map)
         qubit_remapping = dict(zip(nested_instr.qubits, nested_instr.operation.body.qubits))
 
-        remapped_template_state = template_builder.state.remap(qubit_remapping, idx)
-        inner_template_builder = inner_template_builder.set_state(remapped_template_state)
+        remapped_template_state = builder.template_state.remap(qubit_remapping, idx)
+        remapped_pre_samplex = builder.samplex_state.remap(remapped_template_state.qubit_map)
+        inner_builder = inner_builder.set_template_state(remapped_template_state).set_samplex_state(
+            remapped_pre_samplex
+        )
 
-        remapped_pre_samplex = samplex_builder.state.remap(remapped_template_state.qubit_map)
-        inner_samplex_builder = inner_samplex_builder.set_state(remapped_pre_samplex)
-
-        _build(nested_instr.operation.body, inner_template_builder, inner_samplex_builder)
+        _build(nested_instr.operation.body, inner_builder)
 
 
 def pre_build(circuit: QuantumCircuit) -> tuple[TemplateState, PreSamplex]:
@@ -94,13 +78,10 @@ def pre_build(circuit: QuantumCircuit) -> tuple[TemplateState, PreSamplex]:
         The built template state and the corresponding pre-samplex.
     """
     template_state = TemplateState.construct_for_circuit(circuit)
-    template_builder, samplex_builder = get_builders(None, template_state.qubit_map.keys())
-    template_builder = template_builder.set_state(template_state)
-
     pre_samplex = PreSamplex(qubit_map=template_state.qubit_map, cregs=circuit.cregs)
-    samplex_builder = samplex_builder.set_state(pre_samplex)
-
-    _build(circuit, template_builder, samplex_builder)
+    builder = get_builder(None, template_state.qubit_map.keys())
+    builder.set_template_state(template_state).set_samplex_state(pre_samplex)
+    _build(circuit, builder)
 
     return template_state, pre_samplex
 

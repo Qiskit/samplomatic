@@ -15,7 +15,7 @@ import pytest
 from qiskit.circuit.library import HGate, SXGate
 from rustworkx import PyDiGraph
 
-from samplomatic.builders.specs import InstructionSpec
+from samplomatic.builders.specs import InstructionMode
 from samplomatic.constants import Direction
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.partition import QubitIndicesPartition, SubsystemIndicesPartition
@@ -39,7 +39,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
         n2 = graph.add_node(
@@ -48,7 +49,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
 
@@ -76,7 +78,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
         n2 = graph.add_node(
@@ -88,7 +91,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
 
@@ -109,7 +113,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.RIGHT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
         n2 = graph.add_node(
@@ -118,7 +123,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
 
@@ -139,7 +145,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 SXGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
         n2 = graph.add_node(
@@ -148,7 +155,8 @@ class TestPrePropagateNodesAreMergeable:
                 Direction.LEFT,
                 HGate(),
                 SubsystemIndicesPartition(1, [(0,)]),
-                InstructionSpec(),
+                InstructionMode.NONE,
+                [],
             )
         )
 
