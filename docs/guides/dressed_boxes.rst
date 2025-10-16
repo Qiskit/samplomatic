@@ -7,7 +7,7 @@ Similarly, for operations that ideally commute on the same qubits, the noise pro
 Protocols for suppressing, mitigating, and correcting noise therefore need to know the context in which it arises.
 Samplomatic therefore uses box instructions to reason about collections of circuit operations that should be treated as having a stable noise context, and uses annotations on boxes to allow users to declare and configure intent.
 
-Every box is a scope that owns a set of qubits and operations that act on those qubits, and a list of annotations.
+Every box is a scope that owns a set of qubits, operations that act on those qubits, and a list of annotations.
 Samplomatic annotations specify *directives* and *dressings*.
 Directives specify what to do with the box.
 Dressings are groups of parameterized gates to add to the left- or right-side of the box.
