@@ -355,6 +355,15 @@ class TensorInterface(MutableMapping):
         return set(self._dimension_constraints)
 
     @property
+    def bound_dimensions(self) -> dict[str, int]:
+        """Those :attr:`~.free_dimensions` that have already been bound to a value."""
+        return {
+            free_dimension: size
+            for free_dimension, size in self._dimension_constraints.items()
+            if size is not ABSENT
+        }
+
+    @property
     def _unbound_specs(self) -> set[str]:
         """The specifications that do not have any data."""
         return {name for name in self._specs if name not in self._data}

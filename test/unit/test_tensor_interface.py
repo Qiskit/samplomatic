@@ -209,7 +209,18 @@ class TestTensorInterface:
         assert not interface.fully_bound
         assert interface.shape == ()
         assert interface.ndim == 0
-        assert interface.size == 1  # np.prod(()) == 1
+        assert interface.size == 1
+
+    def test_free_dimension(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", ("n",), np.float32),
+                TensorSpecification("y", ("n",), np.float32),
+            ]
+        )
+        assert interface.bound_dimensions == {}
+        interface["x"] = np.ones((5,), dtype=np.float32)
+        assert interface.bound_dimensions == {"n": 5}
 
     def test_make_broadcastable(self):
         specs = [
@@ -291,11 +302,7 @@ class TestTensorInterface:
         assert [spec.name for spec in sliced.specs] == ["a", "b"]
 
     def test_setitem_invalid_key(self):
-        interface = TensorInterface(
-            [
-                TensorSpecification("x", (2,), np.float32),
-            ]
-        )
+        interface = TensorInterface([TensorSpecification("x", (2,), np.float32)])
         with pytest.raises(ValueError, match=r"The interface has no specification named 'y'"):
             interface["y"] = np.array([1.0, 2.0], dtype=np.float32)
 
