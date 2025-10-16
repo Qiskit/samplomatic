@@ -11,7 +11,7 @@ Every box is a scope that owns a set of qubits, operations that act on those qub
 Samplomatic annotations specify *directives* and *dressings*.
 Directives specify what to do with the box, e.g. twirl the box.
 Dressings are groups of parameterized gates to add to the left- or right-side of the box, e.g. a layer of single qubit gates.
-They incorporate gates from the box and those to enact directives:
+Dressing gates can incorporate gates from the box, as well as operations required to enact directives:
 * Gates in the box that are compatible with and on the same side as the parameterized gates.
 * Twirling gates sampled from a set to randomize the box.
 * Noise injection gates sampled from a Pauli Lindblad map.
