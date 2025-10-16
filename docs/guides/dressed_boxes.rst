@@ -28,7 +28,7 @@ Suppose we would like to Pauli twirl the following circuit during execution, tha
     Circuit to Pauli twirl.
 
 
-Stratify the circuit into boxes.
+This is achieved by stratifying the circuit into boxes and adding twirl annotations.
 
 .. figure:: ../figs/dressed_pauli_twirl.drawio.png
 
