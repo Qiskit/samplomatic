@@ -40,7 +40,7 @@ class TestBoxBuilder:
         pre_samplex = PreSamplex(qubit_map=qubit_map, cregs=[creg])
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxBuilder(
-            CollectionSpec(qubits, "Left", RzSxSynth()),
+            CollectionSpec(qubits, "Left", RzSxSynth(), QubitPartition.from_elements([])),
             EmissionSpec(qubits, "Right", VirtualType.PAULI),
         )
         builder.set_samplex_state(pre_samplex).set_template_state(template_state)
@@ -101,7 +101,7 @@ class TestBoxBuilder:
         pre_samplex = PreSamplex(qubit_map=qubit_map)
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxBuilder(
-            CollectionSpec(qubits, "Left", RzSxSynth()),
+            CollectionSpec(qubits, "Left", RzSxSynth(), QubitPartition.from_elements([])),
             EmissionSpec(qubits, "Right", VirtualType.U2),
         )
         builder.set_samplex_state(pre_samplex)

@@ -34,6 +34,7 @@ from .nodes.collect_template_values import CollectTemplateValues
 from .nodes.collect_z2_to_output_node import CollectZ2ToOutputNode
 from .nodes.combine_registers_node import CombineRegistersNode
 from .nodes.conversion_node import ConversionNode
+from .nodes.copy_node import CopyNode
 from .nodes.inject_noise_node import InjectNoiseNode
 from .nodes.multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
 from .nodes.pauli_past_clifford_node import PauliPastCliffordNode
@@ -61,6 +62,7 @@ NODE_TYPE_MAP = [
     LeftU2ParametricMultiplicationNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
+    CopyNode,
 ]
 
 
