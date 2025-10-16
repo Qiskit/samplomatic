@@ -14,9 +14,10 @@
 
 import abc
 from copy import deepcopy
+from typing import Generic, TypeVar
 
 import numpy as np
-from qiskit.circuit import ControlFlowOp, IfElseOp, QuantumCircuit
+from qiskit.circuit import IfElseOp, QuantumCircuit
 
 from ..aliases import CircuitInstruction, ParamIndices, Qubit, QubitIndex
 from ..exceptions import BuildError
@@ -27,8 +28,10 @@ from ..synths import Synth
 from .param_iter import ParamIter
 from .specs import InstructionMode
 
+T = TypeVar("T")
 
-class DynamicBuilder(abc.ABC):
+
+class DynamicBuilder(abc.ABC, Generic[T]):
     """Base class for building dressed conditional operations.
 
     This class does not inherit from :class:`~.Builder` as it does not add the operations to the
@@ -36,7 +39,7 @@ class DynamicBuilder(abc.ABC):
     corresponding samplex.
 
     Args:
-        op: The control flow operation to build
+        op: The control flow operation to build.
         pre_samplex: The pre-samplex to use.
         synth: The synthesizer to use for the dressing.
         param_iter: An iterator over parameters to use in the circuit being built.
@@ -44,7 +47,7 @@ class DynamicBuilder(abc.ABC):
 
     def __init__(
         self,
-        op: ControlFlowOp,
+        op: T,
         pre_samplex: PreSamplex,
         synth: Synth,
         param_iter: ParamIter,
@@ -90,11 +93,11 @@ class DynamicBuilder(abc.ABC):
         """Build a block of a control flow operation."""
 
     @abc.abstractmethod
-    def build(self) -> ControlFlowOp:
+    def build(self) -> T:
         """Build the operation."""
 
 
-class BoxLeftIfElseBuilder(DynamicBuilder):
+class BoxLeftIfElseBuilder(DynamicBuilder[IfElseOp]):
     def build_block(self, block) -> QuantumCircuit:
         block = (
             block
@@ -151,7 +154,7 @@ class BoxLeftIfElseBuilder(DynamicBuilder):
         return IfElseOp(self.op.operation.condition, if_block, else_block, self.op.label)
 
 
-class BoxRightIfElseBuilder(DynamicBuilder):
+class BoxRightIfElseBuilder(DynamicBuilder[IfElseOp]):
     def build_block(self, block) -> QuantumCircuit:
         block = (
             block
