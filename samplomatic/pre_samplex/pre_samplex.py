@@ -1151,10 +1151,7 @@ class PreSamplex:
             samplex.add_output(
                 TensorSpecification(
                     "pauli_signs",
-                    (
-                        "num_randomizations",
-                        num_signs,
-                    ),
+                    ("num_randomizations", num_signs),
                     np.dtype(np.bool_),
                     "Signs from sampled Pauli Lindblad maps. The order matches the iteration order "
                     "of injected noise in the circuit.",
