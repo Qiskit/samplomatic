@@ -22,10 +22,10 @@ class CopyNode(EvaluationNode):
     """Copies a register.
 
     Args:
-        regoster_name:
-        output_name:
-        register_type:
-        num_subsystems:
+        regoster_name: The name of the register to copy.
+        output_name: The name of the copy register.
+        register_type: The type of register to copy.
+        num_subsystems: The number of subsystems the register contains.
     """
 
     def __init__(
@@ -39,6 +39,24 @@ class CopyNode(EvaluationNode):
         self._output_name = output_name
         self._output_type = output_type
         self._num_subsystems = num_subsystems
+
+    def _to_json_dict(self) -> dict[str, str]:
+        return {
+            "node_type": "13",
+            "register_name": self._register_name,
+            "output_name": self._output_name,
+            "output_type": self._output_type,
+            "num_subsystems": self._num_subsystems,
+        }
+
+    @classmethod
+    def _from_json_dict(cls, data: dict[str, str]) -> "CopyNode":
+        return cls(
+            data["register_name"],
+            data["output_name"],
+            VirtualType(data["output_type"]),
+            int(data["num_subsystems"]),
+        )
 
     @property
     def outgoing_register_type(self):
