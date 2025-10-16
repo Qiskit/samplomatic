@@ -80,12 +80,12 @@ class TestBasisTransformNode:
         registers = {}
 
         samplex_input.bind(measure=np.array([2, 2, 1], dtype=np.uint8))
-        basis_change.sample(registers, None, samplex_input, 1, None)
+        basis_change.sample(registers, None, samplex_input, 1)
         expected_register = U2Register(np.array([[HGate(), HGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
 
         samplex_input.bind(measure=np.array([2, 0, 0], dtype=np.uint8))
-        basis_change.sample(registers, None, samplex_input, 13, None)
+        basis_change.sample(registers, None, samplex_input, 13)
         expected_register = U2Register(np.array([[HGate(), IGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
         assert registers["basis_change"] == expected_register

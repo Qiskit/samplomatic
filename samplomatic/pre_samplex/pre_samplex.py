@@ -76,9 +76,8 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
-from ..samplex.noise_requirement import NoiseRequirement
 from ..synths import Synth
-from ..tensor_interface import TensorSpecification
+from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
@@ -1096,17 +1095,44 @@ class PreSamplex:
             )
 
         for noise_ref, num_qubits in self._pauli_lindblad_maps.items():
-            samplex.add_noise_requirement(
-                NoiseRequirement(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
+            num_terms = f"num_terms_{noise_ref}"
+            samplex.add_input(
+                PauliLindbladMapSpecification(
+                    f"pauli_lindblad_maps.{noise_ref}", num_qubits, num_terms
+                )
             )
+            for noise_modifier in self._noise_modifiers.get(noise_ref, []):
+                samplex.add_input(
+                    TensorSpecification(
+                        f"noise_scales.{noise_modifier}",
+                        (),
+                        np.dtype(np.float64),
+                        "A scalar factor by which to scale rates of a Pauli Lindblad map.",
+                        optional=True,
+                    )
+                )
+                samplex.add_input(
+                    TensorSpecification(
+                        f"local_scales.{noise_modifier}",
+                        (num_terms,),
+                        np.dtype(np.float64),
+                        "An array of factors by which to scale individual rates of a Pauli "
+                        "Lindblad map, where the order should match the corresponding list of "
+                        "terms.",
+                        optional=True,
+                    )
+                )
 
         if max_param_idx is not None:
             samplex.add_output(
                 TensorSpecification(
                     "parameter_values",
-                    (max_param_idx + 1,),
+                    (
+                        "num_randomizations",
+                        max_param_idx + 1,
+                    ),
                     np.dtype(np.float32),
-                    "Parameter values for the template circuit.",
+                    "Parameter values valid for an associated template circuit.",
                 )
             )
 
@@ -1115,7 +1141,7 @@ class PreSamplex:
                 samplex.add_output(
                     TensorSpecification(
                         f"measurement_flips.{reg.name}",
-                        (1, len(reg)),
+                        ("num_randomizations", 1, len(reg)),
                         np.dtype(np.bool_),
                         "Bit-flip corrections for measurement twirling.",
                     )
@@ -1125,7 +1151,10 @@ class PreSamplex:
             samplex.add_output(
                 TensorSpecification(
                     "pauli_signs",
-                    (num_signs,),
+                    (
+                        "num_randomizations",
+                        num_signs,
+                    ),
                     np.dtype(np.bool_),
                     "Signs from sampled Pauli Lindblad maps. The order matches the iteration order "
                     "of injected noise in the circuit.",

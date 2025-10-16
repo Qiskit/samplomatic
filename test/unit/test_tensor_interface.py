@@ -10,239 +10,351 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+
 import numpy as np
 import pytest
-from qiskit.quantum_info import QubitSparsePauliList
+from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic.tensor_interface import (
-    Specification,
+    PauliLindbladMapSpecification,
     TensorInterface,
     TensorSpecification,
-    ValueType,
 )
 
 
-class TestSpecification:
-    """Test Specification class."""
-
-    def test_specification_describe_and_repr(
-        self,
-    ):
-        spec = Specification("count", ValueType.INT, "an integer count")
-        assert "count" in spec.describe() and "int" in spec.describe()
-        assert "Optional" not in spec.describe()
-        assert repr(spec).startswith("Specification(")
-
-        spec = Specification("count", ValueType.INT, "an integer count", True)
-        assert "Optional" in spec.describe()
-
-    @pytest.mark.parametrize("val, expected", [(0, False), (1, True), ("", False)])
-    def test_validate_and_coerce_bool(self, val, expected):
-        """Test with bool type."""
-        spec = Specification("flag", ValueType.BOOL)
-        assert spec.validate_and_coerce(val) is expected
-
-    def test_validate_and_coerce_int(self):
-        """Test with int type."""
-        spec = Specification("num", ValueType.INT)
-        assert spec.validate_and_coerce(30) == 30
-        assert spec.validate_and_coerce("5") == 5
-
-    def test_validate_and_coerce_paulis(self):
-        """Test with paulis type."""
-        spec = Specification("map", ValueType.PAULIS)
-        obj = QubitSparsePauliList.from_list(["XX"])
-        assert spec.validate_and_coerce(obj) is obj
-        with pytest.raises(TypeError):
-            spec.validate_and_coerce("not-paulis")
-
-    def test_validate_and_coerce_numpy_array(self):
-        """Test with numpy type."""
-        spec = Specification("arr", ValueType.NUMPY_ARRAY)
-        out = spec.validate_and_coerce([1, 2, 3])
-        assert isinstance(out, np.ndarray)
-        np.testing.assert_array_equal(out, np.array([1, 2, 3]))
-
-
 class TestTensorSpecification:
-    """Test the TensorSpecification class."""
+    def test_simple_construction_and_attributes(self):
+        spec = TensorSpecification(
+            name="input_tensor",
+            shape=("batch", 3, 224, 224),
+            dtype=np.float32,
+            description="An input tensor",
+            broadcastable=True,
+            optional=True,
+        )
 
-    def test_tensor_specification_basic(self):
-        """Test basic attributes and methods."""
-        ts = TensorSpecification("x", (3,), np.dtype(np.int64), "a vector")
-        desc = ts.describe()
-        assert "int64" in desc and "[3]" in desc
-        assert repr(ts).startswith("TensorSpecification(")
-        assert ts.shape == (3,)
-        assert ts.ndim == 1
-        assert not ts.optional
-        assert "Optional" not in desc
+        assert spec.name == "input_tensor"
+        assert spec.description == "An input tensor"
+        assert spec.optional is True
+        assert spec.broadcastable is True
+        assert spec.dtype == np.float32
+        assert spec.shape == ("batch", 3, 224, 224)
+        assert spec.free_dimensions == {"batch"}
+        assert spec.ndim == 4
 
-        ts = TensorSpecification("x", (3,), np.dtype(np.int64), "a vector", optional=True)
-        assert ts.optional
-        assert "Optional" in ts.describe()
+    def test_describe(self):
+        spec = TensorSpecification(
+            name="features",
+            shape=("batch", 128),
+            dtype=np.float64,
+            description="My vector",
+            broadcastable=False,
+            optional=False,
+        )
 
-    def test_tensor_specification_empty_matches_shape_and_dtype(self):
-        """Test the empty method gives valid type."""
-        ts = TensorSpecification("x", (2, 3), np.dtype(np.float64))
-        arr = ts.empty()
-        assert arr.shape == (2, 3)
-        assert arr.dtype == np.dtype(np.float64)
-        ts.validate_and_coerce(arr)
+        expected = "'features' <float64['batch', 128]>: My vector"
+        assert spec.describe() == expected
 
-    def test_tensor_specification_validate_and_coerce(self):
-        """Test that validate_and_coerce accepts valid input."""
-        ts = TensorSpecification("x", (2, 2), np.int64)
-        arr = np.zeros((2, 2), dtype=np.int64)
-        result = ts.validate_and_coerce(arr)
-        assert np.allclose(result, arr)
+    def test_repr(self):
+        spec = TensorSpecification(
+            name="input",
+            shape=("batch", 64),
+            dtype=np.int32,
+            description="Input tensor",
+            broadcastable=True,
+            optional=True,
+        )
 
-    def test_tensor_specification_bad_validate_and_coerce(self):
-        """Test that validate_and_coerce fails when expected."""
-        ts = TensorSpecification("x", (2, 2), np.dtype(np.int64))
+        assert repr(spec) == (
+            "TensorSpecification('input', ('batch', 64), dtype('int32'), "
+            "'Input tensor', broadcastable=True, optional=True)"
+        )
 
-        with pytest.raises(ValueError, match="expects an array of dtype int64"):
-            ts.validate_and_coerce(np.zeros((2, 2), dtype=np.float32))
+        spec_minimal = TensorSpecification(
+            name="input",
+            shape=(32,),
+            dtype=np.float32,
+        )
 
-        with pytest.raises(ValueError, match="expects an array of shape \\(2, 2\\)"):
-            ts.validate_and_coerce(np.zeros((3, 3), dtype=np.int64))
+        assert repr(spec_minimal) == "TensorSpecification('input', (32,), dtype('float32'))"
 
-    def test_tensor_specification_validate_and_coerce_broadcast(self):
-        """Test that validate_and_coerce accepts valid input when broadcastable."""
-        ts = TensorSpecification("x", (2, 2), np.int64, broadcastable=True)
-        arr = np.zeros((7, 2, 2), dtype=np.int64)
-        result = ts.validate_and_coerce(arr)
-        assert np.allclose(result, arr)
+    def test_validate_and_coerce_success(self):
+        spec = TensorSpecification(
+            name="features",
+            shape=("batch", 128),
+            dtype=np.float32,
+            broadcastable=False,
+            optional=False,
+        )
 
-    def test_tensor_specification_bad_validate_and_coerce_broadcast(self):
-        """Test that validate_and_coerce fails when expected when broadcastable."""
-        ts = TensorSpecification("x", (2, 2), np.dtype(np.int64))
+        input_array = np.ones((4, 128), dtype=np.float64)  # dtype will be coerced
+        coerced, bound_dims = spec.validate_and_coerce(input_array)
 
-        with pytest.raises(ValueError, match="expects an array of dtype int64"):
-            ts.validate_and_coerce(np.zeros((7, 2, 2), dtype=np.float32))
+        assert isinstance(coerced, np.ndarray)
+        assert coerced.shape == (4, 128)
+        assert coerced.dtype == np.float32
+        assert bound_dims == {"batch": 4}
 
-        with pytest.raises(ValueError, match="expects an array of shape \\(2, 2\\)"):
-            ts.validate_and_coerce(np.zeros((17, 2, 3), dtype=np.int64))
+    def test_validate_and_coerce_broadcastable_success(self):
+        spec = TensorSpecification(
+            name="features",
+            shape=("batch", 128),
+            dtype=np.float32,
+            description="Feature vector",
+            broadcastable=True,
+            optional=False,
+        )
+
+        input_array = np.ones((2, 4, 128), dtype=np.float64).tolist()  # dtype will be coerced
+
+        coerced, bound_dims = spec.validate_and_coerce(input_array)
+
+        assert isinstance(coerced, np.ndarray)
+        assert coerced.shape == (2, 4, 128)
+        assert coerced.dtype == np.float32
+        assert bound_dims == {"batch": 4}
+
+    def test_validate_and_coerce_not_array(self):
+        spec = TensorSpecification("x", (2,), np.float32)
+        arr = [[1, 2], [1]]  # ragged
+        with pytest.raises(ValueError, match=r"expects an array but received"):
+            spec.validate_and_coerce(arr)
+
+    def test_validate_and_coerce_not_castable(self):
+        spec = TensorSpecification("x", (2,), np.uint32)
+        # complex dtype can't be safely cast to int32
+        arr = np.array([{1.2}, {2.3}])
+        with pytest.raises(ValueError, match=r"expected to be castable to type"):
+            spec.validate_and_coerce(arr)
+
+    def test_validate_and_coerce_too_few_dimensions(self):
+        spec = TensorSpecification("x", (2, 3), np.float32)
+        arr = np.ones((3,), dtype=np.float32)
+        with pytest.raises(ValueError, match=r"must have at least 2 axes"):
+            spec.validate_and_coerce(arr)
+
+    def test_validate_and_coerce_inconsistent_free_dimensions(self):
+        spec = TensorSpecification("x", ("d", "d"), np.float32)
+        arr = np.ones((2, 3), dtype=np.float32)
+        with pytest.raises(ValueError, match=r"self-inconsistent values for the free dimension"):
+            spec.validate_and_coerce(arr)
+
+    def test_validate_and_coerce_broadcastable_shape_mismatch(self):
+        spec = TensorSpecification("x", (2, 3), np.float32, broadcastable=True)
+        arr = np.ones((4, 2, 4), dtype=np.float32)
+        with pytest.raises(ValueError, match=r"expects an array ending with shape"):
+            spec.validate_and_coerce(arr)
+
+    def test_validate_and_coerce_strict_shape_mismatch(self):
+        spec = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
+        arr = np.ones((2, 4), dtype=np.float32)
+        with pytest.raises(ValueError, match=r"expects an array of shape"):
+            spec.validate_and_coerce(arr)
+
+
+class TestPauliLindbladMapSpecification:
+    def test_simple_construction_and_attributes(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+
+        assert spec.name == "noise"
+        assert spec.num_qubits == 3
+        assert spec.num_terms == "n_terms"
+        assert spec.optional is False
+        assert spec.free_dimensions == {"n_terms"}
+        assert spec.description == "A PauliLindblad map acting on 3 qubits, with 'n_terms' terms."
+
+    def test_describe(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        assert (
+            spec.describe() == "'noise' <PauliLindbladMap>: A PauliLindblad map acting "
+            "on 3 qubits, with 'n_terms' terms."
+        )
+
+    def test_repr(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        expected = "PauliLindbladMapSpecification('noise', num_qubits=3, num_terms=n_terms)"
+        assert repr(spec) == expected
+
+    def test_validate_and_coerce_success(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        lindblad = PauliLindbladMap.from_list([("IXI", 0.3)])
+
+        coerced, bound_dims = spec.validate_and_coerce(lindblad)
+
+        assert coerced is lindblad
+        assert bound_dims == {"n_terms": 1}
+
+    def test_validate_and_coerce_wrong_type(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        with pytest.raises(ValueError, match=r"Expected a PauliLindbladMap, but received"):
+            spec.validate_and_coerce("not a lindblad map")
+
+    def test_validate_and_coerce_wrong_num_qubits(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        lindblad = PauliLindbladMap.from_list([("IZ", 0.5)])
+        with pytest.raises(ValueError, match=r"Expected a PauliLindbladMap acting on 3"):
+            spec.validate_and_coerce(lindblad)
 
 
 class TestTensorInterface:
-    """Test the TensorInterface class."""
+    def test_simple_construction_and_attributes(self):
+        specs = [
+            TensorSpecification("a", (2, 3), np.float32),
+            TensorSpecification("b", ("n",), np.int64, optional=True),
+        ]
+        interface = TensorInterface(specs)
 
-    def test_basic_attributes(self):
-        """Test basic attributes post-construction."""
-        spec1 = Specification("flag", ValueType.BOOL, "boolean flag " * 30)
-        spec2 = TensorSpecification("vec", (2,), np.dtype(np.float64), "vector input")
-        tensor_interface = TensorInterface([spec2, spec1])
+        assert interface.specs == sorted(specs, key=lambda s: s.name)
+        assert interface.free_dimensions == {"n"}
+        assert not interface.fully_bound
+        assert interface.shape == ()
+        assert interface.ndim == 0
+        assert interface.size == 1  # np.prod(()) == 1
 
-        assert "TensorInterface" in repr(tensor_interface)
-        assert "flag' <bool" in tensor_interface.describe()
-        assert "*abc123*" in tensor_interface.describe(prefix="*abc123*")
-        assert all(len(line) <= 100 for line in tensor_interface.describe(width=100).split("\n"))
-        assert [spec.name for spec in tensor_interface.specs] == ["flag", "vec"]
-        assert tensor_interface.shape == ()
-        assert tensor_interface.size == 1
-        assert tensor_interface.ndim == 0
+    def test_make_broadcastable(self):
+        specs = [
+            TensorSpecification("a", (2, 3), np.float32, broadcastable=False),
+            TensorSpecification("b", ("n",), np.int64, broadcastable=False),
+        ]
+        interface = TensorInterface(specs)
 
-    def test_dunders(self):
-        """Test some dunders: contains, delete, len."""
-        spec1 = Specification("flag", ValueType.BOOL, "boolean flag")
-        spec2 = TensorSpecification("vec", (2,), np.float64, "vector input")
-        tensor_interface = TensorInterface([spec1, spec2])
+        interface["a"] = np.ones((2, 3), dtype=np.float32)
+        interface["b"] = np.arange(5, dtype=np.int64)
 
-        assert len(tensor_interface) == 0
-        assert "flag" not in tensor_interface
-        tensor_interface["flag"] = 1
-        assert len(tensor_interface) == 1
-        assert "flag" in tensor_interface
-        assert list(iter(tensor_interface)) == ["flag"]
+        broadcastable_interface = interface.make_broadcastable()
 
-        tensor_interface["flag"] = 1
-        assert tensor_interface["flag"] is True
-        del tensor_interface["flag"]
-        assert "flag" not in tensor_interface
+        # check that all specs are now broadcastable
+        for spec in broadcastable_interface.specs:
+            if isinstance(spec, TensorSpecification):
+                assert spec.broadcastable is True
 
-    def test_invalid_key_assignment_raises(self):
-        """Test setting a non-existent key raises ValueError."""
-        spec1 = Specification("flag", ValueType.BOOL, "boolean flag")
-        spec2 = TensorSpecification("vec", (2,), np.float64, "vector input")
-        tensor_interface = TensorInterface([spec1, spec2])
+        # check that data was preserved
+        assert broadcastable_interface["a"].shape == (2, 3)
+        assert np.array_equal(broadcastable_interface["b"], np.arange(5, dtype=np.int64))
 
-        with pytest.raises(ValueError, match="no specification named 'unknown'"):
-            tensor_interface["unknown"] = 123
+        # bind a bigger shape
+        broadcastable_interface["b"] = np.arange(50, dtype=np.int64).reshape(2, 5, 5)
+        assert broadcastable_interface.shape == (2, 5)
 
-    def test_fully_bound(self):
-        """Test fully_bound property."""
-        spec1 = Specification("flag", ValueType.BOOL, "boolean flag")
-        spec2 = TensorSpecification("vec", (2,), np.float64, "vector input")
-        spec3 = Specification("optional", ValueType.INT, "optional int", True)
+    def test_mapping_interface(self):
+        specs = [
+            TensorSpecification("x", (4,), np.float32),
+            TensorSpecification("y", (4,), np.float32),
+        ]
+        interface = TensorInterface(specs)
 
-        tensor_interface = TensorInterface([spec1, spec2, spec3])
-        assert not tensor_interface.fully_bound
+        # initially empty
+        assert "x" not in interface
+        assert "y" not in interface
+        assert len(interface) == 0
 
-        tensor_interface.bind(flag=0)
-        assert not tensor_interface.fully_bound
+        # set items
+        interface["x"] = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+        interface["y"] = np.array([5.0, 6.0, 7.0, 8.0], dtype=np.float32)
 
-        tensor_interface.bind(vec=np.array([1.0, 2.0]))
-        assert tensor_interface.fully_bound
+        # get items
+        assert np.array_equal(interface["x"], np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32))
+        assert np.array_equal(interface["y"], np.array([5.0, 6.0, 7.0, 8.0], dtype=np.float32))
 
-        tensor_interface.bind(optional=1.0)
-        assert tensor_interface.fully_bound
+        # membership and length
+        assert "x" in interface
+        assert "y" in interface
+        assert len(interface) == 2
 
-    def test_make_broadcastable_returns_new_interface(self):
-        """Test make_broadcastable() returns new interface with updated specs."""
-        spec = TensorSpecification("arr", (2,), np.float64, broadcastable=False)
-        tensor_interface = TensorInterface([spec])
-        tensor_interface["arr"] = np.array([1.0, 2.0])
-        new_tensor_interface = tensor_interface.make_broadcastable()
-        assert new_tensor_interface.specs[0].broadcastable is True
-        assert np.allclose(new_tensor_interface["arr"], tensor_interface["arr"])
+        # iteration
+        keys = set(iter(interface))
+        assert keys == {"x", "y"}
 
-    def test_broadcast_shape_updates_and_incompatible_shapes_raise(self):
-        """Test Broadcast shape updates correctly and incompatible shapes raise ValueError."""
-        spec1 = TensorSpecification("x", (2,), np.float64, broadcastable=True)
-        spec2 = TensorSpecification("y", (3, 4), np.float64, broadcastable=True)
+        # deletion
+        del interface["x"]
+        assert "x" not in interface
+        assert len(interface) == 1
 
-        tensor_interface = TensorInterface([spec1, spec2])
-        assert tensor_interface.shape == ()
+    def test_getitem_slicing_mode(self):
+        specs = [
+            TensorSpecification("a", (2,), np.float32, broadcastable=True),
+            TensorSpecification("b", (2,), np.float32, broadcastable=False),
+        ]
+        interface = TensorInterface(specs)
 
-        tensor_interface["x"] = np.ones((3, 2), dtype=np.float64)
-        assert tensor_interface.shape == (3,)
+        # note first item gives shape (3, 4)
+        interface["a"] = np.arange(24).reshape((3, 4, 2))
+        interface["b"] = np.array([10.0, 20.0], dtype=np.float32)
 
-        with pytest.raises(ValueError, match="because it is not broadcastable"):
-            tensor_interface["x"] = np.ones((4, 2), dtype=np.float64)
+        sliced = interface[0]
+        assert sliced is not interface
+        assert isinstance(sliced, TensorInterface)
+        assert sliced.shape == (4,)
 
-        with pytest.raises(ValueError, match="because it is not broadcastable"):
-            tensor_interface["y"] = np.ones((17, 3, 4), dtype=np.float64)
+        assert np.array_equal(sliced["a"], interface["a"][0])
+        assert np.array_equal(sliced["b"], interface["b"])
+        assert [spec.name for spec in sliced.specs] == ["a", "b"]
 
-        tensor_interface["y"] = np.ones((3, 4), dtype=np.float64)
-        assert tensor_interface.shape == (3,)
+    def test_setitem_invalid_key(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", (2,), np.float32),
+            ]
+        )
+        with pytest.raises(ValueError, match=r"The interface has no specification named 'y'"):
+            interface["y"] = np.array([1.0, 2.0], dtype=np.float32)
 
-        tensor_interface["y"] = np.ones((17, 3, 3, 4), dtype=np.float64)
-        assert tensor_interface.shape == (17, 3)
+    def test_setitem_inconsistent_free_dimension(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", ("n",), np.float32),
+                TensorSpecification("y", ("n",), np.float32),
+            ]
+        )
+        interface["x"] = np.ones((5,), dtype=np.float32)
+        with pytest.raises(ValueError, match=r"Inconsistent values for the free dimension 'n'"):
+            interface["y"] = np.ones((6,), dtype=np.float32)
 
-    def test_getitem_with_slice_returns_new_interface(self):
-        """Test indexing with slices returns a new TensorInterface."""
-        spec1 = TensorSpecification("x", (2,), np.float64, broadcastable=True)
-        spec2 = TensorSpecification("y", (5, 2), np.float64, broadcastable=True)
-        spec3 = Specification("z", ValueType.INT, optional=True)
-        tensor_interface = TensorInterface([spec1, spec2, spec3])
-        tensor_interface["x"] = data_x = np.arange(12, dtype=np.float64).reshape(6, 2)
-        tensor_interface["y"] = data_y = np.arange(10, dtype=np.float64).reshape(5, 2)
-        tensor_interface["z"] = data_z = 1
-        new_tensor_interface = tensor_interface[:3]
+    def test_setitem_broadcast_shape_mismatch(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", (2,), np.float32, broadcastable=True),
+                TensorSpecification("y", (2,), np.float32, broadcastable=True),
+            ]
+        )
+        interface["x"] = np.ones((3, 2), dtype=np.float32)
+        with pytest.raises(ValueError, match=r"not broadcastable with the current interface shape"):
+            interface["y"] = np.ones((4, 2), dtype=np.float32)
 
-        assert isinstance(new_tensor_interface, TensorInterface)
-        assert new_tensor_interface is not tensor_interface
-        assert np.allclose(new_tensor_interface["x"], data_x[:3])
-        assert np.allclose(new_tensor_interface["y"], data_y)
-        assert new_tensor_interface["z"] == data_z
-        assert new_tensor_interface.specs[2].optional
-        assert new_tensor_interface.shape == (3,)
+    def test_str_and_repr_do_not_fail(self):
+        specs = [
+            TensorSpecification("x", (2,), np.float32),
+            TensorSpecification("y", (3,), np.int64, optional=True),
+            PauliLindbladMapSpecification("noise", 2, "num_terms"),
+        ]
+        interface = TensorInterface(specs)
+        interface["x"] = np.array([1.0, 2.0], dtype=np.float32)
 
-    def test_nested_dict_assignment(self):
-        """Test nested dict assignment resolves flattened names correctly."""
-        spec1 = Specification("foo.bar", ValueType.INT)
-        tensor_interface = TensorInterface([spec1])
-        tensor_interface["foo"] = {"bar": 5}
-        assert "foo.bar" in tensor_interface
-        assert tensor_interface["foo.bar"] == 5
+        assert isinstance(str(interface), str)
+        assert isinstance(repr(interface), str)
+
+    def test_describe_contains_expected_fragments(self):
+        specs = [
+            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
+            TensorSpecification("y", (3,), np.int64, optional=True, description="Class labels"),
+        ]
+        interface = TensorInterface(specs)
+        interface["x"] = np.ones((5,), dtype=np.float32)
+
+        # basic description
+        desc = interface.describe()
+        assert "'x' <float32['n']>: Input vector" in desc
+        assert "'y' <int64[3]>: (Optional) Class labels" in desc
+
+        # include free dimensions
+        desc_with_dims = interface.describe(include_free_dimensions=True)
+        assert "Dimension constraints: n=5" in desc_with_dims
+
+        # custom prefix
+        desc_custom_prefix = interface.describe(prefix="- ", bound_prefix="* ")
+        assert "* 'x' <float32['n']>: Input vector" in desc_custom_prefix
+        assert "- 'y' <int64[3]>: (Optional) Class labels" in desc_custom_prefix
+
+        # wrapping
+        desc_wrapped = interface.describe(width=60)
+        assert all(len(line) <= 60 for line in desc_wrapped.splitlines())
