@@ -13,6 +13,8 @@
 
 """Interfaces"""
 
+from __future__ import annotations
+
 import abc
 import textwrap
 from collections.abc import Iterable, MutableMapping
@@ -83,7 +85,7 @@ class Specification(abc.ABC, Generic[T]):
         """
 
     @staticmethod
-    def _from_json(data: dict[str, Any]) -> "Specification":
+    def _from_json(data: dict[str, Any]) -> Specification:
         return {  # noqa: SLF001
             "PauliLindbladMapSpecification": PauliLindbladMapSpecification,
             "TensorSpecification": TensorSpecification,
@@ -154,7 +156,7 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
         }
 
     @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "PauliLindbladMapSpecification":
+    def _from_json(cls, data: dict[str, Any]) -> PauliLindbladMapSpecification:
         return cls(data["name"], data["num_qubits"], data["num_terms"])
 
 
@@ -222,7 +224,7 @@ class TensorSpecification(Specification[np.ndarray]):
         }
 
     @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "TensorSpecification":
+    def _from_json(cls, data: dict[str, Any]) -> TensorSpecification:
         return cls(
             data["name"],
             tuple(data["shape"]),
@@ -471,7 +473,7 @@ class TensorInterface(MutableMapping):
 
         return self
 
-    def make_broadcastable(self) -> "TensorInterface":
+    def make_broadcastable(self) -> TensorInterface:
         """Return a new interface like this one where all tensor specifications are broadcastable.
 
         Returns:
