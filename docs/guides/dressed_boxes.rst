@@ -11,7 +11,7 @@ Every box is a scope that owns a set of qubits, operations that act on those qub
 Samplomatic annotations specify *directives* and *dressings*.
 Directives specify what to do with the box, e.g. twirl the box.
 Dressings are groups of parameterized gates to add to the left- or right-side of the box, e.g. a layer of single qubit gates.
-Dressing gates can incorporate gates from the box, as well as operations required to enact directives:
+The gates in a dressing incorporate gates from the box, as well as operations required to enact directives:
 * Gates in the box that are compatible with and on the same side as the parameterized gates.
 * Twirling gates sampled from a set to randomize the box.
 * Noise injection gates sampled from a Pauli Lindblad map.
@@ -37,7 +37,8 @@ This is achieved by stratifying the circuit into boxes and adding twirl annotati
 
 
 Each dressed box contains a layer of single-qubit gates and a layer of two-qubit entangling gates on disjoint pairs of qubits.
-The layer of entangling gates is surrounded by layers of random Paulis in such a way that the logical action of the box is unchanged.
+The layer of entangling gates is surrounded by layers of random Pauli gates in such a way that the logical action of the box is unchanged.
+These random Pauli layers are *virtual* in the same spirit as a virtual Z gate–they do not add additional operations to the circuit, but instead act as a directive to alter how adjacent single-qubit gates are implemented.
 
 .. figure:: ../figs/pauli_twirl.drawio.png
 
@@ -49,15 +50,16 @@ The layer of entangling gates is surrounded by layers of random Paulis in such a
 
 The random Pauli layer between the entangling gates and single-qubit gates is composed into the layer of single-qubit gates and implemented together in its dressing.
 The other random Pauli layer will be composed into the dressing of the next dressed box.
-The random Pauli gates are *virtual* in the same spirit as a virtual Z gate–they do not add additional operations to the circuit, but instead act as a directive to alter how other operations are implemented.
 
-Recast in this light, the left (right) twirl directive is to implement a random Pauli in this box's dressing and apply the Pauli that undoes it in the next (previous) box's dressing.
+To summarize, the left (right) twirl directive is to implement a random Pauli in this box's dressing and apply the Pauli that undoes it in the next (previous) box's dressing.
 The inject noise and basis change directives are analogous.
 
 Circuit randomization with virtual gates
 ----------------------------------------
 
 Samplomatic uses the framework of *virtual gates* to reason about circuits with dressed boxes.
+Virtual gates are generated at the boundary of the box opposite its dressing.
+These virtual gates are moved through the circuit in a prescribed way and need to be composed into a dressing.
 If all virtual gates can be composed into a dressing, randomizations of the circuit can be built procedurally.
 
 .. figure:: ../figs/dressed_box.drawio.png
@@ -66,10 +68,8 @@ If all virtual gates can be composed into a dressing, randomizations of the circ
 
 
 Gates on the side of the dressing compatible with its template parametrization can be composed into it, reducing the number of physical gates.
-These are called easy gates.
-The remainder of the box is called hard and is implemented as is.
-Directives are enacted by virtual gates generated at the edge of the box opposite its dressing.
-These virtual gates are moved through the circuit in a prescribed direction and need to be composed into a dressing.
+These are called *easy* gates.
+The remainder of the box is called *hard* and is implemented as is.
 
 .. figure:: ../figs/dressed_box_uncollected.drawio.png
 
