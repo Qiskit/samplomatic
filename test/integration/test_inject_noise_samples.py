@@ -15,16 +15,10 @@
 import numpy as np
 from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.circuit.library import CXGate
-from qiskit.quantum_info import (
-    Operator,
-    Pauli,
-    PauliLindbladMap,
-    average_gate_fidelity,
-)
+from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap, average_gate_fidelity
 
 from samplomatic.annotations import InjectNoise, Twirl
 from samplomatic.builders import pre_build
-from samplomatic.noise_oracle import StaticNoiseOracle
 
 
 def make_circuits():
@@ -35,10 +29,10 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    noise_oracle = StaticNoiseOracle({"my_noise": PauliLindbladMap.from_list([("II", 0.0)])})
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("II", 0.0)])}
     expected = [Operator(np.identity(16))]
 
-    yield (circuit, expected, noise_oracle), "identity"
+    yield (circuit, expected, pauli_lindblad_maps), "identity"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
@@ -47,16 +41,15 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    yield (circuit, expected, noise_oracle), "identity_optional_modifiers"
+    yield (circuit, expected, pauli_lindblad_maps), "identity_optional_modifiers"
 
-    noise_oracle = StaticNoiseOracle({"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])})
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])}
     expected = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
 
-    yield (circuit, expected, noise_oracle), "xx_noise"
+    yield (circuit, expected, pauli_lindblad_maps), "xx_noise"
 
-    noise_oracle = StaticNoiseOracle(
-        {"my_noise": PauliLindbladMap.from_list([("XX", 100.0), ("YY", 100.0)])}
-    )
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 100.0), ("YY", 100.0)])}
+
     expected = [
         Operator(np.identity(16)),
         Operator(Pauli("XXXX").to_matrix()),
@@ -64,7 +57,7 @@ def make_circuits():
         Operator(Pauli("YYYY").to_matrix()),
     ]
 
-    yield (circuit, expected, noise_oracle), "two_body_noise"
+    yield (circuit, expected, pauli_lindblad_maps), "two_body_noise"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise")]):
@@ -73,11 +66,11 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    noise_oracle = StaticNoiseOracle({"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])})
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])}
     noise_ops = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
     expected = [(Operator(CXGate()) ^ Operator(CXGate())) & op for op in noise_ops]
 
-    yield (circuit, expected, noise_oracle), "xx_noise_permuted"
+    yield (circuit, expected, pauli_lindblad_maps), "xx_noise_permuted"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise")]):
@@ -91,7 +84,7 @@ def make_circuits():
 
     expected = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
 
-    yield (circuit, expected, noise_oracle), "xx_noise_twice"
+    yield (circuit, expected, pauli_lindblad_maps), "xx_noise_twice"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise0")]):
@@ -103,12 +96,11 @@ def make_circuits():
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 1)
 
-    noise_oracle = StaticNoiseOracle(
-        {
-            "my_noise0": PauliLindbladMap.from_list([("XI", 100.0)]),
-            "my_noise1": PauliLindbladMap.from_list([("IX", 100.0)]),
-        }
-    )
+    pauli_lindblad_maps = {
+        "my_noise0": PauliLindbladMap.from_list([("XI", 100.0)]),
+        "my_noise1": PauliLindbladMap.from_list([("IX", 100.0)]),
+    }
+
     expected = [
         Operator(np.identity(16)),
         Operator(Pauli("XIXI").to_matrix()),
@@ -116,9 +108,9 @@ def make_circuits():
         Operator(Pauli("XXXX").to_matrix()),
     ]
 
-    yield (circuit, expected, noise_oracle), "two_annotations"
+    yield (circuit, expected, pauli_lindblad_maps), "two_annotations"
 
-    noise_oracle = StaticNoiseOracle({"my_noise": PauliLindbladMap.from_list([("XI", 100.0)])})
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XI", 100.0)])}
     expected = [Operator(np.identity(16)), Operator(Pauli("XIXI").to_matrix())]
 
     for idx, perm in enumerate([(0, 1), (1, 0)]):
@@ -127,7 +119,7 @@ def make_circuits():
             circuit.noop(*perm)
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1)
-        yield (circuit, expected, noise_oracle), f"permuted_context_qubits_{idx}"
+        yield (circuit, expected, pauli_lindblad_maps), f"permuted_context_qubits_{idx}"
 
     for idx, (perm, pauli) in enumerate(zip([(0, 1), (1, 0)], [Pauli("XIXI"), Pauli("IXIX")])):
         expected = [Operator(np.identity(16)), Operator(pauli.to_matrix())]
@@ -136,16 +128,16 @@ def make_circuits():
         circuit.append(box_op, perm)
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1)
-        yield (circuit, expected, noise_oracle), f"permuted_box_op_qubits_{idx}"
+        yield (circuit, expected, pauli_lindblad_maps), f"permuted_box_op_qubits_{idx}"
 
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
         args, descriptions = zip(*make_circuits())
-        metafunc.parametrize("circuit,expected,noise_oracle", list(args), ids=descriptions)
+        metafunc.parametrize("circuit,expected,pauli_lindblad_maps", list(args), ids=descriptions)
 
 
-def test_sampling(circuit, expected, noise_oracle, save_plot):
+def test_sampling(circuit, expected, pauli_lindblad_maps, save_plot):
     """Test sampling.
 
     Casts the given ``circuit`` and the twirled circuit into operators, and it compares their
@@ -162,8 +154,7 @@ def test_sampling(circuit, expected, noise_oracle, save_plot):
     save_plot(lambda: samplex_state.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    samplex.set_noise_oracle(noise_oracle)
-    samplex_input = samplex.inputs()
+    samplex_input = samplex.inputs().bind(pauli_lindblad_maps=pauli_lindblad_maps)
     samplex_output = samplex.sample(samplex_input, num_randomizations=(num_rand := 20))
     parameter_values = samplex_output["parameter_values"]
 
