@@ -2,26 +2,28 @@ Dressed boxes
 =============
 
 Physical noise mechanisms that occur during the execution of quantum circuits are contextual.
-When applying operations on disjoint qubits simultaneously, the noise profile of the overall operation may not be equal to that of the constituent parts if they were to be applied in isolation.
+When applying operations on disjoint qubits simultaneously, the noise profile of the overall operation may not be equal to that of the constituent parts, if those parts were to be applied in isolation.
 Similarly, for operations that ideally commute on the same qubits, the noise profile associated with the individual operations may not commute and could be different altogether if the order of the operations changed.
-Protocols for suppressing, mitigating, and correcting noise therefore need to know the context in which it arises.
-Samplomatic therefore uses box instructions to reason about collections of circuit operations that should be treated as having a stable noise context, and uses annotations on boxes to allow users to declare and configure intent.
+Therefore, protocols for suppressing, mitigating, and correcting noise need to know the context in which it arises.
 
+Samplomatic uses box instructions to reason about collections of circuit operations that should be treated as having a stable noise context, and uses annotations on boxes to allow users to declare and configure intent.
 Every box is a scope that owns a set of qubits, operations that act on those qubits, and a list of annotations.
 Samplomatic annotations specify *directives* and *dressings*.
 Directives specify what to do with the box, e.g. twirl the box.
 Dressings are groups of parameterized gates to add to the left- or right-side of the box, e.g. a layer of single qubit gates.
 The gates in a dressing incorporate gates from the box, as well as operations required to enact directives:
+
 * Gates in the box that are compatible with and on the same side as the parameterized gates.
 * Twirling gates sampled from a set to randomize the box.
 * Noise injection gates sampled from a Pauli Lindblad map.
 * User-specified basis changing gates.
+
 Note that directives can alter dressings of other boxes.
 
 A guiding example
 -----------------
 
-Suppose we would like to Pauli twirl the following circuit during execution, that is, suppose we want to add random Pauli gates before and after the parallel entangling gates that don't change the logical content of the circuit, but that do change the effective noise model.
+Suppose we would like to twirl the following circuit, adding random Pauli gates before and after the parallel entangling gates that don't change the logical content of the circuit, but that do change the effective noise model.
 
 .. figure:: ../figs/undressed_pauli.drawio.png
 
