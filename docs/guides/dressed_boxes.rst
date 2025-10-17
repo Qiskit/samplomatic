@@ -58,7 +58,7 @@ Circuit randomization with virtual gates
 ----------------------------------------
 
 Samplomatic uses the framework of *virtual gates* to reason about circuits with dressed boxes.
-Virtual gates are generated at the boundary of the box opposite its dressing.
+Conceptually, and as implemented in a :class:`~.Samplex` instance produced by the :func:`~build` process, virtual gates are generated at the boundary of the box opposite its dressing.
 These virtual gates are moved through the circuit in a prescribed way and need to be composed into a dressing.
 If all virtual gates can be composed into a dressing, randomizations of the circuit can be built procedurally.
 
