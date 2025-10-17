@@ -12,7 +12,6 @@
 
 """InjectNoiseNode"""
 
-import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from ...aliases import NumSubsystems, RegisterName, StrRef
@@ -87,19 +86,15 @@ class InjectNoiseNode(SamplingNode):
             self._sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
-        rates = noise_oracle.get_rates(self._noise_ref)
-        paulis = noise_oracle.get_paulis(self._noise_ref)
+    def sample(self, registers, rng, inputs, num_randomizations):
+        pauli_lindblad_map = inputs[f"pauli_lindblad_maps.{self._noise_ref}"]
         if self._modifier_ref:
-            scale = inputs.get("noise_scales." + self._modifier_ref, 1.0)
-            local_scale = inputs.get(
-                "local_scales." + self._modifier_ref, np.ones(paulis.num_terms)
+            scale = inputs.get(f"noise_scales.{self._modifier_ref}", 1.0)
+            local_scale = inputs.get(f"local_scales.{self._modifier_ref}", 1.0)
+            pauli_lindblad_map = PauliLindbladMap.from_components(
+                pauli_lindblad_map.rates * scale * local_scale,
+                pauli_lindblad_map.get_qubit_sparse_pauli_list_copy(),
             )
-            rates = rates * scale * local_scale
-        pauli_lindblad_map = PauliLindbladMap.from_sparse_list(
-            [(pauli, idxs, rate) for (pauli, idxs), rate in zip(paulis.to_sparse_list(), rates)],
-            num_qubits=paulis.num_qubits,
-        )
         signs, samples = pauli_lindblad_map.signed_sample(
             num_randomizations, rng.bit_generator.random_raw()
         )

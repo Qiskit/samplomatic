@@ -88,7 +88,7 @@ def test_collect(rng):
         ]
     )
     x = HaarU2(10).sample(num_samples, rng)
-    outputs["template_values"].ravel()[...] = np.linspace(0, 1, outputs["template_values"].size)
+    outputs["template_values"] = np.linspace(0, 1, num_samples * 100).reshape(num_samples, 100)
     original_template_values = outputs["template_values"].copy()
 
     # define and run the collection node

@@ -105,7 +105,7 @@ class DummyCollectionNode(CollectionNode, DummyNode):
 class DummySamplingNode(SamplingNode, DummyNode):
     """Dummy child sampling node for testing."""
 
-    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
+    def sample(self, registers, rng, inputs, num_randomizations):
         self._update(registers, rng, num_randomizations)
 
 

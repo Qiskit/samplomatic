@@ -15,7 +15,6 @@
 import pytest
 
 from samplomatic import build
-from samplomatic.noise_oracle import StaticNoiseOracle
 
 from .utils import make_layered_circuit, make_pauli_lindblad_maps
 
@@ -90,16 +89,13 @@ class TestSample:
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_pauli_lindblad_maps(num_qubits)
-        noise_oracle = StaticNoiseOracle({"even": even_noise, "odd": odd_noise})
+        pauli_lindblad_maps = {"even": even_noise, "odd": odd_noise}
 
         template, samplex = build(circuit)
-        samplex_input = (
-            samplex.set_noise_oracle(noise_oracle)
-            .inputs()
-            .bind(
-                parameter_values=rng.random(len(circuit.parameters)),
-                noise_scales={"even": scale, "odd": scale},
-            )
+        samplex_input = samplex.inputs().bind(
+            pauli_lindblad_maps=pauli_lindblad_maps,
+            parameter_values=rng.random(len(circuit.parameters)),
+            noise_scales={"even": scale, "odd": scale},
         )
         samplex_output = benchmark(
             samplex.sample,
@@ -142,7 +138,7 @@ class TestSample:
         num_boxes = num_gates // (num_qubits // 2)
         circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
         even_noise, odd_noise = make_pauli_lindblad_maps(num_qubits)
-        noise_oracle = StaticNoiseOracle({"even": even_noise, "odd": odd_noise})
+        pauli_lindblad_maps = {"even": even_noise, "odd": odd_noise}
 
         local_scales = {
             "even": [local_scale] * even_noise.num_terms,
@@ -150,13 +146,10 @@ class TestSample:
         }
 
         template, samplex = build(circuit)
-        samplex_input = (
-            samplex.set_noise_oracle(noise_oracle)
-            .inputs()
-            .bind(
-                parameter_values=rng.random(len(circuit.parameters)),
-                local_scales=local_scales,
-            )
+        samplex_input = samplex.inputs().bind(
+            pauli_lindblad_maps=pauli_lindblad_maps,
+            parameter_values=rng.random(len(circuit.parameters)),
+            local_scales=local_scales,
         )
         samplex_output = benchmark(
             samplex.sample,

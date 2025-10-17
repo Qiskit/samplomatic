@@ -57,7 +57,7 @@ def test_collect(rng):
                 "A ten-qubit array",
             )
         ]
-    )
+    ).bind(out=np.empty((3, 10), dtype=np.uint8))
 
     registers = {"reg1": reg1, "reg2": reg2}
     node1.collect(registers, outputs, rng)
@@ -87,7 +87,7 @@ def test_collect_with_dummy_axes(rng):
                 "A ten-qubit array",
             )
         ]
-    )
+    ).bind(out=np.empty((3, 1, 10), dtype=np.uint8))
 
     registers = {"reg1": reg1, "reg2": reg2}
     node1.collect(registers, outputs, rng)
