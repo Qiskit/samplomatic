@@ -1090,7 +1090,7 @@ class PreSamplex:
                     f"basis_changes.{basis_ref}",
                     (length,),
                     np.dtype(np.uint8),
-                    "Basis changing gates.",
+                    "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3. ",
                 )
             )
 

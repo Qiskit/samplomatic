@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import abc
+import re
 import textwrap
 from collections.abc import Iterable, MutableMapping
 from typing import Any, Generic, TypeVar
@@ -135,7 +136,7 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
 
         if value.num_qubits != self.num_qubits:
             raise ValueError(
-                f"Expected a PauliLindbladMap acting on {self.num_qubits}, but received one "
+                f"Expected a PauliLindbladMap acting on {self.num_qubits} qubits, but received one "
                 f"acting on {value.num_qubits} qubits instead."
             )
 
@@ -426,6 +427,18 @@ class TensorInterface(MutableMapping):
                 ret[idx] = joiner.join(textwrap.wrap(ret[idx], width - len(joiner)))
 
         return "\n".join(ret)
+
+    def get_specs(self, pattern: str = "") -> list[Specification]:
+        """Return all specifications of this inteface whose names the pattern string.
+
+        Args:
+            pattern: A pattern string. Regex is supported.
+
+        Returns:
+            Those specifications whose names match the pattern, sorted.
+        """
+        regex_pattern = re.compile(pattern)
+        return [spec for name, spec in self._specs.items() if regex_pattern.search(name)]
 
     def bind(self, **kwargs) -> Self:
         """Bind data to this interface.
