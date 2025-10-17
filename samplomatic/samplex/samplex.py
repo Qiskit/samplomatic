@@ -299,10 +299,6 @@ class Samplex:
     def inputs(self) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
-        Raises:
-            ValueError: If the samplex has :meth:`~noise_requirements` and the noise oracle
-                has not been set.
-
         Returns:
             The input interface for this samplex.
         """
