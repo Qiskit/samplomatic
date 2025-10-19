@@ -1,9 +1,17 @@
 name: Build Sphinx docs
+# This workflow builds the docs on all branches and releases,
+# but it only deploys for the main branch and releases. Specifically
+#  - Deploy to gh-pages:dev/ for builds of main
+#  - Deploy to gh-pages:/ for builds of release
+#  - Also deploy to gh-pages:/stable/<version> for builds of release
+# This third step is done to make the version drop-down menu work
 
 on:
   push:
     branches:
-      - fix-docs-workflow
+      - '**'
+  pull_request:
+    branches: [ "main" ]
   release:
     types: [published]
 
