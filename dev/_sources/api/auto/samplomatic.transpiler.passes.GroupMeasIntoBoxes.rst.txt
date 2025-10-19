@@ -1,0 +1,17 @@
+GroupMeasIntoBoxes
+==================
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: GroupMeasIntoBoxes
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~GroupMeasIntoBoxes.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

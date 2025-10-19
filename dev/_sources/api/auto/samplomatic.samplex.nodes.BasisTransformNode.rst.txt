@@ -1,0 +1,31 @@
+BasisTransformNode
+==================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: BasisTransformNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~BasisTransformNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~BasisTransformNode.get_style
+      ~BasisTransformNode.instantiates
+      ~BasisTransformNode.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: sample

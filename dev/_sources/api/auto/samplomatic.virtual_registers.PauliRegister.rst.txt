@@ -1,0 +1,41 @@
+PauliRegister
+=============
+
+.. currentmodule:: samplomatic.virtual_registers
+
+.. autoclass:: PauliRegister
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PauliRegister.CONVERTABLE_TYPES
+      ~PauliRegister.GATE_SHAPE
+      ~PauliRegister.SUBSYSTEM_SIZE
+      ~PauliRegister.TYPE
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PauliRegister.convert_to
+      ~PauliRegister.identity
+      ~PauliRegister.inplace_multiply
+      ~PauliRegister.invert
+      ~PauliRegister.multiply
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: CONVERTABLE_TYPES
+   .. autoattribute:: GATE_SHAPE
+   .. autoattribute:: SUBSYSTEM_SIZE
+   .. autoattribute:: TYPE
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: convert_to
+   .. automethod:: identity
+   .. automethod:: inplace_multiply
+   .. automethod:: invert
+   .. automethod:: multiply

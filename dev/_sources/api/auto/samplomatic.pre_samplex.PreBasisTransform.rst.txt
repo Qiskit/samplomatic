@@ -1,0 +1,33 @@
+PreBasisTransform
+=================
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreBasisTransform
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreBasisTransform.basis_ref
+      ~PreBasisTransform.direction
+      ~PreBasisTransform.register_type
+      ~PreBasisTransform.subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreBasisTransform.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: basis_ref
+   .. autoattribute:: direction
+   .. autoattribute:: register_type
+   .. autoattribute:: subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
