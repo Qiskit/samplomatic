@@ -72,6 +72,8 @@ jobs:
         with:
           name: sphinx-docs
           path: site
+      - name: Bypass Jekyll Processing # Necessary for setting the correct css path
+        run: touch site/.nojekyll
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
