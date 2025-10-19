@@ -42,7 +42,7 @@ jobs:
         path: docs/_build/html
 
   deploy-dev:
-    if: github.ref == 'refs/heads/fix-docs-workflow'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:
