@@ -1,4 +1,4 @@
-name: Build Sphinx docs
+name: Build Docs
 # This workflow builds the docs on all branches and releases,
 # but it only deploys for the main branch and releases. Specifically
 #  - Deploy to gh-pages:dev/ for builds of main
@@ -62,7 +62,7 @@ jobs:
           folder: site
           target-folder: dev
 
-  publish:
+  deploy-stable:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
     permissions:
