@@ -8,8 +8,7 @@ name: Build Sphinx docs
 
 on:
   push:
-    branches:
-      - '**'
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   release:
