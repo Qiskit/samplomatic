@@ -113,7 +113,7 @@ Optionally, paste these into your `.vscode/settings.json` to set up ruff (you al
 
 ### Sphinx documentation
 
-`samplomatic` documentation can be rendered via `sphinx`. In order to produce the rendered
+`samplomatic` documentation is rendered with `sphinx`. In order to produce the rendered
 documentation:
 
 1. Install samplomatic with the [development requirements](#installation)
@@ -124,16 +124,20 @@ documentation:
     docs$ make html
     ```
 
-The `.html` documentation will be rendered at `docs/_build` (with the index being available at
-`docs/_build/html/index.html`).
+The rendered `.html` documentation will be written to `docs/_build`.
 
 The documentation content doesn't yet promise to reflect the final state of the public interface of the project, and is liable to change.
 Presently, these are the guidelines for what is included:
 
- * All top-level modules, with members defined by their `__all__` or, if absent, `dir()`
- * All top-level packages, with members as defined by the their `__init__`
- * Manual inclusion of hand-picked second level packages / modules (e.g. `samplomatic.samplex.node`)
- * Manual handling of promoted members
+ * All top-level modules, with members defined by their `__all__` or, if absent, `dir()`.
+ * All top-level packages, with members as defined by the their `__init__`.
+ * Manual inclusion of hand-picked second level packages / modules (e.g. `samplomatic.samplex.node`).
+ * Manual handling of promoted members.
+
+Documentation is published by GitHub Actions that make commits into the `gh-pages` branch of this repository:
+
+ * Commits to `main` write documentation into the `dev/` folder.
+ * Releases of the library write documentation into both the `/` and `stable/<version>` folders, the latter so that old documentation versions are kept online.
 
 #### Writing Code Examples In Documentation
 
