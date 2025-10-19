@@ -3,7 +3,7 @@ name: Build Sphinx docs
 on:
   push:
     branches:
-      - main
+      - fix-docs-workflow
   release:
     types: [published]
 
@@ -35,10 +35,11 @@ jobs:
         path: docs/_build/html
 
   deploy-dev:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/fix-docs-workflow'
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     steps:
@@ -58,6 +59,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
