@@ -124,7 +124,7 @@ documentation:
     docs$ make html
     ```
 
-The rendered `.html` documentation will be written to `docs/_build`.
+The rendered HTML documentation will be written to `docs/_build`.
 
 The documentation content doesn't yet promise to reflect the final state of the public interface of the project, and is liable to change.
 Presently, these are the guidelines for what is included:
