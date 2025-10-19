@@ -130,13 +130,13 @@ class TestBuildPreSamplex:
         """Test that adding emit basis with same name but different length errors."""
         qreg = QuantumRegister(2)
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
-        pre_samplex.add_emit_meas_basis_transform(QubitPartition.from_elements(qreg[:1]), "meas")
+        pre_samplex.add_emit_meas_basis_change(QubitPartition.from_elements(qreg[:1]), "meas")
 
-        with pytest.raises(SamplexBuildError, match=r"Cannot add basis transform"):
-            pre_samplex.add_emit_meas_basis_transform(QubitPartition.from_elements(qreg), "meas")
+        with pytest.raises(SamplexBuildError, match=r"Cannot add basis change"):
+            pre_samplex.add_emit_meas_basis_change(QubitPartition.from_elements(qreg), "meas")
 
-        with pytest.raises(SamplexBuildError, match=r"Cannot add basis transform"):
-            pre_samplex.add_emit_prep_basis_transform(QubitPartition.from_elements(qreg), "meas")
+        with pytest.raises(SamplexBuildError, match=r"Cannot add basis change"):
+            pre_samplex.add_emit_prep_basis_change(QubitPartition.from_elements(qreg), "meas")
 
     def test_propagate_preceded_by_collect(self):
         """Test that add_propagate adds leftwards pre-propagate node."""
@@ -280,10 +280,10 @@ class TestHelpersAttributes:
 
         pre_samplex = PreSamplex(qubit_map={q0: 0, q1: 1, q2: 2, q3: 3})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        prep_idx0 = pre_samplex.add_emit_prep_basis_transform(subsystems, "prepare")
+        prep_idx0 = pre_samplex.add_emit_prep_basis_change(subsystems, "prepare")
         emit_idx0 = pre_samplex.add_emit_twirl(subsystems, PauliRegister)
         collect_idx1 = pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        meas_idx0 = pre_samplex.add_emit_meas_basis_transform(subsystems, "measure")
+        meas_idx0 = pre_samplex.add_emit_meas_basis_change(subsystems, "measure")
         emit_idx10 = pre_samplex.add_emit_twirl(subsystems0, PauliRegister)
         emit_idx11 = pre_samplex.add_emit_twirl(subsystems1, PauliRegister)
         collect_idx2 = pre_samplex.add_collect(subsystems, RzSxSynth(), [])

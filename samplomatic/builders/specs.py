@@ -75,7 +75,7 @@ class EmissionSpec:
     """What type of virtual gates to emit for basis changes."""
 
     basis_ref: StrRef = ""
-    """A unique identifier of the basis transformation."""
+    """A unique identifier of the basis change."""
 
     noise_ref: StrRef = ""
     """A unique identifier of the Pauli Lindblad map to use for noise injection."""

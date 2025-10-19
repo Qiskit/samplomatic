@@ -236,11 +236,11 @@ class PrePropagateKey:
 
 
 @dataclass
-class PreBasisTransform(PreEmit):
+class PreChangeBasis(PreEmit):
     """The basis emit node type used during samplex building."""
 
     basis_ref: StrRef
-    """Unique identifier of this basis transform."""
+    """Unique identifier of this basis change."""
 
     def get_style(self) -> NodeStyle:
         return super().get_style().append_data("Basis Identifier", self.basis_ref)

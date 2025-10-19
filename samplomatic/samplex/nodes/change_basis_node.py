@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BasisTransformNode"""
+"""ChangeBasisNode"""
 
 from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
@@ -88,7 +88,7 @@ class BasisChange(Generic[T]):
         return self._action
 
     def get_transform(self, elements: Sequence[T]) -> VirtualRegister:
-        """Return the transform for the basis change.
+        """Return the transform gates for the basis change.
 
         Args:
             elements: The elements that specify the basis change.
@@ -112,7 +112,7 @@ PREP_PAULI_BASIS = BasisChange[np.uint8](
 """A basis change from the computational basis into Pauli eigenstates."""
 
 
-class BasisTransformNode(SamplingNode):
+class ChangeBasisNode(SamplingNode):
     """A node that instantiates a basis changing virtual register for a given measurement.
 
     Args:
@@ -155,7 +155,7 @@ class BasisTransformNode(SamplingNode):
         }
 
     @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "BasisTransformNode":
+    def _from_json_dict(cls, data: dict[str, str]) -> "ChangeBasisNode":
         return cls(
             data["register_name"],
             BasisChange.from_json_dict(orjson.loads(data["basis_change"])),

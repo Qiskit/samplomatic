@@ -29,7 +29,7 @@ from ..aliases import InterfaceName, Parameter, ParameterExpression
 from ..exceptions import DeserializationError
 from ..tensor_interface import Specification
 from .nodes import Node
-from .nodes.basis_transform_node import BasisTransformNode
+from .nodes.change_basis_node import ChangeBasisNode
 from .nodes.collect_template_values import CollectTemplateValues
 from .nodes.collect_z2_to_output_node import CollectZ2ToOutputNode
 from .nodes.combine_registers_node import CombineRegistersNode
@@ -47,7 +47,7 @@ from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
 
 NODE_TYPE_MAP = [
-    BasisTransformNode,
+    ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,

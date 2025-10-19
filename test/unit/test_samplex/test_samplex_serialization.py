@@ -16,7 +16,7 @@ from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic import build
-from samplomatic.annotations import BasisTransform, InjectNoise, Twirl
+from samplomatic.annotations import ChangeBasis, InjectNoise, Twirl
 from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
 
 
@@ -92,10 +92,10 @@ class TestSamplexSerialization:
         )
         np.testing.assert_allclose(samplex_output["pauli_signs"], samplex_new_output["pauli_signs"])
 
-    def test_basis_transform_circuit(self, rng):
-        """Test a circuit with basis transform annotations."""
+    def test_change_basis_circuit(self, rng):
+        """Test a circuit with basis change annotations."""
         circuit = QuantumCircuit(2)
-        with circuit.box([BasisTransform()]):
+        with circuit.box([ChangeBasis()]):
             circuit.noop(range(2))
 
         with circuit.box([Twirl()]):
