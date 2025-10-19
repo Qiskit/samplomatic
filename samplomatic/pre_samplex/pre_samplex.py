@@ -710,7 +710,7 @@ class PreSamplex:
 
         Args:
             qubits: The qubits to emit virtual gates on.
-            basis_ref: Unique identifier of this basis chancge.
+            basis_ref: Unique identifier of this basis change.
 
         Raises:
             SamplexBuildError: If a basis change with the same `basis_ref` but of different
