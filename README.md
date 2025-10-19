@@ -12,6 +12,10 @@ Samplomatic is a library that helps you sample randomizations of your quantum ci
 Pauli twirling a static circuit is the simplest example, but the types of randomization available are extensible by design—we hope that you will contribute your own weird groups!
 Beyond twirling, which is a primary use-case, this library also supports other types of randomization, such as sampling-based noise injection.
 
+## Documentation
+
+Documentation is hosted at <https://qiskit.github.io/samplomatic>.
+
 ## Installation
 
 You can install Samplomatic via pip from PyPI:
