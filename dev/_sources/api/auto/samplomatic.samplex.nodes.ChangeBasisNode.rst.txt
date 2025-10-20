@@ -1,24 +1,24 @@
-BasisTransformNode
-==================
+ChangeBasisNode
+===============
 
 .. currentmodule:: samplomatic.samplex.nodes
 
-.. autoclass:: BasisTransformNode
+.. autoclass:: ChangeBasisNode
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~BasisTransformNode.outgoing_register_type
+      ~ChangeBasisNode.outgoing_register_type
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~BasisTransformNode.get_style
-      ~BasisTransformNode.instantiates
-      ~BasisTransformNode.sample
+      ~ChangeBasisNode.get_style
+      ~ChangeBasisNode.instantiates
+      ~ChangeBasisNode.sample
 
    .. rubric:: Attributes Documentation
 

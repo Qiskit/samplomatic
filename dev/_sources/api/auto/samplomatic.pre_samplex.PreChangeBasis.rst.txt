@@ -1,25 +1,25 @@
-PreBasisTransform
-=================
+PreChangeBasis
+==============
 
 .. currentmodule:: samplomatic.pre_samplex
 
-.. autoclass:: PreBasisTransform
+.. autoclass:: PreChangeBasis
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~PreBasisTransform.basis_ref
-      ~PreBasisTransform.direction
-      ~PreBasisTransform.register_type
-      ~PreBasisTransform.subsystems
+      ~PreChangeBasis.basis_ref
+      ~PreChangeBasis.direction
+      ~PreChangeBasis.register_type
+      ~PreChangeBasis.subsystems
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~PreBasisTransform.get_style
+      ~PreChangeBasis.get_style
 
    .. rubric:: Attributes Documentation
 

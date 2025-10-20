@@ -1,17 +1,17 @@
-BasisTransformMode
-==================
+ChangeBasisMode
+===============
 
 .. currentmodule:: samplomatic.annotations
 
-.. autoclass:: BasisTransformMode
+.. autoclass:: ChangeBasisMode
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~BasisTransformMode.MEASURE
-      ~BasisTransformMode.PREPARE
+      ~ChangeBasisMode.MEASURE
+      ~ChangeBasisMode.PREPARE
 
    .. rubric:: Attributes Documentation
 

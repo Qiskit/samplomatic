@@ -1,9 +1,9 @@
-<map id="inheritancebcdccb8db2" name="inheritancebcdccb8db2">
+<map id="inheritance68c4ce4645" name="inheritance68c4ce4645">
 <area shape="rect" id="node1" href="https://docs.python.org/3/library/abc.html#abc.ABC" target="_top" title="Helper class that provides a standard way to create an ABC using" alt="" coords="5,138,70,161"/>
 <area shape="rect" id="node3" href="auto/samplomatic.samplex.nodes.SamplingNode.html#samplomatic.samplex.nodes.SamplingNode" target="_top" title="A node that produces samples." alt="" coords="117,94,222,117"/>
 <area shape="rect" id="node5" href="auto/samplomatic.samplex.nodes.CollectionNode.html#samplomatic.samplex.nodes.CollectionNode" target="_top" title="A node that collects register state for return." alt="" coords="115,160,224,183"/>
 <area shape="rect" id="node9" href="auto/samplomatic.samplex.nodes.EvaluationNode.html#samplomatic.samplex.nodes.EvaluationNode" target="_top" title="A node that evaluates on an existing register state." alt="" coords="113,294,226,317"/>
-<area shape="rect" id="node2" href="auto/samplomatic.samplex.nodes.BasisTransformNode.html#samplomatic.samplex.nodes.BasisTransformNode" target="_top" title="A node that instantiates a basis changing virtual register for a given measurement." alt="" coords="304,5,445,28"/>
+<area shape="rect" id="node2" href="auto/samplomatic.samplex.nodes.ChangeBasisNode.html#samplomatic.samplex.nodes.ChangeBasisNode" target="_top" title="A node that instantiates a basis changing virtual register for a given measurement." alt="" coords="311,5,437,28"/>
 <area shape="rect" id="node11" href="auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode" target="_top" title="A node that produces samples for injecting noise." alt="" coords="316,49,433,72"/>
 <area shape="rect" id="node20" href="auto/samplomatic.samplex.nodes.TwirlSamplingNode.html#samplomatic.samplex.nodes.TwirlSamplingNode" target="_top" title="A node that produces samples for twirling." alt="" coords="308,94,440,117"/>
 <area shape="rect" id="node4" href="auto/samplomatic.samplex.nodes.CollectTemplateValues.html#samplomatic.samplex.nodes.CollectTemplateValues" target="_top" title="Collects a register slice and writes corresponding template values to output." alt="" coords="297,183,451,206"/>

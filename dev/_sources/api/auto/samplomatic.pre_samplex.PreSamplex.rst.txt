@@ -16,16 +16,16 @@ PreSamplex
 
    .. autosummary::
 
-      ~PreSamplex.add_basis_transform_node
+      ~PreSamplex.add_change_basis_node
       ~PreSamplex.add_collect
       ~PreSamplex.add_collect_node
       ~PreSamplex.add_collect_z2_to_output_node
       ~PreSamplex.add_combine_node
       ~PreSamplex.add_dangler
-      ~PreSamplex.add_emit_meas_basis_transform
+      ~PreSamplex.add_emit_meas_basis_change
       ~PreSamplex.add_emit_noise_left
       ~PreSamplex.add_emit_noise_right
-      ~PreSamplex.add_emit_prep_basis_transform
+      ~PreSamplex.add_emit_prep_basis_change
       ~PreSamplex.add_emit_twirl
       ~PreSamplex.add_force_copy_nodes
       ~PreSamplex.add_inject_noise_node
@@ -56,16 +56,16 @@ PreSamplex
 
    .. rubric:: Methods Documentation
 
-   .. automethod:: add_basis_transform_node
+   .. automethod:: add_change_basis_node
    .. automethod:: add_collect
    .. automethod:: add_collect_node
    .. automethod:: add_collect_z2_to_output_node
    .. automethod:: add_combine_node
    .. automethod:: add_dangler
-   .. automethod:: add_emit_meas_basis_transform
+   .. automethod:: add_emit_meas_basis_change
    .. automethod:: add_emit_noise_left
    .. automethod:: add_emit_noise_right
-   .. automethod:: add_emit_prep_basis_transform
+   .. automethod:: add_emit_prep_basis_change
    .. automethod:: add_emit_twirl
    .. automethod:: add_force_copy_nodes
    .. automethod:: add_inject_noise_node
