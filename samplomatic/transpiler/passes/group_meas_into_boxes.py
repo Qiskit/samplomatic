@@ -40,7 +40,7 @@ class GroupMeasIntoBoxes(TransformationPass):
     box that they can fit.
 
     Args:
-        annotations: The annotations placed on the measurement boxe. The supported values are:
+        annotations: The annotations placed on the measurement boxes. The supported values are:
 
             * ``'twirl'`` for a :class:`~.Twirl` annotation.
             * ``'change_basis'`` for a :class:`~.ChangeBasis` annotation with mode
