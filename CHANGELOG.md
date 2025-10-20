@@ -19,7 +19,7 @@
 - Converted `samplomatic.tensor_interface.Specification` to an abstract class. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
 - Changed `samplomatic.samplex.interfaces.SamplexOutput` to not construct empty data arrays on construction, it is now the caller's responsibility to populate the data. This does not affect users of `Samplex.sample()`. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
 - The format returned by `samplomatic.samplex.samplex_serialization.samplex_to_json()` changed to accomodate the absense of noise requirements, and it (and the reverse function `samplex_from_json()`) are not backwards compatible with the previous minor version. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
-- Renamed `samplomatic.BasisTransform` to `samplomatic.ChangeBasis` in order to make all annotations start with a verb, and to consolodate all names around "change" rather than "transform". Likewise, renamed `samplomatic.samplex.nodes.BasisTransformNode` to `samplomatic.samplex.nodes.ChangeBasisNode`.
+- Renamed `samplomatic.BasisTransform` to `samplomatic.ChangeBasis` in order to make all annotations start with a verb, and to consolidate all names around "change" rather than "transform". Likewise, renamed `samplomatic.samplex.nodes.BasisTransformNode` to `samplomatic.samplex.nodes.ChangeBasisNode`.
 - Renamed string literal option for from `"basis_transform"` to `"change_basis"` in both `samplomatic.transpiler.generate_boxing_pass_manager` and `samplomatic.transpiler.passes.GroupMeasIntoBoxes`. ([#172](https://github.com/Qiskit/samplomatic/issues/172))
 
 ### Fixed
