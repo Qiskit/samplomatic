@@ -1,0 +1,19 @@
+DecompositionMode
+=================
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: DecompositionMode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~DecompositionMode.RZRX
+      ~DecompositionMode.RZSX
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: RZRX
+   .. autoattribute:: RZSX
