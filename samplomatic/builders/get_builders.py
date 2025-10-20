@@ -20,8 +20,8 @@ from qiskit.circuit import Annotation, Qubit
 
 from ..aliases import CircuitInstruction, TypeAlias
 from ..annotations import (
-    BasisTransform,
-    BasisTransformMode,
+    ChangeBasis,
+    ChangeBasisMode,
     DressingMode,
     InjectNoise,
     Twirl,
@@ -92,28 +92,28 @@ def get_builders(
     return RightBoxTemplateBuilder(collection), RightBoxSamplexBuilder(collection, emission)
 
 
-def basis_transform_parser(
-    basis_transform: BasisTransform,
+def change_basis_parser(
+    change_basis: ChangeBasis,
     collection: CollectionSpec,
     emission: EmissionSpec,
 ):
-    """Parse a basis transform annotation by mutating emission and collection specs.
+    """Parse a basis change annotation by mutating emission and collection specs.
 
     Args:
-        basis_transform: The basis transform annotation to parse.
+        change_basis: The basis change annotation to parse.
         collection: The collection spec to modify.
         emission: The emission spec to modify.
 
     Raises:
         BuildError: If `dressing` is already specified on one of the specs and is incompatible
-            with the basis transform mode.
+            with the basis change mode.
         BuildError: If `synth` is already specified on the `collection` and not equal to the
-            synth corresponding to `basis_transform.decomposition`.
+            synth corresponding to `change_basis.decomposition`.
     """
     emission.basis_register_type = VirtualType.U2
-    emission.basis_ref = basis_transform.ref
+    emission.basis_ref = change_basis.ref
 
-    synth = get_synth(basis_transform.decomposition)
+    synth = get_synth(change_basis.decomposition)
     if (current_synth := collection.synth) is not None:
         if synth != current_synth:
             raise BuildError(
@@ -124,13 +124,13 @@ def basis_transform_parser(
 
     dressing = (
         DressingMode.LEFT
-        if (mode := basis_transform.mode) is BasisTransformMode.MEASURE
+        if (mode := change_basis.mode) is ChangeBasisMode.MEASURE
         else DressingMode.RIGHT
     )
     if (current_dressing := collection.dressing) is not None:
         if dressing != current_dressing:
             raise BuildError(
-                f"Cannot use {mode} basis transform with another annotation that uses "
+                f"Cannot use {mode} basis change with another annotation that uses "
                 f"{current_dressing}."
             )
     else:
@@ -193,4 +193,4 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
 
 SUPPORTED_ANNOTATIONS: dict[
     Annotation, Callable[[type[Annotation], CollectionSpec, EmissionSpec], None]
-] = {BasisTransform: basis_transform_parser, Twirl: twirl_parser, InjectNoise: inject_noise_parser}
+] = {ChangeBasis: change_basis_parser, Twirl: twirl_parser, InjectNoise: inject_noise_parser}

@@ -10,15 +10,15 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for BasisTransformNode"""
+"""Tests for ChangeBasisNode"""
 
 import numpy as np
 import pytest
 from qiskit.circuit.library import HGate, IGate
 
 from samplomatic.annotations import VirtualType
-from samplomatic.samplex.nodes import BasisTransformNode
-from samplomatic.samplex.nodes.basis_transform_node import (
+from samplomatic.samplex.nodes import ChangeBasisNode
+from samplomatic.samplex.nodes.change_basis_node import (
     MEAS_PAULI_BASIS,
     PREP_PAULI_BASIS,
     BasisChange,
@@ -64,18 +64,18 @@ class TestBasisChange:
         assert np.allclose(np.absolute(meas_basis @ basis), np.eye(2))
 
 
-class TestBasisTransformNode:
-    """Tests for BasisTransformNode"""
+class TestChangeBasisNode:
+    """Tests for ChangeBasisNode"""
 
     def test_construction(self):
         """Test attributes from construction."""
-        basis_change = BasisTransformNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
         assert basis_change.instantiates() == {"basis_change": (3, VirtualType.U2)}
         assert basis_change.outgoing_register_type is VirtualType.U2
 
     def test_sample(self):
         """Test evaluation of the node."""
-        basis_change = BasisTransformNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
         samplex_input = TensorInterface([TensorSpecification("measure", (3,), np.uint8)])
         registers = {}
 

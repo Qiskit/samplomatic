@@ -10,18 +10,18 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BasisTransform"""
+"""ChangeBasis"""
 
 from __future__ import annotations
 
 from qiskit.circuit import Annotation
 
 from ..aliases import StrRef
-from .basis_transform_mode import BasisTransformLiteral, BasisTransformMode
+from .change_basis_mode import ChangeBasisLiteral, ChangeBasisMode
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 
 
-class BasisTransform(Annotation):
+class ChangeBasis(Annotation):
     """Directive to add basis changing gates.
 
     The resulting :class:`~.Samplex` built from a circuit with a box with this annotation has
@@ -32,26 +32,26 @@ class BasisTransform(Annotation):
     Args:
         decomposition: How to decompose basis changing gates.
         mode: Whether to add gates to prepare or measure in a given basis.
-        ref: A unique identifier of this basis transform. If ``None``, it is set to ``mode.value``.
+        ref: A unique identifier of this basis change. If ``None``, it is set to ``mode.value``.
     """
 
-    namespace = "samplomatic.basis_transform"
+    namespace = "samplomatic.change_basis"
 
     __slots__ = ("decomposition", "mode", "ref")
 
     def __init__(
         self,
         decomposition: DecompositionLiteral = DecompositionMode.RZSX,
-        mode: BasisTransformLiteral = BasisTransformMode.MEASURE,
+        mode: ChangeBasisLiteral = ChangeBasisMode.MEASURE,
         ref: StrRef | None = None,
     ):
         self.decomposition = DecompositionMode(decomposition)
-        self.mode = BasisTransformMode(mode)
+        self.mode = ChangeBasisMode(mode)
         self.ref = ref or self.mode.value
 
     def __eq__(self, other):
         return (
-            isinstance(other, BasisTransform)
+            isinstance(other, ChangeBasis)
             and self.decomposition == other.decomposition
             and self.mode == other.mode
             and self.ref == other.ref

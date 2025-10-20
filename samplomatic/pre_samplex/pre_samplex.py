@@ -58,7 +58,7 @@ from ..graph_utils import (
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from ..samplex import Samplex
 from ..samplex.nodes import (
-    BasisTransformNode,
+    ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
@@ -71,7 +71,7 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.basis_transform_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from ..samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
 from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
@@ -81,7 +81,7 @@ from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecificatio
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
-    PreBasisTransform,
+    PreChangeBasis,
     PreCollect,
     PreEdge,
     PreEmit,
@@ -158,8 +158,8 @@ class PreSamplex:
         pauli_lindblad_map_count: A count of the total number of Pauli Lindblad maps.
         pauli_lindblad_maps: A map from unique identifiers of Pauli Lindblad maps to the number of
             systems the map acts on.
-        basis_transforms: A map from unique identifiers of basis transforms to the number of
-            subsystems in that basis transform.
+        basis_changes: A map from unique identifiers of basis changes to the number of
+            subsystems in that basis change.
         twirled_clbits: A set of all classical bit indices which were previously twirled in the
             circuit.
         passthrough_params: List of :class:`~.ParamSpec` for parameters which exist in the template
@@ -180,7 +180,7 @@ class PreSamplex:
         pauli_lindblad_map_count: count | None = None,
         pauli_lindblad_maps: dict[str, NumSubsystems] | None = None,
         noise_modifiers: dict[str, set[str]] | None = None,
-        basis_transforms: dict[str, int] | None = None,
+        basis_changes: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
         forced_copy_node_idxs: set[NodeIndex] | None = None,
@@ -199,7 +199,7 @@ class PreSamplex:
         )
         self._pauli_lindblad_maps = {} if pauli_lindblad_maps is None else pauli_lindblad_maps
         self._noise_modifiers = defaultdict(set) if noise_modifiers is None else noise_modifiers
-        self._basis_transforms = {} if basis_transforms is None else basis_transforms
+        self._basis_changes = {} if basis_changes is None else basis_changes
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
         self.passthrough_params: ParamSpec = (
             [] if passthrough_params is None else passthrough_params
@@ -226,7 +226,7 @@ class PreSamplex:
             self._pauli_lindblad_map_count,
             self._pauli_lindblad_maps,
             self._noise_modifiers,
-            self._basis_transforms,
+            self._basis_changes,
             self._twirled_clbits,
             self.passthrough_params,
             self._forced_copy_node_idxs,
@@ -679,56 +679,56 @@ class PreSamplex:
         )
         return self._add_emit_right(node)
 
-    def add_emit_meas_basis_transform(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
+    def add_emit_meas_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
         """Add a node that emits virtual gates left to measure in a basis.
 
         Args:
             qubits: The qubits to emit virtual gates on.
-            basis_ref: Unique identifier of this basis transform.
+            basis_ref: Unique identifier of this basis change.
 
         Raises:
-            SamplexBuildError: If a basis transform with the same `basis_ref` but of different
+            SamplexBuildError: If a basis change with the same `basis_ref` but of different
                 length has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._basis_transforms.get(basis_ref)) and num_subsys != len(qubits):
+        if (num_subsys := self._basis_changes.get(basis_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add basis transform `{basis_ref}` on `{qubits}` and a "
+                f"Cannot add basis change `{basis_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
-            self._basis_transforms[basis_ref] = len(qubits)
+            self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreBasisTransform(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
+        node = PreChangeBasis(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
         return self._add_emit_left(node)
 
-    def add_emit_prep_basis_transform(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
+    def add_emit_prep_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
         """Add a node that emits virtual gates right to prepare a basis.
 
         Args:
             qubits: The qubits to emit virtual gates on.
-            basis_ref: Unique identifier of this basis transformation.
+            basis_ref: Unique identifier of this basis change.
 
         Raises:
-            SamplexBuildError: If a basis transform with the same `basis_ref` but of different
+            SamplexBuildError: If a basis change with the same `basis_ref` but of different
                 length has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._basis_transforms.get(basis_ref)) and num_subsys != len(qubits):
+        if (num_subsys := self._basis_changes.get(basis_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add basis transform `{basis_ref}` on `{qubits}` and a "
+                f"Cannot add basis change `{basis_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
-            self._basis_transforms[basis_ref] = len(qubits)
+            self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreBasisTransform(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
+        node = PreChangeBasis(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
         return self._add_emit_right(node)
 
     def add_propagate(self, instr: CircuitInstruction, spec: InstructionSpec):
@@ -1034,8 +1034,8 @@ class PreSamplex:
         for topological_idx, pre_node_idx in enumerate(topological_sort(self.graph)):
             pre_node = self.graph[pre_node_idx]
             order[pre_node_idx] = topological_idx
-            if isinstance(pre_node, PreBasisTransform):
-                self.add_basis_transform_node(
+            if isinstance(pre_node, PreChangeBasis):
+                self.add_change_basis_node(
                     samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
                 )
             elif isinstance(pre_node, PreInjectNoise):
@@ -1084,7 +1084,7 @@ class PreSamplex:
                 )
             )
 
-        for basis_ref, length in self._basis_transforms.items():
+        for basis_ref, length in self._basis_changes.items():
             samplex.add_input(
                 TensorSpecification(
                     f"basis_changes.{basis_ref}",
@@ -1160,7 +1160,7 @@ class PreSamplex:
 
         return samplex
 
-    def add_basis_transform_node(
+    def add_change_basis_node(
         self,
         samplex: Samplex,
         pre_basis_idx: NodeIndex,
@@ -1172,16 +1172,16 @@ class PreSamplex:
 
         Args:
             samplex: The samplex to add nodes to.
-            pre_basis_idx: The index of the pre-basis node to turn into a basis transform node.
+            pre_basis_idx: The index of the pre-basis node to turn into a basis change node.
             pre_nodes_to_nodes: A map from pre-node indices to node indices.
             order: A map from pre-node indices to integers representing their position in a
                 topological sort of the samplex state graph.
             register_names: A map such that ``register_names[a][b]`` is the name of the register
                 implied by the edge (a, b) in the samplex state graph.
         """
-        pre_basis = cast(PreBasisTransform, self.graph[pre_basis_idx])
+        pre_basis = cast(PreChangeBasis, self.graph[pre_basis_idx])
         reg_idx = order[pre_basis_idx]
-        node = BasisTransformNode(
+        node = ChangeBasisNode(
             reg_name := f"basis_change_{reg_idx}",
             MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS,
             "basis_changes." + pre_basis.basis_ref,

@@ -16,13 +16,13 @@ import numpy as np
 from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
 
-from samplomatic.annotations import BasisTransform, Twirl
+from samplomatic.annotations import ChangeBasis, Twirl
 from samplomatic.builders import pre_build
 
 
 def make_circuits():
     circuit = QuantumCircuit(1)
-    with circuit.box([BasisTransform()]):
+    with circuit.box([ChangeBasis()]):
         circuit.measure_all()
 
     expected = QuantumCircuit(1)
@@ -43,7 +43,7 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "z_basis_measure"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([BasisTransform(mode="prepare")]):
+    with circuit.box([ChangeBasis(mode="prepare")]):
         circuit.noop(0)
 
     expected = QuantumCircuit(1)
@@ -64,7 +64,7 @@ def make_circuits():
     yield (circuit, expected, {"prepare": pauli}), "z_basis_prepare"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([BasisTransform()]):
+    with circuit.box([ChangeBasis()]):
         circuit.rx(np.pi / 4, 0)
         circuit.measure_all()
 
@@ -76,7 +76,7 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "x_basis_sq_gate_measure"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([BasisTransform(mode="prepare")]):
+    with circuit.box([ChangeBasis(mode="prepare")]):
         circuit.rx(np.pi / 4, 0)
 
     expected = QuantumCircuit(1)
@@ -87,7 +87,7 @@ def make_circuits():
     yield (circuit, expected, {"prepare": pauli}), "x_basis_sq_gate_prepare"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([BasisTransform(), Twirl()]):
+    with circuit.box([ChangeBasis(), Twirl()]):
         circuit.rx(np.pi / 4, 0)
 
     with circuit.box([Twirl(dressing="right")]):
@@ -104,7 +104,7 @@ def make_circuits():
     with circuit.box([Twirl()]):
         circuit.noop(0)
 
-    with circuit.box([BasisTransform(mode="prepare"), Twirl(dressing="right")]):
+    with circuit.box([ChangeBasis(mode="prepare"), Twirl(dressing="right")]):
         circuit.rx(np.pi / 4, 0)
 
     expected = QuantumCircuit(1)
@@ -115,7 +115,7 @@ def make_circuits():
     yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare"
 
     circuit = QuantumCircuit(2)
-    with circuit.box([BasisTransform()]):
+    with circuit.box([ChangeBasis()]):
         circuit.noop(0, 1)
 
     expected = QuantumCircuit(2)
@@ -126,9 +126,9 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "xx_basis"
 
     circuit = QuantumCircuit(2)
-    with circuit.box([BasisTransform(ref="my_basis0")]):
+    with circuit.box([ChangeBasis(ref="my_basis0")]):
         circuit.noop(0, 1)
-    with circuit.box([BasisTransform(ref="my_basis1")]):
+    with circuit.box([ChangeBasis(ref="my_basis1")]):
         circuit.noop(0, 1)
 
     expected = QuantumCircuit(2)
@@ -145,12 +145,12 @@ def make_circuits():
     )
 
     circuit = QuantumCircuit(1)
-    with circuit.box([BasisTransform(mode="prepare", ref="my_basis")]):
+    with circuit.box([ChangeBasis(mode="prepare", ref="my_basis")]):
         circuit.noop(0)
 
     circuit.z(0)
 
-    with circuit.box([BasisTransform(ref="my_basis")]):
+    with circuit.box([ChangeBasis(ref="my_basis")]):
         circuit.noop(0)
 
     expected = QuantumCircuit(1)
@@ -164,14 +164,14 @@ def make_circuits():
     expected.h(0)
     for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
-        with circuit.box([BasisTransform(mode="prepare")]):
+        with circuit.box([ChangeBasis(mode="prepare")]):
             circuit.noop(*perm)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
     for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
         circuit = QuantumCircuit(3)
-        box_op = BoxOp(QuantumCircuit(3), annotations=[BasisTransform(mode="prepare")])
+        box_op = BoxOp(QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare")])
         circuit.append(box_op, perm)
         expected = QuantumCircuit(3)
         expected.h(idx)
@@ -181,10 +181,10 @@ def make_circuits():
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
         args, descriptions = zip(*make_circuits())
-        metafunc.parametrize("circuit,expected,basis_transforms", list(args), ids=descriptions)
+        metafunc.parametrize("circuit,expected,basis_changes", list(args), ids=descriptions)
 
 
-def test_sampling(circuit, expected, basis_transforms, save_plot):
+def test_sampling(circuit, expected, basis_changes, save_plot):
     """Test sampling.
 
     Casts the given ``circuit`` and the twirled circuit into operators, and it compares their
@@ -201,7 +201,7 @@ def test_sampling(circuit, expected, basis_transforms, save_plot):
     save_plot(lambda: samplex_state.draw(), "Finalized Pre-Samplex", delayed=True)
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
-    samplex_input = samplex.inputs().bind(basis_changes=basis_transforms)
+    samplex_input = samplex.inputs().bind(basis_changes=basis_changes)
     samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 

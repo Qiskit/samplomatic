@@ -13,7 +13,7 @@
 """Pre-Samplex"""
 
 from .graph_data import (
-    PreBasisTransform,
+    PreChangeBasis,
     PreCollect,
     PreEdge,
     PreEmit,
