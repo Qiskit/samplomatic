@@ -1,0 +1,23 @@
+VirtualType
+===========
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: VirtualType
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~VirtualType.C1
+      ~VirtualType.PAULI
+      ~VirtualType.U2
+      ~VirtualType.Z2
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: C1
+   .. autoattribute:: PAULI
+   .. autoattribute:: U2
+   .. autoattribute:: Z2

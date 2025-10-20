@@ -1,0 +1,91 @@
+PreSamplex
+==========
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreSamplex
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreSamplex.max_param_idx
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreSamplex.add_change_basis_node
+      ~PreSamplex.add_collect
+      ~PreSamplex.add_collect_node
+      ~PreSamplex.add_collect_z2_to_output_node
+      ~PreSamplex.add_combine_node
+      ~PreSamplex.add_dangler
+      ~PreSamplex.add_emit_meas_basis_change
+      ~PreSamplex.add_emit_noise_left
+      ~PreSamplex.add_emit_noise_right
+      ~PreSamplex.add_emit_prep_basis_change
+      ~PreSamplex.add_emit_twirl
+      ~PreSamplex.add_force_copy_nodes
+      ~PreSamplex.add_inject_noise_node
+      ~PreSamplex.add_propagate
+      ~PreSamplex.add_propagate_node
+      ~PreSamplex.add_twirl_sampling_node
+      ~PreSamplex.add_z2_collect
+      ~PreSamplex.draw
+      ~PreSamplex.enforce_no_propagation
+      ~PreSamplex.finalize
+      ~PreSamplex.find_danglers
+      ~PreSamplex.find_then_remove_danglers
+      ~PreSamplex.get_all_danglers
+      ~PreSamplex.merge_parallel_pre_propagate_nodes
+      ~PreSamplex.prune_prenodes_unreachable_from_emission
+      ~PreSamplex.qubits_to_indices
+      ~PreSamplex.remap
+      ~PreSamplex.remove_force_copy_nodes
+      ~PreSamplex.set_all_danglers
+      ~PreSamplex.sorted_predecessor_idxs
+      ~PreSamplex.subgraphs
+      ~PreSamplex.validate_no_rightward_danglers
+      ~PreSamplex.verify_no_twirled_clbits
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: max_param_idx
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: add_change_basis_node
+   .. automethod:: add_collect
+   .. automethod:: add_collect_node
+   .. automethod:: add_collect_z2_to_output_node
+   .. automethod:: add_combine_node
+   .. automethod:: add_dangler
+   .. automethod:: add_emit_meas_basis_change
+   .. automethod:: add_emit_noise_left
+   .. automethod:: add_emit_noise_right
+   .. automethod:: add_emit_prep_basis_change
+   .. automethod:: add_emit_twirl
+   .. automethod:: add_force_copy_nodes
+   .. automethod:: add_inject_noise_node
+   .. automethod:: add_propagate
+   .. automethod:: add_propagate_node
+   .. automethod:: add_twirl_sampling_node
+   .. automethod:: add_z2_collect
+   .. automethod:: draw
+   .. automethod:: enforce_no_propagation
+   .. automethod:: finalize
+   .. automethod:: find_danglers
+   .. automethod:: find_then_remove_danglers
+   .. automethod:: get_all_danglers
+   .. automethod:: merge_parallel_pre_propagate_nodes
+   .. automethod:: prune_prenodes_unreachable_from_emission
+   .. automethod:: qubits_to_indices
+   .. automethod:: remap
+   .. automethod:: remove_force_copy_nodes
+   .. automethod:: set_all_danglers
+   .. automethod:: sorted_predecessor_idxs
+   .. automethod:: subgraphs
+   .. automethod:: validate_no_rightward_danglers
+   .. automethod:: verify_no_twirled_clbits
