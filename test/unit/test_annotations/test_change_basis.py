@@ -41,3 +41,8 @@ def test_hash():
     assert hash(ChangeBasis()) != hash(ChangeBasis(decomposition="rzrx"))
     assert hash(ChangeBasis()) != hash(ChangeBasis(mode="prepare"))
     assert hash(ChangeBasis()) != hash(ChangeBasis(ref="ref"))
+
+
+def test_repr():
+    """Test repr."""
+    assert repr(ChangeBasis()) == "ChangeBasis(decomposition='rzsx', mode='measure', ref='measure')"

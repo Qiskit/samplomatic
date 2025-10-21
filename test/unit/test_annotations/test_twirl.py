@@ -44,3 +44,8 @@ def test_hash():
     assert hash(Twirl()) != hash("hey")
     assert hash(Twirl()) != hash(Twirl(decomposition="rzrx"))
     assert hash(Twirl()) != hash(Twirl(dressing="right"))
+
+
+def test_repr():
+    """Test repr."""
+    assert repr(Twirl()) == "Twirl(group='pauli', dressing='left', decomposition='rzsx')"
