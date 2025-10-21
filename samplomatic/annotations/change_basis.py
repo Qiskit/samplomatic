@@ -59,3 +59,9 @@ class ChangeBasis(Annotation):
 
     def __hash__(self):
         return hash((self.decomposition, self.mode, self.ref))
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(decomposition='{self.decomposition.name.lower()}', "
+            f"mode='{self.mode.name.lower()}', ref='{self.ref}')"
+        )
