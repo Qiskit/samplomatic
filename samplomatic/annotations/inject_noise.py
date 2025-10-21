@@ -50,4 +50,4 @@ class InjectNoise(Annotation):
         return hash((self.ref, self.modifier_ref))
 
     def __repr__(self):
-        return f"{type(self).__name__}(ref='{self.ref}', modifier_ref={self.modifier_ref})"
+        return f"{type(self).__name__}(ref='{self.ref}', modifier_ref={self.modifier_ref!r})"
