@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/Qiskit/samplomatic/tree/0.10.1) - 2025-10-22
+
+### Fixed
+
+- Fixed a bug where the `build()` process was mishandling an optimization step in the case the base circuit contains multiple `rx` (or `rz`) gates in the same layer with distinct bound numeric values (e.g. `circuit.rx(0.123, 0)`). ([#179](https://github.com/Qiskit/samplomatic/issues/179))
+
+
 ## [0.10.0](https://github.com/Qiskit/samplomatic/tree/0.10.0) - 2025-10-20
 
 ### Removed
