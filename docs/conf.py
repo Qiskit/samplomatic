@@ -101,7 +101,9 @@ html_theme_options = {
 html_last_updated_fmt = "%Y/%m/%d"
 html_title = f"{project} {release}"
 html_context = {
-    "version_list": [],  # TODO: dynamically populate this with previous versions that have docs
+    "version_list": [
+        "0.10.0"
+    ],  # TODO: dynamically populate this with previous versions that have docs
 }
 docs_url_prefix = "samplomatic"
 
