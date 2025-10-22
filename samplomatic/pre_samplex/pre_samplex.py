@@ -827,6 +827,7 @@ class PreSamplex:
             are part of the same generation, and have identical directions and operation names, and
             have predecessors in common.
         """
+        fractional = {"rx", "rz"}
         for generation in topological_generations(self.graph):
             for node_idxs in self._cluster_pre_propagate_nodes(generation):
                 if len(node_idxs) == 1:
@@ -834,6 +835,15 @@ class PreSamplex:
                     continue
 
                 nodes = [self.graph[node_idx] for node_idx in node_idxs]
+
+                if any(
+                    node.operation.name in fractional and not node.operation.is_parameterized()
+                    for node in nodes
+                ):
+                    # TODO: for now, merging is not allowed for rx and rz gates when they specify
+                    # numerical values. there's nothing technically more difficult about this
+                    # than the parametric case, we just don't support it yet in this optimization.
+                    continue
 
                 combined_subsystems = QubitIndicesPartition.union(
                     *(node.subsystems for node in nodes)
