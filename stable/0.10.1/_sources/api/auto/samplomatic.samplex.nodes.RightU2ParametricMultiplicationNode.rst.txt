@@ -1,0 +1,17 @@
+RightU2ParametricMultiplicationNode
+===================================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: RightU2ParametricMultiplicationNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~RightU2ParametricMultiplicationNode.evaluate
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate

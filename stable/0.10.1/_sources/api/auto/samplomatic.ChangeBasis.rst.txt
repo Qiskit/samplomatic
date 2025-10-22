@@ -1,0 +1,31 @@
+﻿samplomatic.ChangeBasis
+=======================
+
+.. currentmodule:: samplomatic
+
+.. autoclass:: ChangeBasis
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ChangeBasis.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ChangeBasis.decomposition
+      ~ChangeBasis.mode
+      ~ChangeBasis.ref
+      ~ChangeBasis.namespace
+   
+   

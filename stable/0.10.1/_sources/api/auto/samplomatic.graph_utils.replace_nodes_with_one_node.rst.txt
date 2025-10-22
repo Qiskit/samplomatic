@@ -1,0 +1,6 @@
+replace_nodes_with_one_node
+===========================
+
+.. currentmodule:: samplomatic.graph_utils
+
+.. autofunction:: replace_nodes_with_one_node

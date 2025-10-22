@@ -1,0 +1,430 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "157f8340",
+   "metadata": {},
+   "source": [
+    "# Transpiler\n",
+    "\n",
+    "The {func}`~.generate_boxing_pass_manager` function is a flexible and convenient tool to\n",
+    "build a {class}`qiskit.transpiler.PassManager` able to group the circuit instructions into annotated boxes.\n",
+    "Whether you want to automate your workflow, you are interested in trying different boxing strategies for your\n",
+    "circuits, or you simply want a quick and easy alternative to grouping and annotating by hand,\n",
+    "{func}`~.generate_boxing_pass_manager` can help you achieve your goals.\n",
+    "\n",
+    "This guide illustrates how to use {func}`~.generate_boxing_pass_manager` and its arguments.\n",
+    "To highlight the effects of each of the function's arguments, in the sections that follow we will mainly target\n",
+    "the circuit below."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0fd32ec9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qiskit.circuit import Parameter, QuantumCircuit\n",
+    "\n",
+    "circuit = QuantumCircuit(4, 7)\n",
+    "circuit.h(1)\n",
+    "circuit.h(2)\n",
+    "circuit.cz(1, 2)\n",
+    "circuit.h(1)\n",
+    "circuit.cx(1, 0)\n",
+    "circuit.cx(2, 3)\n",
+    "circuit.measure(range(1, 4), range(3))\n",
+    "circuit.cx(0, 1)\n",
+    "circuit.cx(1, 2)\n",
+    "circuit.cx(2, 3)\n",
+    "for qubit in range(4):\n",
+    "    circuit.rz(Parameter(f\"th_{qubit}\"), qubit)\n",
+    "    circuit.rx(Parameter(f\"phi_{qubit}\"), qubit)\n",
+    "    circuit.rz(Parameter(f\"lam_{qubit}\"), qubit)\n",
+    "circuit.measure(range(4), range(3, 7))\n",
+    "\n",
+    "circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "68eb58a7",
+   "metadata": {},
+   "source": [
+    "## Group operations into boxes\n",
+    "\n",
+    "The argument ``enable_gates`` can be set to ``True`` or ``False`` to specify whether the two-qubit gates should be grouped into\n",
+    "boxes. Similarly, ``enable_measures`` allows specifying whether or not measurements should be grouped. The following\n",
+    "snippet shows an example where both gates and measurements are grouped."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "131713bb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from samplomatic.transpiler import generate_boxing_pass_manager\n",
+    "\n",
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=True,\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "44fa764d",
+   "metadata": {},
+   "source": [
+    "As can be seen in the figure, the pass manager creates boxes of two types: those that contain a single layer of\n",
+    "two-qubit gates, and those that contain a single layer of measurements. This separation reflects standard practices\n",
+    "in noise learning and mitigation protocols, which usually target layers of homogeneous operations. The two-qubit gates\n",
+    "and measurements are placed in the leftmost box that can accommodate them, and every single-qubit gates is placed in\n",
+    "the same box as the two-qubit gate or measurement they preceed.\n",
+    "\n",
+    "The following snippet shows another example where ``enable_gates`` is set to ``False``. As can be seen, the two-qubit\n",
+    "gates are not grouped into boxes, nor are the single-qubit gates that preceed them."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8d71e0ae",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=False,\n",
+    "    enable_measures=True,\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ef3b1822",
+   "metadata": {},
+   "source": [
+    "## Choose how to dress your boxes\n",
+    "\n",
+    "All the two-qubit gates and measurement boxes in the returned circuit own left-dressed annotations. In particular,\n",
+    "all the boxes that contain two-qubit gates are annotated with a {class}`.~Twirl`, while for measurement boxes, users can\n",
+    "choose between {class}`.~Twirl`, {class}`.~BasisTranform` (with ``mode`` aset to ``\"measure\"``), or both. The following code\n",
+    "generates a circuit where the all the boxes are twirled, and the measurement boxes are additionally annotated with\n",
+    "{class}`.~BasisTranform`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4463773b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=True,\n",
+    "    measure_annotations=\"all\",\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "93aaa255",
+   "metadata": {},
+   "source": [
+    "## Prepare your circuit for noise injection\n",
+    "\n",
+    "The ``inject_noise_targets`` allows specifying what boxes should receive an {class}`.~InjectNoise` annotation. As an example,\n",
+    "the following snippet generates a circuit where the two-qubit gates boxes own an {class}`.~InjectNoise` annotation but the\n",
+    "measurement boxes do not."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3938bee5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=True,\n",
+    "    inject_noise_targets=\"gates\",\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "78eb28df",
+   "metadata": {},
+   "source": [
+    "If a circuit contains two or more boxes that are equivalent up to single-qubit gates, all of them are annotated with\n",
+    "an {class}`.~InjectNoise` annotation with the same ``ref``. Thus, the number of unique ``ref``s in the returned\n",
+    "circuit is equal to the number of unique boxes, with uniqueness defined up to single-qubit gates.\n",
+    "\n",
+    "By selecting the appropriate value for ``inject_noise_strategy``, users can decide whether the {class}`.~InjectNoise` annotations\n",
+    "should have:\n",
+    "\n",
+    "* ``modifier_ref=''``, recommended when modifying the noise maps prior to sampling from them is not required,\n",
+    "* ``modifier_ref=ref``, recommended when all the noise maps need to be scaled uniformly by the same factor, or\n",
+    "* a unique value of ``modifier_ref``, recommended when every noise map needs to be scaled by a different factor.\n",
+    "\n",
+    "The following code generates a circuit where the two-qubit gates boxes own an {class}`.~InjectNoise` annotation with unique\n",
+    "values of ``modifier_ref``."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0074b400",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=True,\n",
+    "    inject_noise_targets=\"gates\",\n",
+    "    inject_noise_strategy=\"individual_modification\",\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "345b2bef",
+   "metadata": {},
+   "source": [
+    "## Specify how to treat barriers\n",
+    "\n",
+    "By default, barriers are removed from the circuit prior to grouping the operations, as shown in the following\n",
+    "snippet."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "feeb0d86",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "circuit_with_barrier = QuantumCircuit(4)\n",
+    "circuit_with_barrier.cz(0, 1)\n",
+    "circuit_with_barrier.barrier()\n",
+    "circuit_with_barrier.cz(2, 3)\n",
+    "circuit_with_barrier.measure_all()\n",
+    "\n",
+    "boxing_pass_manager = generate_boxing_pass_manager()\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit_with_barrier)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a6836f68",
+   "metadata": {},
+   "source": [
+    "Setting ``remove_barriers`` to ``False`` allows preserving the barriers."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c4e56681",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    remove_barriers=False,\n",
+    ")\n",
+    "\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit_with_barrier)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d884ef33",
+   "metadata": {},
+   "source": [
+    "Notice that when two gates are separated by a barrier, setting ``remove_barriers`` to ``True`` potentially\n",
+    "allows them to be placed into the same box. However, if ``remove_barriers`` is set to ``False``, they are\n",
+    "sure to be placed into different boxes. Thus, choosing to preserve the barriers guarantees that the\n",
+    "alignment and schedule of gates in the input circuit are respected, but it generally results in circuits\n",
+    "with larger depths."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d622fa1c",
+   "metadata": {},
+   "source": [
+    "## Incorporate Samplomatic's pass manager into `Qiskit`'s preset pass managers\n",
+    "\n",
+    "The code below shows how to incorporate {func}`~.generate_boxing_pass_manager` into one of Qiskit's preset pass managers. The transpiled circuit is ISA and contains boxes."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5e8f1b0a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qiskit.transpiler import generate_preset_pass_manager\n",
+    "\n",
+    "preset_pass_manager = generate_preset_pass_manager(\n",
+    "    basis_gates=[\"rz\", \"sx\", \"cx\"],\n",
+    "    coupling_map=[[0, 1], [1, 2]],\n",
+    "    optimization_level=0,\n",
+    ")\n",
+    "boxing_pass_manager = generate_boxing_pass_manager()\n",
+    "\n",
+    "# Run the boxing pass manager after the scheduling stage\n",
+    "preset_pass_manager.post_scheduling = boxing_pass_manager\n",
+    "\n",
+    "circuit = QuantumCircuit(3)\n",
+    "circuit.h(0)\n",
+    "circuit.cx(0, 1)\n",
+    "circuit.cx(0, 2)\n",
+    "circuit.measure_all()\n",
+    "\n",
+    "transpiled_circuit = preset_pass_manager.run(circuit)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "315671b2",
+   "metadata": {},
+   "source": [
+    "## Build your circuit\n",
+    "\n",
+    "Every pass manager produced by {func}`~.generate_boxing_pass_manager` returns\n",
+    "circuits that can be successfully turned into a template/samplex pair by {func}`~.build`. As an\n",
+    "example, the following code calls the {func}`~.build` function on a circuit produced by a boxing pass\n",
+    "manager."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed34cc47",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from samplomatic import build\n",
+    "\n",
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=True,\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit)\n",
+    "\n",
+    "template, samplex = build(transpiled_circuit)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c8395c86",
+   "metadata": {},
+   "source": [
+    "In order to ensure that any transpiled circuit can be successfully built, the pass managers know how to\n",
+    "include additional boxes when they are needed. As an example, consider the circuit below, which ends with an\n",
+    "unmeasured qubit ``0``."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "76fbe38c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "circuit_with_unmeasured_qubit = QuantumCircuit(4, 3)\n",
+    "circuit_with_unmeasured_qubit.cz(0, 1)\n",
+    "circuit_with_unmeasured_qubit.cz(2, 3)\n",
+    "for qubit in range(4):\n",
+    "    circuit_with_unmeasured_qubit.rz(Parameter(f\"th_{qubit}\"), qubit)\n",
+    "    circuit_with_unmeasured_qubit.rx(Parameter(f\"phi_{qubit}\"), qubit)\n",
+    "    circuit_with_unmeasured_qubit.rz(Parameter(f\"lam_{qubit}\"), qubit)\n",
+    "circuit_with_unmeasured_qubit.measure(range(1, 4), range(3))\n",
+    "\n",
+    "circuit_with_unmeasured_qubit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ab604dc1",
+   "metadata": {},
+   "source": [
+    "Drawing left-dressed boxes around the gates and the measurements would result in a circuit that has uncollected\n",
+    "virtual gates on qubit ``0``, and calling {func}`~.build` on this circuit would result in an error. To\n",
+    "avoid this, the pass managers returned by {func}`~.generate_boxing_pass_manager` are allowed\n",
+    "to add right-dressed boxes to act as collectors. As an example, in the following snippet qubit ``0`` is\n",
+    "terminated by a right-dressed box that picks up the uncollected virtual gate. The single-qubit gates acting on qubit\n",
+    "``0`` are also placed inside the box, in order to minimise the depth of the resulting circuit."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bda391d8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=True,\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit_with_unmeasured_qubit)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fc9bf4b8",
+   "metadata": {},
+   "source": [
+    "In another example, a right-dressed box is added to collect the virtual gates that would otherwise remain\n",
+    "uncollected due to the unboxed measurements."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "910f1e6b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "boxing_pass_manager = generate_boxing_pass_manager(\n",
+    "    enable_gates=True,\n",
+    "    enable_measures=False,\n",
+    ")\n",
+    "transpiled_circuit = boxing_pass_manager.run(circuit_with_unmeasured_qubit)\n",
+    "transpiled_circuit.draw(\"mpl\", scale=0.8)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6402f11f",
+   "metadata": {},
+   "source": []
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
