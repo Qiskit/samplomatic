@@ -5,6 +5,7 @@ Release Notes
    :maxdepth: 1
    :titlesonly:
 
+   Release notes for 0.10.1 <release_notes_0.10.1>
    Release notes for 0.10.0 <release_notes_0.10.0>
    Release notes for 0.9.0 <release_notes_0.9.0>
    Release notes for 0.8.0 <release_notes_0.8.0>
