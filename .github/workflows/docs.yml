@@ -25,7 +25,9 @@ jobs:
       with:
         python-version: "3.11"
     - name: Discover released versions
-      run: echo "RELEASED_VERSIONS=$(curl -s https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/versions.json | jq -r 'join(",")')" >> $GITHUB_ENV
+      run: |
+        echo "RELEASED_VERSIONS=$(curl -s https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/versions.json | jq -r 'join(",")')" >> $GITHUB_ENV
+        echo "RELEASED_VERSIONS=$RELEASED_VERSIONS"
     - name: Setup Graphviz
       uses: ts-graphviz/setup-graphviz@v2
     - name: Install dependencies
