@@ -377,6 +377,9 @@ class Samplex:
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
+        if not isinstance(samplex_input, TensorInterface):
+            samplex_input = self.inputs().bind(**samplex_input)
+
         if not samplex_input.fully_bound:
             raise SamplexRuntimeError(
                 "The samplex input is missing values for the following:\n"
