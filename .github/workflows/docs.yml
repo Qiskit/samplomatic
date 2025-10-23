@@ -25,9 +25,7 @@ jobs:
       with:
         python-version: "3.11"
     - name: Discover released versions
-      run: |
-        echo "RELEASED_VERSIONS=$(curl -s https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/versions.json | jq -r 'join(",")')" >> $GITHUB_ENV
-        echo "RELEASED_VERSIONS=$RELEASED_VERSIONS"
+      run: echo "RELEASED_VERSIONS=$(curl -s https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/versions.json | jq -r 'join(",")')" >> $GITHUB_ENV
     - name: Setup Graphviz
       uses: ts-graphviz/setup-graphviz@v2
     - name: Install dependencies
@@ -36,6 +34,7 @@ jobs:
         python -m pip install ".[dev,vis]"
     - name: Build documentation
       run: |
+        echo "Using RELEASED_VERSIONS=$RELEASED_VERSIONS"
         # these commands should match what's in the README
         cd docs
         make html
