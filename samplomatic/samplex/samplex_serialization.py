@@ -16,17 +16,14 @@
 from __future__ import annotations
 
 import io
-import uuid
 
 import orjson
 import pybase64
-
-# This is super private in Qiskit and on every upgrade should be checked for changes
-from qiskit.qpy.binary_io.value import _read_parameter_expr_v13, _write_parameter_expression_v13
+from qiskit.circuit import QuantumCircuit
+from qiskit.qpy import dump, load
 from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
-from ..aliases import InterfaceName, Parameter, ParameterExpression
-from ..exceptions import DeserializationError
+from ..aliases import InterfaceName
 from ..tensor_interface import Specification
 from .nodes import Node
 from .nodes.change_basis_node import ChangeBasisNode
@@ -63,37 +60,29 @@ NODE_TYPE_MAP = [
 ]
 
 
-def _serialize_expressions(expr: ParameterExpression):
-    with io.BytesIO() as buf:
-        _write_parameter_expression_v13(buf, expr, 15)
-        return pybase64.b64encode_as_string(buf.getvalue())
-
-
-def _deserialize_expression(expr: str, parameters: dict[str, Parameter]):
-    with io.BytesIO(pybase64.b64decode(expr)) as buf:
-        return _read_parameter_expr_v13(buf, parameters, 15)
-
-
 def _serialize_expression_table(table: ParameterExpressionTable) -> str:
-    expressions = []
-    for x in table._expressions:  # noqa: SLF001
-        if isinstance(x, Parameter):
-            expressions.append({"param": (x.uuid.hex, x.name)})
-        else:
-            expressions.append({"expression": _serialize_expressions(x)})
+    # qiskit doesn't have a direct way to serialize a list of parameter expressions. in order to
+    # stick to the public qpy interface, the simplest solution is to put them inside of an object
+    # that qpy can serialize.
+    circuit = QuantumCircuit(1)
+    for expr in table._expressions:  # noqa: SLF001
+        circuit.rz(expr, 0)
 
-    return orjson.dumps(expressions).decode("utf-8")
+    with io.BytesIO() as buf:
+        dump(circuit, buf, version=15)
+        circuit_base64 = pybase64.b64encode_as_string(buf.getvalue())
+
+    return orjson.dumps({"qpy": 15, "circuit_base64": circuit_base64}).decode("utf-8")
 
 
-def _deserialize_expression_table(json_data: str) -> ParameterExpressionTable:
+def _deserialize_expression_table(json_str: str) -> ParameterExpressionTable:
+    json_data = orjson.loads(json_str)
+    with io.BytesIO(pybase64.b64decode(json_data["circuit_base64"])) as buf:
+        circuit = load(buf)[0]
+
     param_table = ParameterExpressionTable()
-    for expression in json_data:
-        if param := expression.get("param"):
-            param_table.append(Parameter(param[1], uuid=uuid.UUID(param[0])))
-        elif expr_data := expression.get("expression"):
-            param_table.append(_deserialize_expression(expr_data, {}))
-        else:
-            raise DeserializationError("Invalid parameter in expression table")
+    for instr in circuit:
+        param_table.append(instr.operation.params[0])
     return param_table
 
 
@@ -142,8 +131,7 @@ def _process_graph_header(
     dict[InterfaceName, Specification],
     dict[InterfaceName, Specification],
 ]:
-    raw_param_table_dict = orjson.loads(data["param_table"])
-    param_table = _deserialize_expression_table(raw_param_table_dict)
+    param_table = _deserialize_expression_table(data["param_table"])
     inputs = _deserialize_specifications(data["input_specification"])
     outputs = _deserialize_specifications(data["output_specification"])
     passthrough_params = _deserialize_passthrough_params(data["passthrough_params"])
