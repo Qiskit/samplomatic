@@ -132,8 +132,8 @@ class TestSamplexSerialization:
             circuit.cx(0, 1)
 
         with circuit.box([Twirl()]):
-            circuit.rx(p[3], 0)
-            circuit.rx(p[4], 1)
+            circuit.rx(p[3] + p[0], 0)
+            circuit.rx(2 * p[4], 1)
             circuit.cx(0, 1)
 
         with circuit.box([Twirl(dressing="right")]):
