@@ -9,9 +9,11 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
 from copy import deepcopy
 
 import numpy as np
+import pytest
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 from qiskit.quantum_info import PauliLindbladMap
 
@@ -121,19 +123,27 @@ class TestSamplexSerialization:
             samplex_output["measurement_flips.meas"], samplex_new_output["measurement_flips.meas"]
         )
 
-    def test_parametric_circuit(self, rng):
+    @pytest.mark.parametrize(
+        "parameters",
+        [
+            ParameterVector("params", 5),
+            [Parameter(f"p{idx}") for idx in range(5)],
+            list(ParameterVector("params", 3)) + [Parameter(f"p{idx}") for idx in range(2)],
+            [Parameter(f"p{idx}") for idx in range(3)] + list(ParameterVector("params", 2)),
+        ],
+    )
+    def test_parametric_circuit(self, rng, parameters):
         """Test a circuit with parametric gates."""
-        p = ParameterVector("params", 5)
         circuit = QuantumCircuit(3)
         with circuit.box([Twirl()]):
-            circuit.rx(p[0], 0)
-            circuit.rx(p[1], 1)
-            circuit.rx(p[2], 2)
+            circuit.rx(parameters[0], 0)
+            circuit.rx(parameters[1], 1)
+            circuit.rx(parameters[2], 2)
             circuit.cx(0, 1)
 
         with circuit.box([Twirl()]):
-            circuit.rx(p[3] + p[0], 0)
-            circuit.rx(2 * p[4], 1)
+            circuit.rx(parameters[3] + parameters[0], 0)
+            circuit.rx(2 * parameters[4], 1)
             circuit.cx(0, 1)
 
         with circuit.box([Twirl(dressing="right")]):
