@@ -11,12 +11,54 @@
 # that they have been altered from the originals.
 
 
-"""Samplex serialization"""
+"""Samplex serialization
+
+:class:`~.Samplex` objects are serializable and deserializable via :func:`~.samplex_to_json` and
+:func:`~.samplex_from_json`.
+Since the data structure of a samplex is primarily node-based, a JSON node-link format is used.
+All elements of the samplex data model that are not contained directly in the graph itself are
+encoded in the graph attributes section of the format. Details about the nodes, such as what type
+of :class:`~.Node` they represent, are stored in the corresponding node attributes. Samplexes
+have no edge attributes.
+
+Serialization and deserializaiton is performed by :func:`rustworkx.node_link_json` and
+:func:`rustworkx.parse_node_link_json`, with attribute dictionaries supplied and defined
+by samplomatic.
+
+Versioning
+----------
+
+Some backwards compatibility of the serialization format is offered.
+Every serialized :class:`~.Samplex` starting with ``samplomatic==0.11.0`` encodes a single-integer
+Samplex Serialization Version (SSV).
+SSVs are incremented independently of the package version, and every package version describes the
+SSV range it is willing to read and write.
+For any particular package version:
+
+ - :const:`~SSV` is the latest SSV known about and future versions can not be loaded.
+ - :const:`~SSV_MIN_SUPPORTED` is the oldest SSV supported for reading and writing.
+
+Nodes can be added, removed, or have modified behaviour between package versions. To account for
+this,
+
+ - If a package version introduces a :class:`~.Node` type, it must increment the SSV and provide
+   serialization
+   support for it. Prior SSVs will not be able to serialize samplexes containing this node, and
+   an incompatability error will be raised. Future SSVs will be able to save and load the new type,
+   unless support is dropped.
+ - If a package version removes a :class:`~.Node` type, it must increment the SSV, and the
+ - If a package modifies the behaviour of a :class:`~.Node` type:
+   - If there is a fundamental change to behaviour, then this will be treated as a simultaneous
+     removal of a node type, according to the bullets above, but where the name happens to be the
+     same. The serialization format can change arbitrarily, but the node type index _must_ change.
+   - If the change to behaviour is backwards compatible
+"""
 
 from __future__ import annotations
 
 import io
 import uuid
+from typing import TypedDict, cast, overload
 
 import orjson
 import pybase64
@@ -25,6 +67,7 @@ import pybase64
 from qiskit.qpy.binary_io.value import _read_parameter_expr_v13, _write_parameter_expression_v13
 from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
+from .._version import version as samplomatic_version
 from ..aliases import InterfaceName, Parameter, ParameterExpression
 from ..exceptions import DeserializationError
 from ..tensor_interface import Specification
@@ -46,7 +89,15 @@ from .nodes.u2_param_multiplication_node import (
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
 
-NODE_TYPE_MAP = [
+__all__ = ["SSV", "SSV_MIN_SUPPORTED", "samplex_from_json", "samplex_to_json"]
+
+SSV = 1
+"""The most recent samplex serialization version, and the default version serialized to."""
+
+SSV_MIN_SUPPORTED = 1
+"""The minimum samplex serialization version supported by this samplomatic version."""
+
+NODE_TYPE_MAP: list[Node | None] = [
     ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
@@ -61,6 +112,41 @@ NODE_TYPE_MAP = [
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
 ]
+"""Serializable node types.
+
+Each node in this list must declare the ``"node_type"`` of its json encoding consistently with its
+0-indexed position in this list. For example, ``CombineRegistersNode`` must declare
+``"node_type": "3"``. For this reason, once a type is in a position, it must never be moved. If a
+node type is removed, it should be replaced by ``None`` to preserve ordering of the other node
+types. This list can be extended with new types.
+"""
+
+
+class Header(TypedDict):
+    """Template all headers must specify.
+
+    Multiple SSVs can use the same header type.
+    """
+
+    ssv: str
+    samplomatic_version: str
+
+
+class HeaderV1(Header):
+    param_table: str
+    input_specification: str
+    output_specification: str
+    passthrough_params: str
+
+    def from_samplex(samplex: Samplex):
+        return HeaderV1(
+            ssv=str(SSV),
+            samplomatic_version=samplomatic_version,
+            param_table=_serialize_expression_table(samplex._param_table),  # noqa: SLF001
+            input_specification=_serialize_specifications(samplex._input_specifications),  # noqa: SLF001
+            output_specification=_serialize_specifications(samplex._output_specifications),  # noqa: SLF001
+            passthrough_params=_serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
+        )
 
 
 def _serialize_expressions(expr: ParameterExpression):
@@ -124,74 +210,63 @@ def _deserialize_passthrough_params(data: str) -> tuple[list[int], list[int]] | 
     return tuple(orjson.loads(data))
 
 
-def _generate_graph_header(samplex: Samplex) -> dict[str, str]:
-    return {
-        "finalized": str(samplex._finalized),  # noqa: SLF001
-        "param_table": _serialize_expression_table(samplex._param_table),  # noqa: SLF001
-        "input_specification": _serialize_specifications(samplex._input_specifications),  # noqa: SLF001
-        "output_specification": _serialize_specifications(samplex._output_specifications),  # noqa: SLF001
-        "passthrough_params": _serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
-    }
+def _deserialize_node(node_data: dict[str, str]) -> Node:
+    if (node_type := NODE_TYPE_MAP[int(node_data["node_type"])]) is None:
+        raise
+    return node_type._from_json_dict(node_data)  # noqa: SLF001
 
 
-def _process_graph_header(
-    data: dict[str, str],
-) -> tuple[
-    ParameterExpressionTable,
-    bool,
-    dict[InterfaceName, Specification],
-    dict[InterfaceName, Specification],
-]:
-    raw_param_table_dict = orjson.loads(data["param_table"])
-    param_table = _deserialize_expression_table(raw_param_table_dict)
-    inputs = _deserialize_specifications(data["input_specification"])
-    outputs = _deserialize_specifications(data["output_specification"])
-    passthrough_params = _deserialize_passthrough_params(data["passthrough_params"])
-    return (
-        param_table,
-        data["finalized"] == "true",
-        inputs,
-        outputs,
-        passthrough_params,
-    )
+@overload
+def samplex_to_json(samplex: Samplex, filename: str, ssv: int) -> None: ...
 
 
-def samplex_to_json(samplex: Samplex, filename: str | None = None) -> str | None:
+@overload
+def samplex_to_json(samplex: Samplex, filename: None, ssv: int) -> str: ...
+
+
+def samplex_to_json(samplex, filename, ssv=SSV):
     """Dump a samplex to json.
 
     Args:
         filename: An optional path to write the json to.
+        ssv: The samplex serialization to write.
 
     Returns:
         Either the json as a string or ``None`` if ``filename`` is specified.
     """
+    if ssv < SSV_MIN_SUPPORTED:
+        raise
+    if ssv in {1}:
+        header = HeaderV1.from_samplex(samplex)
+    else:
+        raise
 
-    def node_attr(x: Node):
-        return x._to_json_dict()  # noqa: SLF001
+    def serialize_node(node: Node) -> dict[str, str]:
+        return node._to_json_dict(ssv)  # noqa: SLF001
 
     return node_link_json(
         samplex.graph,
         path=filename,
-        graph_attrs=lambda _: _generate_graph_header(samplex),
-        node_attrs=node_attr,
+        graph_attrs=lambda _: header,
+        node_attrs=serialize_node,
     )
 
 
-def _parse_node(node_data: dict[str, str]) -> Node:
-    node_type_index = int(node_data["node_type"])
-    return NODE_TYPE_MAP[node_type_index]._from_json_dict(node_data)  # noqa: SLF001
-
-
 def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
-    graph_attrs = _process_graph_header(samplex_graph.attrs)
-    samplex_graph.attrs = None
+    ssv = samplex_graph.attrs.get("ssv")
     samplex = Samplex()
+
+    if ssv in {"1"}:
+        data = cast(HeaderV1, samplex_graph.attrs)
+        samplex._param_table = _deserialize_expression_table(orjson.loads(data["param_table"]))  # noqa: SLF001
+        samplex._input_specifications = _deserialize_specifications(data["input_specification"])  # noqa: SLF001
+        samplex._output_specifications = _deserialize_specifications(data["output_specification"])  # noqa: SLF001
+        samplex._passthrough_params = _deserialize_passthrough_params(data["passthrough_params"])  # noqa: SLF001
+    else:
+        raise
+
+    samplex_graph.attrs = None
     samplex.graph = samplex_graph
-    samplex._param_table = graph_attrs[0]  # noqa: SLF001
-    samplex._finalized = graph_attrs[1]  # noqa: SLF001
-    samplex._input_specifications = graph_attrs[2]  # noqa: SLF001
-    samplex._output_specifications = graph_attrs[3]  # noqa: SLF001
-    samplex._passthrough_params = graph_attrs[4]  # noqa: SLF001
     return samplex
 
 
@@ -204,5 +279,5 @@ def samplex_from_json(json_data: str) -> Samplex:
     Returns:
         The loaded samplex.
     """
-    samplex_graph = parse_node_link_json(json_data, node_attrs=_parse_node)
+    samplex_graph = parse_node_link_json(json_data, node_attrs=_deserialize_node)
     return _samplex_from_graph(samplex_graph)
