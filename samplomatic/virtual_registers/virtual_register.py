@@ -19,7 +19,7 @@ import numpy as np
 
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
-from ..utils.serialization import array_to_json
+from ..samplex.ssv.utils import array_to_str
 
 T = TypeVar("T")
 
@@ -95,7 +95,7 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
             )
 
     def to_json_dict(self) -> dict[str, str]:
-        array_data = array_to_json(self._array)
+        array_data = array_to_str(self._array)
         return {"type": self.TYPE, "array": array_data}
 
     @staticmethod

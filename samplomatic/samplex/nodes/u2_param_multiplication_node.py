@@ -15,9 +15,8 @@
 from typing import Literal
 
 import numpy as np
-import orjson
 
-from ...aliases import ParamIndex, RegisterName, Self, SubsystemIndex
+from ...aliases import ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError, SamplexRuntimeError
 from ...virtual_registers import U2Register, VirtualRegister
@@ -59,14 +58,6 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         self._operand = operand
         self._param_idxs = param_idxs
         self._register_name = register_name
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
-        return cls(
-            data["operand"],
-            data["register_name"],
-            orjson.loads(data["param_indices"]),
-        )
 
     def get_style(self):
         return (
@@ -126,14 +117,6 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         SamplexConstructionError: if `param_idxs` is empty.
     """
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "10",
-            "operand": self._operand,
-            "param_indices": orjson.dumps(self._param_idxs).decode("utf-8"),
-            "register_name": self._register_name,
-        }
-
     def evaluate(
         self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray
     ):
@@ -176,14 +159,6 @@ class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
     Raises:
         SamplexConstructionError: if `param_idxs` is empty.
     """
-
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "12",
-            "operand": self._operand,
-            "param_indices": orjson.dumps(self._param_idxs).decode("utf-8"),
-            "register_name": self._register_name,
-        }
 
     def evaluate(
         self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray

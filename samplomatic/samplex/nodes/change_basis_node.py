@@ -145,24 +145,6 @@ class ChangeBasisNode(SamplingNode):
         basis = inputs[self._basis_ref]
         registers[self._register_name] = self._basis_change.get_transform(basis)
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "0",
-            "register_name": self._register_name,
-            "basis_change": orjson.dumps(self._basis_change.to_json_dict()).decode("utf-8"),
-            "basis_ref": self._basis_ref,
-            "num_subsystems": str(self._num_subsystems),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "ChangeBasisNode":
-        return cls(
-            data["register_name"],
-            BasisChange.from_json_dict(orjson.loads(data["basis_change"])),
-            data["basis_ref"],
-            int(data["num_subsystems"]),
-        )
-
     def get_style(self):
         return (
             super()

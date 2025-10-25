@@ -120,22 +120,3 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
                 raise SerializationError() from exc
             raise SerializationError() from exc
         return deserializer(data)
-
-
-class Foo:
-    pass
-
-
-class FooSerializer(TypeSerializer[Foo]):
-    TYPE_ID = "0"
-
-    class SchemaV1(DataSerializer[Foo]):
-        TSV = 1
-
-        @classmethod
-        def deserialize(cls, data):
-            return Foo()
-
-        @classmethod
-        def serialize(cls, obj):
-            return {}
