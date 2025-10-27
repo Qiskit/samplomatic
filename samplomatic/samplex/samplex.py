@@ -314,7 +314,7 @@ class Samplex:
 
     def sample(
         self,
-        samplex_input: InterfaceValues | TensorInterface,
+        samplex_input: InterfaceValues,
         num_randomizations: int = 1,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
@@ -362,9 +362,8 @@ class Samplex:
 
 
         Args:
-            samplex_input: The inputs required to generate samples for this samplex, see
-                :meth:`~inputs`. If a dictionary is provided, its items are bound to the inputs
-                of this samplex.
+            samplex_input: The inputs required to generate samples for this samplex. If a dictionary
+                is provided, its items are bound to the inputs of this samplex.
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
