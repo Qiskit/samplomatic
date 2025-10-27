@@ -12,6 +12,7 @@
 
 """InjectNoiseNode"""
 
+import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from ...aliases import NumSubsystems, RegisterName, StrRef
@@ -32,6 +33,12 @@ class InjectNoiseNode(SamplingNode):
     * ``local_scales``, a dictionary from :class:`~.StrRef` to lists of floats. If ``modifier_ref``
       is in the dictionary, the rates of
       :class:`qiskit.quantum_info.PauliLindbladMap` are scaled individually.
+
+    .. note::
+
+       This node intentionally uses the opposite convention as
+       :meth:`qiskit.quantum_info.PauliLindbladMap.signed_sample` for representing signs as
+       booleans. In particular, this node uses ``True`` to represent "the sign should be flipped".
 
     Args:
         register_name: The name of the register to store the samples.
@@ -98,6 +105,10 @@ class InjectNoiseNode(SamplingNode):
         signs, samples = pauli_lindblad_map.signed_sample(
             num_randomizations, rng.bit_generator.random_raw()
         )
+        # TODO: we negate the convention used by PauliLindbladMap.signed_sample(); it arguably chose
+        # the wrong convention. qiskit will introduce a new method with the "right" convetion; until
+        # then, we choose to negate in order to get the right convention ASAP
+        np.logical_not(signs, out=signs)
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
 
