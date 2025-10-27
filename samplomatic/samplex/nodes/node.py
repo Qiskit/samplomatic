@@ -15,28 +15,18 @@
 from __future__ import annotations
 
 import abc
-import inspect
 from numbers import Number
 from typing import Literal
 
 from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, Self, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
+from ...serialization.serializable import Serializable
 from ...visualization.hover_style import NodeStyle
 
 
-class NodeType(abc.ABCMeta):
-    """Metaclass used for registering all non-abstract subclasses.
-
-    This is done so that we can automate testing coverage of Node serialization: there is a test
-    that demands each node type does a round-trip.
-    """
-
-    def __new__(mcls, name, bases, namespace):
-        cls = super().__new__(mcls, name, bases, namespace)
-        if cls.__name__ != "Node" and not inspect.isabstract(cls):
-            cls.NODE_REGISTRY.add(cls)
-        return cls
+class NodeType(Serializable, abc.ABCMeta):
+    """Metaclass used to make :class:`~.Node` both abstract and :class:`~.Serializable`."""
 
 
 class Node(metaclass=NodeType):

@@ -66,10 +66,11 @@ class TypeSerializerMeta(type):
                     cls.SERIALIZERS[tsv] = attr_value.serialize
                     cls.DESERIALIZERS[tsv] = attr_value.deserialize
 
-            if cls.SERIALIZERS:
-                cls.MIN_TSV = min(cls.SERIALIZERS)
-                cls.MAX_TSV = max(cls.SERIALIZERS)
-                if set(cls.SERIALIZERS) != range(cls.MIN_TSV, cls.MAX_TSV + 1):
+            cls.TSVS = sorted(cls.SERIALIZERS)
+            if cls.TSVS:
+                cls.MIN_TSV = min(cls.TSVS)
+                cls.MAX_TSV = max(cls.TSVS)
+                if set(cls.TSVS) != set(range(cls.MIN_TSV, cls.MAX_TSV + 1)):
                     raise TypeError(f"{cls.__name__} is missing a data serializer.")
 
             cls.TYPE_ID_REGISTRY[cls.TYPE_ID] = cls
@@ -84,6 +85,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
     DESERIALIZERS: ClassVar[dict[int, Callable[[dict[str, str]], T]]] = None
     MIN_TSV: ClassVar[int] = None
     MAX_TSV: ClassVar[int] = None
+    TSVS: ClassVar[list[int]] = None
 
     @classmethod
     def serialize(cls, obj: T, tsv: int | None = None) -> dict[str, str]:

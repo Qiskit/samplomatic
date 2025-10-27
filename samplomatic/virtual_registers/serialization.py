@@ -14,7 +14,7 @@
 
 from ..annotations import VirtualType
 from ..exceptions import DeserializationError
-from ..samplex.ssv.utils import array_from_str
+from ..serialization.utils import array_from_json
 from .pauli_register import PauliRegister
 from .u2_register import U2Register
 from .virtual_register import VirtualRegister
@@ -23,7 +23,7 @@ from .z2_register import Z2Register
 
 def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
     register_type = VirtualType(data["type"])
-    array = array_from_str(data["array"])
+    array = array_from_json(data["array"])
     if register_type == VirtualType.U2:
         return U2Register(array)
     elif register_type == VirtualType.Z2:

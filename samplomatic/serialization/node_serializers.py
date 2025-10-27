@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Node Serialization"""
+"""Node Serializers"""
 
 import orjson
 
@@ -32,12 +32,12 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.change_basis_node import BasisChange
 from ..samplex.nodes.combine_registers_node import CombineType
 from ..synths import RzRxSynth, RzSxSynth
 from ..virtual_registers.serialization import virtual_register_from_json
+from .basis_change_serializers import BasisChangeSerializer
 from .type_serializer import DataSerializer, TypeSerializer
-from .utils import array_from_str, array_to_str, slice_from_json, slice_to_json
+from .utils import array_from_json, array_to_json, slice_from_json, slice_to_json
 
 
 class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
@@ -50,9 +50,10 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
 
         @classmethod
         def serialize(cls, obj):
+            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change, 1)  # noqa: SLF001
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
-                "basis_change": orjson.dumps(obj._basis_change.to_json_dict()).decode("utf-8"),  # noqa: SLF001
+                "basis_change": orjson.dumps(basis_change_ser).decode("utf-8"),
                 "basis_ref": obj._basis_ref,  # noqa: SLF001
                 "num_subsystems": str(obj._num_subsystems),  # noqa: SLF001
             }
@@ -61,7 +62,7 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
         def deserialize(cls, data):
             return ChangeBasisNode(
                 data["register_name"],
-                BasisChange.from_json_dict(orjson.loads(data["basis_change"])),
+                BasisChangeSerializer.deserialize(orjson.loads(data["basis_change"])),
                 data["basis_ref"],
                 int(data["num_subsystems"]),
             )
@@ -79,10 +80,10 @@ class CollectTemplateValuesSerializer(TypeSerializer[CollectTemplateValues]):
         def serialize(cls, obj):
             return {
                 "template_param_names": obj._template_params_name,  # noqa: SLF001
-                "template_idxs": array_to_str(obj._template_idxs),  # noqa: SLF001
+                "template_idxs": array_to_json(obj._template_idxs),  # noqa: SLF001
                 "register_type": obj._register_type,  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
-                "subsystem_idxs": array_to_str(obj._subsystem_idxs),  # noqa: SLF001
+                "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
                 "synth": type(obj._synth).__name__,  # noqa: SLF001
             }
 
@@ -98,10 +99,10 @@ class CollectTemplateValuesSerializer(TypeSerializer[CollectTemplateValues]):
 
             return CollectTemplateValues(
                 data["template_param_names"],
-                array_from_str(data["template_idxs"]),
+                array_from_json(data["template_idxs"]),
                 data["register_name"],
                 VirtualType(data["register_type"]),
-                array_from_str(data["subsystem_idxs"]),
+                array_from_json(data["subsystem_idxs"]),
                 synth,
             )
 
@@ -119,17 +120,17 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
             {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "output_name": obj._output_name,  # noqa: SLF001
-                "subsystem_indices": array_to_str(obj._subsystem_idxs),  # noqa: SLF001
-                "output_indices": array_to_str(obj._output_idxs),  # noqa: SLF001
+                "subsystem_indices": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
+                "output_indices": array_to_json(obj._output_idxs),  # noqa: SLF001
             }
 
         @classmethod
         def deserialize(cls, data):
             return CollectZ2ToOutputNode(
                 data["register_name"],
-                array_from_str(data["subsystem_indices"]),
+                array_from_json(data["subsystem_indices"]),
                 data["output_name"],
-                array_from_str(data["output_indices"]),
+                array_from_json(data["output_indices"]),
             )
 
 
@@ -152,7 +153,7 @@ class CombineRegistersNodeSerializer(TypeSerializer[CombineRegistersNode]):
                     elif isinstance(v, CombineType):
                         continue
                     else:
-                        value_list.append({"array": array_to_str(v)})
+                        value_list.append({"array": array_to_json(v)})
                 operands_dict[key] = value_list
 
             return {
@@ -170,7 +171,7 @@ class CombineRegistersNodeSerializer(TypeSerializer[CombineRegistersNode]):
                 tuple_value = []
                 for value in values:
                     if array_str := value.get("array"):
-                        tuple_value.append(array_from_str(array_str))
+                        tuple_value.append(array_from_json(array_str))
                     elif type_str := value.get("type"):
                         tuple_value.append(VirtualType(type_str))
                     else:
@@ -303,7 +304,7 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
         def serialize(cls, obj):
             return {
                 "op_name": obj._op_name,  # noqa: SLF001
-                "subsystem_idxs": array_to_str(obj._subsystem_idxs),  # noqa: SLF001
+                "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
             }
 
@@ -312,7 +313,7 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
             return PauliPastCliffordNode(
                 data["op_name"],
                 data["register_name"],
-                array_from_str(data["subsystem_idxs"]),
+                array_from_json(data["subsystem_idxs"]),
             )
 
 
@@ -331,7 +332,7 @@ class SliceRegisterNodeSerializer(TypeSerializer[SliceRegisterNode]):
                 slice_idxs = slice_to_json(obj._slice_idxs)  # noqa: SLF001
             else:
                 is_slice = "false"
-                slice_idxs = array_to_str(obj._slice_idxs)  # noqa: SLF001
+                slice_idxs = array_to_json(obj._slice_idxs)  # noqa: SLF001
             return {
                 "input_type": obj._input_type.value,  # noqa: SLF001
                 "output_type": obj._output_type.value,  # noqa: SLF001
@@ -346,7 +347,7 @@ class SliceRegisterNodeSerializer(TypeSerializer[SliceRegisterNode]):
             slice_idxs = (
                 slice_from_json(data["slice_idxs"])
                 if data["is_slice"] == "true"
-                else array_from_str(data["slice_idxs"])
+                else array_from_json(data["slice_idxs"])
             )
             return SliceRegisterNode(
                 VirtualType(data["input_type"]),

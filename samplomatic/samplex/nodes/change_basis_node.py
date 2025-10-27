@@ -16,18 +16,18 @@ from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
 
 import numpy as np
-import orjson
 from qiskit.circuit.library import HGate, IGate, RXGate
 
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
-from ...virtual_registers import U2Register, VirtualRegister, virtual_register_from_json
+from ...serialization.serializable import Serializable
+from ...virtual_registers import U2Register, VirtualRegister
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")
 
 
-class BasisChange(Generic[T]):
+class BasisChange(Generic[T], metaclass=Serializable):
     """Represents a basis change.
 
     Args:
@@ -52,19 +52,6 @@ class BasisChange(Generic[T]):
             character: transform[0]
             for character, transform in zip(self._alphabet, self._action.virtual_gates)
         }
-
-    def to_json_dict(self) -> dict[str, str]:
-        return {
-            "alphabet": self.alphabet,
-            "action": orjson.dumps(self.action.to_json_dict()).decode("utf-8"),
-        }
-
-    @classmethod
-    def from_json_dict(cls, data: dict[str, str]) -> "BasisChange":
-        return cls(
-            data["alphabet"],
-            virtual_register_from_json(orjson.loads(data["action"])),
-        )
 
     @property
     def num_elements(self) -> int:

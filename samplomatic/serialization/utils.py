@@ -19,7 +19,7 @@ import pybase64
 from samplomatic.exceptions import DeserializationError
 
 
-def array_to_str(array: np.ndarray) -> str:
+def array_to_json(array: np.ndarray) -> str:
     """Convert an array to a json format.
 
     Args:
@@ -46,7 +46,7 @@ def array_to_str(array: np.ndarray) -> str:
     return orjson.dumps({"data": data, "shape": array.shape, "dtype": dtype}).decode("utf-8")
 
 
-def array_from_str(data: str) -> np.ndarray:
+def array_from_json(data: str) -> np.ndarray:
     """Convert a json string to a numpy array.
 
     Args:

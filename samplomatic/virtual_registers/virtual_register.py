@@ -19,12 +19,13 @@ import numpy as np
 
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
-from ..samplex.ssv.utils import array_to_str
+from ..serialization.serializable import Serializable
+from ..serialization.utils import array_to_json
 
 T = TypeVar("T")
 
 
-class VirtualRegisterMeta(abc.ABCMeta):
+class VirtualRegisterMeta(Serializable, abc.ABCMeta):
     """Metaclass for :class:`~.VirtualRegister`."""
 
     _TYPE_MAP: dict[VirtualType, "VirtualRegisterMeta"] = {}
@@ -95,7 +96,7 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
             )
 
     def to_json_dict(self) -> dict[str, str]:
-        array_data = array_to_str(self._array)
+        array_data = array_to_json(self._array)
         return {"type": self.TYPE, "array": array_data}
 
     @staticmethod
