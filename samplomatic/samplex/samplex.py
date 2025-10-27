@@ -314,7 +314,7 @@ class Samplex:
 
     def sample(
         self,
-        samplex_input: InterfaceValues,
+        samplex_input: InterfaceValues | None = None,
         num_randomizations: int = 1,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
@@ -363,9 +363,10 @@ class Samplex:
 
         Args:
             samplex_input: A mapping from input names to input values, as described by
-                :meth:`~.inputs`, see the guide on :doc:`guides/samplex_io`. Names that contain a
-                period can use nested dictionary expansion. Note that :class:`~.TensorInterface` is
-                a mapping object and is therefore a valid input argument when fully bound.
+                :meth:`~.inputs` (see also the guide on :doc:`guides/samplex_io`), or ``None`` if
+                no input is required. Names that contain a period can use nested dictionary
+                expansion. Note that :class:`~.TensorInterface` is a mapping object and is therefore
+                a valid input argument when fully bound.
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
@@ -380,7 +381,7 @@ class Samplex:
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
         if not isinstance(samplex_input, TensorInterface):
-            samplex_input = self.inputs().bind(**samplex_input)
+            samplex_input = self.inputs().bind(**(samplex_input or {}))
 
         if not samplex_input.fully_bound:
             raise SamplexRuntimeError(
