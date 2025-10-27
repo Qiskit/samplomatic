@@ -363,10 +363,9 @@ class Samplex:
 
         Args:
             samplex_input: A mapping from input names to input values, as described by
-                :meth:`~.inputs` (see also the guide on :doc:`guides/samplex_io`), or ``None`` if
-                no input is required. Names that contain a period can use nested dictionary
-                expansion. Note that :class:`~.TensorInterface` is a mapping object and is therefore
-                a valid input argument when fully bound.
+                :meth:`~.inputs`, or ``None`` if no input is required. Names that contain a period
+                can use nested dictionary expansion. Note that :class:`~.TensorInterface` is a
+                mapping object and is therefore a valid input argument when fully bound.
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
