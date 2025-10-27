@@ -106,7 +106,7 @@ class InjectNoiseNode(SamplingNode):
             num_randomizations, rng.bit_generator.random_raw()
         )
         # TODO: we negate the convention used by PauliLindbladMap.signed_sample(); it arguably chose
-        # the wrong convention. qiskit will introduce a new method with the "right" convetion; until
+        # the wrong convention. qiskit will introduce a new method with the "right" convention; until
         # then, we choose to negate in order to get the right convention ASAP
         np.logical_not(signs, out=signs)
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
