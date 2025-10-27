@@ -14,14 +14,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
-from numpy.typing import ArrayLike
-from qiskit.quantum_info import PauliLindbladMap
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -40,15 +38,12 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification
+from ..tensor_interface import InterfaceValues, Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
-
-InterfaceValues = Mapping[str, Union[ArrayLike, PauliLindbladMap, "InterfaceValues"]]
-
 
 if TYPE_CHECKING:
     from plotly.graph_objects import Figure
