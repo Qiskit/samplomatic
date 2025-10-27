@@ -41,7 +41,10 @@ class TestBasic:
         """Test that an empty samplex doesn't error when sampled."""
         samplex = Samplex()
         samplex.finalize()
+
         samplex.sample(samplex.inputs())
+        samplex.sample({})
+        samplex.sample(None)
 
     def test_str(self):
         """Test the string dunder is doing fancy stuff."""
