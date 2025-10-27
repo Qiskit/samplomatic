@@ -14,12 +14,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
+from numpy.typing import ArrayLike
+from qiskit.quantum_info import PauliLindbladMap
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -44,6 +46,9 @@ from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from .parameter_expression_table import ParameterExpressionTable
+
+InterfaceValues = Mapping[str, Union[ArrayLike, PauliLindbladMap, "InterfaceValues"]]
+
 
 if TYPE_CHECKING:
     from plotly.graph_objects import Figure
@@ -314,7 +319,7 @@ class Samplex:
 
     def sample(
         self,
-        samplex_input: TensorInterface,
+        samplex_input: InterfaceValues | TensorInterface,
         num_randomizations: int = 1,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
@@ -362,8 +367,9 @@ class Samplex:
 
 
         Args:
-            samplex_input: The inputs required to generate samples for this samplex. See
-                :meth:`~inputs`.
+            samplex_input: The inputs required to generate samples for this samplex, see
+                :meth:`~inputs`. If a dictionary is provided, its items are bound to the inputs
+                of this samplex.
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
