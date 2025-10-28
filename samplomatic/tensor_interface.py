@@ -19,10 +19,9 @@ import abc
 import re
 import textwrap
 from collections.abc import Iterable, Mapping, MutableMapping
-from typing import Any, Generic, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 import numpy as np
-from numpy.typing import ArrayLike
 from qiskit.quantum_info import PauliLindbladMap
 
 from .aliases import InterfaceName, Self
@@ -35,8 +34,6 @@ __all__ = [
 ]
 
 T = TypeVar("T")
-
-InterfaceValues = Mapping[str, Union[ArrayLike, PauliLindbladMap, "InterfaceValues"]]
 
 ABSENT = object()
 
@@ -463,7 +460,7 @@ class TensorInterface(MutableMapping):
         regex_pattern = re.compile(pattern)
         return [spec for name, spec in self._specs.items() if regex_pattern.search(name)]
 
-    def bind(self, **kwargs: InterfaceValues) -> Self:
+    def bind(self, **kwargs: Mapping[str, Any]) -> Self:
         """Bind data to this interface.
 
         A tensor interface is a flat data structure mapping names to values, where the values must
