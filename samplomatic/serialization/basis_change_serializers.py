@@ -24,7 +24,7 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
 
     TYPE_ID = "13"
 
-    class TSV1(DataSerializer[BasisChange]):
+    class SSV1(DataSerializer[BasisChange]):
         MIN_SSV = 1
 
         @classmethod
