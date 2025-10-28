@@ -30,19 +30,19 @@ class TestTypeSerializerMeta:
         """Test that having duplicate type ids errors."""
 
         class _(TypeSerializer):
-            TYPE_ID = "MY_ID"
+            TYPE_ID = "t0"
 
-        with pytest.raises(TypeError, match="with the existing type id MY_ID"):
+        with pytest.raises(TypeError, match="with the existing type id t0"):
 
             class _(TypeSerializer):
-                TYPE_ID = "MY_ID"
+                TYPE_ID = "t0"
 
     def test_no_min_ssv_error(self):
         """Test that having no SSV errors."""
         with pytest.raises(TypeError, match="must specify a MIN_SSV"):
 
             class _(TypeSerializer):
-                TYPE_ID = "MY_ID"
+                TYPE_ID = "t1"
 
                 class MyDataSerializer(DataSerializer):
                     pass
@@ -52,7 +52,7 @@ class TestTypeSerializerMeta:
         with pytest.raises(TypeError, match="multiple serializers for SSVs"):
 
             class _(TypeSerializer):
-                TYPE_ID = "MY_ID"
+                TYPE_ID = "t2"
 
                 class MyDataSerializer(DataSerializer):
                     MIN_SSV = 1
@@ -67,7 +67,7 @@ class TestTypeSerializerMeta:
         with pytest.raises(TypeError, match="missing a data serializer"):
 
             class _(TypeSerializer):
-                TYPE_ID = "MY_ID"
+                TYPE_ID = "t3"
 
                 class MyDataSerializer(DataSerializer):
                     MIN_SSV = 1
