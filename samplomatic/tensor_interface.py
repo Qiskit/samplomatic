@@ -18,7 +18,7 @@ from __future__ import annotations
 import abc
 import re
 import textwrap
-from collections.abc import Iterable, MutableMapping
+from collections.abc import Iterable, Mapping, MutableMapping
 from typing import Any, Generic, TypeVar
 
 import numpy as np
@@ -155,6 +155,15 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
             "num_qubits": self.num_qubits,
             "num_terms": self.num_terms,
         }
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, PauliLindbladMapSpecification):
+            return (
+                self.name == other.name
+                and self.num_terms == other.num_terms
+                and self.num_qubits == other.num_qubits
+            )
+        return False
 
     @classmethod
     def _from_json(cls, data: dict[str, Any]) -> PauliLindbladMapSpecification:
@@ -295,6 +304,17 @@ class TensorSpecification(Specification[np.ndarray]):
             f"{type(self).__name__}('{self.name}', {repr(self.shape)}, {repr(self.dtype)}"
             f"{description}{broadcastable}{optional})"
         )
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, TensorSpecification):
+            return (
+                self.name == other.name
+                and self.dtype == other.dtype
+                and self.shape == other.shape
+                and self.broadcastable == other.broadcastable
+                and self.optional == other.optional
+            )
+        return False
 
 
 class TensorInterface(MutableMapping):
@@ -440,7 +460,7 @@ class TensorInterface(MutableMapping):
         regex_pattern = re.compile(pattern)
         return [spec for name, spec in self._specs.items() if regex_pattern.search(name)]
 
-    def bind(self, **kwargs) -> Self:
+    def bind(self, **kwargs: Mapping[str, Any]) -> Self:
         """Bind data to this interface.
 
         A tensor interface is a flat data structure mapping names to values, where the values must

@@ -151,6 +151,34 @@ class TestTensorSpecification:
         with pytest.raises(ValueError, match=r"expects an array of shape"):
             spec.validate_and_coerce(arr)
 
+    def test_equal_specs(self):
+        spec1 = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
+        spec2 = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
+        assert spec1 == spec2
+
+    @pytest.mark.parametrize(
+        "attr, new_value",
+        [
+            ("name", "y"),
+            ("shape", (5,)),
+            ("dtype", np.float64),
+            ("broadcastable", True),
+            ("optional", True),
+        ],
+    )
+    def test_not_equal_specs(self, attr, new_value):
+        attributes = {
+            "name": "x",
+            "shape": (2, 3),
+            "dtype": np.float32,
+            "broadcastable": False,
+            "optional": False,
+        }
+        spec1 = TensorSpecification(**attributes)
+        attributes[attr] = new_value
+        spec2 = TensorSpecification(**attributes)
+        assert spec1 != spec2
+
 
 class TestPauliLindbladMapSpecification:
     def test_simple_construction_and_attributes(self):
@@ -194,6 +222,17 @@ class TestPauliLindbladMapSpecification:
         lindblad = PauliLindbladMap.from_list([("IZ", 0.5)])
         with pytest.raises(ValueError, match=r"Expected a PauliLindbladMap acting on 3"):
             spec.validate_and_coerce(lindblad)
+
+    def test_equal_specs(self):
+        spec1 = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        spec2 = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        assert spec1 == spec2
+
+    def test_not_equal_specs(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        assert spec != PauliLindbladMapSpecification("x", num_qubits=3, num_terms="n_terms")
+        assert spec != PauliLindbladMapSpecification("noise", num_qubits=4, num_terms="n_terms")
+        assert spec != PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="x")
 
 
 class TestTensorInterface:
