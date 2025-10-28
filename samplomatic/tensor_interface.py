@@ -19,10 +19,9 @@ import abc
 import re
 import textwrap
 from collections.abc import Iterable, Mapping, MutableMapping
-from typing import Any, Generic, TypeVar, Union
+from typing import Any, Generic, TypeAlias, TypeVar
 
 import numpy as np
-from numpy.typing import ArrayLike
 from qiskit.quantum_info import PauliLindbladMap
 
 from .aliases import InterfaceName, Self
@@ -36,7 +35,10 @@ __all__ = [
 
 T = TypeVar("T")
 
-InterfaceValues = Mapping[str, Union[ArrayLike, PauliLindbladMap, "InterfaceValues"]]
+
+# TODO: this type alias would more properly be a recursive mapping with allowed value types
+# np.ndarray or PauliLindbladMap, but defining it that way leads to horrible sphinx renderings
+InterfaceValues: TypeAlias = Mapping[str, Any]
 
 ABSENT = object()
 
