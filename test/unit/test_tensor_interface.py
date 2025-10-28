@@ -404,39 +404,3 @@ class TestTensorInterface:
         # wrapping
         desc_wrapped = interface.describe(width=60)
         assert all(len(line) <= 60 for line in desc_wrapped.splitlines())
-
-    def test_equal_interfaces(self):
-        specs = [
-            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
-            TensorSpecification("y", (3,), np.int64, optional=True, description="Class labels"),
-        ]
-        interface = TensorInterface(specs)
-        interface["x"] = np.ones((5,), dtype=np.float32)
-
-        interface2 = TensorInterface(specs)
-        interface2["x"] = np.ones((5,), dtype=np.float32)
-
-        assert interface == interface2
-
-    def test_not_equal_different_specs(self):
-        specs = [
-            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
-            TensorSpecification("y", (3,), np.int64, optional=True),
-        ]
-        interface = TensorInterface(specs)
-        assert interface != TensorInterface(specs[0:1])
-        specs[1] = TensorSpecification("y", (3,), np.float128, optional=True)
-        assert interface != TensorInterface(specs)
-
-    def test_not_equal_different_data(self):
-        specs = [
-            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
-            TensorSpecification("y", (3,), np.int64, optional=True, description="Class labels"),
-        ]
-        interface = TensorInterface(specs)
-        interface["x"] = np.ones((5,), dtype=np.float32)
-        assert interface != TensorInterface(specs)
-
-        interface2 = TensorInterface(specs)
-        interface2["x"] = np.zeros((5,), dtype=np.float32)
-        assert interface != interface2

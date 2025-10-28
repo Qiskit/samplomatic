@@ -34,12 +34,3 @@ class SamplexOutput(TensorInterface):
     ):
         super().__init__(specs)
         self.metadata: dict[str, Any] = {} if metadata is None else metadata
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, SamplexOutput):
-            return (
-                self._specs == other._specs
-                and self._data == other._data
-                and self.metadata == other.metadata
-            )
-        return False
