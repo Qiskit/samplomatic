@@ -36,9 +36,12 @@ class InjectNoiseNode(SamplingNode):
 
     .. note::
 
-       This node intentionally uses the opposite convention as
-       :meth:`qiskit.quantum_info.PauliLindbladMap.signed_sample` for representing signs as
-       booleans. In particular, this node uses ``True`` to represent "the sign should be flipped".
+        This node intentionally uses the opposite convention as
+        :meth:`qiskit.quantum_info.PauliLindbladMap.signed_sample` for representing signs as boolean
+        values. In particular, values written by this node represent the parity of the number of
+        non-trivial factors in the sampled error that arise from negative rates. In other words,
+        when using the boolean written by this node to implement basic PEC, the sign used to correct
+        expectation values should be :math:`-1^{s}` for a bool value :math:`s`.
 
     Args:
         register_name: The name of the register to store the samples.

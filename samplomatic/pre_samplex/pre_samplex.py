@@ -1163,8 +1163,10 @@ class PreSamplex:
                     "pauli_signs",
                     ("num_randomizations", num_signs),
                     np.dtype(np.bool_),
-                    "Signs from sampled Pauli Lindblad maps. The order matches the iteration order "
-                    "of injected noise in the circuit.",
+                    "Signs from sampled Pauli Lindblad maps, where boolean values represent the "
+                    "parity of the number of non-trivial factors in the sampled error that arise "
+                    "from negative rates. The order matches the iteration order of boxes in the "
+                    "original circuit with noise injection annotations.",
                 )
             )
 
