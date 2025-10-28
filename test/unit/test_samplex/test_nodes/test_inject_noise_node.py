@@ -55,16 +55,17 @@ def test_sample(rng):
     )
     node.sample(registers, rng, samplex_input, 5)
     assert registers["injection"] == PauliRegister(np.zeros(15, dtype=np.uint8).reshape(3, 5))
-    assert registers["the_sign"] == Z2Register(np.ones((1, 5), dtype=np.uint8))
+    assert registers["the_sign"] == Z2Register(np.zeros((1, 5), dtype=np.uint8))
 
-    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XXX", -100.0)])}
+    # via binomial concentration around p=0.5, we can be very confident at least 20 are flipped
+    samplex_input["pauli_lindblad_maps.my_noise"] = PauliLindbladMap.from_list([("XXX", -100.0)])
     node.sample(registers, rng, samplex_input, 100)
-    assert (~registers["the_sign"].virtual_gates).any()
+    assert registers["the_sign"].virtual_gates.sum() > 20
 
     samplex_input.bind(noise_scales={"my_modifier": 0.0})
     node.sample(registers, rng, samplex_input, 100)
-    assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
+    assert registers["the_sign"] == Z2Register(np.zeros((1, 100), dtype=np.uint8))
 
     samplex_input.bind(noise_scales={"my_modifier": 1.0}, local_scales={"my_modifier": [0.0]})
     node.sample(registers, rng, samplex_input, 100)
-    assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
+    assert registers["the_sign"] == Z2Register(np.zeros((1, 100), dtype=np.uint8))
