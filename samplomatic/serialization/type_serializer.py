@@ -199,7 +199,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
         try:
             cls = TypeSerializer.TYPE_ID_REGISTRY[data["id"]]
         except KeyError:
-            raise SerializationError("Cannot deserialize object without a type identifier.")
+            raise SerializationError("Cannot deserialize object without a type id.")
         try:
             deserializer = cls.DESERIALIZERS[int(data["ssv"])]
         except KeyError as exc:
@@ -212,7 +212,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
             if ssv > cls.MAX_SSV:
                 raise SerializationError(
                     f"Cannot deserialize an object with SSV {ssv}, the maximum supported by this "
-                    f"serializer is {cls.MIN_SSV}."
+                    f"serializer is {cls.MAX_SSV}."
                 ) from exc
             raise SerializationError(
                 f"Received invalid SSV {ssv} while deserializng, it should be in the range "
