@@ -151,6 +151,34 @@ class TestTensorSpecification:
         with pytest.raises(ValueError, match=r"expects an array of shape"):
             spec.validate_and_coerce(arr)
 
+    def test_equal_specs(self):
+        spec1 = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
+        spec2 = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
+        assert spec1 == spec2
+
+    @pytest.mark.parametrize(
+        "attr, new_value",
+        [
+            ("name", "y"),
+            ("shape", (5,)),
+            ("dtype", np.float64),
+            ("broadcastable", True),
+            ("optional", True),
+        ],
+    )
+    def test_not_equal_specs(self, attr, new_value):
+        attributes = {
+            "name": "x",
+            "shape": (2, 3),
+            "dtype": np.float32,
+            "broadcastable": False,
+            "optional": False,
+        }
+        spec1 = TensorSpecification(**attributes)
+        attributes[attr] = new_value
+        spec2 = TensorSpecification(**attributes)
+        assert spec1 != spec2
+
 
 class TestPauliLindbladMapSpecification:
     def test_simple_construction_and_attributes(self):
@@ -194,6 +222,17 @@ class TestPauliLindbladMapSpecification:
         lindblad = PauliLindbladMap.from_list([("IZ", 0.5)])
         with pytest.raises(ValueError, match=r"Expected a PauliLindbladMap acting on 3"):
             spec.validate_and_coerce(lindblad)
+
+    def test_equal_specs(self):
+        spec1 = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        spec2 = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        assert spec1 == spec2
+
+    def test_not_equal_specs(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
+        assert spec != PauliLindbladMapSpecification("x", num_qubits=3, num_terms="n_terms")
+        assert spec != PauliLindbladMapSpecification("noise", num_qubits=4, num_terms="n_terms")
+        assert spec != PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="x")
 
 
 class TestTensorInterface:
@@ -365,3 +404,39 @@ class TestTensorInterface:
         # wrapping
         desc_wrapped = interface.describe(width=60)
         assert all(len(line) <= 60 for line in desc_wrapped.splitlines())
+
+    def test_equal_interfaces(self):
+        specs = [
+            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
+            TensorSpecification("y", (3,), np.int64, optional=True, description="Class labels"),
+        ]
+        interface = TensorInterface(specs)
+        interface["x"] = np.ones((5,), dtype=np.float32)
+
+        interface2 = TensorInterface(specs)
+        interface2["x"] = np.ones((5,), dtype=np.float32)
+
+        assert interface == interface2
+
+    def test_not_equal_different_specs(self):
+        specs = [
+            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
+            TensorSpecification("y", (3,), np.int64, optional=True),
+        ]
+        interface = TensorInterface(specs)
+        assert interface != TensorInterface(specs[0:1])
+        specs[1] = TensorSpecification("y", (3,), np.float128, optional=True)
+        assert interface != TensorInterface(specs)
+
+    def test_not_equal_different_data(self):
+        specs = [
+            TensorSpecification("x", ("n",), np.float32, description="Input vector"),
+            TensorSpecification("y", (3,), np.int64, optional=True, description="Class labels"),
+        ]
+        interface = TensorInterface(specs)
+        interface["x"] = np.ones((5,), dtype=np.float32)
+        assert interface != TensorInterface(specs)
+
+        interface2 = TensorInterface(specs)
+        interface2["x"] = np.zeros((5,), dtype=np.float32)
+        assert interface != interface2

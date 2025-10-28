@@ -156,6 +156,15 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
             "num_terms": self.num_terms,
         }
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, PauliLindbladMapSpecification):
+            return (
+                self.name == other.name
+                and self.num_terms == other.num_terms
+                and self.num_qubits == other.num_qubits
+            )
+        return False
+
     @classmethod
     def _from_json(cls, data: dict[str, Any]) -> PauliLindbladMapSpecification:
         return cls(data["name"], data["num_qubits"], data["num_terms"])
@@ -295,6 +304,17 @@ class TensorSpecification(Specification[np.ndarray]):
             f"{type(self).__name__}('{self.name}', {repr(self.shape)}, {repr(self.dtype)}"
             f"{description}{broadcastable}{optional})"
         )
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, TensorSpecification):
+            return (
+                self.name == other.name
+                and self.dtype == other.dtype
+                and self.shape == other.shape
+                and self.broadcastable == other.broadcastable
+                and self.optional == other.optional
+            )
+        return False
 
 
 class TensorInterface(MutableMapping):
@@ -567,3 +587,17 @@ class TensorInterface(MutableMapping):
 
     def __len__(self):
         return len(self._data)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, TensorInterface):
+            return False
+        if self._specs != other._specs:
+            return False
+        for key in self._data:
+            v1, v2 = self._data[key], other.get(key, None)
+            if isinstance(v1, np.ndarray) or isinstance(v2, np.ndarray):
+                if not np.array_equal(v1, v2):
+                    return False
+            elif v1 != v2:
+                return False
+        return True
