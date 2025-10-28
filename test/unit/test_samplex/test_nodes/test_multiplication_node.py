@@ -33,12 +33,12 @@ class TestLeftMultiplicationNode:
 
     def test_equality(self, rng):
         """Test equality."""
-        operand = UniformPauli(5).sample(1, rng)
+        operand = UniformPauli(25).sample(1, rng)
         node = LeftMultiplicationNode(operand, "a")
         assert node == node
         assert node == LeftMultiplicationNode(operand, "a")
         assert node != RightMultiplicationNode(operand, "a")
-        assert node != LeftMultiplicationNode(UniformPauli(5).sample(1, rng), "a")
+        assert node != LeftMultiplicationNode(UniformPauli(25).sample(1, rng), "a")
         assert node != LeftMultiplicationNode(operand, "b")
 
     @pytest.mark.parametrize("distribution_type", [HaarU2, UniformPauli])
@@ -73,12 +73,12 @@ class TestRightMultiplicationNode:
 
     def test_equality(self, rng):
         """Test equality."""
-        operand = UniformPauli(5).sample(1, rng)
+        operand = UniformPauli(25).sample(1, rng)
         node = RightMultiplicationNode(operand, "a")
         assert node == node
         assert node == RightMultiplicationNode(operand, "a")
         assert node != LeftMultiplicationNode(operand, "a")
-        assert node != RightMultiplicationNode(UniformPauli(5).sample(1, rng), "a")
+        assert node != RightMultiplicationNode(UniformPauli(25).sample(1, rng), "a")
         assert node != RightMultiplicationNode(operand, "b")
 
     @pytest.mark.parametrize("distribution_type", [HaarU2, UniformPauli])
