@@ -13,9 +13,25 @@
 import orjson
 import pytest
 
-from samplomatic.samplex.nodes import ChangeBasisNode
+from samplomatic.samplex.nodes import (
+    ChangeBasisNode,
+)
 from samplomatic.samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
-from samplomatic.serialization.node_serializers import ChangeBasisNodeSerializer
+from samplomatic.serialization.node_serializers import (
+    ChangeBasisNodeSerializer,
+    CollectTemplateValuesSerializer,
+    CollectZ2ToOutputNodeSerializer,
+    CombineRegistersNodeSerializer,
+    ConversionNodeSerializer,
+    InjectNoiseNodeSerializer,
+    LeftMultiplicationNodeSerializer,
+    LeftU2ParametricMultiplicationNodeSerializer,
+    PauliPastCliffordNodeSerializer,
+    RightMultiplicationNodeSerializer,
+    RightU2ParametricMultiplicationNodeSerializer,
+    SliceRegisterNodeSerializer,
+    TwirlSamplingNodeSerializer,
+)
 from samplomatic.serialization.type_serializer import TypeSerializer
 
 
@@ -26,3 +42,63 @@ def test_change_basis_serializer_round_trip(basis_change, ssv):
     data = ChangeBasisNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
+
+
+@pytest.mark.parametrize("ssv", CollectTemplateValuesSerializer.SSVS)
+def test_collect_template_values_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", CollectZ2ToOutputNodeSerializer.SSVS)
+def test_collect_z2_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", CombineRegistersNodeSerializer.SSVS)
+def test_combine_registers_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", ConversionNodeSerializer.SSVS)
+def test_conversion_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", InjectNoiseNodeSerializer.SSVS)
+def test_inject_noise_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", LeftMultiplicationNodeSerializer.SSVS)
+def test_left_multiplication_serializer_round_trip(ssv, rng):
+    pass
+
+
+@pytest.mark.parametrize("ssv", RightMultiplicationNodeSerializer.SSVS)
+def test_right_multiplication_serializer_round_trip(ssv, rng):
+    pass
+
+
+@pytest.mark.parametrize("ssv", PauliPastCliffordNodeSerializer.SSVS)
+def test_pauli_past_clifford_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", SliceRegisterNodeSerializer.SSVS)
+def test_slice_register_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", TwirlSamplingNodeSerializer.SSVS)
+def test_twirl_sampling_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", LeftU2ParametricMultiplicationNodeSerializer.SSVS)
+def test_left_u2_multiplication_serializer_round_trip(ssv):
+    pass
+
+
+@pytest.mark.parametrize("ssv", RightU2ParametricMultiplicationNodeSerializer.SSVS)
+def test_right_u2_multiplication_serializer_round_trip(ssv):
+    pass
