@@ -355,6 +355,13 @@ class Samplex:
 
             >>> # after binding required values, we can sample 123 randomizations
             >>> samplex.sample(
+            ...     inputs.bind(parameter_values=[0.1, 0.2]),
+            ...     num_randomizations=123,
+            ... ) # doctest: +ELLIPSIS
+            SamplexOutput({'measurement_flips.meas': ..., 'parameter_values': ...})
+
+            >>> # alternatively, we can provide any mapping object directly to specify inputs
+            >>> samplex.sample(
             ...     {"parameter_values": [0.1, 0.2]},
             ...     num_randomizations=123,
             ... ) # doctest: +ELLIPSIS
