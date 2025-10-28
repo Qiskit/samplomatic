@@ -137,6 +137,14 @@ class PauliPastCliffordNode(EvaluationNode):
             )
         }
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, PauliPastCliffordNode)
+            and self._op_name == other._op_name
+            and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
+            and self._register_name == other._register_name
+        )
+
     def get_style(self):
         return (
             super()

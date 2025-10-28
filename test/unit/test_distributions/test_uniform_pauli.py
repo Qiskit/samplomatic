@@ -13,7 +13,7 @@
 """Test the PauliRegister distribution"""
 
 from samplomatic.annotations import VirtualType
-from samplomatic.distributions import UniformPauli
+from samplomatic.distributions import HaarU2, UniformPauli
 
 
 def test_attributes():
@@ -22,6 +22,15 @@ def test_attributes():
 
     assert distribution.num_subsystems == 13
     assert distribution.register_type is VirtualType.PAULI
+
+
+def test_equality():
+    """Test equality."""
+    distribution = UniformPauli(13)
+    assert distribution == distribution
+    assert distribution == UniformPauli(13)
+    assert distribution != HaarU2(13)
+    assert distribution != UniformPauli(17)
 
 
 def test_sample(rng):

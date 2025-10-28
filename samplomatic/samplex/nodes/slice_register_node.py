@@ -154,6 +154,31 @@ class SliceRegisterNode(EvaluationNode):
         converted_register = registers[self._input_register_name].convert_to(self._output_type)
         registers[self._output_register_name] = converted_register[self._slice_idxs]
 
+    def __eq__(self, other):
+        if not (
+            isinstance(other, SliceRegisterNode)
+            and self._output_type == other._output_type
+            and self._output_register_name == other._output_register_name
+            and self._input_type == other._input_type
+            and self._input_register_name == other._input_register_name
+            and type(self._slice_idxs) is type(other._slice_idxs)
+        ):
+            return False
+        return (
+            self._slice_idxs == other._slice_idxs
+            if isinstance(self._slice_idxs, slice)
+            else np.array_equal(self._slice_idxs, other._slice_idxs)
+        )
+
+    def get_style(self):
+        return (
+            super()
+            .get_style()
+            .append_data("Output Type", repr(self._output_type))
+            .append_data("Output Register Name", self._output_register_name)
+            .append_data("Input Register Name", self._input_register_name)
+        )
+
 
 def get_slice_from_idxs(slice_idxs: ArrayLike) -> ArrayLike | slice:
     """Return a :class:`slice` object if the given indices are stridable.

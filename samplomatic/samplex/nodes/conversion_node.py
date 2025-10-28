@@ -116,6 +116,17 @@ class ConversionNode(EvaluationNode):
         if self.remove_existing:
             registers.pop(self.existing_name)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, ConversionNode)
+            and self.existing_name == other.existing_name
+            and self.existing_type == other.existing_type
+            and self.new_name == other.new_name
+            and self.new_type == other.new_type
+            and self.num_subsystems == other.num_subsystems
+            and self.remove_existing == other.remove_existing
+        )
+
     def get_style(self):
         return (
             super()

@@ -80,6 +80,14 @@ class TwirlSamplingNode(SamplingNode):
         registers[self._lhs_register_name] = samples
         registers[self._rhs_register_name] = samples.invert()
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, TwirlSamplingNode)
+            and self._lhs_register_name == other._lhs_register_name
+            and self._rhs_register_name == other._rhs_register_name
+            and self._distribution == other._distribution
+        )
+
     def get_style(self):
         return (
             super()

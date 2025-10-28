@@ -140,6 +140,17 @@ class CollectTemplateValues(CollectionNode):
 
         all_values[:, template_idxs] = values.transpose(1, 0, 2).reshape(-1, template_idxs.size)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, CollectTemplateValues)
+            and self._template_params_name == other._template_params_name
+            and np.array_equal(self._template_idxs, other._template_idxs)
+            and self._register_type == other._register_type
+            and self._register_name == other._register_name
+            and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
+            and self._synth == other._synth
+        )
+
     def get_style(self):
         return (
             super()

@@ -196,6 +196,27 @@ class CombineRegistersNode(EvaluationNode):
 
         registers[self._output_register_name] = output_register
 
+    def __eq__(self, other):
+        if not (
+            isinstance(other, CombineRegistersNode)
+            and self._output_type == other._output_type
+            and self._output_register_name == other._output_register_name
+            and self._num_output_subsystems == other._num_output_subsystems
+            and len(self._operands) == len(other._operands)
+        ):
+            return False
+        for reg_name, (source_idx, dest_idx, input_type, _) in self._operands.items():
+            if (other_operand := other._operands.get(reg_name)) is None:
+                return False
+            other_source_idx, other_dest_idx, other_input_type, _ = other_operand
+            if not (
+                np.array_equal(source_idx, other_source_idx)
+                and np.array_equal(dest_idx, other_dest_idx)
+                and input_type == other_input_type
+            ):
+                return False
+        return True
+
     def get_style(self):
         operands = {
             register_name: (source_idxs.tolist(), destination_idxs.tolist(), str(input_type))

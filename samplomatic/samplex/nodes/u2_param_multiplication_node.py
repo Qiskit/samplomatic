@@ -68,6 +68,14 @@ class U2ParametricMultiplicationNode(EvaluationNode):
             orjson.loads(data["param_indices"]),
         )
 
+    def __eq__(self, other):
+        return (
+            type(self) is type(other)
+            and self._operand == other._operand
+            and self._param_idxs == other._param_idxs
+            and self._register_name == other._register_name
+        )
+
     def get_style(self):
         return (
             super()

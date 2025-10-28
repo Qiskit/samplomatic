@@ -15,7 +15,7 @@
 import numpy as np
 
 from samplomatic.annotations import VirtualType
-from samplomatic.distributions import HaarU2
+from samplomatic.distributions import HaarU2, UniformPauli
 
 
 def test_attributes():
@@ -24,6 +24,15 @@ def test_attributes():
 
     assert distribution.num_subsystems == 13
     assert distribution.register_type is VirtualType.U2
+
+
+def test_equality():
+    """Test equality."""
+    distribution = HaarU2(2)
+    assert distribution == distribution
+    assert distribution == HaarU2(2)
+    assert distribution != HaarU2(3)
+    assert distribution != UniformPauli(13)
 
 
 def test_sample_shape(rng):

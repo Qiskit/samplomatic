@@ -86,6 +86,15 @@ class CollectZ2ToOutputNode(CollectionNode):
             self._subsystem_idxs, :
         ].transpose(1, 0)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, CollectZ2ToOutputNode)
+            and self._register_name == other._register_name
+            and self._output_name == other._output_name
+            and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
+            and np.array_equal(self._output_idxs, other._output_idxs)
+        )
+
     def get_style(self):
         style = (
             super()

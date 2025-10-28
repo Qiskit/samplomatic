@@ -98,6 +98,13 @@ class BasisChange(Generic[T]):
         """
         return type(self.action)([[self._lookup[e]] for e in elements])
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, BasisChange)
+            and self.alphabet == other.alphabet
+            and self.action == other.action
+        )
+
 
 MEAS_PAULI_BASIS = BasisChange[np.uint8](
     [0, 1, 2, 3],
@@ -161,6 +168,15 @@ class ChangeBasisNode(SamplingNode):
             BasisChange.from_json_dict(orjson.loads(data["basis_change"])),
             data["basis_ref"],
             int(data["num_subsystems"]),
+        )
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, ChangeBasisNode)
+            and self._register_name == other._register_name
+            and self._basis_change == other._basis_change
+            and self._basis_ref == other._basis_ref
+            and self._num_subsystems == other._num_subsystems
         )
 
     def get_style(self):
