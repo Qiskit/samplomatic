@@ -24,6 +24,8 @@ from samplomatic.samplex.nodes import PauliPastCliffordNode
 from samplomatic.samplex.nodes.pauli_past_clifford_node import PAULI_PAST_CLIFFORD_LOOKUP_TABLES
 from samplomatic.virtual_registers import PauliRegister
 
+from .dummy_nodes import DummyEvaluationNode
+
 
 class TestLookupTables:
     paulis_1q = {
@@ -114,6 +116,15 @@ class TestPauliPastClifford:
         """Test init error."""
         with pytest.raises(SamplexBuildError, match=", found hadamard."):
             PauliPastCliffordNode("hadamard", "my_reg", [(3,), (1,), (0,)])
+
+    def test_equality(self):
+        node = PauliPastCliffordNode("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node == node
+        assert node == PauliPastCliffordNode("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node != DummyEvaluationNode()
+        assert node != PauliPastCliffordNode("cx", "my_reg", [(3, 0), (1, 4), (2, 5)])
+        assert node != PauliPastCliffordNode("cx", "my_other_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node != PauliPastCliffordNode("ecr", "my_reg", [(0, 3), (1, 4), (2, 5)])
 
     def test_reads_from(self):
         """Test ``reads_from``."""

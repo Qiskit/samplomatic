@@ -115,6 +115,16 @@ class InjectNoiseNode(SamplingNode):
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, InjectNoiseNode)
+            and self._register_name == other._register_name
+            and self._sign_register_name == other._sign_register_name
+            and self._noise_ref == other._noise_ref
+            and self._modifier_ref == other._modifier_ref
+            and self._num_subsystems == other._num_subsystems
+        )
+
     def get_style(self):
         return (
             super()

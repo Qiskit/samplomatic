@@ -62,6 +62,13 @@ class MultiplicationNode(EvaluationNode):
             )
         }
 
+    def __eq__(self, other):
+        return (
+            type(self) is type(other)
+            and self._operand == other._operand
+            and self._register_name == other._register_name
+        )
+
     def get_style(self):
         return super().get_style().append_data("Fixed Operand", repr(self._operand))
 

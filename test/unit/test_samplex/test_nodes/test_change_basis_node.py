@@ -26,6 +26,8 @@ from samplomatic.samplex.nodes.change_basis_node import (
 from samplomatic.tensor_interface import TensorInterface, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
+from .dummy_nodes import DummySamplingNode
+
 
 class TestBasisChange:
     """Test the BasisChange class"""
@@ -35,6 +37,15 @@ class TestBasisChange:
         assert basis_change.num_elements == 3
         assert basis_change.alphabet == ["A", "B", "C"]
         assert basis_change.action == PauliRegister([[0], [1], [2]])
+
+    def test_equality(self):
+        """Test equality."""
+        basis_change = BasisChange("ABC", PauliRegister([[0], [1], [2]]))
+        assert basis_change == basis_change
+        assert basis_change == BasisChange("ABC", PauliRegister([[0], [1], [2]]))
+        assert basis_change != BasisChange("AB", PauliRegister([[0], [1]]))
+        assert basis_change != BasisChange("CAB", PauliRegister([[0], [1], [2]]))
+        assert basis_change != BasisChange("ABC", PauliRegister([[2], [1], [0]]))
 
     def test_construction_fails(self):
         """Test the construction fails when expected."""
@@ -72,6 +83,16 @@ class TestChangeBasisNode:
         basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
         assert basis_change.instantiates() == {"basis_change": (3, VirtualType.U2)}
         assert basis_change.outgoing_register_type is VirtualType.U2
+
+    def test_equality(self):
+        """Test equality."""
+        basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        assert basis_change == basis_change
+        assert basis_change != DummySamplingNode()
+        assert basis_change != ChangeBasisNode("basis_change", PREP_PAULI_BASIS, "measure", 3)
+        assert basis_change != ChangeBasisNode("change_basis", MEAS_PAULI_BASIS, "measure", 3)
+        assert basis_change != ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "meas", 3)
+        assert basis_change != ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 4)
 
     def test_sample(self):
         """Test evaluation of the node."""

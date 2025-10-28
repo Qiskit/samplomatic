@@ -18,6 +18,8 @@ from samplomatic.samplex.nodes import TwirlSamplingNode
 from samplomatic.tensor_interface import TensorInterface
 from samplomatic.virtual_registers import PauliRegister
 
+from .dummy_nodes import DummySamplingNode
+
 
 def test_instantiates():
     """Test instantiation and basic attributes."""
@@ -25,6 +27,17 @@ def test_instantiates():
     expected_dict = {"lhs": (10, VirtualType.PAULI), "rhs": (10, VirtualType.PAULI)}
     assert node.instantiates() == expected_dict
     assert node.outgoing_register_type is VirtualType.PAULI
+
+
+def test_equality():
+    """Test equality."""
+    node = TwirlSamplingNode("lhs", "rhs", UniformPauli(1))
+    assert node == node
+    assert node == TwirlSamplingNode("lhs", "rhs", UniformPauli(1))
+    assert node != DummySamplingNode()
+    assert node != TwirlSamplingNode("left", "rhs", UniformPauli(1))
+    assert node != TwirlSamplingNode("lhs", "right", UniformPauli(1))
+    assert node != TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
 
 
 def test_sample(rng):

@@ -20,6 +20,35 @@ from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import CombineRegistersNode
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
+from .dummy_nodes import DummyEvaluationNode
+
+
+def test_equality():
+    """Test equality."""
+    operands = {"reg": [(0, 1), (0, 2), VirtualType.PAULI]}
+    node = CombineRegistersNode(VirtualType.U2, "larger_reg", 3, operands)
+    assert node == node
+    assert node == CombineRegistersNode(VirtualType.U2, "larger_reg", 3, operands)
+    assert node != DummyEvaluationNode()
+    assert node != CombineRegistersNode(VirtualType.PAULI, "larger_reg", 3, operands)
+    assert node != CombineRegistersNode(VirtualType.U2, "smaller_reg", 3, operands)
+    assert node != CombineRegistersNode(VirtualType.U2, "larger_reg", 7, operands)
+
+    other_operands = {"r": [(0, 1), (0, 2), VirtualType.PAULI]}
+    assert node != CombineRegistersNode(VirtualType.U2, "larger_reg", 3, other_operands)
+
+    other_operands = {"reg": [(1, 0), (0, 2), VirtualType.PAULI]}
+    assert node != CombineRegistersNode(VirtualType.U2, "larger_reg", 3, other_operands)
+
+    other_operands = {"reg": [(0, 1), (0, 2), VirtualType.U2]}
+    assert node != CombineRegistersNode(VirtualType.U2, "larger_reg", 3, other_operands)
+
+    other_operands = {
+        "reg": [(0, 1), (0, 2), VirtualType.PAULI],
+        "my_reg": [(0,), (1,), VirtualType.PAULI],
+    }
+    assert node != CombineRegistersNode(VirtualType.U2, "larger_reg", 3, other_operands)
+
 
 def test_inserting_identities():
     """Test inserting identities in a register using a ``CombineRegistersNode``."""
