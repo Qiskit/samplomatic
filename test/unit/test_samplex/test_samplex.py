@@ -41,7 +41,10 @@ class TestBasic:
         """Test that an empty samplex doesn't error when sampled."""
         samplex = Samplex()
         samplex.finalize()
+
         samplex.sample(samplex.inputs())
+        samplex.sample({})
+        samplex.sample(None)
 
     def test_str(self):
         """Test the string dunder is doing fancy stuff."""
@@ -248,7 +251,8 @@ class TestSample:
         assert isinstance(registers["y"], U2Register)
         assert registers["y"].shape == (15, 13)
 
-    def test_parameter_evaluation(self):
+    @pytest.mark.parametrize("input_as_dict", [True, False])
+    def test_parameter_evaluation(self, input_as_dict):
         """Test the evaluation method when there are parameters."""
         samplex = Samplex()
         samplex.append_parameter_expression(a := Parameter("a"))
@@ -275,7 +279,11 @@ class TestSample:
 
         samplex.finalize()
 
-        samplex_input = samplex.inputs().bind(parameter_values=np.array([1, 2, 4], float))
+        if input_as_dict:
+            samplex_input = {"parameter_values": np.array([1, 2, 4], float)}
+        else:
+            samplex_input = samplex.inputs().bind(parameter_values=np.array([1, 2, 4], float))
+
         registers = samplex.sample(
             samplex_input, num_randomizations=13, keep_registers=True
         ).metadata["registers"]

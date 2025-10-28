@@ -38,7 +38,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..tensor_interface import Specification, TensorInterface, TensorSpecification
+from ..tensor_interface import InterfaceValues, Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
@@ -314,7 +314,7 @@ class Samplex:
 
     def sample(
         self,
-        samplex_input: TensorInterface,
+        samplex_input: InterfaceValues | None = None,
         num_randomizations: int = 1,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
@@ -360,10 +360,20 @@ class Samplex:
             ... ) # doctest: +ELLIPSIS
             SamplexOutput({'measurement_flips.meas': ..., 'parameter_values': ...})
 
+            >>> # alternatively, we can provide any mapping object directly to specify inputs
+            >>> samplex.sample(
+            ...     {"parameter_values": [0.1, 0.2]},
+            ...     num_randomizations=123,
+            ... ) # doctest: +ELLIPSIS
+            SamplexOutput({'measurement_flips.meas': ..., 'parameter_values': ...})
+
 
         Args:
-            samplex_input: The inputs required to generate samples for this samplex. See
-                :meth:`~inputs`.
+            samplex_input: A mapping from input names to input values, as described by
+                :meth:`~.inputs` (see also the :ref:`samplex-io` guide), or ``None`` if
+                no input is required. Names that contain a period can use nested dictionary
+                expansion. Note that :class:`~.TensorInterface` is a mapping object and is therefore
+                a valid input argument when fully bound.
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
@@ -376,6 +386,9 @@ class Samplex:
             # this raises instead of calling finalize() to make it impossible
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
+
+        if not isinstance(samplex_input, TensorInterface):
+            samplex_input = self.inputs().bind(**(samplex_input or {}))
 
         if not samplex_input.fully_bound:
             raise SamplexRuntimeError(
