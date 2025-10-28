@@ -1,0 +1,35 @@
+Specification
+=============
+
+.. currentmodule:: samplomatic.tensor_interface
+
+.. autoclass:: Specification
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Specification.description
+      ~Specification.free_dimensions
+      ~Specification.name
+      ~Specification.optional
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Specification.describe
+      ~Specification.validate_and_coerce
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: description
+   .. autoattribute:: free_dimensions
+   .. autoattribute:: name
+   .. autoattribute:: optional
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: describe
+   .. automethod:: validate_and_coerce

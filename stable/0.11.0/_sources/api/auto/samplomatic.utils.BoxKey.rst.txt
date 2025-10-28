@@ -1,0 +1,7 @@
+BoxKey
+======
+
+.. currentmodule:: samplomatic.utils
+
+.. autoclass:: BoxKey
+   :show-inheritance:

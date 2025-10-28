@@ -1,0 +1,21 @@
+NoiseInjectionStrategy
+======================
+
+.. currentmodule:: samplomatic.transpiler
+
+.. autoclass:: NoiseInjectionStrategy
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION
+      ~NoiseInjectionStrategy.NO_MODIFICATION
+      ~NoiseInjectionStrategy.UNIFORM_MODIFICATION
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: INDIVIDUAL_MODIFICATION
+   .. autoattribute:: NO_MODIFICATION
+   .. autoattribute:: UNIFORM_MODIFICATION
