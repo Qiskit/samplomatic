@@ -22,7 +22,7 @@ from .type_serializer import DataSerializer, TypeSerializer
 class BasisChangeSerializer(TypeSerializer[BasisChange]):
     """Serializer for :class:`~.BasisChange`."""
 
-    TYPE_ID = "13"
+    TYPE_ID = "B0"
 
     class SSV1(DataSerializer[BasisChange]):
         MIN_SSV = 1

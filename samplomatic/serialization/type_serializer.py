@@ -18,13 +18,11 @@ import abc
 import inspect
 from typing import Any, Callable, ClassVar, Generic, TypeVar
 
+from ..exceptions import SerializationError
+
 T = TypeVar("T")
 
 SSV = 1
-
-
-class SerializationError(Exception):
-    """Error raised during serialization."""
 
 
 class DataSerializer(Generic[T]):
@@ -163,12 +161,10 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
         Raises:
             SerializationError: If serialization is not supported for the given SSV.
         """
-        ssv = ssv or cls.MAX_SSV
+        ssv = ssv if ssv is not None else SSV
         try:
             serializer = cls.SERIALIZERS[ssv]
         except KeyError as exc:
-            if ssv is None:
-                raise SerializationError("No SSV provided for serialization.") from exc
             if ssv < cls.MIN_SSV:
                 raise SerializationError(
                     f"Expected an SSV greater than or equal to {cls.MIN_SSV}, got {ssv}."
@@ -177,7 +173,10 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
                 raise SerializationError(
                     f"Expected an SSV less than or equal to {cls.MAX_SSV}, got {ssv}."
                 ) from exc
-            raise SerializationError(f"Received an invalid SSV {ssv}.") from exc
+            raise SerializationError(
+                f"Received invalid SSV {ssv} while serializng, it should be in the range "
+                f"{cls.MIN_SSV} to {cls.MAX_SSV} inclusive."
+            ) from exc
         return {
             "id": cls.TYPE_ID,
             "ssv": str(ssv),
@@ -200,7 +199,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
         try:
             cls = TypeSerializer.TYPE_ID_REGISTRY[data["id"]]
         except KeyError:
-            raise
+            raise SerializationError("Cannot deserialize object without a type identifier.")
         try:
             deserializer = cls.DESERIALIZERS[int(data["ssv"])]
         except KeyError as exc:
@@ -215,5 +214,8 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
                     f"Cannot deserialize an object with SSV {ssv}, the maximum supported by this "
                     f"serializer is {cls.MIN_SSV}."
                 ) from exc
-            raise SerializationError(f"Received invalid SSV {ssv}.") from exc
+            raise SerializationError(
+                f"Received invalid SSV {ssv} while deserializng, it should be in the range "
+                f"{cls.MIN_SSV} to {cls.MAX_SSV} inclusive."
+            ) from exc
         return deserializer(data)

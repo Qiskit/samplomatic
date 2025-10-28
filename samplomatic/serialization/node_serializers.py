@@ -24,7 +24,7 @@ from .type_serializer import DataSerializer, TypeSerializer
 class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
     """Serializer for :class:`~.ChangeBasisNode`."""
 
-    TYPE_ID = "0"
+    TYPE_ID = "N0"
 
     class SSV1(DataSerializer[ChangeBasisNode]):
         MIN_SSV = 1
