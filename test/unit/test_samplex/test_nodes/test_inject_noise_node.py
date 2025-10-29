@@ -24,8 +24,6 @@ from samplomatic.tensor_interface import (
 )
 from samplomatic.virtual_registers import PauliRegister, Z2Register
 
-from .dummy_nodes import DummySamplingNode
-
 
 def test_instantiates():
     """Test instantiation and basic attributes."""
@@ -37,12 +35,12 @@ def test_instantiates():
     assert node.outgoing_register_type is VirtualType.PAULI
 
 
-def test_equality():
+def test_equality(dummy_sampling_node):
     """Test equality."""
     node = InjectNoiseNode("inject", "sign", "noise", "modifier", 5)
     assert node == node
     assert node == InjectNoiseNode("inject", "sign", "noise", "modifier", 5)
-    assert node != DummySamplingNode
+    assert node != dummy_sampling_node()
     assert node != InjectNoiseNode("my_inject", "sign", "noise", "modifier", 5)
     assert node != InjectNoiseNode("inject", "my_sign", "noise", "modifier", 5)
     assert node != InjectNoiseNode("inject", "sign", "my_noise", "modifier", 5)

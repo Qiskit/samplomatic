@@ -23,8 +23,6 @@ from samplomatic.samplex.nodes import CollectTemplateValues
 from samplomatic.synths import RzRxSynth, RzSxSynth
 from samplomatic.tensor_interface import TensorSpecification
 
-from .dummy_nodes import DummyCollectionNode
-
 
 def test_construction():
     """Test simple construction and simple attributes."""
@@ -40,14 +38,14 @@ def test_construction():
     assert node.outgoing_register_type is None
 
 
-def test_equality():
+def test_equality(dummy_collection_node):
     """Test equality."""
     param_idxs = [[0, 1, 3], [2, 4, 5]]
     u2 = VirtualType.U2
     node = CollectTemplateValues("values", param_idxs, "x", u2, [3, 2], RzSxSynth())
     assert node == node
     assert node == CollectTemplateValues("values", param_idxs, "x", u2, [3, 2], RzSxSynth())
-    assert node != DummyCollectionNode()
+    assert node != dummy_collection_node()
     assert node != CollectTemplateValues("vals", param_idxs, "x", u2, [3, 2], RzSxSynth())
     assert node != CollectTemplateValues(
         "values", [[6, 7, 8], [9, 10, 11]], "x", u2, [3, 2], RzSxSynth()

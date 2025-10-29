@@ -20,16 +20,14 @@ from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import CombineRegistersNode
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
-from .dummy_nodes import DummyEvaluationNode
 
-
-def test_equality():
+def test_equality(dummy_evaluation_node):
     """Test equality."""
     operands = {"reg": [(0, 1), (0, 2), VirtualType.PAULI]}
     node = CombineRegistersNode(VirtualType.U2, "larger_reg", 3, operands)
     assert node == node
     assert node == CombineRegistersNode(VirtualType.U2, "larger_reg", 3, operands)
-    assert node != DummyEvaluationNode()
+    assert node != dummy_evaluation_node()
     assert node != CombineRegistersNode(VirtualType.PAULI, "larger_reg", 3, operands)
     assert node != CombineRegistersNode(VirtualType.U2, "smaller_reg", 3, operands)
     assert node != CombineRegistersNode(VirtualType.U2, "larger_reg", 7, operands)

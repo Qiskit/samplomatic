@@ -26,8 +26,6 @@ from samplomatic.samplex.nodes.change_basis_node import (
 from samplomatic.tensor_interface import TensorInterface, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
-from .dummy_nodes import DummySamplingNode
-
 
 class TestBasisChange:
     """Test the BasisChange class"""
@@ -84,11 +82,11 @@ class TestChangeBasisNode:
         assert basis_change.instantiates() == {"basis_change": (3, VirtualType.U2)}
         assert basis_change.outgoing_register_type is VirtualType.U2
 
-    def test_equality(self):
+    def test_equality(self, dummy_sampling_node):
         """Test equality."""
         basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
         assert basis_change == basis_change
-        assert basis_change != DummySamplingNode()
+        assert basis_change != dummy_sampling_node()
         assert basis_change != ChangeBasisNode("basis_change", PREP_PAULI_BASIS, "measure", 3)
         assert basis_change != ChangeBasisNode("change_basis", MEAS_PAULI_BASIS, "measure", 3)
         assert basis_change != ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "meas", 3)
