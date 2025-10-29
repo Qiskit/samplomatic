@@ -24,7 +24,7 @@ class Twirl(Annotation):
 
     Args:
         group: Which group to twirl with.
-        dressing: Which side of the box to attached dressing instructions.
+        dressing: Which side of the box to attach the dressing instructions.
         decomposition: How to decompose single-qubit gates.
     """
 
