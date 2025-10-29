@@ -117,7 +117,7 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
 
         @classmethod
         def serialize(cls, obj):
-            {
+            return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "output_name": obj._output_name,  # noqa: SLF001
                 "subsystem_indices": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
