@@ -13,8 +13,10 @@
 """Specification Serializers"""
 
 import numpy as np
+import orjson
 
-from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
+from ..aliases import InterfaceName
+from ..tensor_interface import PauliLindbladMapSpecification, Specification, TensorSpecification
 from .type_serializer import DataSerializer, TypeSerializer
 
 
@@ -70,3 +72,25 @@ class TensorSpecificationSerializer(TypeSerializer[TensorSpecification]):
                 data["broadcastable"],
                 data["optional"],
             )
+
+
+def serialize_specifications(data: dict[InterfaceName, Specification]) -> str:
+    out_dict = {}
+    for name, spec in data.items():
+        if isinstance(spec, TensorSpecification):
+            out_dict[name] = orjson.dumps(TensorSpecificationSerializer.serialize(spec)).decode(
+                "utf-8"
+            )  # noqa: SLF001
+        else:
+            out_dict[name] = orjson.dumps(
+                PauliLindbladMapSpecificationSerializer.serialize(spec)
+            ).decode("utf-8")  # noqa: SLF001
+    return orjson.dumps(out_dict).decode("utf-8")
+
+
+def deserialize_specifications(data: str) -> dict[InterfaceName, Specification]:
+    outputs_raw = orjson.loads(data)
+    outputs = {}
+    for name, output in outputs_raw.items():
+        outputs[name] = TypeSerializer.deserialize(orjson.loads(output))  # noqa: SLF001
+    return outputs
