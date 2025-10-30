@@ -136,10 +136,6 @@ class ParameterExpressionTable:
         """
         return (
             isinstance(other, ParameterExpressionTable)
-            and all(
-                str(expr1) == str(expr2)
-                for expr1, expr2 in zip(self._expressions, other._expressions)
-            )
-            and self._parameters.keys() == other._parameters.keys()
-            # TODO: What about ParameterVectorElement?
+            and self._expressions == other._expressions
+            and self._parameters == other._parameters
         )

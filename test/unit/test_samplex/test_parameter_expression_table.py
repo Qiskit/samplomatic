@@ -121,9 +121,9 @@ def test_equality():
     new_table.append(original_param + 1)
     assert new_table == table
 
+    new_table.append(original_param + 2)
+    assert new_table != table
+
     new_table = ParameterExpressionTable()
     new_table.append(Parameter("a") + 1)
-    assert new_table == table
-
-    new_table.append(Parameter("b"))
     assert new_table != table
