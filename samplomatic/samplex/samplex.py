@@ -488,9 +488,9 @@ class Samplex:
     def __eq__(self, other) -> bool:
         """Compare against ``other`` and return ``True`` if the two are equal.
 
-        To be determined equal, the two objects must have isomorphic graphs. This means
-        Two :class:`~.Samplex` objects are considered equal if they describe the same
-        distribution, and iregardless of graph indexing.
+        Samplexes must have isomorphic graphs to be equal. This means that
+        two :class:`~.Samplex` objects are equal if they describe the same
+        distribution, regardless of graph indexing.
         """
         # We don't compare some internal attributes set by the finalization, as they
         # are drawn directly from the graph.
