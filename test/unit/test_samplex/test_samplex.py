@@ -30,6 +30,19 @@ from samplomatic.virtual_registers import PauliRegister, U2Register
 class TestBasic:
     """Basic tests to do with construction and attributes."""
 
+    def _build_samplex(self, n_nodes, node_type, param) -> Samplex:
+        """Return a basic samplex"""
+        samplex = Samplex()
+        for _ in range(n_nodes):
+            samplex.add_node(node_type())
+        for idx in range(n_nodes - 1):
+            samplex.add_edge(idx, idx + 1)
+        samplex.append_parameter_expression(param)
+        samplex.add_input(TensorSpecification("a", (1, 2, "x"), np.uint8))
+        samplex.add_output(TensorSpecification("out", ("num_randomizations", 5, 6), float))
+        samplex.set_passthrough_params([(0, param)])
+        return samplex
+
     def test_empty(self):
         """Test that an empty samplex doesn't error when sampled."""
         samplex = Samplex()
@@ -127,6 +140,44 @@ class TestBasic:
         samplex.add_edge(b, c)
 
         save_plot(samplex.draw())
+
+    def test_equality(self, dummy_sampling_node, dummy_collection_node):
+        """Test equality of Samplex objects"""
+        param = Parameter("a")
+        samplex = self._build_samplex(2, dummy_sampling_node, param)
+        assert samplex == samplex
+        assert samplex == self._build_samplex(2, dummy_sampling_node, param)
+        assert samplex != self._build_samplex(2, dummy_sampling_node, Parameter("a"))
+
+        new_samplex = self._build_samplex(3, dummy_sampling_node, param)
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_collection_node, param)
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_sampling_node, param)
+        new_samplex.add_edge(1, 0)
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_sampling_node, param)
+        new_samplex.add_input(TensorSpecification("b", (1, 2, "x"), np.uint8))
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_sampling_node, param)
+        new_samplex.add_output(TensorSpecification("out2", (9,), float, "desc"))
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_sampling_node, param)
+        new_samplex.append_parameter_expression(Parameter("x") + Parameter("d"))
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_sampling_node, param)
+        new_samplex.set_passthrough_params([(1, Parameter("y"))])
+        assert samplex != new_samplex
+
+        new_samplex = self._build_samplex(2, dummy_sampling_node, param)
+        new_samplex.finalize()
+        assert samplex != new_samplex
 
 
 class TestValidation:
