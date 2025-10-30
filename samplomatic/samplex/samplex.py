@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
+from rustworkx import is_isomorphic
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -482,6 +483,25 @@ class Samplex:
             subgraph_idxs=subgraph_idxs,
             layout_method=layout_method,
             ranker=_node_ranker,
+        )
+
+    def __eq__(self, other) -> bool:
+        """Compare against ``other`` and return ``True`` if the two are equal.
+
+        Samplexes must have isomorphic graphs to be equal. This means that
+        two :class:`~.Samplex` objects are equal if they describe the same
+        distribution, regardless of graph indexing.
+        """
+        # We don't compare some internal attributes set by the finalization, as they
+        # are drawn directly from the graph.
+        return (
+            isinstance(other, Samplex)
+            and is_isomorphic(self.graph, other.graph, lambda x, y: x == y)
+            and self._finalized == other._finalized
+            and self._input_specifications == other._input_specifications
+            and self._output_specifications == other._output_specifications
+            and self._param_table == other._param_table
+            and self._passthrough_params == other._passthrough_params
         )
 
 
