@@ -18,8 +18,6 @@ from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import ConversionNode
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
-from .dummy_nodes import DummyEvaluationNode
-
 
 def test_construction():
     """Test construction and basic attributes."""
@@ -38,12 +36,12 @@ def test_construction():
     assert node.outgoing_register_type is VirtualType.U2
 
 
-def test_equality():
+def test_equality(dummy_evaluation_node):
     """Test equality."""
     node = ConversionNode("existing", VirtualType.PAULI, "new", VirtualType.U2, 5, True)
     assert node == node
     assert node == ConversionNode("existing", VirtualType.PAULI, "new", VirtualType.U2, 5, True)
-    assert node != DummyEvaluationNode()
+    assert node != dummy_evaluation_node()
     assert node != ConversionNode("exist", VirtualType.PAULI, "new", VirtualType.U2, 5, True)
     assert node != ConversionNode("existing", VirtualType.C1, "new", VirtualType.U2, 5, True)
     assert node != ConversionNode("existing", VirtualType.PAULI, "old", VirtualType.U2, 5, True)

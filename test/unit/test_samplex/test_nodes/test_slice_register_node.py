@@ -20,10 +20,8 @@ from samplomatic.samplex.nodes import SliceRegisterNode
 from samplomatic.samplex.nodes.slice_register_node import get_slice_from_idxs
 from samplomatic.virtual_registers import PauliRegister
 
-from .dummy_nodes import DummyEvaluationNode
 
-
-def test_equality():
+def test_equality(dummy_evaluation_node):
     """Test equality."""
     node = SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg_in", "reg_out", [0, 1])
     assert node == node
@@ -34,7 +32,7 @@ def test_equality():
     assert node != SliceRegisterNode(
         VirtualType.PAULI, VirtualType.U2, "reg_in", "reg_out", [0, 1], force_copy=True
     )
-    assert node != DummyEvaluationNode()
+    assert node != dummy_evaluation_node
     assert node != SliceRegisterNode(VirtualType.U2, VirtualType.U2, "reg_in", "reg_out", [0, 1])
     assert node != SliceRegisterNode(
         VirtualType.PAULI, VirtualType.PAULI, "reg_in", "reg_out", [0, 1]

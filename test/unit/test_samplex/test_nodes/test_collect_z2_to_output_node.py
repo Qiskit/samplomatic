@@ -20,8 +20,6 @@ from samplomatic.samplex.nodes import CollectZ2ToOutputNode
 from samplomatic.tensor_interface import TensorSpecification
 from samplomatic.virtual_registers import Z2Register
 
-from .dummy_nodes import DummyCollectionNode
-
 
 def test_construction():
     """Test simple construction and simple attributes."""
@@ -34,12 +32,12 @@ def test_construction():
     assert node.outgoing_register_type is None
 
 
-def test_equality():
+def test_equality(dummy_collection_node):
     """Test equality."""
     node = CollectZ2ToOutputNode("reg", [0, 2], "out", [1, 3])
     assert node == node
     assert node == CollectZ2ToOutputNode("reg", [0, 2], "out", [1, 3])
-    assert node != DummyCollectionNode()
+    assert node != dummy_collection_node()
     assert node != CollectZ2ToOutputNode("my_reg", [0, 2], "out", [1, 3])
     assert node != CollectZ2ToOutputNode("reg", [1, 2], "out", [1, 3])
     assert node != CollectZ2ToOutputNode("reg", [0, 2], "my_out", [1, 3])

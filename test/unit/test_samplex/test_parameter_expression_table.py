@@ -12,7 +12,7 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import Parameter
+from qiskit.circuit import Parameter, ParameterVector
 
 from samplomatic.exceptions import ParameterError
 from samplomatic.samplex import ParameterExpressionTable
@@ -108,3 +108,27 @@ def test_evaluate_fails():
 
     with pytest.raises(ParameterError, match="Missing value for Parameter"):
         table.evaluate({a: 1, b: 2, Parameter("d"): 3})
+
+
+def test_equality():
+    """Test equality checks"""
+    original_param = Parameter("a")
+    original_vector = ParameterVector("b", 10)
+
+    table = ParameterExpressionTable()
+    table.append(original_param + 1)
+    table.append(original_vector[3] + 5)
+    assert table == table
+
+    new_table = ParameterExpressionTable()
+    new_table.append(original_param + 1)
+    new_table.append(original_vector[3] + 5)
+    assert new_table == table
+
+    new_table.append(original_param + 2)
+    assert new_table != table
+
+    new_table = ParameterExpressionTable()
+    new_table.append(Parameter("a") + 1)
+    new_table.append(ParameterVector("b", 10)[3] + 5)
+    assert new_table != table

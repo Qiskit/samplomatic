@@ -84,6 +84,7 @@ class ParameterExpressionTable:
         if not self._sorted:
             sorted_parameters = sorted(self._parameters.values(), key=_sort_key)
             self._parameters = {parameter.name: parameter for parameter in sorted_parameters}
+            self._sorted = True
         return list(self._parameters.values())
 
     @property
@@ -125,3 +126,10 @@ class ParameterExpressionTable:
             )
         except KeyError as exc:
             raise ParameterError(f"Missing value for {exc}.")
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, ParameterExpressionTable)
+            and self._expressions == other._expressions
+            and self._parameters == other._parameters
+        )
