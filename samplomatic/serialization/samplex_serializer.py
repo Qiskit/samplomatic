@@ -150,7 +150,7 @@ def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
     samplex = Samplex()
     samplex.graph = samplex_graph
 
-    if ssv in SUPPORTED_SSVS:
+    if int(ssv) in SUPPORTED_SSVS:
         data = cast(HeaderV1, samplex_graph.attrs)
         samplex._param_table = ParameterExpressionTableSerializer.deserialize(  # noqa: SLF001
             orjson.loads(data["param_table"])
