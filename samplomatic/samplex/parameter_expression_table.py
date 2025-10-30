@@ -128,12 +128,6 @@ class ParameterExpressionTable:
             raise ParameterError(f"Missing value for {exc}.")
 
     def __eq__(self, other) -> bool:
-        """Compare ``self`` and ``other`` and return True if they are equal.
-
-        ``Parameter``s and ``ParameterExpressions``s are compared based on their string
-        representation, as the underlying ``Parameter`` objects don't have equating
-        method.
-        """
         return (
             isinstance(other, ParameterExpressionTable)
             and self._expressions == other._expressions
