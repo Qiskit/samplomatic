@@ -84,6 +84,7 @@ class ParameterExpressionTable:
         if not self._sorted:
             sorted_parameters = sorted(self._parameters.values(), key=_sort_key)
             self._parameters = {parameter.name: parameter for parameter in sorted_parameters}
+            self._sorted = True
         return list(self._parameters.values())
 
     @property
@@ -125,3 +126,20 @@ class ParameterExpressionTable:
             )
         except KeyError as exc:
             raise ParameterError(f"Missing value for {exc}.")
+
+    def __eq__(self, other) -> bool:
+        """Compare ``self`` and ``other`` and return True if they are equal.
+
+        ``Parameter``s and ``ParameterExpressions``s are compared based on their string
+        representation, as the underlying ``Parameter`` objects don't have equating
+        method.
+        """
+        return (
+            isinstance(other, ParameterExpressionTable)
+            and all(
+                str(expr1) == str(expr2)
+                for expr1, expr2 in zip(self._expressions, other._expressions)
+            )
+            and self._parameters.keys() == other._parameters.keys()
+            # TODO: What about ParameterVectorElement?
+        )

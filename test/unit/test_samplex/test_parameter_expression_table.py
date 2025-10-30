@@ -108,3 +108,22 @@ def test_evaluate_fails():
 
     with pytest.raises(ParameterError, match="Missing value for Parameter"):
         table.evaluate({a: 1, b: 2, Parameter("d"): 3})
+
+
+def test_equality():
+    """Test equality checks"""
+    original_param = Parameter("a")
+    table = ParameterExpressionTable()
+    table.append(original_param + 1)
+    assert table == table
+
+    new_table = ParameterExpressionTable()
+    new_table.append(original_param + 1)
+    assert new_table == table
+
+    new_table = ParameterExpressionTable()
+    new_table.append(Parameter("a") + 1)
+    assert new_table == table
+
+    new_table.append(Parameter("b"))
+    assert new_table != table

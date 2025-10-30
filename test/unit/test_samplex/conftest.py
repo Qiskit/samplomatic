@@ -93,6 +93,17 @@ def dummy_node():
             for register_name in self.removes():
                 registers.pop(register_name)
 
+        def __eq__(self, other) -> bool:
+            return (
+                type(self) is type(other)
+                and self._reads_from == other._reads_from
+                and self._writes_to == other._writes_to
+                and self._instantiates == other._instantiates
+                and self._removes == other._removes
+                and self._parameter_idxs == other._parameter_idxs
+                and self._outputs_to == other._outputs_to
+            )
+
     yield DummyNode
     Node.NODE_REGISTRY.clear()
     Node.NODE_REGISTRY.update(original_registry)
