@@ -19,10 +19,9 @@ import inspect
 from typing import Any, Callable, ClassVar, Generic, TypeVar
 
 from ..exceptions import SerializationError
+from .ssv import SSV
 
 T = TypeVar("T")
-
-SSV = 1
 
 
 class DataSerializer(Generic[T]):

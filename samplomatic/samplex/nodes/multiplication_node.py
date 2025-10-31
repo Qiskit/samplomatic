@@ -84,6 +84,8 @@ class LeftMultiplicationNode(MultiplicationNode):
         SamplexConstructionError: If ``operand`` has more than one sample.
     """
 
+    TYPE_ID = "N6"
+
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "6",
@@ -105,6 +107,8 @@ class RightMultiplicationNode(MultiplicationNode):
     Raises:
         SamplexConstructionError: If ``operand`` has more than one sample.
     """
+
+    TYPE_ID = "N7"
 
     def _to_json_dict(self) -> dict[str, str]:
         return {

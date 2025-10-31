@@ -134,6 +134,8 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         SamplexConstructionError: if `param_idxs` is empty.
     """
 
+    TYPE_ID = "N11"
+
     def _to_json_dict(self) -> dict[str, str]:
         return {
             "node_type": "10",
@@ -184,6 +186,8 @@ class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
     Raises:
         SamplexConstructionError: if `param_idxs` is empty.
     """
+
+    TYPE_ID = "N12"
 
     def _to_json_dict(self) -> dict[str, str]:
         return {

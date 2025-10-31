@@ -23,45 +23,16 @@ from .._version import version as samplomatic_version
 from ..exceptions import SerializationError
 from ..samplex import Samplex
 from ..samplex.nodes import (
-    ChangeBasisNode,
-    CollectTemplateValues,
-    CollectZ2ToOutputNode,
-    CombineRegistersNode,
-    ConversionNode,
-    InjectNoiseNode,
-    LeftMultiplicationNode,
-    LeftU2ParametricMultiplicationNode,
     Node,
-    PauliPastCliffordNode,
-    RightMultiplicationNode,
-    RightU2ParametricMultiplicationNode,
-    SliceRegisterNode,
-    TwirlSamplingNode,
 )
+from ..serializable import TYPE_REGISTRY
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
 from .specification_serializers import deserialize_specifications, serialize_specifications
-from .type_serializer import SSV, TypeSerializer
+from .ssv import SSV
+from .type_serializer import TypeSerializer
 
-SSV_MIN_SUPPORTED = SSV
-SUPPORTED_SSVS = set(range(SSV_MIN_SUPPORTED, SSV + 1))
-
-NODE_TYPE_MAP: dict[Node, str] = {
-    ChangeBasisNode: "N0",
-    CollectTemplateValues: "N1",
-    CollectZ2ToOutputNode: "N2",
-    CombineRegistersNode: "N3",
-    ConversionNode: "N4",
-    InjectNoiseNode: "N5",
-    LeftMultiplicationNode: "N6",
-    PauliPastCliffordNode: "N8",
-    SliceRegisterNode: "N9",
-    TwirlSamplingNode: "N10",
-    LeftU2ParametricMultiplicationNode: "N11",
-    RightMultiplicationNode: "N7",
-    RightU2ParametricMultiplicationNode: "N12",
-}
-# TODO: Do we want to use a dict like this or add a Serializable class with corresponding TYPE_ID?
+SUPPORTED_SSVS = {SSV}
 
 
 class Header(TypedDict):
@@ -126,10 +97,10 @@ def samplex_to_json(samplex, filename, ssv=SSV):
     Raises:
         SerializationError: If ``ssv`` is invalid.
     """
-    if ssv < SSV_MIN_SUPPORTED:
+    if ssv < min(SUPPORTED_SSVS):
         raise SerializationError(
             f"Cannot serialize a samplex to SSV {ssv}. The minimum "
-            f"supported version is {SSV_MIN_SUPPORTED}."
+            f"supported version is {min(SUPPORTED_SSVS)}."
         )
     if ssv in SUPPORTED_SSVS:
         header = HeaderV1.from_samplex(samplex)
@@ -137,7 +108,7 @@ def samplex_to_json(samplex, filename, ssv=SSV):
         raise SerializationError(f"Cannot serialize a samplex to unsupported SSV {ssv}.")
 
     def serialize_node(node: Node):
-        return TypeSerializer.TYPE_ID_REGISTRY[NODE_TYPE_MAP[type(node)]].serialize(node)
+        return TypeSerializer.TYPE_ID_REGISTRY[TYPE_REGISTRY[type(node)]].serialize(node)
 
     return node_link_json(
         samplex.graph,
