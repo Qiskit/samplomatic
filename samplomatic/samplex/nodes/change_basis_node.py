@@ -16,13 +16,12 @@ from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
 
 import numpy as np
-import orjson
 from qiskit.circuit.library import HGate, IGate, RXGate
 
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
 from ...serializable import Serializable
-from ...virtual_registers import U2Register, VirtualRegister, virtual_register_from_json
+from ...virtual_registers import U2Register, VirtualRegister
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")
@@ -55,19 +54,6 @@ class BasisChange(Generic[T], metaclass=Serializable):
             character: transform[0]
             for character, transform in zip(self._alphabet, self._action.virtual_gates)
         }
-
-    def to_json_dict(self) -> dict[str, str]:
-        return {
-            "alphabet": self.alphabet,
-            "action": orjson.dumps(self.action.to_json_dict()).decode("utf-8"),
-        }
-
-    @classmethod
-    def from_json_dict(cls, data: dict[str, str]) -> "BasisChange":
-        return cls(
-            data["alphabet"],
-            virtual_register_from_json(orjson.loads(data["action"])),
-        )
 
     @property
     def num_elements(self) -> int:
@@ -156,24 +142,6 @@ class ChangeBasisNode(SamplingNode):
     def sample(self, registers, rng, inputs, num_randomizations):
         basis = inputs[self._basis_ref]
         registers[self._register_name] = self._basis_change.get_transform(basis)
-
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "0",
-            "register_name": self._register_name,
-            "basis_change": orjson.dumps(self._basis_change.to_json_dict()).decode("utf-8"),
-            "basis_ref": self._basis_ref,
-            "num_subsystems": str(self._num_subsystems),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "ChangeBasisNode":
-        return cls(
-            data["register_name"],
-            BasisChange.from_json_dict(orjson.loads(data["basis_change"])),
-            data["basis_ref"],
-            int(data["num_subsystems"]),
-        )
 
     def __eq__(self, other):
         return (

@@ -12,12 +12,10 @@
 
 """MultiplicationNode"""
 
-import orjson
-
-from ...aliases import RegisterName, Self
+from ...aliases import RegisterName
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...virtual_registers import GroupRegister, VirtualRegister, virtual_register_from_json
+from ...virtual_registers import GroupRegister, VirtualRegister
 from .evaluation_node import EvaluationNode
 
 
@@ -41,14 +39,6 @@ class MultiplicationNode(EvaluationNode):
                 f"Expected fixed operand to have only one sample but it has "
                 f"{self._operand.num_samples}."
             )
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
-        operand = virtual_register_from_json(orjson.loads(data["operand"]))
-        return cls(
-            operand,
-            data["register_name"],
-        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:
@@ -86,13 +76,6 @@ class LeftMultiplicationNode(MultiplicationNode):
 
     TYPE_ID = "N6"
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "6",
-            "operand": orjson.dumps(self._operand.to_json_dict()).decode("utf-8"),
-            "register_name": self._register_name,
-        }
-
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
         registers[self._register_name].left_inplace_multiply(self._operand)
 
@@ -109,13 +92,6 @@ class RightMultiplicationNode(MultiplicationNode):
     """
 
     TYPE_ID = "N7"
-
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "11",
-            "operand": orjson.dumps(self._operand.to_json_dict()).decode("utf-8"),
-            "register_name": self._register_name,
-        }
 
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
         registers[self._register_name].inplace_multiply(self._operand)

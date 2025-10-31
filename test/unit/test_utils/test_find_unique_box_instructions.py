@@ -194,12 +194,12 @@ def test_continue():
     from qiskit.circuit import Parameter, QuantumCircuit
 
     from samplomatic import build
-    from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
+    from samplomatic.serialization import samplex_from_json, samplex_to_json
 
     circuit = QuantumCircuit(2)
     circuit.rx(Parameter("th"), [0, 1])
     circuit = circuit.compose(circuit.inverse())
 
     _, samplex = build(circuit)
-    json = samplex_to_json(samplex)
+    json = samplex_to_json(samplex, None)
     samplex_from_json(json)

@@ -16,12 +16,10 @@ from collections.abc import Sequence
 from enum import Enum, auto
 
 import numpy as np
-import orjson
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
-from ...exceptions import DeserializationError, SamplexConstructionError
-from ...utils.serialization import array_from_json, array_to_json
+from ...exceptions import SamplexConstructionError
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
 
@@ -110,49 +108,6 @@ class CombineRegistersNode(EvaluationNode):
 
         if not self._operands:
             raise SamplexConstructionError(f"{self} requires at least one input register.")
-
-    def _to_json_dict(self) -> dict[str, str]:
-        operands_dict = {}
-        for key, values in self._operands.items():
-            value_list = []
-            for v in values:
-                if isinstance(v, VirtualType):
-                    value_list.append({"type": v.value})
-                elif isinstance(v, CombineType):
-                    continue
-                else:
-                    value_list.append({"array": array_to_json(v)})
-            operands_dict[key] = value_list
-
-        return {
-            "node_type": "3",
-            "output_type": self._output_type.value,
-            "output_register_name": self._output_register_name,
-            "num_output_subsystems": str(self._num_output_subsystems),
-            "operands": orjson.dumps(operands_dict).decode("utf-8"),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "CombineRegistersNode":
-        raw_operands_dict = orjson.loads(data["operands"])
-        operands = {}
-        for name, values in raw_operands_dict.items():
-            tuple_value = []
-            for value in values:
-                if array_str := value.get("array"):
-                    tuple_value.append(array_from_json(array_str))
-                elif type_str := value.get("type"):
-                    tuple_value.append(VirtualType(type_str))
-                else:
-                    raise DeserializationError(f"Invalid Operand type {value}")
-
-            operands[name] = tuple(tuple_value)
-        return cls(
-            VirtualType(data["output_type"]),
-            data["output_register_name"],
-            int(data["num_output_subsystems"]),
-            operands,
-        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:

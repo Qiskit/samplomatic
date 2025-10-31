@@ -18,7 +18,7 @@ import abc
 from numbers import Number
 from typing import ClassVar, Literal
 
-from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, Self, SubsystemIndex
+from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...serializable import Serializable
@@ -161,13 +161,6 @@ class Node(metaclass=Serializable):
         if isinstance(outputs := self.outputs_to(), dict):
             style.append_dict_data("outputs_to", _reg_style(outputs), bullet="• ")
         return style.append_divider()
-
-    def _to_json_dict(self) -> dict[str, str]:
-        raise NotImplementedError
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
-        raise NotImplementedError
 
     @abc.abstractmethod
     def __eq__(self, other) -> bool: ...
