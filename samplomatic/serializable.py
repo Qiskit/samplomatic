@@ -28,7 +28,7 @@ class Serializable(abc.ABCMeta):
 
     def __new__(mcls, name, bases, namespace):
         cls = super().__new__(mcls, name, bases, namespace)
-        if cls.__name__ not in {"Serializable", "Node"} and not inspect.isabstract(cls):
+        if cls.__name__ != "Serializable" and not inspect.isabstract(cls):
             if cls.TYPE_ID is None:
                 raise TypeError(
                     f"Cannot create a new Serializable ({cls.__name__}) without a type id."

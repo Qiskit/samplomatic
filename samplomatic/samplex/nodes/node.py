@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import abc
 from numbers import Number
 from typing import ClassVar, Literal
 
@@ -167,6 +168,9 @@ class Node(metaclass=Serializable):
     @classmethod
     def _from_json_dict(cls, data: dict[str, str]) -> Self:
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def __eq__(self, other) -> bool: ...
 
 
 def _reg_style(register_manifest):
