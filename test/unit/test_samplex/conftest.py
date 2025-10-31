@@ -26,12 +26,13 @@ from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformPauli
 from samplomatic.exceptions import SamplexRuntimeError
 from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
+from samplomatic.serializable import TYPE_REGISTRY
 from samplomatic.virtual_registers import PauliRegister, U2Register
 
 
 @pytest.fixture
 def dummy_node():
-    original_registry = Node.NODE_REGISTRY.copy()
+    original_registry = TYPE_REGISTRY.copy()
 
     class DummyNode(Node):
         """Dummy child for testing.
@@ -43,6 +44,8 @@ def dummy_node():
         * If both ``reads_from`` and ``outputs_to`` are defined, then we write the very first
             numerical entry of the first reads_from entry to all of the output arrays.
         """
+
+        TYPE_ID = "FAKE"
 
         def __init__(
             self,
@@ -105,13 +108,13 @@ def dummy_node():
             )
 
     yield DummyNode
-    Node.NODE_REGISTRY.clear()
-    Node.NODE_REGISTRY.update(original_registry)
+    TYPE_REGISTRY.clear()
+    TYPE_REGISTRY.update(original_registry)
 
 
 @pytest.fixture
 def dummy_collection_node(dummy_node):
-    original_registry = Node.NODE_REGISTRY.copy()
+    original_registry = TYPE_REGISTRY.copy()
 
     class DummyCollectionNode(CollectionNode, dummy_node):
         """Dummy child collection node for testing."""
@@ -127,13 +130,13 @@ def dummy_collection_node(dummy_node):
                     output[:] = register.virtual_gates.ravel()[0]
 
     yield DummyCollectionNode
-    Node.NODE_REGISTRY.clear()
-    Node.NODE_REGISTRY.update(original_registry)
+    TYPE_REGISTRY.clear()
+    TYPE_REGISTRY.update(original_registry)
 
 
 @pytest.fixture
 def dummy_sampling_node(dummy_node):
-    original_registry = Node.NODE_REGISTRY.copy()
+    original_registry = TYPE_REGISTRY.copy()
 
     class DummySamplingNode(SamplingNode, dummy_node):
         """Dummy child sampling node for testing."""
@@ -142,13 +145,13 @@ def dummy_sampling_node(dummy_node):
             self._update(registers, rng, num_randomizations)
 
     yield DummySamplingNode
-    Node.NODE_REGISTRY.clear()
-    Node.NODE_REGISTRY.update(original_registry)
+    TYPE_REGISTRY.clear()
+    TYPE_REGISTRY.update(original_registry)
 
 
 @pytest.fixture
 def dummy_sampling_error_node(dummy_sampling_node):
-    original_registry = Node.NODE_REGISTRY.copy()
+    original_registry = TYPE_REGISTRY.copy()
 
     class DummySamplingErrorNode(dummy_sampling_node):
         """Dummy sampling node that errors when calling sample."""
@@ -157,13 +160,13 @@ def dummy_sampling_error_node(dummy_sampling_node):
             raise SamplexRuntimeError("This node cannot sample.")
 
     yield DummySamplingErrorNode
-    Node.NODE_REGISTRY.clear()
-    Node.NODE_REGISTRY.update(original_registry)
+    TYPE_REGISTRY.clear()
+    TYPE_REGISTRY.update(original_registry)
 
 
 @pytest.fixture
 def dummy_evaluation_node(dummy_node):
-    original_registry = Node.NODE_REGISTRY.copy()
+    original_registry = TYPE_REGISTRY.copy()
 
     class DummyEvaluationNode(EvaluationNode, dummy_node):
         """Dummy child evaluation node for testing."""
@@ -179,5 +182,5 @@ def dummy_evaluation_node(dummy_node):
                     reg[pos, 0] = parameter_values.astype(int)[:num_write]
 
     yield DummyEvaluationNode
-    Node.NODE_REGISTRY.clear()
-    Node.NODE_REGISTRY.update(original_registry)
+    TYPE_REGISTRY.clear()
+    TYPE_REGISTRY.update(original_registry)

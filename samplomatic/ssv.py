@@ -10,6 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplex Serialization"""
+"""Samplex Serialization Version"""
 
-from .samplex_serializer import samplex_from_json, samplex_to_json
+SSV = 1
+"""The samplex serialization version.
+
+This is the default value used when exporting with :meth:`~samplex_from_json`."""

@@ -13,6 +13,7 @@
 import pytest
 
 from samplomatic.exceptions import SerializationError
+from samplomatic.serializable import TYPE_REGISTRY
 from samplomatic.serialization.type_serializer import DataSerializer, TypeSerializer
 
 
@@ -130,6 +131,11 @@ def dummy_serializer():
 
 class TestTypeSerializer:
     """Tests for the TypeSerializer class."""
+
+    def test_registries(self):
+        """Test that the TYPE_ID_REGISTRY has all elements of TYPE_REGISTRY."""
+        assert len(TYPE_REGISTRY) == len(TypeSerializer.TYPE_ID_REGISTRY)
+        assert set(TYPE_REGISTRY.values()) == set(TypeSerializer.TYPE_ID_REGISTRY.keys())
 
     def test_serialize(self, dummy_serializer):
         """Test the serialize method."""

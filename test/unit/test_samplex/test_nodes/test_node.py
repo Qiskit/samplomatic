@@ -15,6 +15,7 @@ import pytest
 from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
+from samplomatic.serializable import TYPE_REGISTRY
 
 
 def test_parameter_idxs(dummy_node):
@@ -134,13 +135,13 @@ def test_validate_redefines(dummy_node):
 
 
 def test_dummy_is_not_registered(dummy_node):
-    """Test that the dummy node is in the node registry."""
-    assert dummy_node in Node.NODE_REGISTRY
+    """Test that the dummy node is in the type registry."""
+    assert dummy_node in TYPE_REGISTRY
 
 
 def test_no_abstract_registrations():
     """Test that the registry mechanism doesn't contain any abstract parents."""
-    assert Node not in Node.NODE_REGISTRY
-    assert SamplingNode not in Node.NODE_REGISTRY
-    assert EvaluationNode not in Node.NODE_REGISTRY
-    assert CollectionNode not in Node.NODE_REGISTRY
+    assert Node not in TYPE_REGISTRY
+    assert SamplingNode not in TYPE_REGISTRY
+    assert EvaluationNode not in TYPE_REGISTRY
+    assert CollectionNode not in TYPE_REGISTRY
