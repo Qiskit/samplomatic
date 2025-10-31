@@ -13,7 +13,7 @@
   boolean values. In particular, values written by this node now represent the parity of the number of
   non-trivial factors in the sampled error that arise from negative rates. In other words, when using
   the boolean written by this node to implement basic PEC, the sign used to correct expectation values
-  should be `-1**bool_value`. ([#188](https://github.com/Qiskit/samplomatic/issues/188))
+  should be `(-1)**bool_value`. ([#188](https://github.com/Qiskit/samplomatic/issues/188))
 
 ### Fixed
 

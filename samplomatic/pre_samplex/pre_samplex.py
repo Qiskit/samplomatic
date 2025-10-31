@@ -1165,8 +1165,10 @@ class PreSamplex:
                     np.dtype(np.bool_),
                     "Signs from sampled Pauli Lindblad maps, where boolean values represent the "
                     "parity of the number of non-trivial factors in the sampled error that arise "
-                    "from negative rates. The order matches the iteration order of boxes in the "
-                    "original circuit with noise injection annotations.",
+                    "from negative rates. In other words, in order to implement basic PEC, the "
+                    "sign used to correct expectation values should be ``(-1)**bool_value``. The "
+                    "order matches the iteration order of boxes in the original circuit with noise "
+                    "injection annotations.",
                 )
             )
 
