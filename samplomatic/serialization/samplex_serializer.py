@@ -20,19 +20,16 @@ import orjson
 from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from .._version import version as samplomatic_version
-from ..exceptions import SerializationError
 from ..samplex import Samplex
 from ..samplex.nodes import (
     Node,
 )
 from ..serializable import TYPE_REGISTRY
+from ..ssv import SSV
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
 from .specification_serializers import deserialize_specifications, serialize_specifications
-from .ssv import SSV
 from .type_serializer import TypeSerializer
-
-SUPPORTED_SSVS = {SSV}
 
 
 class Header(TypedDict):
@@ -95,20 +92,12 @@ def samplex_to_json(samplex, filename, ssv=SSV):
         Either the json as a string or ``None`` if ``filename`` is specified.
 
     Raises:
-        SerializationError: If ``ssv`` is invalid.
+        SerializationError: If ``ssv`` is incompatible.
     """
-    if ssv < min(SUPPORTED_SSVS):
-        raise SerializationError(
-            f"Cannot serialize a samplex to SSV {ssv}. The minimum "
-            f"supported version is {min(SUPPORTED_SSVS)}."
-        )
-    if ssv in SUPPORTED_SSVS:
-        header = HeaderV1.from_samplex(samplex)
-    else:
-        raise SerializationError(f"Cannot serialize a samplex to unsupported SSV {ssv}.")
+    header = HeaderV1.from_samplex(samplex)
 
     def serialize_node(node: Node):
-        return TypeSerializer.TYPE_ID_REGISTRY[TYPE_REGISTRY[type(node)]].serialize(node)
+        return TypeSerializer.TYPE_ID_REGISTRY[TYPE_REGISTRY[type(node)]].serialize(node, ssv)
 
     return node_link_json(
         samplex.graph,
@@ -119,20 +108,16 @@ def samplex_to_json(samplex, filename, ssv=SSV):
 
 
 def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
-    ssv = samplex_graph.attrs.get("ssv")
     samplex = Samplex()
     samplex.graph = samplex_graph
 
-    if int(ssv) in SUPPORTED_SSVS:
-        data = cast(HeaderV1, samplex_graph.attrs)
-        samplex._param_table = ParameterExpressionTableSerializer.deserialize(  # noqa: SLF001
-            orjson.loads(data["param_table"])
-        )
-        samplex._input_specifications = deserialize_specifications(data["input_specification"])  # noqa: SLF001
-        samplex._output_specifications = deserialize_specifications(data["output_specification"])  # noqa: SLF001
-        samplex._passthrough_params = deserialize_passthrough_params(data["passthrough_params"])  # noqa: SLF001
-    else:
-        raise SerializationError(f"Cannot deserialize a samplex with unsupported SSV {ssv}.")
+    data = cast(HeaderV1, samplex_graph.attrs)
+    samplex._param_table = ParameterExpressionTableSerializer.deserialize(  # noqa: SLF001
+        orjson.loads(data["param_table"])
+    )
+    samplex._input_specifications = deserialize_specifications(data["input_specification"])  # noqa: SLF001
+    samplex._output_specifications = deserialize_specifications(data["output_specification"])  # noqa: SLF001
+    samplex._passthrough_params = deserialize_passthrough_params(data["passthrough_params"])  # noqa: SLF001
 
     return samplex
 

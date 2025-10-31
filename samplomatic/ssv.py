@@ -13,3 +13,6 @@
 """Samplex Serialization Version"""
 
 SSV = 1
+"""The samplex serialization version.
+
+This is the default value used when exporting with :meth:`~samplex_from_json`."""

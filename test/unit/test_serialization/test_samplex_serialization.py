@@ -18,21 +18,25 @@ from samplomatic import build
 from samplomatic.annotations import ChangeBasis, InjectNoise, Twirl
 from samplomatic.exceptions import SerializationError
 from samplomatic.serialization import samplex_from_json, samplex_to_json
-from samplomatic.serialization.samplex_serializer import SUPPORTED_SSVS
+from samplomatic.ssv import SSV
+
+SUPPORTED_SSVS = {SSV}
 
 
 class TestSamplexSerialization:
     """Test serialization of samplex functions."""
 
     def test_samplex_to_json_errors(self):
-        """Test appropriate errors are raised when serializing a samplex with a bad SSV."""
+        """Test errors are raised when serializing a samplex with a bad SSV."""
         circuit = QuantumCircuit(1)
+        with circuit.box([ChangeBasis()]):
+            circuit.noop(0)
         _, samplex = build(circuit)
 
-        with pytest.raises(SerializationError, match="Cannot serialize a samplex to SSV 0."):
+        with pytest.raises(SerializationError):
             samplex_to_json(samplex, None, 0)
 
-        with pytest.raises(SerializationError, match="unsupported SSV 9999"):
+        with pytest.raises(SerializationError):
             samplex_to_json(samplex, None, 9999)
 
     @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
