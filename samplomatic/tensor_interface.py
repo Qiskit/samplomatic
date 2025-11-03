@@ -86,13 +86,6 @@ class Specification(Generic[T], metaclass=Serializable):
             a size implied by the ``value``.
         """
 
-    @staticmethod
-    def _from_json(data: dict[str, Any]) -> Specification:
-        return {  # noqa: SLF001
-            "PauliLindbladMapSpecification": PauliLindbladMapSpecification,
-            "TensorSpecification": TensorSpecification,
-        }[data["type"]]._from_json(data)
-
 
 class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
     """A specification for interface values of type :class:`qiskit.quantum_info.PauliLindbladMap`.
@@ -151,14 +144,6 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
             f"num_terms={self.num_terms})"
         )
 
-    def _to_json_dict(self) -> dict[str, Any]:
-        return {
-            "type": "PauliLindbladMapSpecification",
-            "name": self.name,
-            "num_qubits": self.num_qubits,
-            "num_terms": self.num_terms,
-        }
-
     def __eq__(self, other) -> bool:
         if isinstance(other, PauliLindbladMapSpecification):
             return (
@@ -167,10 +152,6 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
                 and self.num_qubits == other.num_qubits
             )
         return False
-
-    @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> PauliLindbladMapSpecification:
-        return cls(data["name"], data["num_qubits"], data["num_terms"])
 
 
 class TensorSpecification(Specification[np.ndarray]):
@@ -226,28 +207,6 @@ class TensorSpecification(Specification[np.ndarray]):
     def ndim(self) -> int:
         """The number of dimensions, i.e. the length of :attr:`~shape`."""
         return len(self.shape)
-
-    def _to_json_dict(self) -> dict[str, Any]:
-        return {
-            "type": "TensorSpecification",
-            "name": self.name,
-            "description": self.description,
-            "dtype": str(self.dtype),
-            "shape": self.shape,
-            "broadcastable": self.broadcastable,
-            "optional": self.optional,
-        }
-
-    @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> TensorSpecification:
-        return cls(
-            data["name"],
-            tuple(data["shape"]),
-            np.dtype(data["dtype"]),
-            data["description"],
-            data["broadcastable"],
-            data["optional"],
-        )
 
     def describe(self) -> str:
         if self.broadcastable:

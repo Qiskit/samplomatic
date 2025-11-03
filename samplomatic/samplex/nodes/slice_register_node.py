@@ -22,7 +22,6 @@ from numpy.typing import ArrayLike
 from ...aliases import RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...utils.serialization import array_from_json, array_to_json, slice_from_json, slice_to_json
 from ...virtual_registers import VirtualRegister
 from .evaluation_node import EvaluationNode
 
@@ -79,38 +78,6 @@ class SliceRegisterNode(EvaluationNode):
                 self._slice_idxs = get_slice_from_idxs(slice_idxs)
             else:
                 self._slice_idxs = slice_idxs
-
-    def _to_json_dict(self) -> dict[str, str]:
-        if isinstance(self._slice_idxs, slice):
-            is_slice = "true"
-            slice_idxs = slice_to_json(self._slice_idxs)
-        else:
-            is_slice = "false"
-            slice_idxs = array_to_json(self._slice_idxs)
-        return {
-            "node_type": "8",
-            "input_type": self._input_type.value,
-            "output_type": self._output_type.value,
-            "input_register_name": self._input_register_name,
-            "output_register_name": self._output_register_name,
-            "slice_idxs": slice_idxs,
-            "is_slice": is_slice,
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> SliceRegisterNode:
-        slice_idxs = (
-            slice_from_json(data["slice_idxs"])
-            if data["is_slice"] == "true"
-            else array_from_json(data["slice_idxs"])
-        )
-        return cls(
-            VirtualType(data["input_type"]),
-            VirtualType(data["output_type"]),
-            data["input_register_name"],
-            data["output_register_name"],
-            slice_idxs,
-        )
 
     @property
     def outgoing_register_type(self) -> VirtualType:

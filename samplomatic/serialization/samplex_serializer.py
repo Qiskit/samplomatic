@@ -10,7 +10,48 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Samplex Serializer"""
+"""Samplex serialization
+
+:class:`~.Samplex` objects are serializable and deserializable via :func:`~.samplex_to_json` and
+:func:`~.samplex_from_json`.
+Since the data structure of a samplex is primarily node-based, a JSON node-link format is used.
+All elements of the samplex data model that are not contained directly in the graph itself are
+encoded in the graph attributes section of the format. Details about the nodes, such as what type
+of :class:`~.Node` they represent, are stored in the corresponding node attributes. Samplexes
+have no edge attributes.
+
+Serialization and deserializaiton is performed by :func:`rustworkx.node_link_json` and
+:func:`rustworkx.parse_node_link_json`, with attribute dictionaries supplied and defined
+by samplomatic.
+
+Versioning
+----------
+
+Some backwards compatibility of the serialization format is offered.
+Every serialized :class:`~.Samplex` starting with ``samplomatic==0.12.0`` encodes a single-integer
+Samplex Serialization Version (SSV).
+SSVs are incremented independently of the package version, and the minimum version is tied to the
+serialization types and samplex content interplay.
+For any particular package version :const:`~SSV` is the latest SSV known about and future versions
+can not be loaded.
+
+Seralizable types need to inherit from the :class:`~.Serializable` metaclass. They can be added,
+removed, or have modified behavior between package versions. To account for this,
+
+ - If a package version introduces a serializable type, it must increment the SSV and provide
+   serialization support for it. Prior SSVs will not be able to serialize samplexes containing this
+   type, and an incompatability error will be raised. Future SSVs will be able to save and load the
+   new type, unless support is dropped.
+ - If a package version removes a serializable type, it must increment the SSV, and trying to
+   serialize objects of the given type will raise backwars compatibility errors for subsequent SSVs.
+ - If a package modifies the behavior of a serializable type:
+   - If there is a fundamental change to behavior, then this will be treated as a simultaneous
+     removal of a node type, according to the bullets above, but where the name happens to be the
+     same. The serialization format can change arbitrarily, but the node type id _must_ change.
+   - If the change to behavior is backwards compatible, it must increment the SSV if the
+     serialization format has changed, update the :class:`~.DataSerializer` for older SSVs,
+     and implement a new :class:`~.DataSerializer` for the new SSV.
+"""
 
 from __future__ import annotations
 

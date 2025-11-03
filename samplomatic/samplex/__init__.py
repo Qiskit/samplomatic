@@ -15,4 +15,3 @@
 from .interfaces import SamplexOutput
 from .parameter_expression_table import ParameterExpressionTable
 from .samplex import Samplex
-from .samplex_serialization import samplex_from_json, samplex_to_json
