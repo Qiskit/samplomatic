@@ -17,6 +17,7 @@ SliceRegisterNode
    .. autosummary::
 
       ~SliceRegisterNode.evaluate
+      ~SliceRegisterNode.get_style
       ~SliceRegisterNode.instantiates
       ~SliceRegisterNode.reads_from
       ~SliceRegisterNode.validate_and_update
@@ -28,6 +29,7 @@ SliceRegisterNode
    .. rubric:: Methods Documentation
 
    .. automethod:: evaluate
+   .. automethod:: get_style
    .. automethod:: instantiates
    .. automethod:: reads_from
    .. automethod:: validate_and_update

@@ -10,7 +10,6 @@ Node
 
    .. autosummary::
 
-      ~Node.NODE_REGISTRY
       ~Node.num_parameters
       ~Node.outgoing_register_type
       ~Node.parameter_idxs
@@ -29,7 +28,6 @@ Node
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: NODE_REGISTRY
    .. autoattribute:: num_parameters
    .. autoattribute:: outgoing_register_type
    .. autoattribute:: parameter_idxs

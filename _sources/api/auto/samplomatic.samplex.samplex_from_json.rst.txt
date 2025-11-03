@@ -1,6 +1,0 @@
-samplex_from_json
-=================
-
-.. currentmodule:: samplomatic.samplex
-
-.. autofunction:: samplex_from_json
