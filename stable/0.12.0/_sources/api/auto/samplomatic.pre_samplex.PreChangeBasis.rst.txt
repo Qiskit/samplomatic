@@ -1,0 +1,33 @@
+PreChangeBasis
+==============
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreChangeBasis
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreChangeBasis.basis_ref
+      ~PreChangeBasis.direction
+      ~PreChangeBasis.register_type
+      ~PreChangeBasis.subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreChangeBasis.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: basis_ref
+   .. autoattribute:: direction
+   .. autoattribute:: register_type
+   .. autoattribute:: subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style

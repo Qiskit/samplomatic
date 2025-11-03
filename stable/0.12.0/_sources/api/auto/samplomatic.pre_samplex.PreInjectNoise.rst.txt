@@ -1,0 +1,37 @@
+PreInjectNoise
+==============
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreInjectNoise
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreInjectNoise.direction
+      ~PreInjectNoise.modifier_ref
+      ~PreInjectNoise.ref
+      ~PreInjectNoise.register_type
+      ~PreInjectNoise.sign_idx
+      ~PreInjectNoise.subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreInjectNoise.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: direction
+   .. autoattribute:: modifier_ref
+   .. autoattribute:: ref
+   .. autoattribute:: register_type
+   .. autoattribute:: sign_idx
+   .. autoattribute:: subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style

@@ -1,0 +1,17 @@
+GroupGatesIntoBoxes
+===================
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: GroupGatesIntoBoxes
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~GroupGatesIntoBoxes.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

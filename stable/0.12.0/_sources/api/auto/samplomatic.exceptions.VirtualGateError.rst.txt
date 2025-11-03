@@ -1,0 +1,6 @@
+VirtualGateError
+================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: VirtualGateError

@@ -1,0 +1,31 @@
+ChangeBasisNode
+===============
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: ChangeBasisNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ChangeBasisNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~ChangeBasisNode.get_style
+      ~ChangeBasisNode.instantiates
+      ~ChangeBasisNode.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: sample

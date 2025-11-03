@@ -1,0 +1,6 @@
+undress_box
+===========
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: undress_box
