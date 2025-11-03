@@ -61,11 +61,11 @@ import orjson
 from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 
 from .._version import version as samplomatic_version
+from ..exceptions import SerializationError
 from ..samplex import Samplex
 from ..samplex.nodes import (
     Node,
 )
-from ..serializable import TYPE_REGISTRY
 from ..ssv import SSV
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
@@ -138,7 +138,11 @@ def samplex_to_json(samplex, filename, ssv=SSV):
     header = HeaderV1.from_samplex(samplex)
 
     def serialize_node(node: Node):
-        return TypeSerializer.TYPE_ID_REGISTRY[TYPE_REGISTRY[type(node)]].serialize(node, ssv)
+        try:
+            type_id = TypeSerializer.TYPE_REGISTRY[type(node)]
+        except KeyError as exc:
+            raise SerializationError(f"Node type {type(node)} cannot be serialized.") from exc
+        return TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(node, ssv)
 
     return node_link_json(
         samplex.graph,

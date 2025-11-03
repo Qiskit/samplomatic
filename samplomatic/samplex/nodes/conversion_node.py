@@ -34,8 +34,6 @@ class ConversionNode(EvaluationNode):
         SamplexConstructionError: If the names are the same, and ``remove_existing`` is true.
     """
 
-    TYPE_ID = "N4"
-
     def __init__(
         self,
         existing_name: RegisterName,

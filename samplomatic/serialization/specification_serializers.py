@@ -24,6 +24,7 @@ class PauliLindbladMapSpecificationSerializer(TypeSerializer[PauliLindbladMapSpe
     """Serializer for :class:`~.PauliLindbladMapSpecification`."""
 
     TYPE_ID = "S0"
+    TYPE = PauliLindbladMapSpecification
 
     class SSV1(DataSerializer[PauliLindbladMapSpecification]):
         MIN_SSV = 1
@@ -47,6 +48,7 @@ class TensorSpecificationSerializer(TypeSerializer[TensorSpecification]):
     """Serializer for :class:`~.TensorSpecification`."""
 
     TYPE_ID = "S1"
+    TYPE = TensorSpecification
 
     class SSV1(DataSerializer[TensorSpecification]):
         MIN_SSV = 1

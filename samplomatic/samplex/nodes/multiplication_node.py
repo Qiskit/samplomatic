@@ -74,8 +74,6 @@ class LeftMultiplicationNode(MultiplicationNode):
         SamplexConstructionError: If ``operand`` has more than one sample.
     """
 
-    TYPE_ID = "N6"
-
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
         registers[self._register_name].left_inplace_multiply(self._operand)
 
@@ -90,8 +88,6 @@ class RightMultiplicationNode(MultiplicationNode):
     Raises:
         SamplexConstructionError: If ``operand`` has more than one sample.
     """
-
-    TYPE_ID = "N7"
 
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
         registers[self._register_name].inplace_multiply(self._operand)

@@ -20,11 +20,14 @@ from samplomatic.serialization.type_serializer import DataSerializer, TypeSerial
 @pytest.fixture
 def restore_registry():
     """Ensure that a test doesn't mutate the registry."""
-    original_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_id_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_type_registry = TypeSerializer.TYPE_REGISTRY.copy()
     yield
     # for extra safety, don't even change the dictionary instance
     TypeSerializer.TYPE_ID_REGISTRY.clear()
-    TypeSerializer.TYPE_ID_REGISTRY.update(original_registry)
+    TypeSerializer.TYPE_ID_REGISTRY.update(original_id_registry)
+    TypeSerializer.TYPE_REGISTRY.clear()
+    TypeSerializer.TYPE_REGISTRY.update(original_type_registry)
 
 
 class TestTypeSerializerMeta:
@@ -37,16 +40,26 @@ class TestTypeSerializerMeta:
             class _(TypeSerializer):
                 pass
 
+    def test_no_type_error(self, restore_registry):
+        """Test that having no type errors."""
+        with pytest.raises(TypeError, match="without a type."):
+
+            class _(TypeSerializer):
+                TYPE_ID = str
+                pass
+
     def test_duplicate_type_id_error(self, restore_registry):
         """Test that having duplicate type ids errors."""
 
         class _(TypeSerializer):
             TYPE_ID = "MY_ID"
+            TYPE = str
 
         with pytest.raises(TypeError, match="with the existing type id MY_ID"):
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
     def test_no_min_ssv_error(self, restore_registry):
         """Test that having no SSV errors."""
@@ -54,6 +67,7 @@ class TestTypeSerializerMeta:
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
                 class MyDataSerializer(DataSerializer):
                     pass
@@ -64,6 +78,7 @@ class TestTypeSerializerMeta:
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
                 class MyDataSerializer(DataSerializer):
                     MIN_SSV = 1
@@ -79,6 +94,7 @@ class TestTypeSerializerMeta:
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
                 class MyDataSerializer(DataSerializer):
                     MIN_SSV = 1
@@ -92,12 +108,14 @@ class TestTypeSerializerMeta:
 @pytest.fixture
 def dummy_serializer():
     """Yield a dummy serializer then clear it from the type registry."""
-    original_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_id_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_type_registry = TypeSerializer.TYPE_REGISTRY.copy()
 
     class DummyTypeSerializer(TypeSerializer):
         """A dummy type serializer for tests."""
 
         TYPE_ID = "MY_TYPE"
+        TYPE = str
 
         class OldSerializer(DataSerializer):
             MIN_SSV = 2
@@ -126,7 +144,9 @@ def dummy_serializer():
     yield DummyTypeSerializer
     # for extra safety, don't even change the dictionary instance
     TypeSerializer.TYPE_ID_REGISTRY.clear()
-    TypeSerializer.TYPE_ID_REGISTRY.update(original_registry)
+    TypeSerializer.TYPE_ID_REGISTRY.update(original_id_registry)
+    TypeSerializer.TYPE_REGISTRY.clear()
+    TypeSerializer.TYPE_REGISTRY.update(original_type_registry)
 
 
 class TestTypeSerializer:
@@ -134,8 +154,7 @@ class TestTypeSerializer:
 
     def test_registries(self):
         """Test that the TYPE_ID_REGISTRY has all elements of TYPE_REGISTRY."""
-        assert len(TYPE_REGISTRY) == len(TypeSerializer.TYPE_ID_REGISTRY)
-        assert set(TYPE_REGISTRY.values()) == set(TypeSerializer.TYPE_ID_REGISTRY.keys())
+        assert TYPE_REGISTRY == set(TypeSerializer.TYPE_REGISTRY.keys())
 
     def test_serialize(self, dummy_serializer):
         """Test the serialize method."""

@@ -23,6 +23,7 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
     """Serializer for :class:`~.BasisChange`."""
 
     TYPE_ID = "B0"
+    TYPE = BasisChange
 
     class SSV1(DataSerializer[BasisChange]):
         MIN_SSV = 1

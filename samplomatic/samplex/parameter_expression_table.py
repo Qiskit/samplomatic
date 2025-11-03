@@ -44,8 +44,6 @@ class ParameterExpressionTable(metaclass=Serializable):
     expressions of them without the tedious responsibilities usually attached.
     """
 
-    TYPE_ID = "P"
-
     def __init__(self):
         self._expressions: list[ParameterExpression] = []
         self._parameters: dict[ParamName, Parameter] = {}

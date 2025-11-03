@@ -26,6 +26,7 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
     """Serializer for :class:`~.ParameterExpressionTable`."""
 
     TYPE_ID = "P"
+    TYPE = ParameterExpressionTable
 
     class SSV1(DataSerializer[ParameterExpressionTable]):
         MIN_SSV = 1

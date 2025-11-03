@@ -97,8 +97,6 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
             the Pauli Lindblad map.
     """
 
-    TYPE_ID = "S0"
-
     def __init__(self, name: InterfaceName, num_qubits: int, num_terms: str):
         self._name = name
         self.num_qubits = num_qubits
@@ -167,8 +165,6 @@ class TensorSpecification(Specification[np.ndarray]):
             same interface.
         optional: Whether the specification is optional.
     """
-
-    TYPE_ID = "S1"
 
     def __init__(
         self,
