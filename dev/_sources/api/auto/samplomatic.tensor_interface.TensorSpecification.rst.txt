@@ -10,6 +10,7 @@ TensorSpecification
 
    .. autosummary::
 
+      ~TensorSpecification.TYPE_ID
       ~TensorSpecification.description
       ~TensorSpecification.free_dimensions
       ~TensorSpecification.name
@@ -25,6 +26,7 @@ TensorSpecification
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: TYPE_ID
    .. autoattribute:: description
    .. autoattribute:: free_dimensions
    .. autoattribute:: name

@@ -6,11 +6,21 @@ LeftMultiplicationNode
 .. autoclass:: LeftMultiplicationNode
    :show-inheritance:
 
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~LeftMultiplicationNode.TYPE_ID
+
    .. rubric:: Methods Summary
 
    .. autosummary::
 
       ~LeftMultiplicationNode.evaluate
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: TYPE_ID
 
    .. rubric:: Methods Documentation
 

@@ -10,6 +10,7 @@ TwirlSamplingNode
 
    .. autosummary::
 
+      ~TwirlSamplingNode.TYPE_ID
       ~TwirlSamplingNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -22,6 +23,7 @@ TwirlSamplingNode
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

@@ -444,7 +444,7 @@
 <h1>TwirlSamplingNode<a class="headerlink" href="#twirlsamplingnode" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.TwirlSamplingNode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">TwirlSamplingNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhs_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.distributions.Distribution.html#samplomatic.distributions.Distribution" title="samplomatic.distributions.distribution.Distribution"><span class="pre">Distribution</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L23-L98"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">TwirlSamplingNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lhs_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhs_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.distributions.Distribution.html#samplomatic.distributions.Distribution" title="samplomatic.distributions.distribution.Distribution"><span class="pre">Distribution</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L23-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="samplomatic.samplex.nodes.SamplingNode.html#samplomatic.samplex.nodes.SamplingNode" title="samplomatic.samplex.nodes.sampling_node.SamplingNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplingNode</span></code></a></p>
 <p>A node that produces samples for twirling.</p>
 <dl class="field-list simple">
@@ -460,7 +460,10 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type" title="samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outgoing_register_type</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.TYPE_ID" title="samplomatic.samplex.nodes.TwirlSamplingNode.TYPE_ID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TYPE_ID</span></code></a></p></td>
+<td><p>The type id of this node.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type" title="samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outgoing_register_type</span></code></a></p></td>
 <td><p>The virtual gate type of outgoing registers.</p></td>
 </tr>
 </tbody>
@@ -484,6 +487,12 @@
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="samplomatic.samplex.nodes.TwirlSamplingNode.TYPE_ID">
+<span class="sig-name descname"><span class="pre">TYPE_ID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'N10'</span></em><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.TYPE_ID" title="Link to this definition">¶</a></dt>
+<dd><p>The type id of this node.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type">
 <span class="sig-name descname"><span class="pre">outgoing_register_type</span></span><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -491,13 +500,13 @@
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.TwirlSamplingNode.get_style">
-<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L91-L98"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.get_style" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L93-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.get_style" title="Link to this definition">¶</a></dt>
 <dd><p>Return the style of this node when plotted.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.TwirlSamplingNode.instantiates">
-<span class="sig-name descname"><span class="pre">instantiates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType" title="samplomatic.annotations.virtual_type.VirtualType"><span class="pre">VirtualType</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L71-L76"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.instantiates" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">instantiates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType" title="samplomatic.annotations.virtual_type.VirtualType"><span class="pre">VirtualType</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L73-L78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.instantiates" title="Link to this definition">¶</a></dt>
 <dd><p>Return a manifest of new virtual registers that this node instantiates.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -511,7 +520,7 @@ these powers are implicit.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.TwirlSamplingNode.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_randomizations</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L78-L81"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.sample" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_randomizations</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/twirl_sampling_node.py#L80-L83"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.TwirlSamplingNode.sample" title="Link to this definition">¶</a></dt>
 <dd><p>Sample this node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -564,7 +573,7 @@ these powers are implicit.</p></li>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/10/31</div>
+              Last updated on 2025/11/03</div>
           </div>
           <div class="right-details">
             
@@ -587,6 +596,7 @@ these powers are implicit.</p></li>
             <ul>
 <li><a class="reference internal" href="#">TwirlSamplingNode</a><ul>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode"><code class="docutils literal notranslate"><span class="pre">TwirlSamplingNode</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.TYPE_ID"><code class="docutils literal notranslate"><span class="pre">TwirlSamplingNode.TYPE_ID</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.outgoing_register_type"><code class="docutils literal notranslate"><span class="pre">TwirlSamplingNode.outgoing_register_type</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.get_style"><code class="docutils literal notranslate"><span class="pre">TwirlSamplingNode.get_style()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.TwirlSamplingNode.instantiates"><code class="docutils literal notranslate"><span class="pre">TwirlSamplingNode.instantiates()</span></code></a></li>

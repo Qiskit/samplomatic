@@ -10,6 +10,7 @@ ConversionNode
 
    .. autosummary::
 
+      ~ConversionNode.TYPE_ID
       ~ConversionNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -25,6 +26,7 @@ ConversionNode
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

@@ -10,6 +10,7 @@ InjectNoiseNode
 
    .. autosummary::
 
+      ~InjectNoiseNode.TYPE_ID
       ~InjectNoiseNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -22,6 +23,7 @@ InjectNoiseNode
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

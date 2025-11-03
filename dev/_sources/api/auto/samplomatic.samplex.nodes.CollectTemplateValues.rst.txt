@@ -10,6 +10,7 @@ CollectTemplateValues
 
    .. autosummary::
 
+      ~CollectTemplateValues.TYPE_ID
       ~CollectTemplateValues.num_subsystems
 
    .. rubric:: Methods Summary
@@ -24,6 +25,7 @@ CollectTemplateValues
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: TYPE_ID
    .. autoattribute:: num_subsystems
 
    .. rubric:: Methods Documentation

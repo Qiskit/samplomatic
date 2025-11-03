@@ -6,11 +6,21 @@ RightMultiplicationNode
 .. autoclass:: RightMultiplicationNode
    :show-inheritance:
 
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~RightMultiplicationNode.TYPE_ID
+
    .. rubric:: Methods Summary
 
    .. autosummary::
 
       ~RightMultiplicationNode.evaluate
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: TYPE_ID
 
    .. rubric:: Methods Documentation
 
