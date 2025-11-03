@@ -10,7 +10,6 @@ PauliPastCliffordNode
 
    .. autosummary::
 
-      ~PauliPastCliffordNode.TYPE_ID
       ~PauliPastCliffordNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -24,7 +23,6 @@ PauliPastCliffordNode
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

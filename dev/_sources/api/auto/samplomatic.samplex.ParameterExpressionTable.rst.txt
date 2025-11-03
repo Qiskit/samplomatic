@@ -10,7 +10,6 @@ ParameterExpressionTable
 
    .. autosummary::
 
-      ~ParameterExpressionTable.TYPE_ID
       ~ParameterExpressionTable.num_expressions
       ~ParameterExpressionTable.num_parameters
       ~ParameterExpressionTable.parameters
@@ -24,7 +23,6 @@ ParameterExpressionTable
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: TYPE_ID
    .. autoattribute:: num_expressions
    .. autoattribute:: num_parameters
    .. autoattribute:: parameters

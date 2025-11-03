@@ -442,7 +442,7 @@
 <h1>PauliPastCliffordNode<a class="headerlink" href="#paulipastcliffordnode" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">PauliPastCliffordNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystem_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L67-L140"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">PauliPastCliffordNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystem_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L67-L138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="samplomatic.samplex.nodes.EvaluationNode.html#samplomatic.samplex.nodes.EvaluationNode" title="samplomatic.samplex.nodes.evaluation_node.EvaluationNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvaluationNode</span></code></a></p>
 <p>A node that propagates a Pauli register past a Clifford gate.</p>
 <dl class="field-list simple">
@@ -461,10 +461,7 @@ the right-most axes is over qubits.</p></li>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.TYPE_ID" title="samplomatic.samplex.nodes.PauliPastCliffordNode.TYPE_ID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TYPE_ID</span></code></a></p></td>
-<td><p>The type id of this node.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type" title="samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outgoing_register_type</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type" title="samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outgoing_register_type</span></code></a></p></td>
 <td><p>The virtual gate type of outgoing registers.</p></td>
 </tr>
 </tbody>
@@ -491,12 +488,6 @@ the right-most axes is over qubits.</p></li>
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode.TYPE_ID">
-<span class="sig-name descname"><span class="pre">TYPE_ID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'N8'</span></em><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.TYPE_ID" title="Link to this definition">¶</a></dt>
-<dd><p>The type id of this node.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type">
 <span class="sig-name descname"><span class="pre">outgoing_register_type</span></span><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -504,7 +495,7 @@ the right-most axes is over qubits.</p></li>
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L101-L107"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.evaluate" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L99-L105"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.evaluate" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate this node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -522,19 +513,19 @@ the right-most axes is over qubits.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode.get_style">
-<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L133-L140"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.get_style" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L131-L138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.get_style" title="Link to this definition">¶</a></dt>
 <dd><p>Return the style of this node when plotted.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode.reads_from">
-<span class="sig-name descname"><span class="pre">reads_from</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L109-L115"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.reads_from" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reads_from</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L107-L113"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.reads_from" title="Link to this definition">¶</a></dt>
 <dd><p>Return a manifest of which virtual register values this node needs to read from.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.PauliPastCliffordNode.writes_to">
-<span class="sig-name descname"><span class="pre">writes_to</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L117-L123"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.writes_to" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">writes_to</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/pauli_past_clifford_node.py#L115-L121"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.writes_to" title="Link to this definition">¶</a></dt>
 <dd><p>Return a manifest of which virtual register values this node needs to write to.</p>
 </dd></dl>
 
@@ -600,7 +591,6 @@ the right-most axes is over qubits.</p></li>
             <ul>
 <li><a class="reference internal" href="#">PauliPastCliffordNode</a><ul>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode"><code class="docutils literal notranslate"><span class="pre">PauliPastCliffordNode</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.TYPE_ID"><code class="docutils literal notranslate"><span class="pre">PauliPastCliffordNode.TYPE_ID</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.outgoing_register_type"><code class="docutils literal notranslate"><span class="pre">PauliPastCliffordNode.outgoing_register_type</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.evaluate"><code class="docutils literal notranslate"><span class="pre">PauliPastCliffordNode.evaluate()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.PauliPastCliffordNode.get_style"><code class="docutils literal notranslate"><span class="pre">PauliPastCliffordNode.get_style()</span></code></a></li>

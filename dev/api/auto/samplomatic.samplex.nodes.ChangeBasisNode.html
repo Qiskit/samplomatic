@@ -442,7 +442,7 @@
 <h1>ChangeBasisNode<a class="headerlink" href="#changebasisnode" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.ChangeBasisNode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">ChangeBasisNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BasisChange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L111-L162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">ChangeBasisNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BasisChange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L109-L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="samplomatic.samplex.nodes.SamplingNode.html#samplomatic.samplex.nodes.SamplingNode" title="samplomatic.samplex.nodes.sampling_node.SamplingNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplingNode</span></code></a></p>
 <p>A node that instantiates a basis changing virtual register for a given measurement.</p>
 <dl class="field-list simple">
@@ -459,10 +459,7 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.TYPE_ID" title="samplomatic.samplex.nodes.ChangeBasisNode.TYPE_ID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TYPE_ID</span></code></a></p></td>
-<td><p>The type id of this node.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type" title="samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outgoing_register_type</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type" title="samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outgoing_register_type</span></code></a></p></td>
 <td><p>The virtual gate type of outgoing registers.</p></td>
 </tr>
 </tbody>
@@ -486,12 +483,6 @@
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.samplex.nodes.ChangeBasisNode.TYPE_ID">
-<span class="sig-name descname"><span class="pre">TYPE_ID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'N0'</span></em><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.TYPE_ID" title="Link to this definition">¶</a></dt>
-<dd><p>The type id of this node.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type">
 <span class="sig-name descname"><span class="pre">outgoing_register_type</span></span><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -499,13 +490,13 @@
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.ChangeBasisNode.get_style">
-<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L155-L162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.get_style" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L151-L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.get_style" title="Link to this definition">¶</a></dt>
 <dd><p>Return the style of this node when plotted.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.ChangeBasisNode.instantiates">
-<span class="sig-name descname"><span class="pre">instantiates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L139-L140"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.instantiates" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">instantiates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L135-L136"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.instantiates" title="Link to this definition">¶</a></dt>
 <dd><p>Return a manifest of new virtual registers that this node instantiates.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -519,7 +510,7 @@ these powers are implicit.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.ChangeBasisNode.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_randomizations</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L142-L144"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.sample" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_randomizations</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/change_basis_node.py#L138-L140"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.ChangeBasisNode.sample" title="Link to this definition">¶</a></dt>
 <dd><p>Sample this node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -595,7 +586,6 @@ these powers are implicit.</p></li>
             <ul>
 <li><a class="reference internal" href="#">ChangeBasisNode</a><ul>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode"><code class="docutils literal notranslate"><span class="pre">ChangeBasisNode</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.TYPE_ID"><code class="docutils literal notranslate"><span class="pre">ChangeBasisNode.TYPE_ID</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.outgoing_register_type"><code class="docutils literal notranslate"><span class="pre">ChangeBasisNode.outgoing_register_type</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.get_style"><code class="docutils literal notranslate"><span class="pre">ChangeBasisNode.get_style()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.samplex.nodes.ChangeBasisNode.instantiates"><code class="docutils literal notranslate"><span class="pre">ChangeBasisNode.instantiates()</span></code></a></li>

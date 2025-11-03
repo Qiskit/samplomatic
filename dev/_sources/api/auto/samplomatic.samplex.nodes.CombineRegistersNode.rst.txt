@@ -10,7 +10,6 @@ CombineRegistersNode
 
    .. autosummary::
 
-      ~CombineRegistersNode.TYPE_ID
       ~CombineRegistersNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -25,7 +24,6 @@ CombineRegistersNode
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

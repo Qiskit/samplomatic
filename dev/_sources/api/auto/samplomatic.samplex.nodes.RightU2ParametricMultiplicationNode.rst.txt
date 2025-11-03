@@ -6,21 +6,11 @@ RightU2ParametricMultiplicationNode
 .. autoclass:: RightU2ParametricMultiplicationNode
    :show-inheritance:
 
-   .. rubric:: Attributes Summary
-
-   .. autosummary::
-
-      ~RightU2ParametricMultiplicationNode.TYPE_ID
-
    .. rubric:: Methods Summary
 
    .. autosummary::
 
       ~RightU2ParametricMultiplicationNode.evaluate
-
-   .. rubric:: Attributes Documentation
-
-   .. autoattribute:: TYPE_ID
 
    .. rubric:: Methods Documentation
 

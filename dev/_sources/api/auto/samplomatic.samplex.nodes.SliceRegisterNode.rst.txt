@@ -10,7 +10,6 @@ SliceRegisterNode
 
    .. autosummary::
 
-      ~SliceRegisterNode.TYPE_ID
       ~SliceRegisterNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -25,7 +24,6 @@ SliceRegisterNode
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

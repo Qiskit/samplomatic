@@ -10,7 +10,6 @@ ChangeBasisNode
 
    .. autosummary::
 
-      ~ChangeBasisNode.TYPE_ID
       ~ChangeBasisNode.outgoing_register_type
 
    .. rubric:: Methods Summary
@@ -23,7 +22,6 @@ ChangeBasisNode
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: TYPE_ID
    .. autoattribute:: outgoing_register_type
 
    .. rubric:: Methods Documentation

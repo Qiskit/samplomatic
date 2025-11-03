@@ -6,12 +6,6 @@ CollectZ2ToOutputNode
 .. autoclass:: CollectZ2ToOutputNode
    :show-inheritance:
 
-   .. rubric:: Attributes Summary
-
-   .. autosummary::
-
-      ~CollectZ2ToOutputNode.TYPE_ID
-
    .. rubric:: Methods Summary
 
    .. autosummary::
@@ -21,10 +15,6 @@ CollectZ2ToOutputNode
       ~CollectZ2ToOutputNode.outputs_to
       ~CollectZ2ToOutputNode.reads_from
       ~CollectZ2ToOutputNode.validate_and_update
-
-   .. rubric:: Attributes Documentation
-
-   .. autoattribute:: TYPE_ID
 
    .. rubric:: Methods Documentation
 

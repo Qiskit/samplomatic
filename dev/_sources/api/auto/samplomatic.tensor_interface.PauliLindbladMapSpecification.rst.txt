@@ -10,7 +10,6 @@ PauliLindbladMapSpecification
 
    .. autosummary::
 
-      ~PauliLindbladMapSpecification.TYPE_ID
       ~PauliLindbladMapSpecification.description
       ~PauliLindbladMapSpecification.free_dimensions
       ~PauliLindbladMapSpecification.name
@@ -25,7 +24,6 @@ PauliLindbladMapSpecification
 
    .. rubric:: Attributes Documentation
 
-   .. autoattribute:: TYPE_ID
    .. autoattribute:: description
    .. autoattribute:: free_dimensions
    .. autoattribute:: name
