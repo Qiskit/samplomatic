@@ -263,7 +263,7 @@ class LeftMultiplicationNodeSerializer(TypeSerializer[LeftMultiplicationNode]):
         @classmethod
         def serialize(cls, obj):
             try:
-                type_id = TypeSerializer.TYPE_REGISTRY[reg_type := type(obj._operand)]  # noqa: SLF001
+                type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj._operand))]  # noqa: SLF001
             except KeyError:
                 raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
             operand = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj._operand)  # noqa: SLF001
@@ -292,7 +292,7 @@ class RightMultiplicationNodeSerializer(TypeSerializer[RightMultiplicationNode])
         @classmethod
         def serialize(cls, obj):
             try:
-                type_id = TypeSerializer.TYPE_REGISTRY[reg_type := type(obj._operand)]  # noqa: SLF001
+                type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj._operand))]  # noqa: SLF001
             except KeyError:
                 raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
             operand = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj._operand)  # noqa: SLF001
