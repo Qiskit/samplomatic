@@ -21,13 +21,14 @@ from qiskit.circuit.library import HGate, IGate, RXGate
 
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
+from ...serializable import Serializable
 from ...virtual_registers import U2Register, VirtualRegister, virtual_register_from_json
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")
 
 
-class BasisChange(Generic[T]):
+class BasisChange(Generic[T], metaclass=Serializable):
     """Represents a basis change.
 
     Args:
@@ -38,6 +39,8 @@ class BasisChange(Generic[T]):
         ValueError: If the number of symbols is not equal to the number of basis elements.
         ValueError: If the number of samples of the action is not one.
     """
+
+    TYPE_ID = "B0"
 
     def __init__(self, alphabet: Iterable[T], action: VirtualRegister):
         self._alphabet = list(alphabet)
@@ -128,6 +131,8 @@ class ChangeBasisNode(SamplingNode):
         basis_ref: Unique identifier of the basis to use.
         num_subsystems: The number of subsystems this node generates gates for.
     """
+
+    TYPE_ID = "N0"
 
     def __init__(
         self,

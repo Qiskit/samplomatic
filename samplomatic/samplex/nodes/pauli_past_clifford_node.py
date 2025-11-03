@@ -77,6 +77,8 @@ class PauliPastCliffordNode(EvaluationNode):
             the right-most axes is over qubits.
     """
 
+    TYPE_ID = "N8"
+
     def __init__(
         self,
         op_name: OperationName,

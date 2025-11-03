@@ -1,0 +1,138 @@
+# This code is a Qiskit project.
+#
+# (C) Copyright IBM 2025.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+"""Samplex Serializer"""
+
+from __future__ import annotations
+
+from typing import TypedDict, cast, overload
+
+import orjson
+from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
+
+from .._version import version as samplomatic_version
+from ..samplex import Samplex
+from ..samplex.nodes import (
+    Node,
+)
+from ..serializable import TYPE_REGISTRY
+from ..ssv import SSV
+from .node_serializers import *  # noqa: F403
+from .parameter_expression_serializer import ParameterExpressionTableSerializer
+from .specification_serializers import deserialize_specifications, serialize_specifications
+from .type_serializer import TypeSerializer
+
+
+class Header(TypedDict):
+    """Template all headers must specify.
+
+    Multiple SSVs can use the same header type.
+    """
+
+    ssv: str
+    samplomatic_version: str
+
+
+class HeaderV1(Header):
+    param_table: str
+    input_specification: str
+    output_specification: str
+    passthrough_params: str
+
+    def from_samplex(samplex: Samplex):
+        return HeaderV1(
+            ssv=str(SSV),
+            samplomatic_version=samplomatic_version,
+            param_table=orjson.dumps(
+                ParameterExpressionTableSerializer.serialize(samplex._param_table)  # noqa: SLF001
+            ).decode("utf-8"),
+            input_specification=serialize_specifications(samplex._input_specifications),  # noqa: SLF001
+            output_specification=serialize_specifications(samplex._output_specifications),  # noqa: SLF001
+            passthrough_params=serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
+        )
+
+
+def serialize_passthrough_params(data: tuple[list[int], list[int]] | None) -> str:
+    if data is None:
+        return "None"
+    return orjson.dumps([data[0], data[1]]).decode("utf-8")
+
+
+def deserialize_passthrough_params(data: str) -> tuple[list[int], list[int]] | None:
+    if data == "None":
+        return None
+    return tuple(orjson.loads(data))
+
+
+@overload
+def samplex_to_json(samplex: Samplex, filename: str, ssv: int) -> None: ...
+
+
+@overload
+def samplex_to_json(samplex: Samplex, filename: None, ssv: int) -> str: ...
+
+
+def samplex_to_json(samplex, filename, ssv=SSV):
+    """Dump a samplex to json.
+
+    Args:
+        filename: An optional path to write the json to.
+        ssv: The samplex serialization to write.
+
+    Returns:
+        Either the json as a string or ``None`` if ``filename`` is specified.
+
+    Raises:
+        SerializationError: If ``ssv`` is incompatible.
+    """
+    header = HeaderV1.from_samplex(samplex)
+
+    def serialize_node(node: Node):
+        return TypeSerializer.TYPE_ID_REGISTRY[TYPE_REGISTRY[type(node)]].serialize(node, ssv)
+
+    return node_link_json(
+        samplex.graph,
+        path=filename,
+        graph_attrs=lambda _: header,
+        node_attrs=serialize_node,
+    )
+
+
+def _samplex_from_graph(samplex_graph: PyDiGraph) -> Samplex:
+    samplex = Samplex()
+    samplex.graph = samplex_graph
+
+    data = cast(HeaderV1, samplex_graph.attrs)
+    samplex._param_table = ParameterExpressionTableSerializer.deserialize(  # noqa: SLF001
+        orjson.loads(data["param_table"])
+    )
+    samplex._input_specifications = deserialize_specifications(data["input_specification"])  # noqa: SLF001
+    samplex._output_specifications = deserialize_specifications(data["output_specification"])  # noqa: SLF001
+    samplex._passthrough_params = deserialize_passthrough_params(data["passthrough_params"])  # noqa: SLF001
+
+    return samplex
+
+
+def samplex_from_json(json_data: str) -> Samplex:
+    """Load a samplex from a json string.
+
+    Args:
+        filename: The json string.
+
+    Returns:
+        The loaded samplex.
+
+    Raises:
+        SerializationError: If the SSV specified in the json string is unsupported.
+    """
+    samplex_graph = parse_node_link_json(json_data, node_attrs=TypeSerializer.deserialize)
+    return _samplex_from_graph(samplex_graph)

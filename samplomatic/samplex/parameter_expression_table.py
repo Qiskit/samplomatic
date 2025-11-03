@@ -17,6 +17,7 @@ from qiskit.circuit import ParameterVectorElement
 
 from ..aliases import Parameter, ParameterExpression, ParamIndex, ParamName, ParamValues
 from ..exceptions import ParameterError
+from ..serializable import Serializable
 
 
 def _sort_key(parameter: Parameter):
@@ -25,7 +26,7 @@ def _sort_key(parameter: Parameter):
     return (parameter.name,)
 
 
-class ParameterExpressionTable:
+class ParameterExpressionTable(metaclass=Serializable):
     r"""Evaluates a list of parameter expressions given a list of parameter values.
 
     An instance of this class owns an ordered list of :math:`M` :class:`ParameterExpression`\s
@@ -42,6 +43,8 @@ class ParameterExpressionTable:
     This class can be used as a shim for tools that want to accept parameter values but use
     expressions of them without the tedious responsibilities usually attached.
     """
+
+    TYPE_ID = "P"
 
     def __init__(self):
         self._expressions: list[ParameterExpression] = []

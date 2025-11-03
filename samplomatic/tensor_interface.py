@@ -25,6 +25,7 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from .aliases import InterfaceName, Self
+from .serializable import Serializable
 
 __all__ = [
     "Specification",
@@ -38,7 +39,7 @@ T = TypeVar("T")
 ABSENT = object()
 
 
-class Specification(abc.ABC, Generic[T]):
+class Specification(Generic[T], metaclass=Serializable):
     """A specification of an expected value inside of an interface."""
 
     @property
@@ -102,6 +103,8 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
         num_terms: A name for the dimensional freedom that represents the number of terms owned by
             the Pauli Lindblad map.
     """
+
+    TYPE_ID = "S0"
 
     def __init__(self, name: InterfaceName, num_qubits: int, num_terms: str):
         self._name = name
@@ -183,6 +186,8 @@ class TensorSpecification(Specification[np.ndarray]):
             same interface.
         optional: Whether the specification is optional.
     """
+
+    TYPE_ID = "S1"
 
     def __init__(
         self,

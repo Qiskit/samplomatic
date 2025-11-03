@@ -52,6 +52,8 @@ class InjectNoiseNode(SamplingNode):
             sampling.
     """
 
+    TYPE_ID = "N5"
+
     def __init__(
         self,
         register_name: RegisterName,
