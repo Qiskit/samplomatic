@@ -1,3 +1,27 @@
+## [0.12.0](https://github.com/Qiskit/samplomatic/tree/0.12.0) - 2025-11-03
+
+### Added
+
+- - Added a new serialization versioning system, the Samplex Serialization Version (SSV), that decouples the
+    serialization version from the package version. The current version is stored in `samplomatic.ssv.SSV`.
+    See the `samplomatic.serialization` module for details.
+  - Added a `Serializable` metaclass to record which classes should be serializable.
+  - Added `DataSerializer`, `TypeSerializer`, and `TypeSerializerMeta` to provide serialization for objects
+    inheriting from `Serializable`.
+
+  ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+
+### Changed
+
+- - The samplex serialization functions `samplex_to_json` and `samplex_from_json` were moved to the
+    `samplomatic.serialization` module.
+  - Classes that are serializable now inherit from `Serializable` rather than implementing `to_json`/`from_json`
+    methods. A `TypeSerializer` with the corresponding type will then contain methods to serialize and deserialize
+    the object.
+
+  ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+
+
 ## [0.11.0](https://github.com/Qiskit/samplomatic/tree/0.11.0) - 2025-10-28
 
 ### Added
