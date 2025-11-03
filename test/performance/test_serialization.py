@@ -46,7 +46,7 @@ def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
-    benchmark(samplex_to_json, samplex, None)
+    benchmark(samplex_to_json, samplex)
 
 
 @pytest.mark.parametrize(

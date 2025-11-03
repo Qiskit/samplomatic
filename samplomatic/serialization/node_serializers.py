@@ -16,7 +16,7 @@ import orjson
 
 from ..annotations import VirtualType
 from ..distributions import HaarU2, UniformPauli
-from ..exceptions import DeserializationError
+from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
     ChangeBasisNode,
     CollectTemplateValues,
@@ -34,10 +34,9 @@ from ..samplex.nodes import (
 )
 from ..samplex.nodes.combine_registers_node import CombineType
 from ..synths import RzRxSynth, RzSxSynth
-from ..utils.serialization import array_from_json, array_to_json, slice_from_json, slice_to_json
-from ..virtual_registers.serialization import virtual_register_from_json
 from .basis_change_serializers import BasisChangeSerializer
 from .type_serializer import DataSerializer, TypeSerializer
+from .utils import array_from_json, array_to_json, slice_from_json, slice_to_json
 
 
 class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
@@ -263,15 +262,20 @@ class LeftMultiplicationNodeSerializer(TypeSerializer[LeftMultiplicationNode]):
 
         @classmethod
         def serialize(cls, obj):
+            try:
+                type_id = TypeSerializer.TYPE_REGISTRY[reg_type := type(obj._operand)]  # noqa: SLF001
+            except KeyError:
+                raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
+            operand = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj._operand)  # noqa: SLF001
             return {
-                "operand": orjson.dumps(obj._operand.to_json_dict()).decode("utf-8"),  # noqa: SLF001
+                "operand": orjson.dumps(operand).decode("utf-8"),
                 "register_name": obj._register_name,  # noqa: SLF001
             }
 
         @classmethod
         def deserialize(cls, data):
             return LeftMultiplicationNode(
-                virtual_register_from_json(orjson.loads(data["operand"])),
+                TypeSerializer.deserialize(orjson.loads(data["operand"])),
                 data["register_name"],
             )
 
@@ -287,15 +291,20 @@ class RightMultiplicationNodeSerializer(TypeSerializer[RightMultiplicationNode])
 
         @classmethod
         def serialize(cls, obj):
+            try:
+                type_id = TypeSerializer.TYPE_REGISTRY[reg_type := type(obj._operand)]  # noqa: SLF001
+            except KeyError:
+                raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
+            operand = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj._operand)  # noqa: SLF001
             return {
-                "operand": orjson.dumps(obj._operand.to_json_dict()).decode("utf-8"),  # noqa: SLF001
+                "operand": orjson.dumps(operand).decode("utf-8"),
                 "register_name": obj._register_name,  # noqa: SLF001
             }
 
         @classmethod
         def deserialize(cls, data):
             return RightMultiplicationNode(
-                virtual_register_from_json(orjson.loads(data["operand"])),
+                TypeSerializer.deserialize(orjson.loads(data["operand"])),
                 data["register_name"],
             )
 

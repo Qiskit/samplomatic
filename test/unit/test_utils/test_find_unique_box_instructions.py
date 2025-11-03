@@ -201,5 +201,5 @@ def test_continue():
     circuit = circuit.compose(circuit.inverse())
 
     _, samplex = build(circuit)
-    json = samplex_to_json(samplex, None)
+    json = samplex_to_json(samplex)
     samplex_from_json(json)
