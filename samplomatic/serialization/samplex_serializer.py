@@ -30,25 +30,25 @@ Versioning
 Some backwards compatibility of the serialization format is offered.
 Every serialized :class:`~.Samplex` starting with ``samplomatic==0.12.0`` encodes a single-integer
 Samplex Serialization Version (SSV).
-SSVs are incremented independently of the package version, and every package version describes the
-SSV range it is willing to read and write.
+SSVs are incremented independently of the package version, and the minimum version is tied to the
+serialization types and samplex content interplay.
 For any particular package version :const:`~SSV` is the latest SSV known about and future versions
 can not be loaded.
 
-Nodes can be added, removed, or have modified behaviour between package versions. To account for
-this,
+Seralizable types need to inherit from the :class:`~.Serializable` metaclass. They can be added,
+removed, or have modified behavior between package versions. To account for this,
 
- - If a package version introduces a :class:`~.Node` type, it must increment the SSV and provide
+ - If a package version introduces a serializable type, it must increment the SSV and provide
    serialization support for it. Prior SSVs will not be able to serialize samplexes containing this
-   node, and an incompatability error will be raised. Future SSVs will be able to save and load the
+   type, and an incompatability error will be raised. Future SSVs will be able to save and load the
    new type, unless support is dropped.
- - If a package version removes a :class:`~.Node` type, it must increment the SSV, and the
-   corresponding :class:`~.TypeSerializer` should also be removed.
- - If a package modifies the behaviour of a :class:`~.Node` type:
-   - If there is a fundamental change to behaviour, then this will be treated as a simultaneous
+ - If a package version removes a serializable type, it must increment the SSV, and trying to
+   serialize objects of the given type will raise backwars compatibility errors for subsequent SSVs.
+ - If a package modifies the behavior of a serializable type:
+   - If there is a fundamental change to behavior, then this will be treated as a simultaneous
      removal of a node type, according to the bullets above, but where the name happens to be the
      same. The serialization format can change arbitrarily, but the node type id _must_ change.
-   - If the change to behaviour is backwards compatible, it must increment the SSV if the
+   - If the change to behavior is backwards compatible, it must increment the SSV if the
      serialization format has changed, update the :class:`~.DataSerializer` for older SSVs,
      and implement a new :class:`~.DataSerializer` for the new SSV.
 """
