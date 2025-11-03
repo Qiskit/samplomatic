@@ -19,6 +19,7 @@ import inspect
 from typing import Any, Callable, ClassVar, Generic, TypeVar
 
 from ..exceptions import SerializationError
+from ..serializable import Serializable
 from ..ssv import SSV
 
 T = TypeVar("T")
@@ -83,6 +84,10 @@ class TypeSerializerMeta(type):
                 raise TypeError(
                     f"Cannot create a new TypeSerializer ({cls.__name__}) without a type id."
                 )
+            if cls.TYPE is None:
+                raise TypeError(
+                    f"Cannot create a new TypeSerializer ({cls.__name__}) without a type."
+                )
             if cls.TYPE_ID in cls.TYPE_ID_REGISTRY:
                 raise TypeError(
                     f"Cannot create a new TypeSerializer ({cls.__name__}) with the existing type "
@@ -114,6 +119,7 @@ class TypeSerializerMeta(type):
                 if set(cls.SSVS) != set(range(cls.MIN_SSV, cls.MAX_SSV + 1)):
                     raise TypeError(f"{cls.__name__} is missing a data serializer.")
 
+            cls.TYPE_REGISTRY[cls.TYPE] = cls.TYPE_ID
             cls.TYPE_ID_REGISTRY[cls.TYPE_ID] = cls
         return cls
 
@@ -128,8 +134,18 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
     TYPE_ID_REGISTRY: dict[str, type[TypeSerializer]] = {}
     """A registry of all :class:`~.TypeSerializer` subclasses, mapping type ids to classes."""
 
+    TYPE_REGISTRY: dict[Serializable, str] = {}
+    """A registry of all :class:`~Serializable` types with serializers, mapping types to type ids.
+
+    This is decoupled from the :attr:`~TYPE_ID_REGISTRY` to support multiple type ids for the same
+    object when there are breaking changes.
+    """
+
     TYPE_ID: ClassVar[str] = None
     """The type id of this serializer."""
+
+    TYPE: ClassVar[Serializable] = None
+    """The type this serializer serializers."""
 
     SERIALIZERS: ClassVar[dict[int, Callable[[T], dict[str, str]]]] = None
     """A map from SSVs to corresponding serialization methods."""

@@ -58,8 +58,6 @@ class CombineRegistersNode(EvaluationNode):
         SamplexConstructionError: If there is not at least one register.
     """
 
-    TYPE_ID = "N3"
-
     def __init__(
         self,
         output_type: VirtualType,

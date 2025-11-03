@@ -37,16 +37,26 @@ class TestTypeSerializerMeta:
             class _(TypeSerializer):
                 pass
 
+    def test_no_type_error(self, restore_registry):
+        """Test that having no type errors."""
+        with pytest.raises(TypeError, match="without a type."):
+
+            class _(TypeSerializer):
+                TYPE_ID = str
+                pass
+
     def test_duplicate_type_id_error(self, restore_registry):
         """Test that having duplicate type ids errors."""
 
         class _(TypeSerializer):
             TYPE_ID = "MY_ID"
+            TYPE = str
 
         with pytest.raises(TypeError, match="with the existing type id MY_ID"):
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
     def test_no_min_ssv_error(self, restore_registry):
         """Test that having no SSV errors."""
@@ -54,6 +64,7 @@ class TestTypeSerializerMeta:
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
                 class MyDataSerializer(DataSerializer):
                     pass
@@ -64,6 +75,7 @@ class TestTypeSerializerMeta:
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
                 class MyDataSerializer(DataSerializer):
                     MIN_SSV = 1
@@ -79,6 +91,7 @@ class TestTypeSerializerMeta:
 
             class _(TypeSerializer):
                 TYPE_ID = "MY_ID"
+                TYPE = str
 
                 class MyDataSerializer(DataSerializer):
                     MIN_SSV = 1
@@ -98,6 +111,7 @@ def dummy_serializer():
         """A dummy type serializer for tests."""
 
         TYPE_ID = "MY_TYPE"
+        TYPE = str
 
         class OldSerializer(DataSerializer):
             MIN_SSV = 2
@@ -134,8 +148,7 @@ class TestTypeSerializer:
 
     def test_registries(self):
         """Test that the TYPE_ID_REGISTRY has all elements of TYPE_REGISTRY."""
-        assert len(TYPE_REGISTRY) == len(TypeSerializer.TYPE_ID_REGISTRY)
-        assert set(TYPE_REGISTRY.values()) == set(TypeSerializer.TYPE_ID_REGISTRY.keys())
+        assert TYPE_REGISTRY == set(TypeSerializer.TYPE_REGISTRY.keys())
 
     def test_serialize(self, dummy_serializer):
         """Test the serialize method."""

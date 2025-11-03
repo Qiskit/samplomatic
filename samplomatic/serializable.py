@@ -15,7 +15,7 @@
 import abc
 import inspect
 
-TYPE_REGISTRY: dict["Serializable", str] = {}
+TYPE_REGISTRY: set["Serializable"] = set()
 """Registry of types that should be serializable, a map from type to type id."""
 
 
@@ -29,9 +29,5 @@ class Serializable(abc.ABCMeta):
     def __new__(mcls, name, bases, namespace):
         cls = super().__new__(mcls, name, bases, namespace)
         if cls.__name__ != "Serializable" and not inspect.isabstract(cls):
-            if cls.TYPE_ID is None:
-                raise TypeError(
-                    f"Cannot create a new Serializable ({cls.__name__}) without a type id."
-                )
-            TYPE_REGISTRY[cls] = cls.TYPE_ID
+            TYPE_REGISTRY.add(cls)
         return cls

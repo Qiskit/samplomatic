@@ -27,8 +27,6 @@ class TwirlSamplingNode(SamplingNode):
         distribution: The distribution to draw samples from.
     """
 
-    TYPE_ID = "N10"
-
     def __init__(
         self,
         lhs_register_name: RegisterName,

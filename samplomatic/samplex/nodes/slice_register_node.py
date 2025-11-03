@@ -48,8 +48,6 @@ class SliceRegisterNode(EvaluationNode):
         SamplexConstructionError: If ``slice_idxs`` has the wrong shape.
     """
 
-    TYPE_ID = "N9"
-
     def __init__(
         self,
         input_type: VirtualType,

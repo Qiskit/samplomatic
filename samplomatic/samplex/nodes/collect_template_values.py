@@ -41,8 +41,6 @@ class CollectTemplateValues(CollectionNode):
             number of subsystems in each entry of ``registers``.
     """
 
-    TYPE_ID = "N1"
-
     def __init__(
         self,
         template_params_name: InterfaceName,

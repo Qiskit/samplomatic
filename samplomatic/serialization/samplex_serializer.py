@@ -65,7 +65,6 @@ from ..samplex import Samplex
 from ..samplex.nodes import (
     Node,
 )
-from ..serializable import TYPE_REGISTRY
 from ..ssv import SSV
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
@@ -138,7 +137,9 @@ def samplex_to_json(samplex, filename, ssv=SSV):
     header = HeaderV1.from_samplex(samplex)
 
     def serialize_node(node: Node):
-        return TypeSerializer.TYPE_ID_REGISTRY[TYPE_REGISTRY[type(node)]].serialize(node, ssv)
+        return TypeSerializer.TYPE_ID_REGISTRY[TypeSerializer.TYPE_REGISTRY[type(node)]].serialize(
+            node, ssv
+        )
 
     return node_link_json(
         samplex.graph,

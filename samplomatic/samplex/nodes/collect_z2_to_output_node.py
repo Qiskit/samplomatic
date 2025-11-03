@@ -32,8 +32,6 @@ class CollectZ2ToOutputNode(CollectionNode):
         output_idxs: The indices of the output to write to.
     """
 
-    TYPE_ID = "N2"
-
     def __init__(
         self,
         register_name: RegisterName,

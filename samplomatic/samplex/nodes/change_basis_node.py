@@ -39,8 +39,6 @@ class BasisChange(Generic[T], metaclass=Serializable):
         ValueError: If the number of samples of the action is not one.
     """
 
-    TYPE_ID = "B0"
-
     def __init__(self, alphabet: Iterable[T], action: VirtualRegister):
         self._alphabet = list(alphabet)
         self._action = action
@@ -117,8 +115,6 @@ class ChangeBasisNode(SamplingNode):
         basis_ref: Unique identifier of the basis to use.
         num_subsystems: The number of subsystems this node generates gates for.
     """
-
-    TYPE_ID = "N0"
 
     def __init__(
         self,

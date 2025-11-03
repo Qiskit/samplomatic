@@ -44,6 +44,7 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
     """Serializer for :class:`~.ChangeBasisNode`."""
 
     TYPE_ID = "N0"
+    TYPE = ChangeBasisNode
 
     class SSV1(DataSerializer[ChangeBasisNode]):
         MIN_SSV = 1
@@ -72,6 +73,7 @@ class CollectTemplateValuesSerializer(TypeSerializer[CollectTemplateValues]):
     """Serializer for :class:`~.CollectTemplateValues`."""
 
     TYPE_ID = "N1"
+    TYPE = CollectTemplateValues
 
     class SSV1(DataSerializer[CollectTemplateValues]):
         MIN_SSV = 1
@@ -111,6 +113,7 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
     """Serializer for :class:`~.CollectZ2ToOutputNode`."""
 
     TYPE_ID = "N2"
+    TYPE = CollectZ2ToOutputNode
 
     class SSV1(DataSerializer[CollectZ2ToOutputNode]):
         MIN_SSV = 1
@@ -138,6 +141,7 @@ class CombineRegistersNodeSerializer(TypeSerializer[CombineRegistersNode]):
     """Serializer for :class:`~.CombineRegistersNode`."""
 
     TYPE_ID = "N3"
+    TYPE = CombineRegistersNode
 
     class SSV1(DataSerializer[CombineRegistersNode]):
         MIN_SSV = 1
@@ -190,6 +194,7 @@ class ConversionNodeSerializer(TypeSerializer[ConversionNode]):
     """Serializer for :class:`~.ConversionNode`."""
 
     TYPE_ID = "N4"
+    TYPE = ConversionNode
 
     class SSV1(DataSerializer[ConversionNode]):
         MIN_SSV = 1
@@ -221,6 +226,7 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
     """Serializer for :class:`~.InjectNoiseNode`."""
 
     TYPE_ID = "N5"
+    TYPE = InjectNoiseNode
 
     class SSV1(DataSerializer[InjectNoiseNode]):
         MIN_SSV = 1
@@ -250,6 +256,7 @@ class LeftMultiplicationNodeSerializer(TypeSerializer[LeftMultiplicationNode]):
     """Serializer for :class:`~.LeftMultiplicationNode`."""
 
     TYPE_ID = "N6"
+    TYPE = LeftMultiplicationNode
 
     class SSV1(DataSerializer[LeftMultiplicationNode]):
         MIN_SSV = 1
@@ -273,6 +280,7 @@ class RightMultiplicationNodeSerializer(TypeSerializer[RightMultiplicationNode])
     """Serializer for :class:`~.RightMultiplicationNode`."""
 
     TYPE_ID = "N7"
+    TYPE = RightMultiplicationNode
 
     class SSV1(DataSerializer[RightMultiplicationNode]):
         MIN_SSV = 1
@@ -296,6 +304,7 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
     """Serializer for :class:`~.PauliPastCliffordNode`."""
 
     TYPE_ID = "N8"
+    TYPE = PauliPastCliffordNode
 
     class SSV1(DataSerializer[PauliPastCliffordNode]):
         MIN_SSV = 1
@@ -321,6 +330,7 @@ class SliceRegisterNodeSerializer(TypeSerializer[SliceRegisterNode]):
     """Serializer for :class:`~.SliceRegisterNode`."""
 
     TYPE_ID = "N9"
+    TYPE = SliceRegisterNode
 
     class SSV1(DataSerializer[SliceRegisterNode]):
         MIN_SSV = 1
@@ -362,6 +372,7 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
     """Serializer for :class:`~.TwirlSamplingNode`."""
 
     TYPE_ID = "N10"
+    TYPE = TwirlSamplingNode
 
     class SSV1(DataSerializer[TwirlSamplingNode]):
         MIN_SSV = 1
@@ -400,6 +411,7 @@ class LeftU2ParametricMultiplicationNodeSerializer(
     """Serializer for :class:`~.LeftU2ParametricMultiplicationNode`."""
 
     TYPE_ID = "N11"
+    TYPE = LeftU2ParametricMultiplicationNode
 
     class SSV1(DataSerializer[LeftU2ParametricMultiplicationNode]):
         MIN_SSV = 1
@@ -427,6 +439,7 @@ class RightU2ParametricMultiplicationNodeSerializer(
     """Serializer for :class:`~.RightU2ParametricMultiplicationNode`."""
 
     TYPE_ID = "N12"
+    TYPE = RightU2ParametricMultiplicationNode
 
     class SSV1(DataSerializer[RightU2ParametricMultiplicationNode]):
         MIN_SSV = 1

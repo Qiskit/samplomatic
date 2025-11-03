@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import abc
 from numbers import Number
-from typing import ClassVar, Literal
+from typing import Literal
 
 from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
@@ -27,9 +27,6 @@ from ...visualization.hover_style import NodeStyle
 
 class Node(metaclass=Serializable):
     """Parent class for samplex node operations."""
-
-    TYPE_ID: ClassVar[str] = None
-    """The type id of this node."""
 
     def __repr__(self):
         register_names = sorted(f"{register_name}(r)" for register_name in self.reads_from())

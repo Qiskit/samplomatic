@@ -45,8 +45,6 @@ def dummy_node():
             numerical entry of the first reads_from entry to all of the output arrays.
         """
 
-        TYPE_ID = "FAKE"
-
         def __init__(
             self,
             *,

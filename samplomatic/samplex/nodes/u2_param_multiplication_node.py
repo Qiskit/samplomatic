@@ -125,8 +125,6 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
         SamplexConstructionError: if `param_idxs` is empty.
     """
 
-    TYPE_ID = "N11"
-
     def evaluate(
         self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray
     ):
@@ -169,8 +167,6 @@ class RightU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
     Raises:
         SamplexConstructionError: if `param_idxs` is empty.
     """
-
-    TYPE_ID = "N12"
 
     def evaluate(
         self, registers: dict[RegisterName, VirtualRegister], parameter_values: np.ndarray
