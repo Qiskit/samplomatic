@@ -44,7 +44,7 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
                 dump(circuit, buf, version=15)
                 circuit_base64 = pybase64.b64encode_as_string(buf.getvalue())
 
-            return {"qpy": 15, "circuit_base64": circuit_base64}
+            return {"qpy": "15", "circuit_base64": circuit_base64}
 
         @classmethod
         def deserialize(cls, data):

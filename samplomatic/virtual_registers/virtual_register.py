@@ -19,12 +19,13 @@ import numpy as np
 
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
+from ..serializable import Serializable
 from ..utils.serialization import array_to_json
 
 T = TypeVar("T")
 
 
-class VirtualRegisterMeta(abc.ABCMeta):
+class VirtualRegisterMeta(Serializable):
     """Metaclass for :class:`~.VirtualRegister`."""
 
     _TYPE_MAP: dict[VirtualType, "VirtualRegisterMeta"] = {}

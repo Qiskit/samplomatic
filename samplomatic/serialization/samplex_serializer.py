@@ -71,6 +71,7 @@ from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
 from .specification_serializers import deserialize_specifications, serialize_specifications
 from .type_serializer import TypeSerializer
+from .virtual_register_serializers import *  # noqa: F403
 
 
 class Header(TypedDict):
@@ -122,7 +123,7 @@ def samplex_to_json(samplex: Samplex, filename: str, ssv: int) -> None: ...
 def samplex_to_json(samplex: Samplex, filename: None, ssv: int) -> str: ...
 
 
-def samplex_to_json(samplex, filename, ssv=SSV):
+def samplex_to_json(samplex, filename=None, ssv=SSV):
     """Dump a samplex to json.
 
     Args:

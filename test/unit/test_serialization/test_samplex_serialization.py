@@ -34,10 +34,10 @@ class TestSamplexSerialization:
         _, samplex = build(circuit)
 
         with pytest.raises(SerializationError):
-            samplex_to_json(samplex, None, 0)
+            samplex_to_json(samplex, ssv=0)
 
         with pytest.raises(SerializationError):
-            samplex_to_json(samplex, None, 9999)
+            samplex_to_json(samplex, ssv=9999)
 
     @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
     def test_general_5q_static_circuit(self, ssv):
@@ -67,7 +67,7 @@ class TestSamplexSerialization:
         circuit.measure_all()
 
         _, samplex = build(circuit)
-        json_data = samplex_to_json(samplex, None, ssv)
+        json_data = samplex_to_json(samplex, ssv=ssv)
         assert isinstance(json_data, str)
 
         samplex_new = samplex_from_json(json_data)
@@ -86,7 +86,7 @@ class TestSamplexSerialization:
             circuit.noop(range(2))
 
         _, samplex = build(circuit)
-        samplex_new = samplex_from_json(samplex_to_json(samplex, None, ssv))
+        samplex_new = samplex_from_json(samplex_to_json(samplex, ssv=ssv))
         samplex_new.finalize()
 
         assert samplex == samplex_new
@@ -102,7 +102,7 @@ class TestSamplexSerialization:
             circuit.measure_all()
 
         _, samplex = build(circuit)
-        samplex_new = samplex_from_json(samplex_to_json(samplex, None, ssv))
+        samplex_new = samplex_from_json(samplex_to_json(samplex, ssv=ssv))
         samplex_new.finalize()
 
         assert samplex == samplex_new
@@ -135,7 +135,7 @@ class TestSamplexSerialization:
             circuit.noop(range(3))
 
         _, samplex = build(circuit)
-        samplex_new = samplex_from_json(samplex_to_json(samplex, None, ssv))
+        samplex_new = samplex_from_json(samplex_to_json(samplex, ssv=ssv))
         samplex_new.finalize()
 
         assert samplex == samplex_new
@@ -149,7 +149,7 @@ class TestSamplexSerialization:
         circuit.rx(Parameter("c"), 0)
 
         _, samplex = build(circuit)
-        samplex_new = samplex_from_json(samplex_to_json(samplex, None, ssv))
+        samplex_new = samplex_from_json(samplex_to_json(samplex, ssv=ssv))
         samplex_new.finalize()
 
         assert samplex == samplex_new
