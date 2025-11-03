@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.4.0 - 2025-08-26" href="release_notes_0.4.0.html" /><link rel="prev" title="0.6.0 - 2025-09-03" href="release_notes_0.6.0.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.11.0 - 2025-10-28" href="release_notes_0.11.0.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>0.5.0 - 2025-08-26 - samplomatic 0.1.dev1</title>
+        <title>0.12.0 - 2025-11-03 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -363,7 +363,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.12.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.10.1.html">Release notes for 0.10.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.10.0.html">Release notes for 0.10.0</a></li>
@@ -371,7 +371,7 @@
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.8.0.html">Release notes for 0.8.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.7.0.html">Release notes for 0.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.6.0.html">Release notes for 0.6.0</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0.5.0.html">Release notes for 0.5.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.3.0.html">Release notes for 0.3.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.2.0.html">Release notes for 0.2.0</a></li>
@@ -419,7 +419,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/release_notes/release_notes_0.5.0.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/release_notes/release_notes_0.12.0.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -440,17 +440,26 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="id1">
-<h1>0.5.0 - 2025-08-26<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1>0.12.0 - 2025-11-03<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Added new boolean option <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code> that adds the <code class="docutils literal notranslate"><span class="pre">RemoveBarriers</span></code> pass to the returned pass manager when true. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/88">#88</a>)</p></li>
+<li><p>Added a new serialization versioning system, the Samplex Serialization Version (SSV), that decouples the
+serialization version from the package version. The current version is stored in <code class="docutils literal notranslate"><span class="pre">samplomatic.ssv.SSV</span></code>.
+See the <code class="docutils literal notranslate"><span class="pre">samplomatic.serialization</span></code> module for details. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
+<li><p>Added a <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> metaclass to record which classes should be serializable. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">DataSerializer</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeSerializer</span></code>, and <code class="docutils literal notranslate"><span class="pre">TypeSerializerMeta</span></code> to provide serialization for objects
+inheriting from <code class="docutils literal notranslate"><span class="pre">Serializable</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
 </ul>
 </section>
 <section id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The pass manager returned by <code class="docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code> now removes all pre-existing barriers, by default. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/88">#88</a>)</p></li>
+<li><p>The samplex serialization functions <code class="docutils literal notranslate"><span class="pre">samplex_to_json</span></code> and <code class="docutils literal notranslate"><span class="pre">samplex_from_json</span></code> were moved to the
+<code class="docutils literal notranslate"><span class="pre">samplomatic.serialization</span></code> module. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
+<li><p>Classes that are serializable now inherit from <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> rather than implementing <code class="docutils literal notranslate"><span class="pre">to_json</span></code>/<code class="docutils literal notranslate"><span class="pre">from_json</span></code>
+methods. A <code class="docutils literal notranslate"><span class="pre">TypeSerializer</span></code> with the corresponding type will then contain methods to serialize and deserialize
+the object. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
 </ul>
 </section>
 </section>
@@ -460,23 +469,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_0.4.0.html">
+          <a class="next-page" href="release_notes_0.11.0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">0.4.0 - 2025-08-26</div>
+                <div class="title">0.11.0 - 2025-10-28</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="release_notes_0.6.0.html">
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0.6.0 - 2025-09-03</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -511,7 +520,7 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0.5.0 - 2025-08-26</a><ul>
+<li><a class="reference internal" href="#">0.12.0 - 2025-11-03</a><ul>
 <li><a class="reference internal" href="#added">Added</a></li>
 <li><a class="reference internal" href="#changed">Changed</a></li>
 </ul>
