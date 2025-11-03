@@ -20,11 +20,14 @@ from samplomatic.serialization.type_serializer import DataSerializer, TypeSerial
 @pytest.fixture
 def restore_registry():
     """Ensure that a test doesn't mutate the registry."""
-    original_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_id_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_type_registry = TypeSerializer.TYPE_REGISTRY.copy()
     yield
     # for extra safety, don't even change the dictionary instance
     TypeSerializer.TYPE_ID_REGISTRY.clear()
-    TypeSerializer.TYPE_ID_REGISTRY.update(original_registry)
+    TypeSerializer.TYPE_ID_REGISTRY.update(original_id_registry)
+    TypeSerializer.TYPE_REGISTRY.clear()
+    TypeSerializer.TYPE_REGISTRY.update(original_type_registry)
 
 
 class TestTypeSerializerMeta:
@@ -105,7 +108,8 @@ class TestTypeSerializerMeta:
 @pytest.fixture
 def dummy_serializer():
     """Yield a dummy serializer then clear it from the type registry."""
-    original_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_id_registry = TypeSerializer.TYPE_ID_REGISTRY.copy()
+    original_type_registry = TypeSerializer.TYPE_REGISTRY.copy()
 
     class DummyTypeSerializer(TypeSerializer):
         """A dummy type serializer for tests."""
@@ -140,7 +144,9 @@ def dummy_serializer():
     yield DummyTypeSerializer
     # for extra safety, don't even change the dictionary instance
     TypeSerializer.TYPE_ID_REGISTRY.clear()
-    TypeSerializer.TYPE_ID_REGISTRY.update(original_registry)
+    TypeSerializer.TYPE_ID_REGISTRY.update(original_id_registry)
+    TypeSerializer.TYPE_REGISTRY.clear()
+    TypeSerializer.TYPE_REGISTRY.update(original_type_registry)
 
 
 class TestTypeSerializer:
