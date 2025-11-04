@@ -12,7 +12,11 @@
 
 """UniformC1"""
 
+import numpy as np
+from qiskit.quantum_info import random_clifford
+
 from ..annotations import VirtualType
+from ..virtual_registers import C1Register
 from .distribution import Distribution
 
 
@@ -28,4 +32,7 @@ class UniformC1(Distribution):
         return VirtualType.C1
 
     def sample(self, size, rng):
-        raise NotImplementedError()
+        array = np.empty((num_elements := self.num_subsystems * size, 2, 3), dtype=np.uint8)
+        for idx in range(num_elements):
+            array[idx] = random_clifford(1, rng).tableau
+        return C1Register(array.reshape((self.num_subsystems, size, 2, 3)))
