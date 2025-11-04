@@ -14,8 +14,8 @@
 
 import orjson
 
+from ..exceptions import SerializationError
 from ..samplex.nodes.change_basis_node import BasisChange
-from ..virtual_registers.serialization import virtual_register_from_json
 from .type_serializer import DataSerializer, TypeSerializer
 
 
@@ -30,14 +30,19 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
 
         @classmethod
         def serialize(cls, obj):
+            try:
+                type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj.action))]
+            except KeyError:
+                raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
+            action = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj.action)
             return {
                 "alphabet": obj.alphabet,
-                "action": orjson.dumps(obj.action.to_json_dict()).decode("utf-8"),
+                "action": orjson.dumps(action).decode("utf-8"),
             }
 
         @classmethod
         def deserialize(cls, data):
             return BasisChange(
                 data["alphabet"],
-                virtual_register_from_json(orjson.loads(data["action"])),
+                TypeSerializer.deserialize(orjson.loads(data["action"])),
             )
