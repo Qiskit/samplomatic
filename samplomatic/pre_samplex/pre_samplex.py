@@ -1132,18 +1132,18 @@ class PreSamplex:
                     )
                 )
 
-        if max_param_idx is not None:
-            samplex.add_output(
-                TensorSpecification(
-                    "parameter_values",
-                    (
-                        "num_randomizations",
-                        max_param_idx + 1,
-                    ),
-                    np.dtype(np.float32),
-                    "Parameter values valid for an associated template circuit.",
-                )
+        parameter_values_shape = (
+            "num_randomizations",
+            0 if max_param_idx is None else max_param_idx + 1,
+        )
+        samplex.add_output(
+            TensorSpecification(
+                "parameter_values",
+                parameter_values_shape,
+                np.dtype(np.float32),
+                "Parameter values valid for an associated template circuit.",
             )
+        )
 
         if self._twirled_clbits:
             for reg in self._cregs:
