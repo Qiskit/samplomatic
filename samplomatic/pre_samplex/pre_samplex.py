@@ -1025,7 +1025,6 @@ class PreSamplex:
 
         # Optmization
         self.prune_prenodes_unreachable_from_emission()
-        self.merge_parallel_pre_propagate_nodes()
 
         samplex = Samplex()
 
