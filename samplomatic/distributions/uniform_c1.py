@@ -32,7 +32,7 @@ class UniformC1(Distribution):
         return VirtualType.C1
 
     def sample(self, size, rng):
-        array = np.empty((num_elements := self.num_subsystems * size, 2, 3), dtype=np.uint8)
+        array = np.empty((num_elements := self.num_subsystems * size, 2, 3), dtype=np.bool_)
         for idx in range(num_elements):
             array[idx] = random_clifford(1, rng).tableau
         return C1Register(array.reshape((self.num_subsystems, size, 2, 3)))
