@@ -12,7 +12,7 @@
 
 """Tests that twirling samples are produced correctly from static circuits."""
 
-from itertools import product
+from itertools import permutations, product
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
@@ -229,15 +229,15 @@ def make_circuits():
 
     yield circuit, "propagate_through_merged_invariant_gates"
 
-    circuit = QuantumCircuit(6)
-    with circuit.box([Twirl(dressing="left")]):
-        circuit.cz(4, 5)
-        circuit.cz(0, 1)
-        circuit.cz(2, 3)
-    with circuit.box([Twirl(dressing="right")]):
-        circuit.noop(*range(6))
+    for pairs in permutations([(0, 1), (2, 3), (4, 5)]):
+        circuit = QuantumCircuit(6)
+        with circuit.box([Twirl(dressing="left")]):
+            for target, control in pairs:
+                circuit.cz(target, control)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(*range(6))
 
-    yield circuit, "cz_gates_on_unsorted_qubit_subset"
+        yield circuit, f"cz_gates_with_odd_qubit_arrangements_{pairs}"
 
 
 def pytest_generate_tests(metafunc):
