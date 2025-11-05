@@ -318,7 +318,7 @@ class TestFinalize:
         samplex = PreSamplex().finalize()
         parameter_values_spec = next(iter(samplex.outputs().specs))
         assert parameter_values_spec.name == "parameter_values"
-        assert parameter_values_spec.shape == ()
+        assert parameter_values_spec.shape == ("num_randomizations", 0)
 
     def test_finalize_validates_rightward_danglers(self):
         """Test that we raise when the graph has unterminated nodes."""

@@ -1134,7 +1134,8 @@ class PreSamplex:
                 )
 
         parameter_values_shape = (
-            () if max_param_idx is None else ("num_randomizations", max_param_idx + 1)
+            "num_randomizations",
+            0 if max_param_idx is None else max_param_idx + 1,
         )
         samplex.add_output(
             TensorSpecification(
