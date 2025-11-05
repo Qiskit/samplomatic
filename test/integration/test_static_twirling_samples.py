@@ -229,13 +229,13 @@ def make_circuits():
 
     yield circuit, "propagate_through_merged_invariant_gates"
 
-    circuit = QuantumCircuit(num_qubits := 6)
+    circuit = QuantumCircuit(6)
     with circuit.box([Twirl(dressing="left")]):
         circuit.cz(4, 5)
         circuit.cz(0, 1)
         circuit.cz(2, 3)
     with circuit.box([Twirl(dressing="right")]):
-        circuit.noop(*range(num_qubits))
+        circuit.noop(*range(6))
 
     yield circuit, "cz_gates_on_unsorted_qubit_subset"
 
