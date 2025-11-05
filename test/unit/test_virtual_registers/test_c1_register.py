@@ -24,24 +24,6 @@ def test_select():
     assert VirtualRegister.select(VirtualType.C1) is C1Register
 
 
-# def test_convert_to_u2():
-#     """Test the convert_to() method for U2Register."""
-#     paulis = PauliRegister([[0, 1, 2], [3, 2, 1]])
-#     u2 = paulis.convert_to(VirtualType.U2)
-
-#     assert isinstance(u2, U2Register)
-#     assert u2.num_subsystems == 2
-#     assert u2.num_samples == 3
-
-#     assert np.allclose(u2.virtual_gates[0, 0], np.diag([1, 1]))
-#     assert np.allclose(u2.virtual_gates[0, 1], np.diag([1, -1]))
-#     assert np.allclose(u2.virtual_gates[0, 2], np.diag([1, 1])[::-1])
-
-#     assert np.allclose(u2.virtual_gates[1, 0], np.diag([-1j, 1j])[::-1])
-#     assert np.allclose(u2.virtual_gates[1, 1], np.diag([1, 1])[::-1])
-#     assert np.allclose(u2.virtual_gates[1, 2], np.diag([1, -1]))
-
-
 def test_convert_to_c1():
     """Test the convert_to() method returns the register when types match."""
     cliffords = C1Register.identity(3, 3)
