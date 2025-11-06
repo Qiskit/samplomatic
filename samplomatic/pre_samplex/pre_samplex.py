@@ -1496,11 +1496,9 @@ class PreSamplex:
             VirtualType.U2,
         )
 
-        param_reorder = pre_node.subsystems.get_indices(all_subsystems)
-        # TODO: This param_reorder is by definition the identity.
         collect = CollectTemplateValues(
             "parameter_values",
-            pre_node.param_idxs[param_reorder, :],
+            pre_node.param_idxs,
             combined_name,
             VirtualType.U2,
             np.arange(len(all_subsystems)),
