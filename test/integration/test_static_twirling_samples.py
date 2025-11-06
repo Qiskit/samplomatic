@@ -232,12 +232,22 @@ def make_circuits():
     for pairs in permutations([(0, 1), (2, 3), (4, 5)]):
         circuit = QuantumCircuit(6)
         with circuit.box([Twirl(dressing="left")]):
-            for target, control in pairs:
-                circuit.cz(target, control)
+            circuit.noop(*range(6))
+        with circuit.box([Twirl(dressing="right")]):
+            for t, c in pairs:
+                circuit.cz(t, c)
+
+        yield circuit, f"r_cz_gates_with_odd_qubit_arrangements_{pairs}"
+
+    for pair in permutations([(0, 3), (1, 4), (2, 5)]):
+        circuit = QuantumCircuit(6)
+        with circuit.box([Twirl(dressing="left")]):
+            for t, c in pair:
+                circuit.cz(t, c)
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(*range(6))
 
-        yield circuit, f"cz_gates_with_odd_qubit_arrangements_{pairs}"
+        yield circuit, f"l_cz_gates_with_odd_qubit_arrangements_{pairs}"
 
 
 def pytest_generate_tests(metafunc):
