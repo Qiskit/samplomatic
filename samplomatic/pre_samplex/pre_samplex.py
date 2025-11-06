@@ -1023,8 +1023,9 @@ class PreSamplex:
         # Validation
         self.validate_no_rightward_danglers()
 
-        # Optmization
+        # Optimization
         self.prune_prenodes_unreachable_from_emission()
+        self.merge_parallel_pre_propagate_nodes()
 
         samplex = Samplex()
 
@@ -1337,7 +1338,8 @@ class PreSamplex:
             input_register_name, (source_idxs, destination_idxs, input_type) = next(
                 iter(operands.items())
             )
-            slice_idxs = [source_idxs[idx] for idx in destination_idxs]
+            slice_idxs = np.empty(len(destination_idxs))
+            slice_idxs[destination_idxs] = source_idxs
             combine_node = SliceRegisterNode(
                 input_type=input_type,
                 output_type=combined_register_type,
@@ -1495,6 +1497,7 @@ class PreSamplex:
         )
 
         param_reorder = pre_node.subsystems.get_indices(all_subsystems)
+        # TODO: This param_reorder is by definition the identity.
         collect = CollectTemplateValues(
             "parameter_values",
             pre_node.param_idxs[param_reorder, :],

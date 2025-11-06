@@ -239,6 +239,28 @@ def make_circuits():
 
         yield circuit, f"cz_gates_with_odd_qubit_arrangements_{pairs}"
 
+    n_qubits = 6
+    for order in permutations(range(n_qubits)):
+        circuit = QuantumCircuit(n_qubits)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.noop(*range(n_qubits))
+        with circuit.box([Twirl(dressing="right")]):
+            for pair_idx in range(int(n_qubits / 2)):
+                circuit.cz(order[pair_idx * 2], order[pair_idx * 2 + 1])
+
+        yield circuit, f"cz_gates_with_odd_qubit_arrangements_2_{order}"
+
+    n_qubits = 6
+    for order in permutations(range(n_qubits)):
+        circuit = QuantumCircuit(n_qubits)
+        with circuit.box([Twirl(dressing="left")]):
+            for pair_idx in range(int(n_qubits / 2)):
+                circuit.cz(order[pair_idx * 2], order[pair_idx * 2 + 1])
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(*range(n_qubits))
+
+        yield circuit, f"cz_gates_with_odd_qubit_arrangements_3_{order}"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
