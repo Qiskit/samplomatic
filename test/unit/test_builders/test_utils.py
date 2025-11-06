@@ -170,7 +170,7 @@ class TestMergePreEdges:
         edge = PreEdge(SubsystemIndicesPartition(1, [(1,)]), Direction.LEFT)
         graph.add_edge(source_idx, destination_idx, edge)
 
-        assert merge_pre_edges(graph, source_idx, destination_idx) == edge
+        assert merge_pre_edges(graph, source_idx, destination_idx, [0]) == edge
 
     @pytest.mark.parametrize("direction", [Direction.LEFT, Direction.RIGHT])
     def test_merge_multiple_edges(self, direction):
@@ -190,7 +190,7 @@ class TestMergePreEdges:
         graph.add_edge(source_idx, destination_idx, edge_2)
 
         expected = PreEdge(SubsystemIndicesPartition(1, [(2,), (87,), (1,), (0,)]), direction)
-        assert merge_pre_edges(graph, source_idx, destination_idx) == expected
+        assert merge_pre_edges(graph, source_idx, destination_idx, [3, 2, 1, 0]) == expected
 
     def test_raises(self):
         """Test that `merge_pre_edges` raises."""
@@ -199,7 +199,7 @@ class TestMergePreEdges:
         destination_idx = graph.add_node("destination")
 
         with pytest.raises(SamplexConstructionError, match="No edges to merge"):
-            merge_pre_edges(graph, source_idx, destination_idx)
+            merge_pre_edges(graph, source_idx, destination_idx, [])
 
         right_edge = PreEdge(SubsystemIndicesPartition(1, [(0,)]), Direction.RIGHT)
         left_edge = PreEdge(SubsystemIndicesPartition(1, [(1,)]), Direction.LEFT)
@@ -208,4 +208,4 @@ class TestMergePreEdges:
         graph.add_edge(source_idx, destination_idx, left_edge)
 
         with pytest.raises(SamplexConstructionError, match="different directions"):
-            merge_pre_edges(graph, source_idx, destination_idx)
+            merge_pre_edges(graph, source_idx, destination_idx, [0, 1])

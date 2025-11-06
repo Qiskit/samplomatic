@@ -834,6 +834,7 @@ class PreSamplex:
                     # Nothing to merge
                     continue
 
+                node_idxs.sort()
                 nodes = [self.graph[node_idx] for node_idx in node_idxs]
 
                 if any(
@@ -862,24 +863,30 @@ class PreSamplex:
                 params = [param for node in nodes for param in node.spec.params]
 
                 # This merges the node but not the edges
-                new_node_idx = replace_nodes_with_one_node(
-                    self.graph,
-                    node_idxs,
-                    PrePropagate(
-                        combined_subsystems,
-                        self.graph[node_idxs[0]].direction,  # all nodes have same direction
-                        self.graph[node_idxs[0]].operation,  # all nodes have same operation
-                        combined_partition,
-                        InstructionSpec(params=params, mode=nodes[0].spec.mode),
-                    ),
+                new_node_idx, successor_edge_order, predecessor_edge_order = (
+                    replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            self.graph[node_idxs[0]].direction,  # all nodes have same direction
+                            self.graph[node_idxs[0]].operation,  # all nodes have same operation
+                            combined_partition,
+                            InstructionSpec(params=params, mode=nodes[0].spec.mode),
+                        ),
+                    )
                 )
 
                 for successor_idx in set(self.graph.successor_indices(new_node_idx)):
-                    new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
+                    new_edge = merge_pre_edges(
+                        self.graph, new_node_idx, successor_idx, successor_edge_order
+                    )
                     replace_edges_with_one_edge(self.graph, new_node_idx, successor_idx, new_edge)
 
                 for predecessor_idx in set(self.graph.predecessor_indices(new_node_idx)):
-                    new_edge = merge_pre_edges(self.graph, predecessor_idx, new_node_idx)
+                    new_edge = merge_pre_edges(
+                        self.graph, predecessor_idx, new_node_idx, predecessor_edge_order
+                    )
                     replace_edges_with_one_edge(self.graph, predecessor_idx, new_node_idx, new_edge)
 
     def _cluster_pre_propagate_nodes(self, generation: list[NodeIndex]) -> list[list[NodeIndex]]:
@@ -1024,6 +1031,7 @@ class PreSamplex:
         self.validate_no_rightward_danglers()
 
         # Optmization
+        self.merge_parallel_pre_propagate_nodes()
         self.prune_prenodes_unreachable_from_emission()
 
         samplex = Samplex()

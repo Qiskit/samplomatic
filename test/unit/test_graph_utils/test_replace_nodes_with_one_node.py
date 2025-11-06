@@ -20,7 +20,7 @@ def test_replace_single_node():
     """Test replacing a single node with a new one."""
     graph = PyDiGraph()
     a = graph.add_node("a")
-    new_node_idx = replace_nodes_with_one_node(graph, [a], "z")
+    new_node_idx, _, _ = replace_nodes_with_one_node(graph, [a], "z")
 
     assert graph.nodes() == ["z"]
     assert graph.num_edges() == 0
@@ -34,7 +34,7 @@ def test_replace_two_connected_nodes():
     b = graph.add_node("b")
     graph.add_edge(a, b, "edge")
 
-    new_node_idx = replace_nodes_with_one_node(graph, [a, b], "z")
+    new_node_idx, _, _ = replace_nodes_with_one_node(graph, [a, b], "z")
 
     assert graph.nodes() == ["z"]
     assert graph.num_edges() == 0
@@ -52,9 +52,11 @@ def test_edge_preservation():
     graph.add_edge(b, c, "b->c")
     graph.add_edge(d, a, "d->a")
 
-    new_node_idx = replace_nodes_with_one_node(graph, [a, b], "z")
+    new_node_idx, succ_idx, pred_idx = replace_nodes_with_one_node(graph, [a, b], "z")
 
     assert graph[new_node_idx] == "z"
+    assert succ_idx == [3, 2]
+    assert pred_idx == [4]
 
     out_edges = graph.out_edges(new_node_idx)
     assert len(out_edges) == 2

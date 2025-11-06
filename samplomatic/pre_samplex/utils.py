@@ -14,7 +14,7 @@
 
 from rustworkx import PyDiGraph
 
-from ..aliases import NodeIndex
+from ..aliases import EdgeIndex, NodeIndex
 from ..exceptions import SamplexConstructionError
 from ..partition import QubitIndicesPartition
 from .graph_data import PreEdge, PreNode, PrePropagate
@@ -54,7 +54,10 @@ def pre_propagate_nodes_are_mergeable(
 
 
 def merge_pre_edges(
-    graph: PyDiGraph[PreNode, PreEdge], source_idx: NodeIndex, destination_idx: NodeIndex
+    graph: PyDiGraph[PreNode, PreEdge],
+    source_idx: NodeIndex,
+    destination_idx: NodeIndex,
+    edge_order: list[EdgeIndex],
 ) -> PreEdge:
     """Merge all pre-edges from two pre-nodes into one pre-edge.
 
@@ -62,12 +65,17 @@ def merge_pre_edges(
         graph: A graph containing the two nodes whose edges are being merged.
         source_idx: The index of the source node.
         destination_idx: The index of the destination node.
+        edge_order: The order of the edges.
 
     Returns:
         A pre-edge resulting from the merger.
     """
-    edges_indices = graph.edge_indices_from_endpoints(source_idx, destination_idx)
-    edges = [graph.get_edge_data_by_index(edge_idx) for edge_idx in edges_indices]
+    edge_indices = graph.edge_indices_from_endpoints(source_idx, destination_idx)
+    edges = [
+        graph.get_edge_data_by_index(edge_idx)
+        for edge_idx in edge_order
+        if edge_idx in edge_indices
+    ]
 
     if not edges:
         raise SamplexConstructionError("No edges to merge.")

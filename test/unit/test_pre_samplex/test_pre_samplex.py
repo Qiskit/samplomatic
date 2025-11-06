@@ -593,7 +593,7 @@ class TestMergeParallelPrePropagateNodes:
         node_idxs = topological_sort(pre_samplex.graph)
         assert isinstance(pre_samplex.graph[node_idxs[1]], PrePropagate)
 
-        qubit_idxs = QubitIndicesPartition(1, [(7,), (4,), (1,), (2,), (0,), (3,)])
+        qubit_idxs = QubitIndicesPartition(1, [(1,), (2,), (0,), (3,), (7,), (4,)])
         assert pre_samplex.graph[node_idxs[1]].subsystems == qubit_idxs
 
         partition = SubsystemIndicesPartition(2, [(0, 1), (2, 3), (4, 5)])
@@ -640,9 +640,9 @@ class TestMergeParallelPrePropagateNodes:
         pre_samplex.merge_parallel_pre_propagate_nodes()
         graph = pre_samplex.graph
         for emit_node in [6, 7]:
-            assert not graph.get_edge_data(emit_node, 4).force_register_copy
+            assert not graph.get_edge_data(emit_node, 5).force_register_copy
             assert graph.get_edge_data(emit_node, 9).force_register_copy
-        assert graph[4].operation.name == "x"
+        assert graph[5].operation.name == "x"
         assert graph[9].operation.name == "sx"
         assert graph[9].subsystems.all_elements == {0, 1}
 
