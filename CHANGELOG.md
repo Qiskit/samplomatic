@@ -1,3 +1,16 @@
+## [0.13.0](https://github.com/Qiskit/samplomatic/tree/0.13.0) - 2025-11-06
+
+### Changed
+
+- A samplex built with `build` always returns `parameter_values` as an output. If it does not
+  generate parameter values, the `parameter_values` will have shape `("num_randomizations", 0)`.
+  Previously, `parameter_values` would not be included in its outputs. ([#225](https://github.com/Qiskit/samplomatic/issues/225))
+
+### Fixed
+
+- Fixed a bug where the slicing indices of `SliceRegisterNodes` were wrong, causing circuits with non-standard ordering to sample incorrectly (particularly with `merge_parallel_pre_propagate_nodes` enabled). ([#229](https://github.com/Qiskit/samplomatic/issues/229))
+
+
 ## [0.12.0](https://github.com/Qiskit/samplomatic/tree/0.12.0) - 2025-11-03
 
 ### Added
