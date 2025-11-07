@@ -1,0 +1,23 @@
+TwirlingStrategy
+================
+
+.. currentmodule:: samplomatic.transpiler
+
+.. autoclass:: TwirlingStrategy
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~TwirlingStrategy.ACTIVE
+      ~TwirlingStrategy.ACTIVE_ACCUM
+      ~TwirlingStrategy.ACTIVE_CIRCUIT
+      ~TwirlingStrategy.ALL
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: ACTIVE
+   .. autoattribute:: ACTIVE_ACCUM
+   .. autoattribute:: ACTIVE_CIRCUIT
+   .. autoattribute:: ALL

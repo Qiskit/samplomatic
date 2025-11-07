@@ -1,0 +1,37 @@
+TensorSpecification
+===================
+
+.. currentmodule:: samplomatic.tensor_interface
+
+.. autoclass:: TensorSpecification
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~TensorSpecification.description
+      ~TensorSpecification.free_dimensions
+      ~TensorSpecification.name
+      ~TensorSpecification.ndim
+      ~TensorSpecification.optional
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~TensorSpecification.describe
+      ~TensorSpecification.validate_and_coerce
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: description
+   .. autoattribute:: free_dimensions
+   .. autoattribute:: name
+   .. autoattribute:: ndim
+   .. autoattribute:: optional
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: describe
+   .. automethod:: validate_and_coerce

@@ -1,0 +1,17 @@
+AddNoops
+========
+
+.. currentmodule:: samplomatic.transpiler.passes.insert_noops
+
+.. autoclass:: AddNoops
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AddNoops.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

@@ -1,0 +1,35 @@
+SliceRegisterNode
+=================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: SliceRegisterNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~SliceRegisterNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~SliceRegisterNode.evaluate
+      ~SliceRegisterNode.get_style
+      ~SliceRegisterNode.instantiates
+      ~SliceRegisterNode.reads_from
+      ~SliceRegisterNode.validate_and_update
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: reads_from
+   .. automethod:: validate_and_update

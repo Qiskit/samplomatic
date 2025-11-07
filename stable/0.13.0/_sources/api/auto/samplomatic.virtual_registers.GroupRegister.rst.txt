@@ -1,0 +1,25 @@
+GroupRegister
+=============
+
+.. currentmodule:: samplomatic.virtual_registers
+
+.. autoclass:: GroupRegister
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~GroupRegister.inplace_multiply
+      ~GroupRegister.invert
+      ~GroupRegister.left_inplace_multiply
+      ~GroupRegister.left_multiply
+      ~GroupRegister.multiply
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: inplace_multiply
+   .. automethod:: invert
+   .. automethod:: left_inplace_multiply
+   .. automethod:: left_multiply
+   .. automethod:: multiply
