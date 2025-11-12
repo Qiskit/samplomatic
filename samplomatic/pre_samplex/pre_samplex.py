@@ -1023,7 +1023,7 @@ class PreSamplex:
         # Validation
         self.validate_no_rightward_danglers()
 
-        # Optmization
+        # Optimization
         self.prune_prenodes_unreachable_from_emission()
         self.merge_parallel_pre_propagate_nodes()
 
@@ -1133,18 +1133,18 @@ class PreSamplex:
                     )
                 )
 
-        if max_param_idx is not None:
-            samplex.add_output(
-                TensorSpecification(
-                    "parameter_values",
-                    (
-                        "num_randomizations",
-                        max_param_idx + 1,
-                    ),
-                    np.dtype(np.float32),
-                    "Parameter values valid for an associated template circuit.",
-                )
+        parameter_values_shape = (
+            "num_randomizations",
+            0 if max_param_idx is None else max_param_idx + 1,
+        )
+        samplex.add_output(
+            TensorSpecification(
+                "parameter_values",
+                parameter_values_shape,
+                np.dtype(np.float32),
+                "Parameter values valid for an associated template circuit.",
             )
+        )
 
         if self._twirled_clbits:
             for reg in self._cregs:
@@ -1338,7 +1338,8 @@ class PreSamplex:
             input_register_name, (source_idxs, destination_idxs, input_type) = next(
                 iter(operands.items())
             )
-            slice_idxs = [source_idxs[idx] for idx in destination_idxs]
+            slice_idxs = np.empty(len(destination_idxs))
+            slice_idxs[destination_idxs] = source_idxs
             combine_node = SliceRegisterNode(
                 input_type=input_type,
                 output_type=combined_register_type,
@@ -1495,10 +1496,9 @@ class PreSamplex:
             VirtualType.U2,
         )
 
-        param_reorder = pre_node.subsystems.get_indices(all_subsystems)
         collect = CollectTemplateValues(
             "parameter_values",
-            pre_node.param_idxs[param_reorder, :],
+            pre_node.param_idxs,
             combined_name,
             VirtualType.U2,
             np.arange(len(all_subsystems)),
