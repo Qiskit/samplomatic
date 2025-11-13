@@ -917,7 +917,6 @@ class PreSamplex:
                             "predecessors": set(self.graph.predecessor_indices(node_idx)),
                         }
                     )
-        print(clusters)
         return [cluster["nodes"] for cluster_type in clusters.values() for cluster in cluster_type]
 
     def sorted_predecessor_idxs(
