@@ -893,6 +893,7 @@ class PreSamplex:
                     mode=node.spec.mode,
                     operation_name=node.operation.name,
                     direction=node.direction,
+                    is_parameterized=node.operation.is_parameterized(),
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -916,7 +917,6 @@ class PreSamplex:
                             "predecessors": set(self.graph.predecessor_indices(node_idx)),
                         }
                     )
-
         return [cluster["nodes"] for cluster_type in clusters.values() for cluster in cluster_type]
 
     def sorted_predecessor_idxs(
