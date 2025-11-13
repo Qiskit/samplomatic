@@ -498,7 +498,7 @@ class TestMergeParallelPrePropagateNodes:
 
     @pytest.mark.parametrize("gate_type", ["rz", "rx"])
     def test_merging_of_fractional_gates(self, gate_type):
-        """Test mixing of parameterized and non-parameterized rz/rx gates"""
+        """Test mixing of parameterized and non-parameterized rz/rx gates."""
         p = Parameter("p")
         box = QuantumCircuit(4)
         getattr(box, gate_type)(p, 0)
