@@ -223,16 +223,20 @@ class PrePropagateKey:
     direction: Direction
     """The direction of the ``PrePropagate`` node."""
 
+    is_parameterized: bool
+    """Whether or not the operation is parameterized."""
+
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, PrePropagateKey)
             and self.mode == other.mode
             and self.operation_name == other.operation_name
             and self.direction == other.direction
+            and self.is_parameterized == other.is_parameterized
         )
 
     def __hash__(self):
-        return hash((self.mode, self.operation_name, self.direction))
+        return hash((self.mode, self.operation_name, self.direction, self.is_parameterized))
 
 
 @dataclass
