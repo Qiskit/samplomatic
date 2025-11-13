@@ -14,4 +14,5 @@
 
 from .distribution import Distribution
 from .haar_u2 import HaarU2
+from .uniform_c1 import UniformC1
 from .uniform_pauli import UniformPauli
