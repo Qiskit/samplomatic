@@ -11,11 +11,13 @@ PrePropagateKey
    .. autosummary::
 
       ~PrePropagateKey.direction
+      ~PrePropagateKey.is_parameterized
       ~PrePropagateKey.mode
       ~PrePropagateKey.operation_name
 
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: direction
+   .. autoattribute:: is_parameterized
    .. autoattribute:: mode
    .. autoattribute:: operation_name
