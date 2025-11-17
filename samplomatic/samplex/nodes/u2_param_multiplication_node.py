@@ -21,6 +21,7 @@ from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError, SamplexRuntimeError
 from ...virtual_registers import U2Register, VirtualRegister
 from .evaluation_node import EvaluationNode
+from .utils import get_fractional_gate_operation
 
 
 class U2ParametricMultiplicationNode(EvaluationNode):
@@ -89,20 +90,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
 
     def _get_operation(self, parameter_values: np.ndarray) -> U2Register:
         """Generate the U2Register for the evaluated operation"""
-        result = np.empty((len(parameter_values), 1, 2, 2), dtype=U2Register.DTYPE)
-
-        if self._operand == "rx":
-            result[:, 0, 0, 0] = np.cos(0.5 * parameter_values)
-            result[:, 0, 0, 1] = -1j * np.sin(0.5 * parameter_values)
-            result[:, 0, 1, 0] = result[:, 0, 0, 1]
-            result[:, 0, 1, 1] = result[:, 0, 0, 0]
-        else:
-            result[:, 0, 0, 0] = np.exp(-0.5j * parameter_values)
-            result[:, 0, 0, 1] = 0
-            result[:, 0, 1, 0] = 0
-            result[:, 0, 1, 1] = np.exp(0.5j * parameter_values)
-
-        return U2Register(result)
+        return get_fractional_gate_operation(self._operand, parameter_values)
 
 
 class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):

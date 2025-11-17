@@ -517,8 +517,8 @@ class TestMergeParallelPrePropagateNodes:
 
         assert len(pre_samplex.graph.nodes()) == 7
         pre_samplex.merge_parallel_pre_propagate_nodes()
-        # The two parametric gates are merged, but the non-parameteric gates are not
-        assert len(pre_samplex.graph.nodes()) == 6
+        # The two parametric gates are merged, and the non-parameteric gates are merged
+        assert len(pre_samplex.graph.nodes()) == 5
 
     def test_pre_samplex_with_no_mergeable_pre_propagates(self):
         """Test propagating an instruction on overlapping qubits adds a new propagate node."""

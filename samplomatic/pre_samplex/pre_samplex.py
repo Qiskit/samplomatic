@@ -76,6 +76,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
+from ..samplex.nodes.utils import get_fractional_gate_operation
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from ..virtual_registers import U2Register
@@ -835,20 +836,9 @@ class PreSamplex:
                     continue
 
                 nodes = [self.graph[node_idx] for node_idx in node_idxs]
-
-                if any(
-                    node.operation.name in fractional and not node.operation.is_parameterized()
-                    for node in nodes
-                ):
-                    # TODO: for now, merging is not allowed for rx and rz gates when they specify
-                    # numerical values. there's nothing technically more difficult about this
-                    # than the parametric case, we just don't support it yet in this optimization.
-                    continue
-
                 combined_subsystems = QubitIndicesPartition.union(
                     *(node.subsystems for node in nodes)
                 )
-
                 num_elements = nodes[0].partition.num_elements_per_part
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
@@ -858,21 +848,43 @@ class PreSamplex:
                         for i in range(num_parts)
                     ],
                 )
+                if any(
+                    node.operation.name in fractional and not node.operation.is_parameterized()
+                    for node in nodes
+                ):
+                    # It is assumed that all nodes in the cluster are all non-parameterized
+                    # and of the same type.
+                    params = [param for node in nodes for param in node.operation.params]
+                    operation = nodes[0].operation
+                    operation.params = params
+                    # This merges the node but not the edges
+                    new_node_idx = replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            nodes[0].direction,  # all nodes have same direction
+                            operation,
+                            combined_partition,
+                            nodes[0].spec,  # all nodes have same spec
+                        ),
+                    )
 
-                params = [param for node in nodes for param in node.spec.params]
-
-                # This merges the node but not the edges
-                new_node_idx = replace_nodes_with_one_node(
-                    self.graph,
-                    node_idxs,
-                    PrePropagate(
-                        combined_subsystems,
-                        self.graph[node_idxs[0]].direction,  # all nodes have same direction
-                        self.graph[node_idxs[0]].operation,  # all nodes have same operation
-                        combined_partition,
-                        InstructionSpec(params=params, mode=nodes[0].spec.mode),
-                    ),
-                )
+                else:
+                    params = [param for node in nodes for param in node.spec.params]
+                    # This merges the node but not the edges
+                    new_node_idx = replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            nodes[0].direction,  # all nodes have same direction
+                            nodes[0].operation,  # all nodes have same operation, up to the
+                            # paramaters which are handled separately
+                            combined_partition,
+                            InstructionSpec(params=params, mode=nodes[0].spec.mode),
+                        ),
+                    )
 
                 for successor_idx in set(self.graph.successor_indices(new_node_idx)):
                     new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
@@ -1409,7 +1421,12 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
+                if op_name in {"rx", "rz"}:
+                    register = get_fractional_gate_operation(
+                        op_name, np.array(pre_propagate.operation.params)
+                    )
+                else:
+                    register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
                 if pre_propagate.direction is Direction.LEFT:
                     propagate_node = RightMultiplicationNode(register, combined_register_name)
                 else:
