@@ -15,15 +15,12 @@
 from __future__ import annotations
 
 import abc
-from typing import TypeVar
 
 import numpy as np
 
 from ..aliases import SubsystemIndex
 from ..exceptions import VirtualGateError
 from .group_register import GroupRegister
-
-T = TypeVar("T")
 
 
 class FiniteGroupRegister(GroupRegister):
@@ -51,10 +48,10 @@ class FiniteGroupRegister(GroupRegister):
         """The number of distinct elements in the group."""
         return len(self.lookup_table)
 
-    def invert(self) -> T:
+    def invert(self):
         return type(self)(self.inverse_table[self.virtual_gates])
 
-    def multiply(self, other: T, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)) -> T:
+    def multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
         try:
             return type(self)(
                 self.lookup_table[self._array[subsystem_idxs, :], other.virtual_gates]
@@ -62,7 +59,7 @@ class FiniteGroupRegister(GroupRegister):
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
-                f"given subsystem_idxs {subsystem_idxs}"
+                f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
 
     def inplace_multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
@@ -73,12 +70,10 @@ class FiniteGroupRegister(GroupRegister):
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
-                f"given subsystem_idxs {subsystem_idxs}"
+                f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
 
-    def left_multiply(
-        self: T, other: T, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)
-    ) -> T:
+    def left_multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
         try:
             return type(self)(
                 self.lookup_table[other.virtual_gates, self._array[subsystem_idxs, :]]
@@ -86,11 +81,11 @@ class FiniteGroupRegister(GroupRegister):
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
-                f"given subsystem_idxs {subsystem_idxs}"
+                f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
 
     def left_inplace_multiply(
-        self: T, other: T, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)
+        self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)
     ):
         try:
             self._array[subsystem_idxs, :] = self.lookup_table[
@@ -99,5 +94,5 @@ class FiniteGroupRegister(GroupRegister):
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
-                f"given subsystem_idxs {subsystem_idxs}"
+                f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
