@@ -51,7 +51,7 @@ class Z2Register(GroupRegister):
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
-                f"given subsystem_idxs {subsystem_idxs}"
+                f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
 
     def inplace_multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
@@ -62,7 +62,7 @@ class Z2Register(GroupRegister):
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
-                f"given subsystem_idxs {subsystem_idxs}"
+                f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
 
     def invert(self):

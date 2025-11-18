@@ -14,7 +14,13 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import CircuitInstruction, ClassicalRegister, QuantumCircuit, QuantumRegister
+from qiskit.circuit import (
+    CircuitInstruction,
+    ClassicalRegister,
+    Parameter,
+    QuantumCircuit,
+    QuantumRegister,
+)
 from qiskit.circuit.library import CXGate, Measure, XGate
 from rustworkx import topological_sort
 
@@ -489,6 +495,30 @@ class TestMergeParallelPrePropagateNodes:
 
         assert pre_samplex.graph[node_idxs[1]].subsystems.all_elements == {0, 1, 2, 3}
         assert pre_samplex.graph[node_idxs[2]].subsystems.all_elements == {0, 1, 2, 3}
+
+    @pytest.mark.parametrize("gate_type", ["rz", "rx"])
+    def test_merging_of_fractional_gates(self, gate_type):
+        """Test mixing of parameterized and non-parameterized rz/rx gates."""
+        p = Parameter("p")
+        box = QuantumCircuit(4)
+        getattr(box, gate_type)(p, 0)
+        getattr(box, gate_type)(1.2, 1)
+        getattr(box, gate_type)(2 * p, 2)
+        getattr(box, gate_type)(3, 3)
+        subsystems = QubitPartition(1, ((q,) for q in box.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in box:
+            pre_samplex.add_propagate(instr, InstructionSpec())
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.prune_prenodes_unreachable_from_emission()
+
+        assert len(pre_samplex.graph.nodes()) == 7
+        pre_samplex.merge_parallel_pre_propagate_nodes()
+        # The two parametric gates are merged, but the non-parameteric gates are not
+        assert len(pre_samplex.graph.nodes()) == 6
 
     def test_pre_samplex_with_no_mergeable_pre_propagates(self):
         """Test propagating an instruction on overlapping qubits adds a new propagate node."""
