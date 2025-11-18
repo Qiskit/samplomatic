@@ -46,7 +46,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode, InstructionSpec
-from ..constants import Direction
+from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -76,7 +76,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
-from ..samplex.nodes.utils import get_fractional_gate_operation
+from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from ..virtual_registers import U2Register
@@ -828,7 +828,6 @@ class PreSamplex:
             are part of the same generation, and have identical directions and operation names, and
             have predecessors in common.
         """
-        fractional = {"rx", "rz"}
         for generation in topological_generations(self.graph):
             for node_idxs in self._cluster_pre_propagate_nodes(generation):
                 if len(node_idxs) == 1:
@@ -849,11 +848,11 @@ class PreSamplex:
                     ],
                 )
                 if any(
-                    node.operation.name in fractional and not node.operation.is_parameterized()
+                    node.operation.name in SUPPORTED_FRACTIONAL_GATES
+                    and not node.operation.is_parameterized()
                     for node in nodes
                 ):
-                    # It is assumed that all nodes in the cluster are all non-parameterized
-                    # and of the same type.
+                    # We rely on the clustering function to not mix parameterized and bounded gates.
                     params = [param for node in nodes for param in node.operation.params]
                     operation = nodes[0].operation
                     operation.params = params
@@ -1421,8 +1420,8 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                if op_name in {"rx", "rz"}:
-                    register = get_fractional_gate_operation(
+                if op_name in SUPPORTED_FRACTIONAL_GATES:
+                    register = get_fractional_gate_register(
                         op_name, np.array(pre_propagate.operation.params)
                     )
                 else:

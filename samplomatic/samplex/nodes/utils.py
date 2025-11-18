@@ -18,11 +18,15 @@ from ...exceptions import SamplexError
 from ...virtual_registers import U2Register
 
 
-def get_fractional_gate_operation(op_name: str, parameter_values: list[float]) -> U2Register:
+def get_fractional_gate_register(op_name: str, parameter_values: np.ndarray) -> U2Register:
     """Return a register representing the operation.
 
     Currently supports only ``rx`` and ``rz`` gates.
     Each value in ``parameter_values`` serves as an argument for a single qubit.
+
+    Args:
+        op_name: The name of the operation.
+        parameter_values: The parameter of each operation, given as array.
 
     Returns:
         A :class:`~.U2Register` representing the operation.

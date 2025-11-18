@@ -18,10 +18,11 @@ import numpy as np
 
 from ...aliases import ParamIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
+from ...constants import SUPPORTED_FRACTIONAL_GATES
 from ...exceptions import SamplexConstructionError, SamplexRuntimeError
 from ...virtual_registers import U2Register, VirtualRegister
 from .evaluation_node import EvaluationNode
-from .utils import get_fractional_gate_operation
+from .utils import get_fractional_gate_register
 
 
 class U2ParametricMultiplicationNode(EvaluationNode):
@@ -53,7 +54,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
         if not param_idxs:
             raise SamplexConstructionError("Expected at least one element in param_idxs")
 
-        if operand not in {"rz", "rx"}:
+        if operand not in SUPPORTED_FRACTIONAL_GATES:
             raise SamplexConstructionError(f"Unexpected operand {operand}")
 
         self._operand = operand
@@ -90,7 +91,7 @@ class U2ParametricMultiplicationNode(EvaluationNode):
 
     def _get_operation(self, parameter_values: np.ndarray) -> U2Register:
         """Generate the U2Register for the evaluated operation"""
-        return get_fractional_gate_operation(self._operand, parameter_values)
+        return get_fractional_gate_register(self._operand, parameter_values)
 
 
 class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
