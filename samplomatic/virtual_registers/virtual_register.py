@@ -20,7 +20,6 @@ import numpy as np
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
 from ..serializable import Serializable
-from ..utils.serialization import array_to_json
 
 T = TypeVar("T")
 
@@ -94,10 +93,6 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
                 "to account for the shape of each virtual gate element, but found total shape "
                 f"{self._array.shape}."
             )
-
-    def to_json_dict(self) -> dict[str, str]:
-        array_data = array_to_json(self._array)
-        return {"type": self.TYPE, "array": array_data}
 
     @staticmethod
     def select(register_type: VirtualType) -> type["VirtualRegister"]:
