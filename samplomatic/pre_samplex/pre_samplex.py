@@ -854,8 +854,6 @@ class PreSamplex:
                 ):
                     # We rely on the clustering function to not mix parameterized and bounded gates.
                     params = [param for node in nodes for param in node.operation.params]
-                    operation = nodes[0].operation
-                    operation.params = params
                     # This merges the node but not the edges
                     new_node_idx = replace_nodes_with_one_node(
                         self.graph,
@@ -863,9 +861,10 @@ class PreSamplex:
                         PrePropagate(
                             combined_subsystems,
                             nodes[0].direction,  # all nodes have same direction
-                            operation,
+                            nodes[0].operation,  # Besides parameters, all nodes have same operation
                             combined_partition,
                             nodes[0].spec,  # all nodes have same spec
+                            bounded_params=params,
                         ),
                     )
 
@@ -1422,7 +1421,7 @@ class PreSamplex:
             else:
                 if op_name in SUPPORTED_FRACTIONAL_GATES:
                     register = get_fractional_gate_register(
-                        op_name, np.array(pre_propagate.operation.params)
+                        op_name, np.array(pre_propagate.bounded_params)
                     )
                 else:
                     register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))

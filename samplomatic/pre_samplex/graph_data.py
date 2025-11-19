@@ -21,7 +21,8 @@ from qiskit.circuit.gate import Gate
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef, SubsystemIndex
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode, InstructionSpec
-from ..constants import Direction
+from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
+from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
 from ..visualization.hover_style import EdgeStyle, NodeStyle
@@ -173,7 +174,11 @@ class PrePropagate(PreNode):
     """The propagation node type used during samplex building."""
 
     operation: Gate
-    """The operation to propagate through."""
+    """The operation to propagate through.
+
+    Even when the ``PrePropagate`` represents more than one subsystem (i.e more than one operation)
+    only a single common ``Gate`` object is stored, and possible parameters are stored elsewhere.
+    """
 
     partition: SubsystemIndicesPartition
     """A partition of subsystem indices, each of which is propagated jointly.
@@ -185,6 +190,26 @@ class PrePropagate(PreNode):
 
     spec: InstructionSpec
     """Specification for how the operation acts on virtual gates."""
+
+    bounded_params: list[float] | None = None
+    """List of bounded params if ``operation`` is a fractional gate with a bounded parameter.
+
+    If the node involves a relevant operation with a single subsystem, the parameter is
+    automatically extracted from the operation.
+    """
+
+    def __post_init__(self):
+        # Current construction assumes one parameter per gate.
+        if (
+            self.operation.name in SUPPORTED_FRACTIONAL_GATES
+            and not self.operation.is_parameterized()
+        ):
+            if self.bounded_params is None:
+                self.bounded_params = self.operation.params
+            if len(self.bounded_params) != len(self.partition):
+                raise SamplexBuildError(
+                    "The number of bounded parameters does not match the number of subsystems."
+                )
 
     def get_style(self):
         return (

@@ -42,5 +42,5 @@ The names of all the Qiskit built-in two-qubit gates that are invariant under qu
 
 SUPPORTED_FRACTIONAL_GATES: set[str] = {"rx", "rz"}
 """
-The names of all the Qiskit built-in single-qubit gates which are supported in Samplomatic.
+The names of all Qiskit built-in fractional gates which are supported in Samplomatic.
 """
