@@ -12,8 +12,9 @@
 
 """Graph Data"""
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 from qiskit.circuit.gate import Gate
@@ -191,7 +192,7 @@ class PrePropagate(PreNode):
     spec: InstructionSpec
     """Specification for how the operation acts on virtual gates."""
 
-    bounded_params: list[float] | None = None
+    bounded_params: Optional[Iterable[float]] = None
     """List of bounded params if ``operation`` is a fractional gate with a bounded parameter.
 
     If the node involves a relevant operation with a single subsystem, the parameter is
