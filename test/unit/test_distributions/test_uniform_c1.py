@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the PauliRegister distribution"""
+"""Test the UniformC1 distribution"""
 
 from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformC1

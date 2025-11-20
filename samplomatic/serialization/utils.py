@@ -43,9 +43,6 @@ def array_to_json(array: np.ndarray) -> str:
     elif array.dtype == np.dtype(np.uint8):
         dtype = "u8"
         data = pybase64.b64encode_as_string(array.astype("<u2").tobytes())
-    elif array.dtype == np.dtype(np.bool_):
-        dtype = "b"
-        data = pybase64.b64encode_as_string(array.tobytes())
     else:
         raise ValueError(f"Unexpected NumPy dtype {array.dtype}.")
 
@@ -77,8 +74,6 @@ def array_from_json(data: str) -> np.ndarray:
         return np.frombuffer(raw, dtype="<u8").reshape(shape)
     elif dtype == "u8":
         return np.frombuffer(raw, dtype="<u2").reshape(shape)
-    elif dtype == "b":
-        return np.frombuffer(raw, dtype=np.bool_).reshape(shape)
 
     raise SerializationError(f"Unexpected NumPy dtype {dtype}.")
 
