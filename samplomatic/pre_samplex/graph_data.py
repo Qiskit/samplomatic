@@ -22,7 +22,7 @@ from qiskit.circuit.gate import Gate
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, StrRef, SubsystemIndex
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode, InstructionSpec
-from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
+from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
@@ -202,7 +202,7 @@ class PrePropagate(PreNode):
     def __post_init__(self):
         # Current construction assumes one parameter per gate.
         if (
-            self.operation.name in SUPPORTED_FRACTIONAL_GATES
+            self.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
             and not self.operation.is_parameterized()
         ):
             if self.bounded_params is None:

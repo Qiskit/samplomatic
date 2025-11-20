@@ -46,7 +46,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode, InstructionSpec
-from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
+from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -848,7 +848,7 @@ class PreSamplex:
                     ],
                 )
                 if any(
-                    node.operation.name in SUPPORTED_FRACTIONAL_GATES
+                    node.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
                     and not node.operation.is_parameterized()
                     for node in nodes
                 ):
@@ -1419,7 +1419,7 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                if op_name in SUPPORTED_FRACTIONAL_GATES:
+                if op_name in SUPPORTED_1Q_FRACTIONAL_GATES:
                     register = get_fractional_gate_register(
                         op_name, np.array(pre_propagate.bounded_params)
                     )
