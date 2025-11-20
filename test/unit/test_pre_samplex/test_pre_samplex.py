@@ -21,7 +21,7 @@ from qiskit.circuit import (
     QuantumCircuit,
     QuantumRegister,
 )
-from qiskit.circuit.library import CXGate, Measure, XGate
+from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate, XGate
 from rustworkx import topological_sort
 
 from samplomatic import Twirl
@@ -273,6 +273,31 @@ class TestBuildPreSamplex:
         with pytest.raises(SamplexBuildError, match="Number of qubits != number of clbits"):
             state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1, 2])
 
+    @pytest.mark.parametrize("gate", [RXGate, RZGate])
+    def test_prepropagate_validation(self, gate):
+        """Test that error is raised when not enough bounded angles are provided"""
+        PrePropagate(QubitIndicesPartition.from_elements([0]), Direction.LEFT, gate(1.2), [[0]], {})
+        PrePropagate(
+            QubitIndicesPartition.from_elements([0]),
+            Direction.LEFT,
+            gate(1.2),
+            [[0], [1]],
+            {},
+            bounded_params=[1.2, 1.4],
+        )
+        with pytest.raises(
+            SamplexBuildError,
+            match="The number of bounded parameters does not match the number of subsystems",
+        ):
+            PrePropagate(
+                QubitIndicesPartition.from_elements([0]),
+                Direction.LEFT,
+                gate(1.2),
+                [[0], [1]],
+                {},
+                bounded_params=[1.2],
+            )
+
 
 class TestHelpersAttributes:
     """Test helper and attributes."""
@@ -517,8 +542,8 @@ class TestMergeParallelPrePropagateNodes:
 
         assert len(pre_samplex.graph.nodes()) == 7
         pre_samplex.merge_parallel_pre_propagate_nodes()
-        # The two parametric gates are merged, but the non-parameteric gates are not
-        assert len(pre_samplex.graph.nodes()) == 6
+        # The two parametric gates are merged, and the non-parameteric gates are merged
+        assert len(pre_samplex.graph.nodes()) == 5
 
     def test_pre_samplex_with_no_mergeable_pre_propagates(self):
         """Test propagating an instruction on overlapping qubits adds a new propagate node."""

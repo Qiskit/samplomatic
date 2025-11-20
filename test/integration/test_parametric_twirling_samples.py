@@ -102,7 +102,10 @@ def make_circuits():
         circuit.rx(2, 3)
 
     with circuit.box([Twirl(dressing="right")]):
-        circuit.noop(0, 1, 2, 3)
+        circuit.rz(1, 0)
+        circuit.rz(a, 1)
+        circuit.rz(b, 2)
+        circuit.rz(2, 3)
 
     yield circuit, "merge_mix_static_and_parametric"
 
