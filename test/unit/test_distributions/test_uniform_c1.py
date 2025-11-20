@@ -39,6 +39,6 @@ def test_sample(rng):
     assert UniformC1(8).sample(1, rng).shape == (8, 1)
     assert UniformC1(8).sample(100, rng).shape == (8, 100)
 
-    assert UniformC1(1).sample(1, rng).virtual_gates.shape == (1, 1, 2, 3)
-    assert UniformC1(8).sample(1, rng).virtual_gates.shape == (8, 1, 2, 3)
-    assert UniformC1(8).sample(100, rng).virtual_gates.shape == (8, 100, 2, 3)
+    assert UniformC1(1).sample(1, rng).virtual_gates.shape == (1, 1)
+    assert UniformC1(8).sample(1, rng).virtual_gates.shape == (8, 1)
+    assert UniformC1(8).sample(100, rng).virtual_gates.shape == (8, 100)
