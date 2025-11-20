@@ -14,9 +14,10 @@ import numpy as np
 import orjson
 import pytest
 
-from samplomatic.distributions import HaarU2
+from samplomatic.distributions import HaarU2, UniformC1
 from samplomatic.serialization.type_serializer import TypeSerializer
 from samplomatic.serialization.virtual_register_serializers import (
+    C1RegisterSerializer,
     PauliRegisterSerializer,
     U2RegisterSerializer,
     Z2RegisterSerializer,
@@ -44,5 +45,13 @@ def test_u2_register_serializer_round_trip(ssv, rng):
 def test_z2_register_serializer_round_trip(ssv):
     register = Z2Register(np.array([[0, 0, 1], [1, 0, 1]], dtype=np.uint8))
     data = Z2RegisterSerializer.serialize(register, ssv)
+    orjson.dumps(data)
+    assert register == TypeSerializer.deserialize(data)
+
+
+@pytest.mark.parametrize("ssv", C1RegisterSerializer.SSVS)
+def test_c1_register_serializer_round_trip(ssv, rng):
+    register = UniformC1(13).sample(3, rng)
+    data = C1RegisterSerializer.serialize(register, ssv)
     orjson.dumps(data)
     assert register == TypeSerializer.deserialize(data)

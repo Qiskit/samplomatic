@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 
+from .c1_register import C1Register
 from .group_register import GroupRegister
 from .pauli_register import PauliRegister
 from .serialization import virtual_register_from_json

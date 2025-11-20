@@ -10,9 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Distributions"""
+"""Tables
 
-from .distribution import Distribution
-from .haar_u2 import HaarU2
-from .uniform_c1 import UniformC1
-from .uniform_pauli import UniformPauli
+This module contains lookup tables for finite groups.
+"""

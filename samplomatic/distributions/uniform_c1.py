@@ -10,9 +10,23 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Distributions"""
+"""UniformC1"""
 
+from ..annotations import VirtualType
+from ..virtual_registers import C1Register
 from .distribution import Distribution
-from .haar_u2 import HaarU2
-from .uniform_c1 import UniformC1
-from .uniform_pauli import UniformPauli
+
+
+class UniformC1(Distribution):
+    """The uniform distribution over virtual C1 gates.
+
+    Args:
+        num_subsystems: The number of subsystems this distribution samples.
+    """
+
+    @property
+    def register_type(self):
+        return VirtualType.C1
+
+    def sample(self, size, rng):
+        return C1Register(rng.integers(0, 24, (self.num_subsystems, size), dtype=C1Register.DTYPE))
