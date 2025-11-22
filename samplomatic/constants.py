@@ -42,7 +42,7 @@ The names of all the Qiskit built-in two-qubit gates that are invariant under qu
 
 STANDARD_1Q_GATES: tuple[str] = (
     "h",
-    "i",
+    "id",
     "x",
     "y",
     "z",
