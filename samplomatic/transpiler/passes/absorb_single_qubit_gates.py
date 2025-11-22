@@ -45,7 +45,7 @@ class AbsorbSingleQubitGates(TransformationPass):
             last_gate = single_qubit_run[-1]
             # this loop should have 0 or 1 iteration because the run is on a single qubit
             for successor in dag.quantum_successors(last_gate):
-                # at the end of a circuit, successor is not a DAGOpNode and has no name attribute
+                # at the end of a circuit, successor is not a DAGOpNode and has no 'op' attribute
                 if isinstance(successor, DAGOpNode) and successor.op.name == "box":
                     qubit = last_gate.qargs[0]
                     single_qubit_runs[successor][qubit] = single_qubit_run
