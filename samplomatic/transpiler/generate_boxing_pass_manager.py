@@ -22,6 +22,7 @@ from qiskit.transpiler.passes import RemoveBarriers
 
 from .noise_injection_strategies import NoiseInjectionStrategyLiteral
 from .passes import (
+    AbsorbSingleQubitGates,
     AddInjectNoise,
     AddTerminalRightDressedBoxes,
     GroupGatesIntoBoxes,
@@ -148,5 +149,6 @@ def generate_boxing_pass_manager(
 
     passes.append(AddTerminalRightDressedBoxes())
     passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
+    passes.append(AbsorbSingleQubitGates())
 
     return PassManager(passes)
