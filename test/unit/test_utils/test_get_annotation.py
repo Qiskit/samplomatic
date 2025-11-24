@@ -14,7 +14,7 @@
 
 from qiskit.circuit import BoxOp, QuantumCircuit
 
-from samplomatic.annotations import BasisTransform, InjectNoise, Twirl
+from samplomatic.annotations import ChangeBasis, InjectNoise, Twirl
 from samplomatic.utils import get_annotation
 
 
@@ -27,9 +27,9 @@ def test_box_without_annotation():
 def test_box_with_annotation():
     """Test `get_annotation` for box with annotations."""
     twirl = Twirl(dressing="right", decomposition="rzrx")
-    basis_transform = BasisTransform(ref="ciao")
-    box = BoxOp(QuantumCircuit(2), annotations=[twirl, basis_transform])
+    change_basis = ChangeBasis(ref="ciao")
+    box = BoxOp(QuantumCircuit(2), annotations=[twirl, change_basis])
 
     assert get_annotation(box, Twirl) is twirl
-    assert get_annotation(box, BasisTransform) is basis_transform
+    assert get_annotation(box, ChangeBasis) is change_basis
     assert get_annotation(box, InjectNoise) is None

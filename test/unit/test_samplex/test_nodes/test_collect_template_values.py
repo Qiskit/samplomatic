@@ -20,19 +20,14 @@ from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.interfaces import SamplexOutput
 from samplomatic.samplex.nodes import CollectTemplateValues
-from samplomatic.synths import RzSxSynth
+from samplomatic.synths import RzRxSynth, RzSxSynth
 from samplomatic.tensor_interface import TensorSpecification
 
 
 def test_construction():
     """Test simple construction and simple attributes."""
     node = CollectTemplateValues(
-        "template_values",
-        [[0, 1, 3], [2, 4, 5]],
-        "x",
-        VirtualType.U2,
-        [3, 2],
-        RzSxSynth(),
+        "template_values", [[0, 1, 3], [2, 4, 5]], "x", VirtualType.U2, [3, 2], RzSxSynth()
     )
 
     assert node.outputs_to() == ["template_values"]
@@ -41,6 +36,23 @@ def test_construction():
     assert node.reads_from() == {"x": ({2, 3}, VirtualType.U2)}
     assert not node.writes_to() and not node.instantiates() and not node.removes()
     assert node.outgoing_register_type is None
+
+
+def test_equality(dummy_collection_node):
+    """Test equality."""
+    param_idxs = [[0, 1, 3], [2, 4, 5]]
+    u2 = VirtualType.U2
+    node = CollectTemplateValues("values", param_idxs, "x", u2, [3, 2], RzSxSynth())
+    assert node == node
+    assert node == CollectTemplateValues("values", param_idxs, "x", u2, [3, 2], RzSxSynth())
+    assert node != dummy_collection_node()
+    assert node != CollectTemplateValues("vals", param_idxs, "x", u2, [3, 2], RzSxSynth())
+    assert node != CollectTemplateValues(
+        "values", [[6, 7, 8], [9, 10, 11]], "x", u2, [3, 2], RzSxSynth()
+    )
+    assert node != CollectTemplateValues("values", param_idxs, "y", u2, [3, 2], RzSxSynth())
+    assert node != CollectTemplateValues("values", param_idxs, "x", u2, [3, 1], RzSxSynth())
+    assert node != CollectTemplateValues("values", param_idxs, "x", u2, [3, 2], RzRxSynth())
 
 
 def test_construction_fails():
@@ -88,7 +100,7 @@ def test_collect(rng):
         ]
     )
     x = HaarU2(10).sample(num_samples, rng)
-    outputs["template_values"].ravel()[...] = np.linspace(0, 1, outputs["template_values"].size)
+    outputs["template_values"] = np.linspace(0, 1, num_samples * 100).reshape(num_samples, 100)
     original_template_values = outputs["template_values"].copy()
 
     # define and run the collection node

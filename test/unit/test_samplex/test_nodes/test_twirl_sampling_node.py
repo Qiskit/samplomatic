@@ -27,12 +27,23 @@ def test_instantiates():
     assert node.outgoing_register_type is VirtualType.PAULI
 
 
+def test_equality(dummy_sampling_node):
+    """Test equality."""
+    node = TwirlSamplingNode("lhs", "rhs", UniformPauli(1))
+    assert node == node
+    assert node == TwirlSamplingNode("lhs", "rhs", UniformPauli(1))
+    assert node != dummy_sampling_node()
+    assert node != TwirlSamplingNode("left", "rhs", UniformPauli(1))
+    assert node != TwirlSamplingNode("lhs", "right", UniformPauli(1))
+    assert node != TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
+
+
 def test_sample(rng):
     """Test the sample method."""
     registers = {}
     node = TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
     samplex_input = TensorInterface([])
 
-    node.sample(registers, rng, samplex_input, 5, None)
+    node.sample(registers, rng, samplex_input, 5)
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)
     assert registers["lhs"].multiply(registers["rhs"]) == PauliRegister.identity(10, 5)

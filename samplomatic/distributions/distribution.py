@@ -47,6 +47,9 @@ class Distribution(abc.ABC):
             The samples.
         """
 
+    def __eq__(self, other):
+        return type(self) is type(other) and self.num_subsystems == other.num_subsystems
+
     def __repr__(self):
         return (
             f"{type(self).__name__}(<num_subsystems={self.num_subsystems}, "

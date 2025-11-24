@@ -16,7 +16,7 @@
 import pytest
 
 from samplomatic import build
-from samplomatic.samplex.samplex_serialization import samplex_from_json, samplex_to_json
+from samplomatic.serialization import samplex_from_json, samplex_to_json
 
 from .utils import make_layered_circuit
 
@@ -74,5 +74,5 @@ def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
-    samplex_json = samplex_to_json(samplex)
+    samplex_json = samplex_to_json(samplex, None)
     benchmark(samplex_from_json, samplex_json)

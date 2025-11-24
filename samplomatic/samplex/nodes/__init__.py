@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .basis_transform_node import BasisTransformNode
+from .change_basis_node import ChangeBasisNode
 from .collect_template_values import CollectTemplateValues
 from .collect_z2_to_output_node import CollectZ2ToOutputNode
 from .collection_node import CollectionNode

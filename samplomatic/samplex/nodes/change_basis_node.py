@@ -10,24 +10,24 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BasisTransformNode"""
+"""ChangeBasisNode"""
 
 from collections.abc import Iterable, Sequence
 from typing import Generic, TypeVar
 
 import numpy as np
-import orjson
 from qiskit.circuit.library import HGate, IGate, RXGate
 
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
-from ...virtual_registers import U2Register, VirtualRegister, virtual_register_from_json
+from ...serializable import Serializable
+from ...virtual_registers import U2Register, VirtualRegister
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")
 
 
-class BasisChange(Generic[T]):
+class BasisChange(Generic[T], metaclass=Serializable):
     """Represents a basis change.
 
     Args:
@@ -53,19 +53,6 @@ class BasisChange(Generic[T]):
             for character, transform in zip(self._alphabet, self._action.virtual_gates)
         }
 
-    def to_json_dict(self) -> dict[str, str]:
-        return {
-            "alphabet": self.alphabet,
-            "action": orjson.dumps(self.action.to_json_dict()).decode("utf-8"),
-        }
-
-    @classmethod
-    def from_json_dict(cls, data: dict[str, str]) -> "BasisChange":
-        return cls(
-            data["alphabet"],
-            virtual_register_from_json(orjson.loads(data["action"])),
-        )
-
     @property
     def num_elements(self) -> int:
         """Number of elements."""
@@ -88,7 +75,7 @@ class BasisChange(Generic[T]):
         return self._action
 
     def get_transform(self, elements: Sequence[T]) -> VirtualRegister:
-        """Return the transform for the basis change.
+        """Return the transform gates for the basis change.
 
         Args:
             elements: The elements that specify the basis change.
@@ -97,6 +84,13 @@ class BasisChange(Generic[T]):
             A virtual register containing the basis change.
         """
         return type(self.action)([[self._lookup[e]] for e in elements])
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, BasisChange)
+            and self.alphabet == other.alphabet
+            and self.action == other.action
+        )
 
 
 MEAS_PAULI_BASIS = BasisChange[np.uint8](
@@ -112,7 +106,7 @@ PREP_PAULI_BASIS = BasisChange[np.uint8](
 """A basis change from the computational basis into Pauli eigenstates."""
 
 
-class BasisTransformNode(SamplingNode):
+class ChangeBasisNode(SamplingNode):
     """A node that instantiates a basis changing virtual register for a given measurement.
 
     Args:
@@ -141,26 +135,17 @@ class BasisTransformNode(SamplingNode):
     def instantiates(self):
         return {self._register_name: (self._num_subsystems, self._basis_change.action.TYPE)}
 
-    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
+    def sample(self, registers, rng, inputs, num_randomizations):
         basis = inputs[self._basis_ref]
         registers[self._register_name] = self._basis_change.get_transform(basis)
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "0",
-            "register_name": self._register_name,
-            "basis_change": orjson.dumps(self._basis_change.to_json_dict()).decode("utf-8"),
-            "basis_ref": self._basis_ref,
-            "num_subsystems": str(self._num_subsystems),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "BasisTransformNode":
-        return cls(
-            data["register_name"],
-            BasisChange.from_json_dict(orjson.loads(data["basis_change"])),
-            data["basis_ref"],
-            int(data["num_subsystems"]),
+    def __eq__(self, other):
+        return (
+            isinstance(other, ChangeBasisNode)
+            and self._register_name == other._register_name
+            and self._basis_change == other._basis_change
+            and self._basis_ref == other._basis_ref
+            and self._num_subsystems == other._num_subsystems
         )
 
     def get_style(self):

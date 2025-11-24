@@ -10,7 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""noise oracles"""
+"""Samplex Serialization"""
 
-from .noise_oracle import NoiseOracle
-from .static_noise_oracle import StaticNoiseOracle
+from .samplex_serializer import samplex_from_json, samplex_to_json

@@ -19,7 +19,6 @@ Submodules
    samplomatic.distributions
    samplomatic.exceptions
    samplomatic.graph_utils
-   samplomatic.noise_oracle
    samplomatic.partition
    samplomatic.pre_samplex
    samplomatic.samplex

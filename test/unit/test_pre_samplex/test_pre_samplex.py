@@ -14,8 +14,14 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import CircuitInstruction, ClassicalRegister, QuantumCircuit, QuantumRegister
-from qiskit.circuit.library import CXGate, Measure, XGate
+from qiskit.circuit import (
+    CircuitInstruction,
+    ClassicalRegister,
+    Parameter,
+    QuantumCircuit,
+    QuantumRegister,
+)
+from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate, XGate
 from rustworkx import topological_sort
 
 from samplomatic.annotations import VirtualType
@@ -128,13 +134,13 @@ class TestBuildPreSamplex:
         """Test that adding emit basis with same name but different length errors."""
         qreg = QuantumRegister(2)
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
-        pre_samplex.add_emit_meas_basis_transform(QubitPartition.from_elements(qreg[:1]), "meas")
+        pre_samplex.add_emit_meas_basis_change(QubitPartition.from_elements(qreg[:1]), "meas")
 
-        with pytest.raises(SamplexBuildError, match=r"Cannot add basis transform"):
-            pre_samplex.add_emit_meas_basis_transform(QubitPartition.from_elements(qreg), "meas")
+        with pytest.raises(SamplexBuildError, match=r"Cannot add basis change"):
+            pre_samplex.add_emit_meas_basis_change(QubitPartition.from_elements(qreg), "meas")
 
-        with pytest.raises(SamplexBuildError, match=r"Cannot add basis transform"):
-            pre_samplex.add_emit_prep_basis_transform(QubitPartition.from_elements(qreg), "meas")
+        with pytest.raises(SamplexBuildError, match=r"Cannot add basis change"):
+            pre_samplex.add_emit_prep_basis_change(QubitPartition.from_elements(qreg), "meas")
 
     def test_propagate_preceded_by_collect(self):
         """Test that add_propagate adds leftwards pre-propagate node."""
@@ -275,6 +281,40 @@ class TestBuildPreSamplex:
         with pytest.raises(SamplexBuildError, match="Number of qubits != number of clbits"):
             state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1, 2])
 
+    @pytest.mark.parametrize("gate", [RXGate, RZGate])
+    def test_prepropagate_validation(self, gate):
+        """Test that error is raised when not enough bounded angles are provided"""
+        PrePropagate(
+            QubitIndicesPartition.from_elements([0]),
+            Direction.LEFT,
+            gate(1.2),
+            [[0]],
+            InstructionMode.PROPAGATE,
+            [],
+        )
+        PrePropagate(
+            QubitIndicesPartition.from_elements([0]),
+            Direction.LEFT,
+            gate(1.2),
+            [[0], [1]],
+            InstructionMode.PROPAGATE,
+            [],
+            bounded_params=[1.2, 1.4],
+        )
+        with pytest.raises(
+            SamplexBuildError,
+            match="The number of bounded parameters does not match the number of subsystems",
+        ):
+            PrePropagate(
+                QubitIndicesPartition.from_elements([0]),
+                Direction.LEFT,
+                gate(1.2),
+                [[0], [1]],
+                InstructionMode.PROPAGATE,
+                [],
+                bounded_params=[1.2],
+            )
+
 
 class TestHelpersAttributes:
     """Test helper and attributes."""
@@ -288,10 +328,10 @@ class TestHelpersAttributes:
 
         pre_samplex = PreSamplex(qubit_map={q0: 0, q1: 1, q2: 2, q3: 3})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        prep_idx0 = pre_samplex.add_emit_prep_basis_transform(subsystems, "prepare")
+        prep_idx0 = pre_samplex.add_emit_prep_basis_change(subsystems, "prepare")
         emit_idx0 = pre_samplex.add_emit_twirl(subsystems, PauliRegister)
         collect_idx1 = pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        meas_idx0 = pre_samplex.add_emit_meas_basis_transform(subsystems, "measure")
+        meas_idx0 = pre_samplex.add_emit_meas_basis_change(subsystems, "measure")
         emit_idx10 = pre_samplex.add_emit_twirl(subsystems0, PauliRegister)
         emit_idx11 = pre_samplex.add_emit_twirl(subsystems1, PauliRegister)
         collect_idx2 = pre_samplex.add_collect(subsystems, RzSxSynth(), [])
@@ -320,6 +360,13 @@ class TestHelpersAttributes:
 
 class TestFinalize:
     """Test the finalize method."""
+
+    def test_parameterless_circuit(self):
+        """Test that a samplex from produced by finalize has a `parameter_values` output spec."""
+        samplex = PreSamplex().finalize()
+        parameter_values_spec = next(iter(samplex.outputs().specs))
+        assert parameter_values_spec.name == "parameter_values"
+        assert parameter_values_spec.shape == ("num_randomizations", 0)
 
     def test_finalize_validates_rightward_danglers(self):
         """Test that we raise when the graph has unterminated nodes."""
@@ -490,6 +537,30 @@ class TestMergeParallelPrePropagateNodes:
 
         assert pre_samplex.graph[node_idxs[1]].subsystems.all_elements == {0, 1, 2, 3}
         assert pre_samplex.graph[node_idxs[2]].subsystems.all_elements == {0, 1, 2, 3}
+
+    @pytest.mark.parametrize("gate_type", ["rz", "rx"])
+    def test_merging_of_fractional_gates(self, gate_type):
+        """Test mixing of parameterized and non-parameterized rz/rx gates."""
+        p = Parameter("p")
+        box = QuantumCircuit(4)
+        getattr(box, gate_type)(p, 0)
+        getattr(box, gate_type)(1.2, 1)
+        getattr(box, gate_type)(2 * p, 2)
+        getattr(box, gate_type)(3, 3)
+        subsystems = QubitPartition(1, ((q,) for q in box.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        for instr in box:
+            pre_samplex.add_propagate(instr, InstructionMode.PROPAGATE, [])
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.prune_prenodes_unreachable_from_emission()
+
+        assert len(pre_samplex.graph.nodes()) == 7
+        pre_samplex.merge_parallel_pre_propagate_nodes()
+        # The two parametric gates are merged, and the non-parameteric gates are merged
+        assert len(pre_samplex.graph.nodes()) == 5
 
     def test_pre_samplex_with_no_mergeable_pre_propagates(self):
         """Test propagating an instruction on overlapping qubits adds a new propagate node."""

@@ -22,7 +22,7 @@ from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 
-from ...annotations import BasisTransform, Twirl
+from ...annotations import ChangeBasis, Twirl
 from ...utils import get_annotation
 from .utils import asap_topological_nodes, validate_op_is_supported
 
@@ -84,11 +84,11 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             return uncollected_qubits
 
         twirl = get_annotation(node.op, Twirl)
-        basis_transform = get_annotation(node.op, BasisTransform)
+        change_basis = get_annotation(node.op, ChangeBasis)
         if twirl and twirl.dressing == "right":
             # Right-dressed boxes act as collectors
             uncollected_qubits = uncollected_qubits.difference(node.qargs)
-        elif twirl or basis_transform:
+        elif twirl or change_basis:
             uncollected_qubits = uncollected_qubits.union(node.qargs)
             for sub_node in asap_topological_nodes(circuit_to_dag(node.op.body)):
                 if sub_node.op.name == "measure":

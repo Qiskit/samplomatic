@@ -30,20 +30,23 @@ class TestSamplexOutput:
         """Test construction and simple attributes."""
         output = SamplexOutput(
             [
-                TensorSpecification("a", (5,), np.uint8, "desc_a"),
-                TensorSpecification("c", (3, 7), np.float32, "desc_c"),
+                TensorSpecification("a", ("num_randomizations", 5), np.uint8, "desc_a"),
+                TensorSpecification("c", ("num_randomizations", 3, 7), np.float32, "desc_c"),
             ]
         )
 
-        assert len(output) == 2
-        assert list(output) == ["a", "c"]
-        assert "a" in output and "c" in output
-        assert len(output.metadata) == 0
+        assert len(output.specs) == 2
+        assert len(output) == 0
+        assert output.metadata == {}
+
+        output.bind(a=np.empty((13, 5), dtype=np.uint8))
 
         assert isinstance(output["a"], np.ndarray)
-        assert output["a"].shape == (5,)
+        assert output["a"].shape == (13, 5)
         assert output["a"].dtype == np.uint8
 
+        output.bind(c=np.empty((13, 3, 7), dtype=np.float32))
+
         assert isinstance(output["c"], np.ndarray)
-        assert output["c"].shape == (3, 7)
+        assert output["c"].shape == (13, 3, 7)
         assert output["c"].dtype == np.float32

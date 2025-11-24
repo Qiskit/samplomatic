@@ -12,12 +12,10 @@
 
 """MultiplicationNode"""
 
-import orjson
-
-from ...aliases import RegisterName, Self
+from ...aliases import RegisterName
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...virtual_registers import GroupRegister, VirtualRegister, virtual_register_from_json
+from ...virtual_registers import GroupRegister, VirtualRegister
 from .evaluation_node import EvaluationNode
 
 
@@ -42,14 +40,6 @@ class MultiplicationNode(EvaluationNode):
                 f"{self._operand.num_samples}."
             )
 
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> Self:
-        operand = virtual_register_from_json(orjson.loads(data["operand"]))
-        return cls(
-            operand,
-            data["register_name"],
-        )
-
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self._operand.TYPE
@@ -61,6 +51,13 @@ class MultiplicationNode(EvaluationNode):
                 self._operand.TYPE,
             )
         }
+
+    def __eq__(self, other):
+        return (
+            type(self) is type(other)
+            and self._operand == other._operand
+            and self._register_name == other._register_name
+        )
 
     def get_style(self):
         return super().get_style().append_data("Fixed Operand", repr(self._operand))
@@ -77,13 +74,6 @@ class LeftMultiplicationNode(MultiplicationNode):
         SamplexConstructionError: If ``operand`` has more than one sample.
     """
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "6",
-            "operand": orjson.dumps(self._operand.to_json_dict()).decode("utf-8"),
-            "register_name": self._register_name,
-        }
-
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
         registers[self._register_name].left_inplace_multiply(self._operand)
 
@@ -98,13 +88,6 @@ class RightMultiplicationNode(MultiplicationNode):
     Raises:
         SamplexConstructionError: If ``operand`` has more than one sample.
     """
-
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "11",
-            "operand": orjson.dumps(self._operand.to_json_dict()).decode("utf-8"),
-            "register_name": self._register_name,
-        }
 
     def evaluate(self, registers: dict[RegisterName, VirtualRegister], *_):
         registers[self._register_name].inplace_multiply(self._operand)

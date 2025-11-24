@@ -34,6 +34,15 @@ class InjectNoiseNode(SamplingNode):
       is in the dictionary, the rates of
       :class:`qiskit.quantum_info.PauliLindbladMap` are scaled individually.
 
+    .. note::
+
+        This node intentionally uses the opposite convention as
+        :meth:`qiskit.quantum_info.PauliLindbladMap.signed_sample` for representing signs as boolean
+        values. In particular, values written by this node represent the parity of the number of
+        non-trivial factors in the sampled error that arise from negative rates. In other words,
+        when using the boolean written by this node to implement basic PEC, the sign used to correct
+        expectation values should be :math:`-1^{s}` for a bool value :math:`s`.
+
     Args:
         register_name: The name of the register to store the samples.
         sign_register_name: The name of the register to store the signs.
@@ -57,26 +66,6 @@ class InjectNoiseNode(SamplingNode):
         self._modifier_ref = modifier_ref
         self._num_subsystems = num_subsystems
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "5",
-            "register_name": self._register_name,
-            "sign_register_name": self._sign_register_name,
-            "noise_ref": self._noise_ref,
-            "modifier_ref": self._modifier_ref,
-            "num_subsystems": str(self._num_subsystems),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "InjectNoiseNode":
-        return cls(
-            data["register_name"],
-            data["sign_register_name"],
-            data["noise_ref"],
-            int(data["num_subsystems"]),
-            data["modifier_ref"],
-        )
-
     @property
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI
@@ -87,24 +76,34 @@ class InjectNoiseNode(SamplingNode):
             self._sign_register_name: (1, VirtualType.Z2),
         }
 
-    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
-        rates = noise_oracle.get_rates(self._noise_ref)
-        paulis = noise_oracle.get_paulis(self._noise_ref)
+    def sample(self, registers, rng, inputs, num_randomizations):
+        pauli_lindblad_map = inputs[f"pauli_lindblad_maps.{self._noise_ref}"]
         if self._modifier_ref:
-            scale = inputs.get("noise_scales." + self._modifier_ref, 1.0)
-            local_scale = inputs.get(
-                "local_scales." + self._modifier_ref, np.ones(paulis.num_terms)
+            scale = inputs.get(f"noise_scales.{self._modifier_ref}", 1.0)
+            local_scale = inputs.get(f"local_scales.{self._modifier_ref}", 1.0)
+            pauli_lindblad_map = PauliLindbladMap.from_components(
+                pauli_lindblad_map.rates * scale * local_scale,
+                pauli_lindblad_map.get_qubit_sparse_pauli_list_copy(),
             )
-            rates = rates * scale * local_scale
-        pauli_lindblad_map = PauliLindbladMap.from_sparse_list(
-            [(pauli, idxs, rate) for (pauli, idxs), rate in zip(paulis.to_sparse_list(), rates)],
-            num_qubits=paulis.num_qubits,
-        )
         signs, samples = pauli_lindblad_map.signed_sample(
             num_randomizations, rng.bit_generator.random_raw()
         )
+        # TODO: we negate the convention used by PauliLindbladMap.signed_sample(); it arguably chose
+        # the wrong convention. qiskit will introduce a new method with the "right" convention;
+        # until then, we choose to negate in order to get the right convention ASAP
+        np.logical_not(signs, out=signs)
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, InjectNoiseNode)
+            and self._register_name == other._register_name
+            and self._sign_register_name == other._sign_register_name
+            and self._noise_ref == other._noise_ref
+            and self._modifier_ref == other._modifier_ref
+            and self._num_subsystems == other._num_subsystems
+        )
 
     def get_style(self):
         return (

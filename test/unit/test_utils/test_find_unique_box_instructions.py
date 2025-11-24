@@ -190,3 +190,16 @@ def test_annotation_handling():
 def test_continue():
     """Test that ``find_unique_box_instructions`` continues if it finds non-boxes."""
     assert find_unique_box_instructions([CXGate()]) == []
+
+    from qiskit.circuit import Parameter, QuantumCircuit
+
+    from samplomatic import build
+    from samplomatic.serialization import samplex_from_json, samplex_to_json
+
+    circuit = QuantumCircuit(2)
+    circuit.rx(Parameter("th"), [0, 1])
+    circuit = circuit.compose(circuit.inverse())
+
+    _, samplex = build(circuit)
+    json = samplex_to_json(samplex)
+    samplex_from_json(json)

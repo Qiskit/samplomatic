@@ -10,15 +10,15 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for BasisTransformNode"""
+"""Tests for ChangeBasisNode"""
 
 import numpy as np
 import pytest
 from qiskit.circuit.library import HGate, IGate
 
 from samplomatic.annotations import VirtualType
-from samplomatic.samplex.nodes import BasisTransformNode
-from samplomatic.samplex.nodes.basis_transform_node import (
+from samplomatic.samplex.nodes import ChangeBasisNode
+from samplomatic.samplex.nodes.change_basis_node import (
     MEAS_PAULI_BASIS,
     PREP_PAULI_BASIS,
     BasisChange,
@@ -35,6 +35,15 @@ class TestBasisChange:
         assert basis_change.num_elements == 3
         assert basis_change.alphabet == ["A", "B", "C"]
         assert basis_change.action == PauliRegister([[0], [1], [2]])
+
+    def test_equality(self):
+        """Test equality."""
+        basis_change = BasisChange("ABC", PauliRegister([[0], [1], [2]]))
+        assert basis_change == basis_change
+        assert basis_change == BasisChange("ABC", PauliRegister([[0], [1], [2]]))
+        assert basis_change != BasisChange("AB", PauliRegister([[0], [1]]))
+        assert basis_change != BasisChange("CAB", PauliRegister([[0], [1], [2]]))
+        assert basis_change != BasisChange("ABC", PauliRegister([[2], [1], [0]]))
 
     def test_construction_fails(self):
         """Test the construction fails when expected."""
@@ -64,28 +73,38 @@ class TestBasisChange:
         assert np.allclose(np.absolute(meas_basis @ basis), np.eye(2))
 
 
-class TestBasisTransformNode:
-    """Tests for BasisTransformNode"""
+class TestChangeBasisNode:
+    """Tests for ChangeBasisNode"""
 
     def test_construction(self):
         """Test attributes from construction."""
-        basis_change = BasisTransformNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
         assert basis_change.instantiates() == {"basis_change": (3, VirtualType.U2)}
         assert basis_change.outgoing_register_type is VirtualType.U2
 
+    def test_equality(self, dummy_sampling_node):
+        """Test equality."""
+        basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        assert basis_change == basis_change
+        assert basis_change != dummy_sampling_node()
+        assert basis_change != ChangeBasisNode("basis_change", PREP_PAULI_BASIS, "measure", 3)
+        assert basis_change != ChangeBasisNode("change_basis", MEAS_PAULI_BASIS, "measure", 3)
+        assert basis_change != ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "meas", 3)
+        assert basis_change != ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 4)
+
     def test_sample(self):
         """Test evaluation of the node."""
-        basis_change = BasisTransformNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
+        basis_change = ChangeBasisNode("basis_change", MEAS_PAULI_BASIS, "measure", 3)
         samplex_input = TensorInterface([TensorSpecification("measure", (3,), np.uint8)])
         registers = {}
 
         samplex_input.bind(measure=np.array([2, 2, 1], dtype=np.uint8))
-        basis_change.sample(registers, None, samplex_input, 1, None)
+        basis_change.sample(registers, None, samplex_input, 1)
         expected_register = U2Register(np.array([[HGate(), HGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
 
         samplex_input.bind(measure=np.array([2, 0, 0], dtype=np.uint8))
-        basis_change.sample(registers, None, samplex_input, 13, None)
+        basis_change.sample(registers, None, samplex_input, 13)
         expected_register = U2Register(np.array([[HGate(), IGate(), IGate()]]).reshape(3, 1, 2, 2))
         assert registers["basis_change"] == expected_register
         assert registers["basis_change"] == expected_register

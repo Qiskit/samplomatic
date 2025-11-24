@@ -12,8 +12,9 @@
 
 """Graph Data"""
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 from qiskit.circuit.gate import Gate
@@ -21,7 +22,8 @@ from qiskit.circuit.gate import Gate
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode
-from ..constants import Direction
+from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
+from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
 from ..visualization.hover_style import EdgeStyle, NodeStyle
@@ -173,7 +175,11 @@ class PrePropagate(PreNode):
     """The propagation node type used during samplex building."""
 
     operation: Gate
-    """The operation to propagate through."""
+    """The operation to propagate through.
+
+    Even when the ``PrePropagate`` represents more than one subsystem (i.e more than one operation)
+    only a single common ``Gate`` object is stored, and possible parameters are stored elsewhere.
+    """
 
     partition: SubsystemIndicesPartition
     """A partition of subsystem indices, each of which is propagated jointly.
@@ -188,6 +194,26 @@ class PrePropagate(PreNode):
 
     params: ParamSpec
     """The parameters required by the node."""
+
+    bounded_params: Optional[Iterable[float]] = None
+    """List of bounded params if ``operation`` is a fractional gate with a bounded parameter.
+
+    If the node involves a relevant operation with a single subsystem, the parameter is
+    automatically extracted from the operation.
+    """
+
+    def __post_init__(self):
+        # Current construction assumes one parameter per gate.
+        if (
+            self.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+            and not self.operation.is_parameterized()
+        ):
+            if self.bounded_params is None:
+                self.bounded_params = self.operation.params
+            if len(self.bounded_params) != len(self.partition):
+                raise SamplexBuildError(
+                    "The number of bounded parameters does not match the number of subsystems."
+                )
 
     def get_style(self):
         return (
@@ -226,24 +252,28 @@ class PrePropagateKey:
     direction: Direction
     """The direction of the ``PrePropagate`` node."""
 
+    is_parameterized: bool
+    """Whether or not the operation is parameterized."""
+
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, PrePropagateKey)
             and self.mode == other.mode
             and self.operation_name == other.operation_name
             and self.direction == other.direction
+            and self.is_parameterized == other.is_parameterized
         )
 
     def __hash__(self):
-        return hash((self.mode, self.operation_name, self.direction))
+        return hash((self.mode, self.operation_name, self.direction, self.is_parameterized))
 
 
 @dataclass
-class PreBasisTransform(PreEmit):
+class PreChangeBasis(PreEmit):
     """The basis emit node type used during samplex building."""
 
     basis_ref: StrRef
-    """Unique identifier of this basis transform."""
+    """Unique identifier of this basis change."""
 
     def get_style(self) -> NodeStyle:
         return super().get_style().append_data("Basis Identifier", self.basis_ref)

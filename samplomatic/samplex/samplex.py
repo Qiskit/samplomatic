@@ -14,12 +14,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
+from rustworkx import is_isomorphic
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
 from ..aliases import (
@@ -38,13 +39,11 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
-from ..noise_oracle import NoiseOracle, StaticNoiseOracle
 from ..tensor_interface import Specification, TensorInterface, TensorSpecification
 from ..virtual_registers import VirtualRegister
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode
-from .noise_requirement import NoiseRequirement
 from .parameter_expression_table import ParameterExpressionTable
 
 if TYPE_CHECKING:
@@ -136,39 +135,20 @@ class Samplex:
         self._evaluation_streams: list[list[EvaluationNode]] = []
         self._sampling_nodes: list[SamplingNode] = []
         self._collection_nodes: list[CollectionNode] = []
-        self._noise_requirements: dict[str, NoiseRequirement] = {}
-        self._noise_oracle: NoiseOracle | None = None
         self._input_specifications: dict[InterfaceName, Specification] = {}
         self._output_specifications: dict[InterfaceName, Specification] = {}
 
     def __str__(self):
-        inputs = (
-            TensorInterface(self._input_specifications.values())
-            if self.noise_oracle is None
-            else self.inputs()
+        inputs = self.inputs().describe(
+            bound_prefix="  * ", prefix="  - ", width=100, include_free_dimensions=True
         )
-        return (
-            f"Samplex(<{len(self.graph)} nodes>)\n"
-            f"  Inputs:\n{inputs.describe(prefix='    * ', width=100)}"
-            f"\n  Outputs:\n{self.outputs(123).describe(prefix='    * ', width=100)}".replace(
-                "[123", "[num_randomizations"
-            )
-        )
+        outputs = self.outputs().describe(prefix="    * ", width=100)
+        return f"Samplex(<{len(self.graph)} nodes>)\n  Inputs:\n{inputs}\n  Outputs:\n{outputs}"
 
     @property
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
         return self._param_table.parameters
-
-    @property
-    def noise_requirements(self) -> dict[str, NoiseRequirement]:
-        """The noise required at sampling time."""
-        return self._noise_requirements
-
-    @property
-    def noise_oracle(self) -> NoiseOracle | None:
-        """The noise oracle to use at sampling time."""
-        return self._noise_oracle
 
     @property
     def num_parameters(self) -> int:
@@ -238,18 +218,6 @@ class Samplex:
         if (name := specification.name) in self._output_specifications:
             raise SamplexConstructionError(f"An output with name '{name}' already exists.")
         self._output_specifications[name] = specification
-
-    def add_noise_requirement(self, noise_requirement: NoiseRequirement):
-        """Add a noise requirement to this samplex.
-
-        Args:
-            noise_requirementl: The requirement to add.
-        """
-        if (noise_ref := noise_requirement.noise_ref) in self._noise_requirements:
-            raise SamplexConstructionError(
-                f"A noise requirement with reference '{noise_ref}' already exists."
-            )
-        self._noise_requirements[noise_ref] = noise_requirement
 
     def add_node(self, node: Node) -> NodeIndex:
         """Add a node to the samplex graph.
@@ -329,93 +297,25 @@ class Samplex:
 
         return self
 
-    def set_noise_oracle(self, noise_oracle: NoiseOracle) -> Self:
-        """Set the noise oracle to use during sampling.
-
-        Args:
-            noise_oracle: The noise oracle to set. This should follow the :class:`~.NoiseOracle`
-                protocol.
-
-        Raises:
-            ValueError: If any of the required noise is missing from `noise_oracle`.
-
-        Returns:
-            The same instance, for chaining.
-        """
-        if any(key not in noise_oracle for key in self._noise_requirements.keys()):
-            required_paulis = "\n".join(
-                f" * {ref}: A Pauli list on {req.num_qubits} qubits."
-                for ref, req in self._noise_requirements.items()
-            )
-            raise ValueError(
-                f"The samplex input requires a noise oracle with the following:\n{required_paulis}"
-            )
-        for ref, req in self._noise_requirements.items():
-            req.validate_num_qubits(noise_oracle.get_paulis(ref))
-        self._noise_oracle = noise_oracle
-
-        return self
-
     def inputs(self) -> TensorInterface:
         """Return an object that specifies and helps build the required inputs of :meth:`~sample`.
 
-        Raises:
-            ValueError: If the samplex has :meth:`~noise_requirements` and the noise oracle
-                has not been set.
-
         Returns:
-            The input for this samplex.
+            The input interface for this samplex.
         """
-        if self._noise_requirements and self._noise_oracle is None:
-            raise ValueError("Samplex input requires a noise oracle, call `set_noise_oracle()`.")
+        return TensorInterface(self._input_specifications.values())
 
-        specs = [*self._input_specifications.values()]
-        for name, noise_req in self._noise_requirements.items():
-            num_terms = self._noise_oracle[name].num_terms
-            for noise_modifier in noise_req.noise_modifiers:
-                specs.append(
-                    TensorSpecification(
-                        f"noise_scales.{noise_modifier}",
-                        (),
-                        np.dtype(np.float64),
-                        "A factor by which to scale rates of a Pauli Lindblad map.",
-                        optional=True,
-                    )
-                )
-                specs.append(
-                    TensorSpecification(
-                        f"local_scales.{noise_modifier}",
-                        (num_terms,),
-                        np.dtype(np.float64),
-                        "An array of factors by which to scale individual rates of a Pauli Lindblad"
-                        " map. The order should match the order of the corresponding Pauli list.",
-                        optional=True,
-                    )
-                )
-
-        return TensorInterface(specs)
-
-    def outputs(self, num_randomizations: int) -> SamplexOutput:
+    def outputs(self) -> TensorInterface:
         """Return an object that specifies the promised outputs of :meth:`~sample`.
 
-        Args:
-            num_randomizations: The number of randomizations requested.
-
         Returns:
-            The input for this samplex.
+            The output interface for this samplex.
         """
-        outputs = []
-        for spec in self._output_specifications.values():
-            if isinstance(spec, TensorSpecification):
-                spec = TensorSpecification(
-                    spec.name, (num_randomizations,) + spec.shape, spec.dtype, spec.description
-                )
-            outputs.append(spec)
-        return SamplexOutput(outputs)
+        return SamplexOutput(self._output_specifications.values())
 
     def sample(
         self,
-        samplex_input: TensorInterface,
+        samplex_input: Mapping[str, Any] | None = None,
         num_randomizations: int = 1,
         rng: int | SeedSequence | Generator | None = None,
         keep_registers: bool = False,
@@ -451,7 +351,7 @@ class Samplex:
             >>> # are required to pass a length-2 vector of floats for 'a' and 'b' (alphabetical)
             >>> print(inputs := samplex.inputs())
             TensorInterface(<
-                * 'parameter_values' <float64[2]>: Input parameter values to use during sampling.
+                - 'parameter_values' <float64[2]>: Input parameter values to use during sampling.
             >)
 
             >>> # after binding required values, we can sample 123 randomizations
@@ -461,10 +361,20 @@ class Samplex:
             ... ) # doctest: +ELLIPSIS
             SamplexOutput({'measurement_flips.meas': ..., 'parameter_values': ...})
 
+            >>> # alternatively, we can provide any mapping object directly to specify inputs
+            >>> samplex.sample(
+            ...     {"parameter_values": [0.1, 0.2]},
+            ...     num_randomizations=123,
+            ... ) # doctest: +ELLIPSIS
+            SamplexOutput({'measurement_flips.meas': ..., 'parameter_values': ...})
+
 
         Args:
-            samplex_input: The inputs required to generate samples for this samplex. See
-                :meth:`~inputs`.
+            samplex_input: A mapping from input names to input values, as described by
+                :meth:`~.inputs` (see also the :ref:`samplex-io` guide), or ``None`` if
+                no input is required. Names that contain a period can use nested dictionary
+                expansion. Note that :class:`~.TensorInterface` is a mapping object and is therefore
+                a valid input argument when fully bound.
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
@@ -478,15 +388,24 @@ class Samplex:
             # to accidentally affect timing benchmarks of sample()
             raise SamplexRuntimeError("The samplex has not been finalized yet, call `finalize()`.")
 
+        if not isinstance(samplex_input, TensorInterface):
+            samplex_input = self.inputs().bind(**(samplex_input or {}))
+
         if not samplex_input.fully_bound:
             raise SamplexRuntimeError(
                 "The samplex input is missing values for the following:\n"
                 f"{samplex_input.describe(prefix='  * ', include_bound=False)}"
             )
 
-        outputs = self.outputs(num_randomizations)
+        outputs = self.outputs()
         if keep_registers:
             outputs.metadata["registers"] = {}
+        for spec in self._output_specifications.values():
+            if isinstance(spec, TensorSpecification):
+                shape = tuple(
+                    num_randomizations if dim == "num_randomizations" else dim for dim in spec.shape
+                )
+                outputs[spec.name] = np.empty(shape, dtype=spec.dtype)
 
         parameter_values = samplex_input.get("parameter_values", [])
         evaluated_values = self._param_table.evaluate(parameter_values)
@@ -499,7 +418,6 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
-        noise_oracle = StaticNoiseOracle({}) if self._noise_oracle is None else self._noise_oracle
         rng = default_rng(rng) if isinstance(rng, (int, SeedSequence)) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
@@ -513,7 +431,6 @@ class Samplex:
                     child_rng,
                     samplex_input,
                     num_randomizations,
-                    noise_oracle,
                 )
                 for child_rng, node in zip(
                     rng.spawn(len(self._sampling_nodes)), self._sampling_nodes
@@ -566,6 +483,25 @@ class Samplex:
             subgraph_idxs=subgraph_idxs,
             layout_method=layout_method,
             ranker=_node_ranker,
+        )
+
+    def __eq__(self, other) -> bool:
+        """Compare against ``other`` and return ``True`` if the two are equal.
+
+        Samplexes must have isomorphic graphs to be equal. This means that
+        two :class:`~.Samplex` objects are equal if they describe the same
+        distribution, regardless of graph indexing.
+        """
+        # We don't compare some internal attributes set by the finalization, as they
+        # are drawn directly from the graph.
+        return (
+            isinstance(other, Samplex)
+            and is_isomorphic(self.graph, other.graph, lambda x, y: x == y)
+            and self._finalized == other._finalized
+            and self._input_specifications == other._input_specifications
+            and self._output_specifications == other._output_specifications
+            and self._param_table == other._param_table
+            and self._passthrough_params == other._passthrough_params
         )
 
 

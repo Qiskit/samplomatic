@@ -10,8 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .basis_transform import BasisTransform
-from .basis_transform_mode import BasisTransformMode
+from .change_basis import ChangeBasis
+from .change_basis_mode import ChangeBasisMode
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 from .dressing_mode import DressingLiteral, DressingMode
 from .inject_noise import InjectNoise
