@@ -14,7 +14,7 @@
 
 from enum import IntEnum
 
-__all__ = ["Direction", "SYMMETRIC_2Q_GATES"]
+__all__ = ["Direction", "SYMMETRIC_2Q_GATES", "SUPPORTED_1Q_FRACTIONAL_GATES"]
 
 
 class Direction(IntEnum):
@@ -38,4 +38,10 @@ SYMMETRIC_2Q_GATES: tuple[str] = (
 )
 """
 The names of all the Qiskit built-in two-qubit gates that are invariant under qubit permutation.
+"""
+
+SUPPORTED_1Q_FRACTIONAL_GATES: set[str] = {"rx", "rz"}
+"""
+The names of all Qiskit built-in fractional single-qubit gates which are supported for virtual
+gate propagation in Samplomatic.
 """
