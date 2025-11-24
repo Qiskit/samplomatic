@@ -26,7 +26,7 @@ from .utils import make_and_insert_box, validate_op_is_supported
 
 
 class GroupGatesIntoBoxes(TransformationPass):
-    """Collect the 2-qubit gates in a circuit inside left-dressed boxes.
+    """Collect the two-qubit gates in a circuit inside left-dressed boxes.
 
     This pass collects all 2-qubit gates in the input circuit into left-dressed boxes. To assign the
     gates to these boxes, it uses a greedy collection strategy that tries to collect gates in the
