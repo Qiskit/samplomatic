@@ -50,7 +50,7 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
 
         @classmethod
         def serialize(cls, obj):
-            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change, 1)  # noqa: SLF001
+            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change)  # noqa: SLF001
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "basis_change": orjson.dumps(basis_change_ser).decode("utf-8"),

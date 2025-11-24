@@ -25,8 +25,8 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
     TYPE_ID = "B0"
     TYPE = BasisChange
 
-    class SSV1(DataSerializer[BasisChange]):
-        MIN_SSV = 1
+    class SSV2(DataSerializer[BasisChange]):
+        MIN_SSV = 2
 
         @classmethod
         def serialize(cls, obj):
