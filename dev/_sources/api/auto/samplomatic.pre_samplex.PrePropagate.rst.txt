@@ -10,6 +10,7 @@ PrePropagate
 
    .. autosummary::
 
+      ~PrePropagate.bounded_params
       ~PrePropagate.direction
       ~PrePropagate.operation
       ~PrePropagate.partition
@@ -24,6 +25,7 @@ PrePropagate
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: bounded_params
    .. autoattribute:: direction
    .. autoattribute:: operation
    .. autoattribute:: partition
