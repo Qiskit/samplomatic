@@ -10,13 +10,13 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the PauliRegister"""
+"""Test the C1Register"""
+
+from qiskit.quantum_info import Clifford
 
 from samplomatic.annotations import VirtualType
-from samplomatic.virtual_registers import (
-    C1Register,
-    VirtualRegister,
-)
+from samplomatic.virtual_registers import C1Register, VirtualRegister
+from samplomatic.virtual_registers.c1_register import C1_TO_TABLEAU
 
 
 def test_select():
@@ -28,6 +28,17 @@ def test_convert_to_c1():
     """Test the convert_to() method returns the register when types match."""
     cliffords = C1Register.identity(3, 3)
     assert cliffords is cliffords.convert_to(VirtualType.C1)
+
+
+def test_tableaus():
+    """Test that the tableaus are correct."""
+    h = Clifford.from_label("H")
+    g = h @ Clifford.from_label("S")
+    for idx, tableau in enumerate(C1_TO_TABLEAU):
+        i, j, k = idx // 8 % 3, idx // 4 % 2, idx % 4
+        g_pow = g.power(i) if i > 0 else Clifford.from_label("I")
+        h_pow = h.power(j) if j > 0 else Clifford.from_label("I")
+        assert g_pow @ h_pow @ Clifford.from_label("IZXY"[k]) == Clifford(tableau)
 
 
 def test_multiply():

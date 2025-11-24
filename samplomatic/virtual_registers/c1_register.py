@@ -58,7 +58,8 @@ class C1Register(FiniteGroupRegister):
     """Virtual register of C1 gates.
 
     Here, we use an integer representation constructed from flattening the six cosets of the
-    Pauli subgroup and the subgroup itself.
+    Pauli subgroup and the subgroup itself. Concretely, a value :math:`c` corresponds to the unitary
+    :math:`G^i H^j P(k)` where :math:`k = c % 4, j = c // 4 % 2, i = c // 8 % 3` and :math:`G = HS`.
     """
 
     TYPE = VirtualType.C1
@@ -77,7 +78,7 @@ class C1Register(FiniteGroupRegister):
 
     def convert_to(self, register_type):
         if register_type is VirtualType.U2:
-            raise NotImplementedError("Not yet implemented.")
+            NotImplementedError("Not yet implemented.")
         return super().convert_to(register_type)
 
     @classmethod

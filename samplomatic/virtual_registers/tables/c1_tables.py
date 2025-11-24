@@ -51,4 +51,7 @@ C1_LOOKUP_TABLE = np.array(
     ],
     np.uint8,
 )
-"""Dot lookup table for single-qubit Cliffords."""
+"""Dot lookup table for single-qubit Cliffords.
+
+The element ``C1_LOOKUP_TABLE[i, j]`` corresponds to the product of ``C_i`` and ``C_j`` in
+operation multiplication order."""
