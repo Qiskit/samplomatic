@@ -18,6 +18,7 @@
 """Sphinx Configuration"""
 
 import inspect
+import json
 import logging
 import os
 import re
@@ -100,10 +101,15 @@ html_theme_options = {
 }
 html_last_updated_fmt = "%Y/%m/%d"
 html_title = f"{project} {release}"
-html_context = {
-    "version_list": [],  # TODO: dynamically populate this with previous versions that have docs
-}
+released_versions = os.getenv("RELEASED_VERSIONS", "")
+html_context = {"version_list": released_versions.split(",") if released_versions else []}
 docs_url_prefix = "samplomatic"
+
+# write all previous versions plus the version we're about to build to file
+output_path = Path(__file__).parent / "_build" / "html" / "versions.json"
+output_path.parent.mkdir(parents=True, exist_ok=True)
+with output_path.open("w") as output_file:
+    json.dump(html_context["version_list"] + [release], output_file, indent=2)
 
 
 # -- Source code links ---------------------------------------------------

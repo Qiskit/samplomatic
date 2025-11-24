@@ -19,7 +19,6 @@ import numpy as np
 from ...aliases import InterfaceName, OutputIndex, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...utils.serialization import array_from_json, array_to_json
 from .collection_node import CollectionNode
 
 
@@ -45,24 +44,6 @@ class CollectZ2ToOutputNode(CollectionNode):
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.uint32)
         self._output_idxs = np.asarray(output_idxs, dtype=np.uint32)
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "2",
-            "register_name": self._register_name,
-            "output_name": self._output_name,
-            "subsystem_indices": array_to_json(self._subsystem_idxs),
-            "output_indices": array_to_json(self._output_idxs),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "CollectZ2ToOutputNode":
-        return cls(
-            data["register_name"],
-            array_from_json(data["subsystem_indices"]),
-            data["output_name"],
-            array_from_json(data["output_indices"]),
-        )
-
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}
 
@@ -85,6 +66,15 @@ class CollectZ2ToOutputNode(CollectionNode):
         output.reshape(-1, output.shape[-1])[:, self._output_idxs] = register.virtual_gates[
             self._subsystem_idxs, :
         ].transpose(1, 0)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, CollectZ2ToOutputNode)
+            and self._register_name == other._register_name
+            and self._output_name == other._output_name
+            and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
+            and np.array_equal(self._output_idxs, other._output_idxs)
+        )
 
     def get_style(self):
         style = (

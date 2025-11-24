@@ -33,3 +33,8 @@ def test_hash():
     assert hash(InjectNoise("ref")) != hash("hey")
     assert hash(InjectNoise("ref")) != hash(InjectNoise("another_ref"))
     assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", "modifier_ref"))
+
+
+def test_repr():
+    """Test repr."""
+    assert repr(InjectNoise("ref")) == "InjectNoise(ref='ref', modifier_ref='')"

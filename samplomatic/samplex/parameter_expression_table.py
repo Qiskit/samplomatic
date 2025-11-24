@@ -17,6 +17,7 @@ from qiskit.circuit import ParameterVectorElement
 
 from ..aliases import Parameter, ParameterExpression, ParamIndex, ParamName, ParamValues
 from ..exceptions import ParameterError
+from ..serializable import Serializable
 
 
 def _sort_key(parameter: Parameter):
@@ -25,7 +26,7 @@ def _sort_key(parameter: Parameter):
     return (parameter.name,)
 
 
-class ParameterExpressionTable:
+class ParameterExpressionTable(metaclass=Serializable):
     r"""Evaluates a list of parameter expressions given a list of parameter values.
 
     An instance of this class owns an ordered list of :math:`M` :class:`ParameterExpression`\s
@@ -84,6 +85,7 @@ class ParameterExpressionTable:
         if not self._sorted:
             sorted_parameters = sorted(self._parameters.values(), key=_sort_key)
             self._parameters = {parameter.name: parameter for parameter in sorted_parameters}
+            self._sorted = True
         return list(self._parameters.values())
 
     @property
@@ -125,3 +127,10 @@ class ParameterExpressionTable:
             )
         except KeyError as exc:
             raise ParameterError(f"Missing value for {exc}.")
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, ParameterExpressionTable)
+            and self._expressions == other._expressions
+            and self._parameters == other._parameters
+        )

@@ -19,7 +19,6 @@ import numpy as np
 from ...aliases import OperationName, RegisterName, SubsystemIndex
 from ...annotations import VirtualType
 from ...exceptions import SamplexBuildError
-from ...utils.serialization import array_from_json, array_to_json
 from .evaluation_node import EvaluationNode
 
 PAULI_PAST_CLIFFORD_LOOKUP_TABLES = {
@@ -93,22 +92,6 @@ class PauliPastCliffordNode(EvaluationNode):
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
         self._register_name = register_name
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "7",
-            "op_name": self._op_name,
-            "subsystem_idxs": array_to_json(self._subsystem_idxs),
-            "register_name": self._register_name,
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "PauliPastCliffordNode":
-        return cls(
-            data["op_name"],
-            data["register_name"],
-            array_from_json(data["subsystem_idxs"]),
-        )
-
     @property
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI
@@ -136,6 +119,14 @@ class PauliPastCliffordNode(EvaluationNode):
                 VirtualType.PAULI,
             )
         }
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, PauliPastCliffordNode)
+            and self._op_name == other._op_name
+            and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
+            and self._register_name == other._register_name
+        )
 
     def get_style(self):
         return (

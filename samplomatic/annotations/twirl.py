@@ -24,7 +24,7 @@ class Twirl(Annotation):
 
     Args:
         group: Which group to twirl with.
-        dressing: Which side of the box to attached dressing instructions.
+        dressing: Which side of the box to attach the dressing instructions.
         decomposition: How to decompose single-qubit gates.
     """
 
@@ -56,3 +56,9 @@ class Twirl(Annotation):
 
     def __hash__(self):
         return hash((self.group, self.dressing, self.decomposition))
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(group='{self.group.name.lower()}', dressing="
+            f"'{self.dressing.name.lower()}', decomposition='{self.decomposition.name.lower()}')"
+        )

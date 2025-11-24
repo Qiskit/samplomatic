@@ -46,7 +46,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode
-from ..constants import Direction
+from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -58,7 +58,7 @@ from ..graph_utils import (
 from ..partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from ..samplex import Samplex
 from ..samplex.nodes import (
-    BasisTransformNode,
+    ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
@@ -72,19 +72,18 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.basis_transform_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from ..samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
 from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
-from ..samplex.noise_requirement import NoiseRequirement
+from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
-from ..tensor_interface import TensorSpecification
-from ..virtual_registers import PauliRegister, U2Register
-from ..virtual_registers.pauli_register import PAULI_GATE_NAMES
+from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
+from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
-    PreBasisTransform,
+    PreChangeBasis,
     PreCollect,
     PreCopy,
     PreEdge,
@@ -162,8 +161,8 @@ class PreSamplex:
         pauli_lindblad_map_count: A count of the total number of Pauli Lindblad maps.
         pauli_lindblad_maps: A map from unique identifiers of Pauli Lindblad maps to the number of
             systems the map acts on.
-        basis_transforms: A map from unique identifiers of basis transforms to the number of
-            subsystems in that basis transform.
+        basis_changes: A map from unique identifiers of basis changes to the number of
+            subsystems in that basis change.
         twirled_clbits: A set of all classical bit indices which were previously twirled in the
             circuit.
         passthrough_params: List of :class:`~.ParamSpec` for parameters which exist in the template
@@ -180,7 +179,7 @@ class PreSamplex:
         pauli_lindblad_map_count: count | None = None,
         pauli_lindblad_maps: dict[str, NumSubsystems] | None = None,
         noise_modifiers: dict[str, set[str]] | None = None,
-        basis_transforms: dict[str, int] | None = None,
+        basis_changes: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
     ):
@@ -198,7 +197,7 @@ class PreSamplex:
         )
         self._pauli_lindblad_maps = {} if pauli_lindblad_maps is None else pauli_lindblad_maps
         self._noise_modifiers = defaultdict(set) if noise_modifiers is None else noise_modifiers
-        self._basis_transforms = {} if basis_transforms is None else basis_transforms
+        self._basis_changes = {} if basis_changes is None else basis_changes
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
         self.passthrough_params: ParamSpec = (
             [] if passthrough_params is None else passthrough_params
@@ -222,7 +221,7 @@ class PreSamplex:
             self._pauli_lindblad_map_count,
             self._pauli_lindblad_maps,
             self._noise_modifiers,
-            self._basis_transforms,
+            self._basis_changes,
             self._twirled_clbits,
             self.passthrough_params,
         )
@@ -663,56 +662,56 @@ class PreSamplex:
         )
         return self._add_right(node)
 
-    def add_emit_meas_basis_transform(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
+    def add_emit_meas_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
         """Add a node that emits virtual gates left to measure in a basis.
 
         Args:
             qubits: The qubits to emit virtual gates on.
-            basis_ref: Unique identifier of this basis transform.
+            basis_ref: Unique identifier of this basis change.
 
         Raises:
-            SamplexBuildError: If a basis transform with the same `basis_ref` but of different
+            SamplexBuildError: If a basis change with the same `basis_ref` but of different
                 length has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._basis_transforms.get(basis_ref)) and num_subsys != len(qubits):
+        if (num_subsys := self._basis_changes.get(basis_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add basis transform `{basis_ref}` on `{qubits}` and a "
+                f"Cannot add basis change `{basis_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
-            self._basis_transforms[basis_ref] = len(qubits)
+            self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreBasisTransform(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
+        node = PreChangeBasis(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
         return self._add_left(node)
 
-    def add_emit_prep_basis_transform(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
+    def add_emit_prep_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
         """Add a node that emits virtual gates right to prepare a basis.
 
         Args:
             qubits: The qubits to emit virtual gates on.
-            basis_ref: Unique identifier of this basis transformation.
+            basis_ref: Unique identifier of this basis change.
 
         Raises:
-            SamplexBuildError: If a basis transform with the same `basis_ref` but of different
+            SamplexBuildError: If a basis change with the same `basis_ref` but of different
                 length has already been added.
 
         Returns:
             The index of the new node in the graph.
         """
-        if (num_subsys := self._basis_transforms.get(basis_ref)) and num_subsys != len(qubits):
+        if (num_subsys := self._basis_changes.get(basis_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add basis transform `{basis_ref}` on `{qubits}` and a "
+                f"Cannot add basis change `{basis_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
-            self._basis_transforms[basis_ref] = len(qubits)
+            self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreBasisTransform(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
+        node = PreChangeBasis(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
         return self._add_right(node)
 
     def add_propagate(self, instr: CircuitInstruction, mode: InstructionMode, params: ParamSpec):
@@ -817,11 +816,9 @@ class PreSamplex:
                     continue
 
                 nodes = [self.graph[node_idx] for node_idx in node_idxs]
-
                 combined_subsystems = QubitIndicesPartition.union(
                     *(node.subsystems for node in nodes)
                 )
-
                 num_elements = nodes[0].partition.num_elements_per_part
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
@@ -831,22 +828,44 @@ class PreSamplex:
                         for i in range(num_parts)
                     ],
                 )
+                if any(
+                    node.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+                    and not node.operation.is_parameterized()
+                    for node in nodes
+                ):
+                    # We rely on the clustering function to not mix parameterized and bounded gates.
+                    params = [param for node in nodes for param in node.operation.params]
+                    # This merges the node but not the edges
+                    new_node_idx = replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            nodes[0].direction,  # all nodes have same direction
+                            nodes[0].operation,  # Besides parameters, all nodes have same operation
+                            combined_partition,
+                            nodes[0].mode,  # all nodes have same spec
+                            params=[],
+                            bounded_params=params,
+                        ),
+                    )
 
-                params = [param for node in nodes for param in node.params]
-
-                # This merges the node but not the edges
-                new_node_idx = replace_nodes_with_one_node(
-                    self.graph,
-                    node_idxs,
-                    PrePropagate(
-                        combined_subsystems,
-                        self.graph[node_idxs[0]].direction,  # all nodes have same direction
-                        self.graph[node_idxs[0]].operation,  # all nodes have same operation
-                        combined_partition,
-                        nodes[0].mode,
-                        params,
-                    ),
-                )
+                else:
+                    params = [param for node in nodes for param in node.params]
+                    # This merges the node but not the edges
+                    new_node_idx = replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            nodes[0].direction,  # all nodes have same direction
+                            nodes[0].operation,  # all nodes have same operation, up to the
+                            # paramaters which are handled separately
+                            combined_partition,
+                            mode=nodes[0].mode,
+                            params=params,
+                        ),
+                    )
 
                 for successor_idx in set(self.graph.successor_indices(new_node_idx)):
                     new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
@@ -864,7 +883,10 @@ class PreSamplex:
             node = self.graph[node_idx]
             if isinstance(node, PrePropagate):
                 cluster_type_key = PrePropagateKey(
-                    mode=node.mode, operation_name=node.operation.name, direction=node.direction
+                    mode=node.mode,
+                    operation_name=node.operation.name,
+                    direction=node.direction,
+                    is_parameterized=node.operation.is_parameterized(),
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -888,7 +910,6 @@ class PreSamplex:
                             "predecessors": set(self.graph.predecessor_indices(node_idx)),
                         }
                     )
-
         return [cluster["nodes"] for cluster_type in clusters.values() for cluster in cluster_type]
 
     def sorted_predecessor_idxs(
@@ -995,7 +1016,7 @@ class PreSamplex:
         # Validation
         self.validate_no_rightward_danglers()
 
-        # Optmization
+        # Optimization
         self.prune_prenodes_unreachable_from_emission()
         self.merge_parallel_pre_propagate_nodes()
 
@@ -1016,8 +1037,8 @@ class PreSamplex:
         for topological_idx, pre_node_idx in enumerate(topological_sort(self.graph)):
             pre_node = self.graph[pre_node_idx]
             order[pre_node_idx] = topological_idx
-            if isinstance(pre_node, PreBasisTransform):
-                self.add_basis_transform_node(
+            if isinstance(pre_node, PreChangeBasis):
+                self.add_change_basis_node(
                     samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
                 )
             elif isinstance(pre_node, PreInjectNoise):
@@ -1074,37 +1095,64 @@ class PreSamplex:
                 )
             )
 
-        for basis_ref, length in self._basis_transforms.items():
+        for basis_ref, length in self._basis_changes.items():
             samplex.add_input(
                 TensorSpecification(
                     f"basis_changes.{basis_ref}",
                     (length,),
                     np.dtype(np.uint8),
-                    "Basis changing gates.",
+                    "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3. ",
                 )
             )
 
         for noise_ref, num_qubits in self._pauli_lindblad_maps.items():
-            samplex.add_noise_requirement(
-                NoiseRequirement(noise_ref, num_qubits, self._noise_modifiers[noise_ref])
-            )
-
-        if max_param_idx is not None:
-            samplex.add_output(
-                TensorSpecification(
-                    "parameter_values",
-                    (max_param_idx + 1,),
-                    np.dtype(np.float32),
-                    "Parameter values for the template circuit.",
+            num_terms = f"num_terms_{noise_ref}"
+            samplex.add_input(
+                PauliLindbladMapSpecification(
+                    f"pauli_lindblad_maps.{noise_ref}", num_qubits, num_terms
                 )
             )
+            for noise_modifier in self._noise_modifiers.get(noise_ref, []):
+                samplex.add_input(
+                    TensorSpecification(
+                        f"noise_scales.{noise_modifier}",
+                        (),
+                        np.dtype(np.float64),
+                        "A scalar factor by which to scale rates of a Pauli Lindblad map.",
+                        optional=True,
+                    )
+                )
+                samplex.add_input(
+                    TensorSpecification(
+                        f"local_scales.{noise_modifier}",
+                        (num_terms,),
+                        np.dtype(np.float64),
+                        "An array of factors by which to scale individual rates of a Pauli "
+                        "Lindblad map, where the order should match the corresponding list of "
+                        "terms.",
+                        optional=True,
+                    )
+                )
+
+        parameter_values_shape = (
+            "num_randomizations",
+            0 if max_param_idx is None else max_param_idx + 1,
+        )
+        samplex.add_output(
+            TensorSpecification(
+                "parameter_values",
+                parameter_values_shape,
+                np.dtype(np.float32),
+                "Parameter values valid for an associated template circuit.",
+            )
+        )
 
         if self._twirled_clbits:
             for reg in self._cregs:
                 samplex.add_output(
                     TensorSpecification(
                         f"measurement_flips.{reg.name}",
-                        (1, len(reg)),
+                        ("num_randomizations", 1, len(reg)),
                         np.dtype(np.bool_),
                         "Bit-flip corrections for measurement twirling.",
                     )
@@ -1114,16 +1162,20 @@ class PreSamplex:
             samplex.add_output(
                 TensorSpecification(
                     "pauli_signs",
-                    (num_signs,),
+                    ("num_randomizations", num_signs),
                     np.dtype(np.bool_),
-                    "Signs from sampled Pauli Lindblad maps. The order matches the iteration order "
-                    "of injected noise in the circuit.",
+                    "Signs from sampled Pauli Lindblad maps, where boolean values represent the "
+                    "parity of the number of non-trivial factors in the sampled error that arise "
+                    "from negative rates. In other words, in order to implement basic PEC, the "
+                    "sign used to correct expectation values should be ``(-1)**bool_value``. The "
+                    "order matches the iteration order of boxes in the original circuit with noise "
+                    "injection annotations.",
                 )
             )
 
         return samplex
 
-    def add_basis_transform_node(
+    def add_change_basis_node(
         self,
         samplex: Samplex,
         pre_basis_idx: NodeIndex,
@@ -1135,16 +1187,16 @@ class PreSamplex:
 
         Args:
             samplex: The samplex to add nodes to.
-            pre_basis_idx: The index of the pre-basis node to turn into a basis transform node.
+            pre_basis_idx: The index of the pre-basis node to turn into a basis change node.
             pre_nodes_to_nodes: A map from pre-node indices to node indices.
             order: A map from pre-node indices to integers representing their position in a
                 topological sort of the samplex state graph.
             register_names: A map such that ``register_names[a][b]`` is the name of the register
                 implied by the edge (a, b) in the samplex state graph.
         """
-        pre_basis = cast(PreBasisTransform, self.graph[pre_basis_idx])
+        pre_basis = cast(PreChangeBasis, self.graph[pre_basis_idx])
         reg_idx = order[pre_basis_idx]
-        node = BasisTransformNode(
+        node = ChangeBasisNode(
             reg_name := f"basis_change_{reg_idx}",
             MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS,
             "basis_changes." + pre_basis.basis_ref,
@@ -1340,7 +1392,8 @@ class PreSamplex:
             input_register_name, (source_idxs, destination_idxs, input_type) = next(
                 iter(operands.items())
             )
-            slice_idxs = [source_idxs[idx] for idx in destination_idxs]
+            slice_idxs = np.empty(len(destination_idxs))
+            slice_idxs[destination_idxs] = source_idxs
             combine_node = SliceRegisterNode(
                 input_type=input_type,
                 output_type=combined_register_type,
@@ -1394,8 +1447,8 @@ class PreSamplex:
         for predecssor_idx in self.graph.predecessor_indices(pre_propagate_idx):
             incoming.add(samplex.graph[pre_nodes_to_nodes[predecssor_idx]].outgoing_register_type)
         if mode is InstructionMode.MULTIPLY and pre_propagate.operation.num_qubits == 1:
+            combined_register_type = VirtualType.U2
             if pre_propagate.operation.is_parameterized():
-                combined_register_type = VirtualType.U2
                 param_idxs = [
                     samplex.append_parameter_expression(param) for _, param in pre_propagate.params
                 ]
@@ -1408,14 +1461,11 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                if (
-                    incoming == {VirtualType.PAULI}
-                    and (name := pre_propagate.operation.name) in PAULI_GATE_NAMES
-                ):
-                    combined_register_type = VirtualType.PAULI
-                    register = PauliRegister.from_name(name)
+                if op_name in SUPPORTED_1Q_FRACTIONAL_GATES:
+                    register = get_fractional_gate_register(
+                        op_name, np.array(pre_propagate.bounded_params)
+                    )
                 else:
-                    combined_register_type = VirtualType.U2
                     register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
                 if pre_propagate.direction is Direction.LEFT:
                     propagate_node = RightMultiplicationNode(register, combined_register_name)
@@ -1503,10 +1553,9 @@ class PreSamplex:
             VirtualType.U2,
         )
 
-        param_reorder = pre_node.subsystems.get_indices(all_subsystems)
         collect = CollectTemplateValues(
             "parameter_values",
-            pre_node.param_idxs[param_reorder, :],
+            pre_node.param_idxs,
             combined_name,
             VirtualType.U2,
             np.arange(len(all_subsystems)),

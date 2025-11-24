@@ -12,11 +12,9 @@
 
 """TwirlSamplingNode"""
 
-import orjson
-
 from ...aliases import NumSubsystems, RegisterName
 from ...annotations import VirtualType
-from ...distributions import Distribution, HaarU2, UniformPauli
+from ...distributions import Distribution
 from .sampling_node import SamplingNode
 
 
@@ -39,31 +37,6 @@ class TwirlSamplingNode(SamplingNode):
         self._rhs_register_name = rhs_register_name
         self._distribution = distribution
 
-    def _to_json_dict(self) -> dict[str, str]:
-        if isinstance(self._distribution, HaarU2):
-            distribution_type = "haar_u2"
-        else:
-            distribution_type = "pauli_uniform"
-        distribution = {
-            "type": distribution_type,
-            "num_subsystems": self._distribution.num_subsystems,
-        }
-        return {
-            "node_type": "9",
-            "lhs_register_name": self._lhs_register_name,
-            "rhs_register_name": self._rhs_register_name,
-            "distribution": orjson.dumps(distribution).decode("utf-8"),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "TwirlSamplingNode":
-        distribution_dict = orjson.loads(data["distribution"])
-        if distribution_dict["type"] == "haar_u2":
-            distribution = HaarU2(distribution_dict["num_subsystems"])
-        else:
-            distribution = UniformPauli(distribution_dict["num_subsystems"])
-        return cls(data["lhs_register_name"], data["rhs_register_name"], distribution)
-
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self._distribution.register_type
@@ -75,10 +48,18 @@ class TwirlSamplingNode(SamplingNode):
             self._rhs_register_name: distribution_info,
         }
 
-    def sample(self, registers, rng, inputs, num_randomizations, noise_oracle):
+    def sample(self, registers, rng, inputs, num_randomizations):
         samples = self._distribution.sample(num_randomizations, rng)
         registers[self._lhs_register_name] = samples
         registers[self._rhs_register_name] = samples.invert()
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, TwirlSamplingNode)
+            and self._lhs_register_name == other._lhs_register_name
+            and self._rhs_register_name == other._rhs_register_name
+            and self._distribution == other._distribution
+        )
 
     def get_style(self):
         return (

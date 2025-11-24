@@ -15,24 +15,23 @@ import pytest
 from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
+from samplomatic.serializable import TYPE_REGISTRY
 
-from .dummy_nodes import DummyNode
 
-
-def test_parameter_idxs():
+def test_parameter_idxs(dummy_node):
     """Test the parameter index attributes."""
-    node = DummyNode()
+    node = dummy_node()
     assert node.num_parameters == 0
 
-    node = DummyNode(parameter_idxs=[1, 2, 43])
+    node = dummy_node(parameter_idxs=[1, 2, 43])
     assert node.parameter_idxs == [1, 2, 43]
     assert node.num_parameters == 3
     assert node.outgoing_register_type is None
 
 
-def test_validate_reads_from():
+def test_validate_reads_from(dummy_node):
     """Test validation for reads_from() succeeds."""
-    node = DummyNode(reads_from={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
+    node = dummy_node(reads_from={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
 
     register_descriptions = {
         "a": (10, VirtualType.PAULI),
@@ -43,9 +42,9 @@ def test_validate_reads_from():
     assert register_descriptions == register_descriptions_copy
 
 
-def test_validate_reads_from_fails():
+def test_validate_reads_from_fails(dummy_node):
     """Test validation for reads_from() fails when expected."""
-    node = DummyNode(reads_from={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
+    node = dummy_node(reads_from={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
 
     with pytest.raises(SamplexConstructionError, match="read from register 'b', but .* not found."):
         node.validate_and_update({"a": (10, VirtualType.PAULI)})
@@ -57,9 +56,9 @@ def test_validate_reads_from_fails():
         node.validate_and_update({"a": (10, VirtualType.U2), "b": (5, VirtualType.U2)})
 
 
-def test_validate_writes_to():
+def test_validate_writes_to(dummy_node):
     """Test validation for writes_to() succeeds."""
-    node = DummyNode(writes_to={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
+    node = dummy_node(writes_to={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
 
     register_descriptions = {
         "a": (10, VirtualType.PAULI),
@@ -70,9 +69,9 @@ def test_validate_writes_to():
     assert register_descriptions == register_descriptions_copy
 
 
-def test_validate_writes_to_fails():
+def test_validate_writes_to_fails(dummy_node):
     """Test validation for writes_to() fails when expected."""
-    node = DummyNode(writes_to={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
+    node = dummy_node(writes_to={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
 
     with pytest.raises(SamplexConstructionError, match="write to register 'b', but .* not found."):
         node.validate_and_update({"a": (10, VirtualType.PAULI)})
@@ -84,9 +83,9 @@ def test_validate_writes_to_fails():
         node.validate_and_update({"a": (10, VirtualType.U2), "b": (5, VirtualType.U2)})
 
 
-def test_validate_instantiates():
+def test_validate_instantiates(dummy_node):
     """Test validation for instantiates() succeeds."""
-    node = DummyNode(instantiates={"a": (10, VirtualType.PAULI), "b": (5, VirtualType.U2)})
+    node = dummy_node(instantiates={"a": (10, VirtualType.PAULI), "b": (5, VirtualType.U2)})
 
     register_descriptions = {"c": (2, VirtualType.PAULI)}
     node.validate_and_update(register_descriptions)
@@ -97,26 +96,26 @@ def test_validate_instantiates():
     }
 
 
-def test_validate_instantiates_fails():
+def test_validate_instantiates_fails(dummy_node):
     """Test validation for instantiates() fails when expected."""
-    node = DummyNode(instantiates={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
+    node = dummy_node(instantiates={"a": ({2, 4}, VirtualType.PAULI), "b": ({1}, VirtualType.U2)})
 
     with pytest.raises(SamplexConstructionError, match="'b', but .* that name already exists"):
         node.validate_and_update({"b": (10, VirtualType.U2)})
 
 
-def test_validate_removes():
+def test_validate_removes(dummy_node):
     """Test validation for removes() succeeds."""
-    node = DummyNode(removes={"a"})
+    node = dummy_node(removes={"a"})
 
     register_descriptions = {"a": (10, VirtualType.PAULI), "c": (2, VirtualType.PAULI)}
     node.validate_and_update(register_descriptions)
     assert register_descriptions == {"c": (2, VirtualType.PAULI)}
 
 
-def test_validate_removes_fails():
+def test_validate_removes_fails(dummy_node):
     """Test validation for removes() fails when expected."""
-    node = DummyNode(removes={"a", "b"})
+    node = dummy_node(removes={"a", "b"})
 
     with pytest.raises(
         SamplexConstructionError, match="'a', but no register with that name exists"
@@ -124,9 +123,9 @@ def test_validate_removes_fails():
         node.validate_and_update({"b": (10, VirtualType.PAULI)})
 
 
-def test_validate_redefines():
+def test_validate_redefines(dummy_node):
     """Test validation when we instantiate and remove the same name in a single node."""
-    node = DummyNode(removes={"a", "b"}, instantiates={"a": (10, VirtualType.U2)})
+    node = dummy_node(removes={"a", "b"}, instantiates={"a": (10, VirtualType.U2)})
 
     node.validate_and_update(
         register_descriptions := {"a": (11, VirtualType.PAULI), "b": (12, VirtualType.U2)}
@@ -135,14 +134,14 @@ def test_validate_redefines():
     assert register_descriptions == {"a": (10, VirtualType.U2)}
 
 
-def test_dummy_is_registered():
-    """Test that the dummy node is in the node registry."""
-    assert DummyNode in Node.NODE_REGISTRY
+def test_dummy_is_not_registered(dummy_node):
+    """Test that the dummy node is in the type registry."""
+    assert dummy_node in TYPE_REGISTRY
 
 
 def test_no_abstract_registrations():
     """Test that the registry mechanism doesn't contain any abstract parents."""
-    assert Node not in Node.NODE_REGISTRY
-    assert SamplingNode not in Node.NODE_REGISTRY
-    assert EvaluationNode not in Node.NODE_REGISTRY
-    assert CollectionNode not in Node.NODE_REGISTRY
+    assert Node not in TYPE_REGISTRY
+    assert SamplingNode not in TYPE_REGISTRY
+    assert EvaluationNode not in TYPE_REGISTRY
+    assert CollectionNode not in TYPE_REGISTRY

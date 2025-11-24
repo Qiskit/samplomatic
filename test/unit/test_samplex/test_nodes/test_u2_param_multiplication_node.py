@@ -43,6 +43,16 @@ class TestLeftU2ParamMultiplicationNode:
         ):
             LeftU2ParametricMultiplicationNode("rzz", "a", [0])
 
+    def test_equality(self):
+        """Test equality."""
+        node = LeftU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
+        assert node == node
+        assert node == LeftU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
+        assert node != RightU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
+        assert node != LeftU2ParametricMultiplicationNode("rx", "a", [0, 1, 2])
+        assert node != LeftU2ParametricMultiplicationNode("rz", "b", [0, 1, 2])
+        assert node != LeftU2ParametricMultiplicationNode("rz", "a", [101, 102, 103])
+
     def test_evaluation_errors(self):
         """Test that errors are properly raised during evaluation"""
         node = LeftU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
@@ -83,6 +93,16 @@ class TestRightU2ParamMultiplicationNode:
             match="Expected at least one element in param_idxs",
         ):
             RightU2ParametricMultiplicationNode("rz", "a", [])
+
+    def test_equality(self):
+        """Test equality."""
+        node = RightU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
+        assert node == node
+        assert node == RightU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
+        assert node != LeftU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
+        assert node != RightU2ParametricMultiplicationNode("rx", "a", [0, 1, 2])
+        assert node != RightU2ParametricMultiplicationNode("rz", "b", [0, 1, 2])
+        assert node != RightU2ParametricMultiplicationNode("rz", "a", [101, 102, 103])
 
     def test_evaluation_errors(self):
         """Test that errors are properly raised during evaluation"""

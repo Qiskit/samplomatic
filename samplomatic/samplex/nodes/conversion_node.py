@@ -56,28 +56,6 @@ class ConversionNode(EvaluationNode):
                 "remove_existing was not set to true."
             )
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "4",
-            "existing_name": self.existing_name,
-            "existing_type": self.existing_type.value,
-            "new_name": self.new_name,
-            "new_type": self.new_type.value,
-            "num_subsystems": self.num_subsystems,
-            "remove_existing": str(self.remove_existing),
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "ConversionNode":
-        return cls(
-            data["existing_name"],
-            VirtualType(data["existing_type"]),
-            data["new_name"],
-            VirtualType(data["new_type"]),
-            int(data["num_subsystems"]),
-            data["remove_existing"] == "True",
-        )
-
     @property
     def outgoing_register_type(self) -> VirtualType:
         return self.new_type
@@ -115,6 +93,17 @@ class ConversionNode(EvaluationNode):
         registers[self.new_name] = registers[self.existing_name].convert_to(self.new_type)
         if self.remove_existing:
             registers.pop(self.existing_name)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, ConversionNode)
+            and self.existing_name == other.existing_name
+            and self.existing_type == other.existing_type
+            and self.new_name == other.new_name
+            and self.new_type == other.new_type
+            and self.num_subsystems == other.num_subsystems
+            and self.remove_existing == other.remove_existing
+        )
 
     def get_style(self):
         return (

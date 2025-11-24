@@ -33,5 +33,4 @@ class SamplexOutput(TensorInterface):
         self, specs: Iterable[TensorSpecification], metadata: dict[str, Any] | None = None
     ):
         super().__init__(specs)
-        self._data = {spec.name: spec.empty() for spec in specs}
         self.metadata: dict[str, Any] = {} if metadata is None else metadata

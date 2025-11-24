@@ -61,6 +61,16 @@ def make_circuits():
 
     yield circuit, "parametric_entangling_circuit"
 
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.rx(np.pi, 0)
+        circuit.rx(np.pi / 2, 1)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "merge_parametric_gate_static_angles"
+
     a, b = Parameter("a"), Parameter("b")
 
     for idx, (x, y) in enumerate(product([a, b, a + b], [a, b, a + b])):
@@ -83,6 +93,21 @@ def make_circuits():
         circuit.rz(2 * Parameter("b"), 0)
 
     yield circuit, "parametric_right_box"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.rx(1, 0)
+        circuit.rx(a, 1)
+        circuit.rx(b, 2)
+        circuit.rx(2, 3)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.rz(1, 0)
+        circuit.rz(a, 1)
+        circuit.rz(b, 2)
+        circuit.rz(2, 3)
+
+    yield circuit, "merge_mix_static_and_parametric"
 
 
 def pytest_generate_tests(metafunc):
@@ -109,7 +134,9 @@ def test_sampling(rng, circuit, save_plot):
     save_plot(lambda: samplex.draw(), "Samplex", delayed=True)
 
     circuit_params = rng.random(len(circuit.parameters))
-    samplex_input = samplex.inputs().bind(parameter_values=circuit_params)
+    samplex_input = samplex.inputs()
+    if circuit.num_parameters:
+        samplex_input.bind(parameter_values=circuit_params)
     samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 

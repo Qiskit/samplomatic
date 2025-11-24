@@ -18,7 +18,7 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 
-from samplomatic.annotations import BasisTransform, Twirl
+from samplomatic.annotations import ChangeBasis, Twirl
 from samplomatic.transpiler.passes import AddTerminalRightDressedBoxes
 
 
@@ -31,8 +31,8 @@ def make_circuits():
 
     for prefix, annotations in [
         ("twirl", [Twirl()]),
-        ("basis_transform", [BasisTransform()]),
-        ("all", [Twirl(), BasisTransform()]),
+        ("change_basis", [ChangeBasis()]),
+        ("all", [Twirl(), ChangeBasis()]),
     ]:
         circuit = QuantumCircuit(3, 1)
         circuit.cx(0, 1)

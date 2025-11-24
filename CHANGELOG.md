@@ -1,3 +1,96 @@
+## [0.13.0](https://github.com/Qiskit/samplomatic/tree/0.13.0) - 2025-11-06
+
+### Changed
+
+- A samplex built with `build` always returns `parameter_values` as an output. If it does not
+  generate parameter values, the `parameter_values` will have shape `("num_randomizations", 0)`.
+  Previously, `parameter_values` would not be included in its outputs. ([#225](https://github.com/Qiskit/samplomatic/issues/225))
+
+### Fixed
+
+- Fixed a bug where the slicing indices of `SliceRegisterNodes` were wrong, causing circuits with non-standard ordering to sample incorrectly (particularly with `merge_parallel_pre_propagate_nodes` enabled). ([#229](https://github.com/Qiskit/samplomatic/issues/229))
+
+
+## [0.12.0](https://github.com/Qiskit/samplomatic/tree/0.12.0) - 2025-11-03
+
+### Added
+
+- Added a new serialization versioning system, the Samplex Serialization Version (SSV), that decouples the
+  serialization version from the package version. The current version is stored in `samplomatic.ssv.SSV`.
+  See the `samplomatic.serialization` module for details. ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+- Added a `Serializable` metaclass to record which classes should be serializable. ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+- Added `DataSerializer`, `TypeSerializer`, and `TypeSerializerMeta` to provide serialization for objects
+  inheriting from `Serializable`. ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+
+### Changed
+
+- The samplex serialization functions `samplex_to_json` and `samplex_from_json` were moved to the
+  `samplomatic.serialization` module. ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+- Classes that are serializable now inherit from `Serializable` rather than implementing `to_json`/`from_json`
+  methods. A `TypeSerializer` with the corresponding type will then contain methods to serialize and deserialize
+  the object. ([#216](https://github.com/Qiskit/samplomatic/issues/216))
+
+
+## [0.11.0](https://github.com/Qiskit/samplomatic/tree/0.11.0) - 2025-10-28
+
+### Added
+
+- Added the ability to provide inputs to `Samplex.sample()` as arbitrary mappings. ([#186](https://github.com/Qiskit/samplomatic/issues/186))
+
+### Changed
+
+- Changed the serialization format of `qiskit.circuit.ParameterExpression`s within the samplex serializer. ([#185](https://github.com/Qiskit/samplomatic/issues/185))
+- Negated the convention for what boolean outputs mean when sampling Pauli Lindblad maps with negative
+  rates. Following this change, the `InjectNoiseNode` samplex node intentionally uses the opposite
+  convention as :meth:`qiskit.quantum_info.PauliLindbladMap.signed_sample` for representing signs as
+  boolean values. In particular, values written by this node now represent the parity of the number of
+  non-trivial factors in the sampled error that arise from negative rates. In other words, when using
+  the boolean written by this node to implement basic PEC, the sign used to correct expectation values
+  should be `(-1)**bool_value`. ([#188](https://github.com/Qiskit/samplomatic/issues/188))
+
+### Fixed
+
+- Fixed a bug that prevented `qiskit.circuit.ParameterExpression`s from being decoded when present in a samplex' expression table. ([#185](https://github.com/Qiskit/samplomatic/issues/185))
+
+
+## [0.10.1](https://github.com/Qiskit/samplomatic/tree/0.10.1) - 2025-10-22
+
+### Fixed
+
+- Fixed a bug where the `build()` process was mishandling an optimization step in the case the base circuit contains multiple `rx` (or `rz`) gates in the same layer with distinct bound numeric values (e.g. `circuit.rx(0.123, 0)`). ([#179](https://github.com/Qiskit/samplomatic/issues/179))
+
+
+## [0.10.0](https://github.com/Qiskit/samplomatic/tree/0.10.0) - 2025-10-20
+
+### Removed
+
+- Removed the `NoiseModelRequirement` class and the associated method `Samplex.add_noise_requirement()` and attribute `Samplex.noise_requirements`. Instead, all noise model requirements are integrated into `Samplex.inputs()`. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+- Removed `samplomatic.tensor_interface.ValueType`. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+
+### Added
+
+- Added a new subclass `samplomatic.tensor_interface.PauliLindbladNoiseSpecification` of `samplomatic.tensor_interface.Specification`. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+- Added the concept of `free_dimensions` to `samplomatic.tensor_inteface.Specification`, which comes with assocated methods and attributes. A free dimension is a string name of an integer quantity whose value is not known until values have been bound to the specification in a `samplomatic.tensor_interface.TensorInterface`, and all free dimensions with the same name in the interface need to have a consistent value or an error will be raised during binding. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+
+### Changed
+
+- Throughout the library, the terms noise map and noise model have been replaced with the more descriptive Pauli Lindblad map. ([#126](https://github.com/Qiskit/samplomatic/issues/126))
+- Replace `generate_boxing_pass_manager`'s argument `enable_measure` with `enable_measures`. ([#153](https://github.com/Qiskit/samplomatic/issues/153))
+- The `twirling_strategy` of pass managers no longer supports `active-circuit` and `active-accum`, use `active_circuit` and `active_accum` instead. ([#156](https://github.com/Qiskit/samplomatic/issues/156))
+- Overhauled how noise models are specified on the `Samplex`. Rates and Pauli lists that define Pauli Lindblad maps are no longer separated into the respective distinct entries `"noise_maps.rates.<ref>"` and `"noise_maps.paulis.<ref>"` of `Samplex.inputs()`. Instead, they are specified as a single entry `"pauli_lindblad_maps.<ref>"` that expects type `qiskit.quantum_info.PauliLindbladMap`. Moreover, `Samplex.noise_requirements` is removed (along with the concept of `NoiseModelRequirement`). Instead, the specification for `"pauli_lindblad_maps<ref>"` within `Samplex.inputs()` dictates the required number of qubits the noise model should act on, and the number of terms can be chosen at the time that `Samplex.sample()` is called so long as it is consistent. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+- Converted `samplomatic.tensor_interface.Specification` to an abstract class. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+- Changed `samplomatic.samplex.interfaces.SamplexOutput` to not construct empty data arrays on construction, it is now the caller's responsibility to populate the data. This does not affect users of `Samplex.sample()`. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+- The format returned by `samplomatic.samplex.samplex_serialization.samplex_to_json()` changed to accomodate the absense of noise requirements, and it (and the reverse function `samplex_from_json()`) are not backwards compatible with the previous minor version. ([#164](https://github.com/Qiskit/samplomatic/issues/164))
+- Renamed `samplomatic.BasisTransform` to `samplomatic.ChangeBasis` in order to make all annotations start with a verb, and to consolidate all names around "change" rather than "transform". Likewise, renamed `samplomatic.samplex.nodes.BasisTransformNode` to `samplomatic.samplex.nodes.ChangeBasisNode`.
+- Renamed string literal option for from `"basis_transform"` to `"change_basis"` in both `samplomatic.transpiler.generate_boxing_pass_manager` and `samplomatic.transpiler.passes.GroupMeasIntoBoxes`. ([#172](https://github.com/Qiskit/samplomatic/issues/172))
+
+### Fixed
+
+- Made `TwirlingStrategyLiteral` consistent with `TwirlingStrategy` enum by replacing `active-circuit` with `active_circuit` and `active-accum` and `active_accum`. ([#156](https://github.com/Qiskit/samplomatic/issues/156))
+- Fixed the basis changing gates for `ChangeBasisNode` for Pauli Y. ([#161](https://github.com/Qiskit/samplomatic/issues/161))
+- Fixed the ordering of `ChangeBasisNode` to conform with the rest of the library. ([#161](https://github.com/Qiskit/samplomatic/issues/161))
+
+
 ## [0.9.0](https://github.com/Qiskit/samplomatic/tree/0.9.0) - 2025-09-30
 
 ### Added

@@ -40,24 +40,6 @@ class CopyNode(EvaluationNode):
         self._output_type = output_type
         self._num_subsystems = num_subsystems
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "13",
-            "register_name": self._register_name,
-            "output_name": self._output_name,
-            "output_type": self._output_type,
-            "num_subsystems": self._num_subsystems,
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "CopyNode":
-        return cls(
-            data["register_name"],
-            data["output_name"],
-            VirtualType(data["output_type"]),
-            int(data["num_subsystems"]),
-        )
-
     @property
     def outgoing_register_type(self):
         return self._output_type
@@ -70,6 +52,15 @@ class CopyNode(EvaluationNode):
 
     def evaluate(self, registers, *_):
         registers[self._output_name] = deepcopy(registers[self._register_name])
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, CopyNode)
+            and self._register_name == other._register_name
+            and self._output_name == other._output_name
+            and self._output_type == other._output_type
+            and self._num_subsystems == other._num_subsystems
+        )
 
     def get_style(self):
         return (

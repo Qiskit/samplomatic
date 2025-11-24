@@ -16,9 +16,8 @@ import numpy as np
 
 from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
 from ...annotations import VirtualType
-from ...exceptions import DeserializationError, SamplexConstructionError
-from ...synths import RzRxSynth, RzSxSynth, Synth
-from ...utils.serialization import array_from_json, array_to_json
+from ...exceptions import SamplexConstructionError
+from ...synths import Synth
 from .collection_node import CollectionNode
 
 
@@ -77,36 +76,6 @@ class CollectTemplateValues(CollectionNode):
                 f"received shape {self._subsystem_idxs.shape} instead."
             )
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "node_type": "1",
-            "template_param_names": self._template_params_name,
-            "template_idxs": array_to_json(self._template_idxs),
-            "register_type": self._register_type,
-            "register_name": self._register_name,
-            "subsystem_idxs": array_to_json(self._subsystem_idxs),
-            "synth": type(self._synth).__name__,
-        }
-
-    @classmethod
-    def _from_json_dict(cls, data: dict[str, str]) -> "CollectTemplateValues":
-        synth_class_name = data["synth"]
-        if synth_class_name == "RzRxSynth":
-            synth = RzRxSynth()
-        elif synth_class_name == "RzSxSynth":
-            synth = RzSxSynth()
-        else:
-            raise DeserializationError(f"Invalid Synth class: {synth_class_name}")
-
-        return cls(
-            data["template_param_names"],
-            array_from_json(data["template_idxs"]),
-            data["register_name"],
-            VirtualType(data["register_type"]),
-            array_from_json(data["subsystem_idxs"]),
-            synth,
-        )
-
     @property
     def num_subsystems(self):
         """The number of subsystems being collected."""
@@ -139,6 +108,17 @@ class CollectTemplateValues(CollectionNode):
         template_idxs = self._template_idxs.ravel()
 
         all_values[:, template_idxs] = values.transpose(1, 0, 2).reshape(-1, template_idxs.size)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, CollectTemplateValues)
+            and self._template_params_name == other._template_params_name
+            and np.array_equal(self._template_idxs, other._template_idxs)
+            and self._register_type == other._register_type
+            and self._register_name == other._register_name
+            and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
+            and self._synth == other._synth
+        )
 
     def get_style(self):
         return (

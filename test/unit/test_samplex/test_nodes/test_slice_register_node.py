@@ -20,16 +20,26 @@ from samplomatic.samplex.nodes import SliceRegisterNode
 from samplomatic.virtual_registers import PauliRegister
 
 
+def test_equality(dummy_evaluation_node):
+    """Test equality."""
+    node = SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg_in", "reg_out", [0, 1])
+    assert node == node
+    assert node == SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg_in", "reg_out", [0, 1])
+    assert node == SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg_in", "reg_out", [0, 1])
+    assert node != dummy_evaluation_node
+    assert node != SliceRegisterNode(VirtualType.U2, VirtualType.U2, "reg_in", "reg_out", [0, 1])
+    assert node != SliceRegisterNode(
+        VirtualType.PAULI, VirtualType.PAULI, "reg_in", "reg_out", [0, 1]
+    )
+    assert node != SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg", "reg_out", [0, 1])
+    assert node != SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg_in", "reg", [0, 1])
+    assert node != SliceRegisterNode(VirtualType.PAULI, VirtualType.U2, "reg_in", "reg_out", [3, 0])
+
+
 def test_no_slice():
     """Test that slice and permutes returns the original register in the trivial case."""
     registers = {"reg_in": PauliRegister([[0, 1, 2, 3], [1, 2, 3, 0]])}
-    node = SliceRegisterNode(
-        VirtualType.PAULI,
-        VirtualType.PAULI,
-        "reg_in",
-        "reg_out",
-        [0, 1],
-    )
+    node = SliceRegisterNode(VirtualType.PAULI, VirtualType.PAULI, "reg_in", "reg_out", [0, 1])
 
     node.evaluate(registers, np.empty(()))
     expected = registers["reg_in"].virtual_gates.tolist()

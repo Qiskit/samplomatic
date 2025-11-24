@@ -16,9 +16,9 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from samplomatic.annotations import VirtualType
-from samplomatic.noise_oracle import StaticNoiseOracle
 from samplomatic.samplex.nodes import InjectNoiseNode
 from samplomatic.tensor_interface import (
+    PauliLindbladMapSpecification,
     TensorInterface,
     TensorSpecification,
 )
@@ -35,34 +35,50 @@ def test_instantiates():
     assert node.outgoing_register_type is VirtualType.PAULI
 
 
+def test_equality(dummy_sampling_node):
+    """Test equality."""
+    node = InjectNoiseNode("inject", "sign", "noise", "modifier", 5)
+    assert node == node
+    assert node == InjectNoiseNode("inject", "sign", "noise", "modifier", 5)
+    assert node != dummy_sampling_node()
+    assert node != InjectNoiseNode("my_inject", "sign", "noise", "modifier", 5)
+    assert node != InjectNoiseNode("inject", "my_sign", "noise", "modifier", 5)
+    assert node != InjectNoiseNode("inject", "sign", "my_noise", "modifier", 5)
+    assert node != InjectNoiseNode("inject", "sign", "noise", "my_modifier", 5)
+    assert node != InjectNoiseNode("inject", "sign", "noise", "modifier", 7)
+
+
 def test_sample(rng):
     """Test the sample method."""
     registers = {}
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3, "my_modifier")
 
-    noise_oracle = StaticNoiseOracle({"my_noise": PauliLindbladMap.from_list([("III", 0.0)])})
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("III", 0.0)])}
     samplex_input = (
         TensorInterface(
             [
+                PauliLindbladMapSpecification("pauli_lindblad_maps.my_noise", 3, 1),
                 TensorSpecification("noise_scales.my_modifier", (), np.float64),
                 TensorSpecification("local_scales.my_modifier", (1,), np.float64),
             ]
         )
         .bind(noise_scales={"my_modifier": 1.0})
         .bind(local_scales={"my_modifier": [1.0]})
+        .bind(pauli_lindblad_maps=pauli_lindblad_maps)
     )
-    node.sample(registers, rng, samplex_input, 5, noise_oracle)
+    node.sample(registers, rng, samplex_input, 5)
     assert registers["injection"] == PauliRegister(np.zeros(15, dtype=np.uint8).reshape(3, 5))
-    assert registers["the_sign"] == Z2Register(np.ones((1, 5), dtype=np.uint8))
+    assert registers["the_sign"] == Z2Register(np.zeros((1, 5), dtype=np.uint8))
 
-    noise_oracle = StaticNoiseOracle({"my_noise": PauliLindbladMap.from_list([("XXX", -100.0)])})
-    node.sample(registers, rng, samplex_input, 100, noise_oracle)
-    assert (~registers["the_sign"].virtual_gates).any()
+    # via binomial concentration around p=0.5, we can be very confident at least 20 are flipped
+    samplex_input["pauli_lindblad_maps.my_noise"] = PauliLindbladMap.from_list([("XXX", -100.0)])
+    node.sample(registers, rng, samplex_input, 100)
+    assert registers["the_sign"].virtual_gates.sum() > 20
 
     samplex_input.bind(noise_scales={"my_modifier": 0.0})
-    node.sample(registers, rng, samplex_input, 100, noise_oracle)
-    assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
+    node.sample(registers, rng, samplex_input, 100)
+    assert registers["the_sign"] == Z2Register(np.zeros((1, 100), dtype=np.uint8))
 
     samplex_input.bind(noise_scales={"my_modifier": 1.0}, local_scales={"my_modifier": [0.0]})
-    node.sample(registers, rng, samplex_input, 100, noise_oracle)
-    assert registers["the_sign"] == Z2Register(np.ones((1, 100), dtype=np.uint8))
+    node.sample(registers, rng, samplex_input, 100)
+    assert registers["the_sign"] == Z2Register(np.zeros((1, 100), dtype=np.uint8))

@@ -75,7 +75,7 @@ def generate_boxing_pass_manager(
     * If ``enable_measures`` is ``True``, it uses the :class:`~.GroupMeasIntoBoxes`
       pass to group the measurements. All the resulting boxes are left dressed. Depending
       on the value of ``measure_annotations``, they own a :class:`~.Twirl` annotation, a
-      :class:`~.BasisTransform` annotation, or both.
+      :class:`~.ChangeBasis` annotation, or both.
     * It adds idling qubits to the boxes following the given ``twirling_strategy``.
     * Using the :class:`~.AddTerminalRightDressedBoxes` pass, it adds right-dressed boxes
       to ensure that the resulting pass manager can produce circuits that can be successfully
@@ -93,9 +93,9 @@ def generate_boxing_pass_manager(
             are:
 
             * ``'twirl'`` for a :class:`~.Twirl` annotation.
-            * ``'basis_transform'`` for a :class:`~.BasisTransform` annotation with mode
+            * ``'change_basis'`` for a :class:`~.ChangeBasis` annotation with mode
               ``measure``.
-            * ``'all'`` for both :class:`~.Twirl` and :class:`~.BasisTransform` annotations.
+            * ``'all'`` for both :class:`~.Twirl` and :class:`~.ChangeBasis` annotations.
 
         twirling_strategy: The twirling strategy.
         inject_noise_targets: The boxes to annotate with an :class:`~.InjectNoise` annotation

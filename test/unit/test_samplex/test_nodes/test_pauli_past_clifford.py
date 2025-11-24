@@ -115,6 +115,15 @@ class TestPauliPastClifford:
         with pytest.raises(SamplexBuildError, match=", found hadamard."):
             PauliPastCliffordNode("hadamard", "my_reg", [(3,), (1,), (0,)])
 
+    def test_equality(self, dummy_evaluation_node):
+        node = PauliPastCliffordNode("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node == node
+        assert node == PauliPastCliffordNode("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node != dummy_evaluation_node()
+        assert node != PauliPastCliffordNode("cx", "my_reg", [(3, 0), (1, 4), (2, 5)])
+        assert node != PauliPastCliffordNode("cx", "my_other_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node != PauliPastCliffordNode("ecr", "my_reg", [(0, 3), (1, 4), (2, 5)])
+
     def test_reads_from(self):
         """Test ``reads_from``."""
         node = PauliPastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])

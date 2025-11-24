@@ -178,7 +178,7 @@ class LeftBoxBuilder(BoxBuilder):
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
             )
         if self.emission.basis_ref:
-            self.samplex_state.add_emit_meas_basis_transform(
+            self.samplex_state.add_emit_meas_basis_change(
                 self.emission.qubits, self.emission.basis_ref
             )
         if twirl_type := self.emission.twirl_register_type:
@@ -251,7 +251,7 @@ class RightBoxBuilder(BoxBuilder):
         self._append_barrier("L")
 
         if self.emission.basis_ref:
-            self.samplex_state.add_emit_prep_basis_transform(
+            self.samplex_state.add_emit_prep_basis_change(
                 self.emission.qubits, self.emission.basis_ref
             )
         if self.emission.noise_ref:

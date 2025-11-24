@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BasisTransformMode"""
+"""ChangeBasisMode"""
 
 from __future__ import annotations
 
@@ -20,15 +20,15 @@ from typing import Literal, Union
 from ..aliases import TypeAlias
 
 
-class BasisTransformMode(str, Enum):
-    """Whether to add basis transform gates to prepare or measure a given basis."""
+class ChangeBasisMode(str, Enum):
+    """Whether to add basis change gates to prepare or measure a given basis."""
 
     MEASURE = "measure"
     PREPARE = "prepare"
 
 
-BasisTransformLiteral: TypeAlias = Union[BasisTransformMode, Literal["measure", "prepare"]]
-"""Allowed basis transform modes.
+ChangeBasisLiteral: TypeAlias = Union[ChangeBasisMode, Literal["measure", "prepare"]]
+"""Allowed basis change modes.
 
  * ``measure``: Gate collection templates are placed on the left side of boxes. The adjoint of the
     basis changing gate is absorbed into the template.

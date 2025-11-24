@@ -13,81 +13,66 @@
 
 """Interfaces"""
 
+from __future__ import annotations
+
+import abc
+import re
 import textwrap
-from collections.abc import Iterable, MutableMapping
-from enum import Enum
-from typing import Any, Literal, overload
+from collections.abc import Iterable, Mapping, MutableMapping
+from typing import Any, Generic, TypeVar
 
 import numpy as np
-from qiskit.quantum_info import QubitSparsePauliList
+from qiskit.quantum_info import PauliLindbladMap
 
 from .aliases import InterfaceName, Self
+from .serializable import Serializable
 
-__all__ = ["ValueType", "Specification", "TensorSpecification", "TensorInterface"]
+__all__ = [
+    "Specification",
+    "PauliLindbladMapSpecification",
+    "TensorSpecification",
+    "TensorInterface",
+]
+
+T = TypeVar("T")
+
+ABSENT = object()
 
 
-class ValueType(str, Enum):
-    """Valid types for an interface value."""
+class Specification(Generic[T], metaclass=Serializable):
+    """A specification of an expected value inside of an interface."""
 
-    BOOL = "bool"
-    INT = "int"
-    PAULIS = "paulis"
-    NUMPY_ARRAY = "numpy_array"
+    @property
+    @abc.abstractmethod
+    def name(self) -> InterfaceName:
+        """The name of this specification."""
 
+    @property
+    @abc.abstractmethod
+    def description(self) -> str:
+        """A description of this specification."""
 
-class Specification:
-    """A specification of an expected value inside of an interface.
+    @property
+    @abc.abstractmethod
+    def optional(self) -> bool:
+        """Whether this is an optional specification."""
 
-    Args:
-        name: The name of the specification.
-        value_type: The type of this specification.
-        description: A description of what the specification represents.
-        optional: Whether the specification is optional.
-    """
+    @property
+    @abc.abstractmethod
+    def free_dimensions(self) -> set[str]:
+        """Named dimensions whose sizes are free until an interface value binds their value.
 
-    def __init__(
-        self, name: InterfaceName, value_type: ValueType, description: str = "", optional=False
-    ):
-        self.name: InterfaceName = name
-        self.value_type = value_type
-        self.description: str = description
-        self.optional: bool = optional
+        Within a :class:`~.TensorInterface`, all free dimensions of the same name must be
+        consistently bound. This allows specification of dimensions of values that can be arbitrary,
+        and that are only resolved once bound to an interface.
+        """
 
-    def _to_json_dict(self) -> dict[str, str]:
-        return {
-            "name": self.name,
-            "value_type": self.value_type.value,
-            "description": self.description,
-            "optional": self.optional,
-        }
-
-    @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "Specification":
-        if "shape" in data:
-            return TensorSpecification._from_json(data)  # noqa: SLF001
-        data["value_type"] = ValueType(data["value_type"])
-        return cls(**data)
-
+    @abc.abstractmethod
     def describe(self) -> str:
         """Return a human-readable description of this specification."""
-        optional = "(Optional) " if self.optional else ""
-        return f"'{self.name}' <{self.value_type.value}>: {optional}{self.description}"
 
-    @overload
-    def validate_and_coerce(self: Literal[ValueType.BOOL], value: Any) -> bool: ...
-
-    @overload
-    def validate_and_coerce(self: Literal[ValueType.INT], value: Any) -> int: ...
-
-    @overload
-    def validate_and_coerce(
-        self: Literal[ValueType.PAULIS], value: Any
-    ) -> QubitSparsePauliList: ...
-
-    @overload
-    def validate_and_coerce(self: Literal[ValueType.NUMPY_ARRAY], value: Any) -> np.ndarray: ...
-
-    def validate_and_coerce(self, value):
+    @abc.abstractmethod
+    def validate_and_coerce(self, value: Any) -> tuple[T, dict[str, int]]:
         """Coerce a value into a correct type if valid.
 
         Args:
@@ -97,27 +82,78 @@ class Specification:
                 TypeError: If the value cannot be coerced into a valid type.
 
         Returns:
-            The coerced value.
+            The coerced value, and a dictionary mapping each member of :attr:`~.free_dimensions` to
+            a size implied by the ``value``.
         """
-        if self.value_type is ValueType.BOOL:
-            return bool(value)
-        if self.value_type is ValueType.INT:
-            return int(value)
-        if self.value_type is ValueType.PAULIS:
-            if isinstance(value, QubitSparsePauliList):
-                return value
-        if self.value_type is ValueType.NUMPY_ARRAY:
-            return np.array(value)
-        raise TypeError(f"Object is type {type(value)} but expected {self.value_type}.")
+
+
+class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
+    """A specification for interface values of type :class:`qiskit.quantum_info.PauliLindbladMap`.
+
+    Args:
+        name: The specification name.
+        num_qubits: How many qubits the Pauli Lindblad map must act on.
+        num_terms: A name for the dimensional freedom that represents the number of terms owned by
+            the Pauli Lindblad map.
+    """
+
+    def __init__(self, name: InterfaceName, num_qubits: int, num_terms: str):
+        self._name = name
+        self.num_qubits = num_qubits
+        self.num_terms = num_terms
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def description(self):
+        return (
+            f"A PauliLindblad map acting on {self.num_qubits} qubits, "
+            f"with '{self.num_terms}' terms."
+        )
+
+    @property
+    def optional(self):
+        return False
+
+    @property
+    def free_dimensions(self):
+        return {self.num_terms}
+
+    def describe(self) -> str:
+        return f"'{self.name}' <PauliLindbladMap>: {self.description}"
+
+    def validate_and_coerce(self, value):
+        if not isinstance(value, PauliLindbladMap):
+            raise ValueError(f"Expected a PauliLindbladMap, but received {value}.")
+
+        if value.num_qubits != self.num_qubits:
+            raise ValueError(
+                f"Expected a PauliLindbladMap acting on {self.num_qubits} qubits, but received one "
+                f"acting on {value.num_qubits} qubits instead."
+            )
+
+        return value, {self.num_terms: len(value)}
 
     def __repr__(self):
-        desc = f", '{self.description}'" if self.description else ""
-        optional = ", optional=True" if self.optional else ""
-        return f"{type(self).__name__}({repr(self.name)}, {self.value_type.value}{desc}{optional})"
+        return (
+            f"{type(self).__name__}({repr(self.name)}, num_qubits={self.num_qubits}, "
+            f"num_terms={self.num_terms})"
+        )
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, PauliLindbladMapSpecification):
+            return (
+                self.name == other.name
+                and self.num_terms == other.num_terms
+                and self.num_qubits == other.num_qubits
+            )
+        return False
 
 
-class TensorSpecification(Specification):
-    """Specification of a single named tensor interface.
+class TensorSpecification(Specification[np.ndarray]):
+    """A specification for tensor-valued interface values of a specific type and shape.
 
     Args:
         name: The name of the interface.
@@ -133,85 +169,112 @@ class TensorSpecification(Specification):
     def __init__(
         self,
         name: InterfaceName,
-        shape: tuple[int, ...],
+        shape: tuple[int | str, ...],
         dtype: np.dtype,
         description: str = "",
         broadcastable: bool = False,
         optional: bool = False,
     ):
-        super().__init__(name, ValueType.NUMPY_ARRAY, description, optional)
-        self.shape = tuple(map(int, shape))
-        self.dtype = dtype
+        self._name = name
+        self._free_dimensions = {dim for dim in shape if isinstance(dim, str)}
+        self.shape = tuple(dim if dim in self._free_dimensions else int(dim) for dim in shape)
+        self.dtype = np.dtype(dtype)
         self.broadcastable = broadcastable
+        self._description = description
+        self._optional = optional
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def optional(self):
+        return self._optional
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def free_dimensions(self):
+        return set(self._free_dimensions)
 
     @property
     def ndim(self) -> int:
         """The number of dimensions, i.e. the length of :attr:`~shape`."""
         return len(self.shape)
 
-    def _to_json_dict(self) -> dict[str, Any]:
-        return {
-            "name": self.name,
-            "description": self.description,
-            "dtype": str(self.dtype),
-            "shape": tuple(int(x) for x in self.shape),
-            "broadcastable": self.broadcastable,
-            "optional": self.optional,
-        }
-
-    @classmethod
-    def _from_json(cls, data: dict[str, Any]) -> "TensorSpecification":
-        return cls(
-            data["name"],
-            tuple(data["shape"]),
-            np.dtype(data["dtype"]),
-            data["description"],
-            data["broadcastable"],
-            data["optional"],
-        )
-
     def describe(self) -> str:
-        """Return a human-readable description of this specification."""
         if self.broadcastable:
-            shape_string = f"[*, {', '.join(map(str, self.shape))}]"
+            shape_string = f"[*, {', '.join(map(repr, self.shape))}]"
         else:
-            shape_string = str(list(self.shape))
+            shape_string = repr(list(self.shape))
         optional = "(Optional) " if self.optional else ""
         return f"'{self.name}' <{self.dtype}{shape_string}>: {optional}{self.description}"
 
-    def empty(self) -> np.ndarray:
-        """Create an empty output according to this specification.
-
-        Args:
-            num_samples: How many samples have been requested.
-
-        Returns:
-            An empty output according to this specification.
-        """
-        return np.empty(self.shape, dtype=self.dtype)
-
     def validate_and_coerce(self, value):
-        value = super().validate_and_coerce(value)
-        if value.dtype != self.dtype:
+        try:
+            value = np.array(value)
+        except ValueError as exc:
+            raise ValueError(f"Input '{self.name}' expects an array but received {value}.") from exc
+        try:
+            value = value.astype(self.dtype, casting="unsafe")
+        except (TypeError, ValueError):
             raise ValueError(
-                f"Input '{self.name}' expects an array of dtype "
-                f"{self.dtype}, but received one with dtype {value.dtype}."
+                f"Input '{self.name}' is expected to be castable to type {self.dtype} "
+                f"under the casting=unsafe rule, but got a type {value.dtype}."
             )
+        if value.ndim < self.ndim:
+            axis = "axes" if self.ndim > 1 else "axis"
+            raise ValueError(
+                f"Input '{self.name}' must have at least {self.ndim} {axis}, "
+                f"but instead has shape {value.shape}."
+            )
+        trailing_shapes_agree = True
+        bound_dimensions = {}
+        for dim, value_dim in zip(self.shape, value.shape[len(value.shape) - self.ndim :]):
+            if dim in self._free_dimensions:
+                if dim in bound_dimensions and bound_dimensions[dim] != value_dim:
+                    raise ValueError(
+                        f"Input `{self.name}` has self-inconsistent values for the free dimension "
+                        f"{dim}: it specifies at least the two different values {value_dim}"
+                        f"and {bound_dimensions[dim]}."
+                    )
+                bound_dimensions[dim] = value_dim
+            else:
+                trailing_shapes_agree &= dim == value_dim
         if self.broadcastable:
-            if value.shape[len(value.shape) - self.ndim :] != self.shape:
+            if not trailing_shapes_agree:
                 raise ValueError(
                     f"Input '{self.name}' expects an array ending with shape {self.shape} "
                     f"but received one with shape {value.shape}."
                 )
-        elif value.shape != self.shape:
+        elif not trailing_shapes_agree:
             raise ValueError(
                 f"Input '{self.name}' expects an array of shape {self.shape}, "
                 f"but received one with shape {value.shape} and dtype {value.dtype}."
             )
-        return value
+        return value, bound_dimensions
 
     def __repr__(self):
-        return super().__repr__()[:-1] + (", broadcastable=True)" if self.broadcastable else ")")
+        description = f", '{self.description}'" if self.description else ""
+        broadcastable = ", broadcastable=True" if self.broadcastable else ""
+        optional = ", optional=True" if self.optional else ""
+        return (
+            f"{type(self).__name__}('{self.name}', {repr(self.shape)}, {repr(self.dtype)}"
+            f"{description}{broadcastable}{optional})"
+        )
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, TensorSpecification):
+            return (
+                self.name == other.name
+                and self.dtype == other.dtype
+                and self.shape == other.shape
+                and self.broadcastable == other.broadcastable
+                and self.optional == other.optional
+            )
+        return False
 
 
 class TensorInterface(MutableMapping):
@@ -230,6 +293,11 @@ class TensorInterface(MutableMapping):
         self._specs = {spec.name: spec for spec in sorted(specs, key=lambda spec: spec.name)}
         self._data: dict[InterfaceName, Any] = {}
         self._shape = ()
+        self._dimension_constraints = {
+            free_dimension: ABSENT
+            for spec in self._specs.values()
+            for free_dimension in spec.free_dimensions
+        }
 
     @property
     def fully_bound(self) -> bool:
@@ -265,35 +333,72 @@ class TensorInterface(MutableMapping):
         return list(self._specs.values())
 
     @property
+    def free_dimensions(self) -> set[str]:
+        """All free dimensions in the interface."""
+        return set(self._dimension_constraints)
+
+    @property
+    def bound_dimensions(self) -> dict[str, int]:
+        """Those :attr:`~.free_dimensions` that have already been bound to a value."""
+        return {
+            free_dimension: size
+            for free_dimension, size in self._dimension_constraints.items()
+            if size is not ABSENT
+        }
+
+    @property
     def _unbound_specs(self) -> set[str]:
         """The specifications that do not have any data."""
         return {name for name in self._specs if name not in self._data}
 
-    def describe(self, include_bound: bool = True, prefix: str = "* ", width: int = 0) -> str:
+    def describe(
+        self,
+        include_bound: bool = True,
+        include_free_dimensions: bool = False,
+        prefix: str = "* ",
+        bound_prefix: str | None = None,
+        width: int = 0,
+    ) -> str:
         """Return a human-readable description of this interface.
 
         Args:
             include_bound: Whether to include interface specs that are already bound.
-            prefix: A string prefix for every line returned.
+            include_free_dimensions: Whether to include information about free dimensions and
+                their bound values.
+            prefix: A string prefix for every specification in the interface that has no value.
+            bound_prefix: A string prefix for every specification in the interface that has a value,
+                or ``None`` to use the same value as ``prefix``.
             width: The text width to wrap at, minimum 40, but where 0 specifies no wrapping.
 
         Returns:
             A description.
         """
+        bound_prefix = prefix if bound_prefix is None else bound_prefix
+
+        ret = []
+        if include_free_dimensions and (
+            constraints := {
+                name: val for name, val in self._dimension_constraints.items() if val is not ABSENT
+            }
+        ):
+            constraints = ", ".join(f"{name}={val}" for name, val in sorted(constraints.items()))
+            ret.append(f"{prefix}Dimension constraints: {constraints}")
+            ret.append("")
+
         unbound = self._unbound_specs
-        ret = [
-            f"{prefix}{spec.describe()}"
+        ret.extend(
+            f"{bound_prefix if spec.name in self else prefix}{spec.describe()}"
             for spec in self._specs.values()
-            if isinstance(spec, TensorSpecification) and (include_bound or spec.name in unbound)
-        ]
+            if not spec.optional and (include_bound or spec.name in unbound)
+        )
 
         if ret:
             ret.append("")
 
         ret.extend(
-            f"{prefix}{spec.describe()}"
+            f"{bound_prefix if spec.name in self else prefix}{spec.describe()}"
             for spec in self._specs.values()
-            if not isinstance(spec, TensorSpecification) and (include_bound or spec.name in unbound)
+            if spec.optional and (include_bound or spec.name in unbound)
         )
 
         if width >= 40:
@@ -303,8 +408,49 @@ class TensorInterface(MutableMapping):
 
         return "\n".join(ret)
 
-    def bind(self, **kwargs) -> Self:
+    def get_specs(self, pattern: str = "") -> list[Specification]:
+        """Return all specifications of this inteface whose names the pattern string.
+
+        Args:
+            pattern: A pattern string. Regex is supported.
+
+        Returns:
+            Those specifications whose names match the pattern, sorted.
+        """
+        regex_pattern = re.compile(pattern)
+        return [spec for name, spec in self._specs.items() if regex_pattern.search(name)]
+
+    def bind(self, **kwargs: Mapping[str, Any]) -> Self:
         """Bind data to this interface.
+
+        A tensor interface is a flat data structure mapping names to values, where the values must
+        conform to constraints specifed by the :attr:`~.specs`.
+
+        .. plot::
+            :include-source:
+            :context:
+            :nofigs:
+
+            >>> from samplomatic.tensor_interface import TensorSpecification, TensorInterface
+            >>> import numpy as np
+            >>>
+            >>> interface = TensorInterface([
+            ...     TensorSpecification("foo.bar", (2, 3), np.float64),
+            ...     TensorSpecification("x", (15,), np.int64),
+            ...     TensorSpecification("y", (4,), np.float32)
+            ... ])
+            >>>
+            >>> # bind a single value
+            >>> interface.bind(x=np.arange(15), y=np.linspace(0, 1, 4)) # doctest: +ELLIPSIS
+            TensorInterface(...)
+            >>>
+            >>> # bind a value that has a "."-separated name
+            >>> interface.bind(foo={"bar": np.zeros((2, 3))}) # doctest: +ELLIPSIS
+            TensorInterface(...)
+            >>>
+            >>> # alternatively, items can be set directly
+            >>> interface["foo.bar"] = np.ones((2, 3))
+            >>> interface["y"] = [2.1, 2.2, 2.3, 2.4]
 
         Args:
             **kwargs: Key-value data to bind.
@@ -320,7 +466,7 @@ class TensorInterface(MutableMapping):
 
         return self
 
-    def make_broadcastable(self) -> "TensorInterface":
+    def make_broadcastable(self) -> TensorInterface:
         """Return a new interface like this one where all tensor specifications are broadcastable.
 
         Returns:
@@ -336,7 +482,10 @@ class TensorInterface(MutableMapping):
         ).bind(**self._data)
 
     def __str__(self):
-        body = f"\n{self.describe(prefix='  * ', width=100)}" if self._specs else ""
+        description = self.describe(
+            bound_prefix="  * ", prefix="  - ", width=100, include_free_dimensions=True
+        )
+        body = f"\n{description}" if self._specs else ""
         return f"{type(self).__name__}(<{body}>)"
 
     def __repr__(self):
@@ -372,7 +521,16 @@ class TensorInterface(MutableMapping):
                 f"Only the following interface names are allowed:\n{self.describe(prefix='  * ')}"
             )
         else:
-            value = spec.validate_and_coerce(value)
+            value, constraints = spec.validate_and_coerce(value)
+            for free_dimension, dim_value in constraints.items():
+                if (expected := self._dimension_constraints[free_dimension]) is ABSENT:
+                    self._dimension_constraints[free_dimension] = dim_value
+                elif expected != dim_value:
+                    raise ValueError(
+                        f"Inconsistent values for the free dimension '{free_dimension}': "
+                        f"it specifies at least the two different values {dim_value} "
+                        f"and {expected}."
+                    )
             if isinstance(spec, TensorSpecification) and spec.broadcastable:
                 value_shape = value.shape[: value.ndim - len(spec.shape)]
                 try:
