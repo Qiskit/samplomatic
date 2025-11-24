@@ -234,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.distributions.Distribution.html">Distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.distributions.UniformC1.html">UniformC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
 </ul>
 </li>
@@ -349,6 +350,7 @@
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">samplomatic.virtual_registers</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.virtual_registers.virtual_register_from_json.html">virtual_register_from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
@@ -463,19 +465,22 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" title="samplomatic.virtual_registers.GroupRegister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupRegister</span></code></a>(virtual_gates)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register" title="samplomatic.virtual_registers.C1Register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">C1Register</span></code></a>(virtual_gates)</p></td>
+<td><p>Virtual register of C1 gates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" title="samplomatic.virtual_registers.GroupRegister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupRegister</span></code></a>(virtual_gates)</p></td>
 <td><p>A virtual register whose elements form a group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister" title="samplomatic.virtual_registers.PauliRegister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PauliRegister</span></code></a>(virtual_gates)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister" title="samplomatic.virtual_registers.PauliRegister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PauliRegister</span></code></a>(virtual_gates)</p></td>
 <td><p>Virtual register of virtual projective Pauli gates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register" title="samplomatic.virtual_registers.U2Register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U2Register</span></code></a>(virtual_gates)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register" title="samplomatic.virtual_registers.U2Register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U2Register</span></code></a>(virtual_gates)</p></td>
 <td><p>Virtual register of 2x2 Unitary matrices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a>(virtual_gates)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a>(virtual_gates)</p></td>
 <td><p>A data register containing a 2D array of virtual gates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register" title="samplomatic.virtual_registers.Z2Register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Z2Register</span></code></a>(virtual_gates)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register" title="samplomatic.virtual_registers.Z2Register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Z2Register</span></code></a>(virtual_gates)</p></td>
 <td><p>Virtual register of elements of Z2, the cyclic group of order 2.</p></td>
 </tr>
 </tbody>
@@ -484,13 +489,14 @@
 </section>
 <section id="class-inheritance-diagram">
 <h2>Class Inheritance Diagram<a class="headerlink" href="#class-inheritance-diagram" title="Link to this heading">¶</a></h2>
-<div class="graphviz"><img src="../_images/inheritance-d7f621fcf132b95138b7cab920039a0842ee26bf.png" alt="Inheritance diagram of samplomatic.virtual_registers.group_register.GroupRegister, samplomatic.virtual_registers.pauli_register.PauliRegister, samplomatic.virtual_registers.u2_register.U2Register, samplomatic.virtual_registers.virtual_register.VirtualRegister, samplomatic.virtual_registers.z2_register.Z2Register" usemap="#inheritancea66bc1d043" class="inheritance graphviz" /></div>
-<map id="inheritancea66bc1d043" name="inheritancea66bc1d043">
-<area shape="rect" id="node1" href="auto/samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" target="_top" title="A virtual register whose elements form a group." alt="" coords="172,55,287,80"/>
-<area shape="rect" id="node3" href="auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister" target="_top" title="Virtual register of virtual projective Pauli gates." alt="" coords="335,5,441,31"/>
-<area shape="rect" id="node4" href="auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register" target="_top" title="Virtual register of 2x2 Unitary matrices." alt="" coords="341,55,435,80"/>
-<area shape="rect" id="node5" href="auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register" target="_top" title="Virtual register of elements of Z2, the cyclic group of order 2." alt="" coords="341,104,435,129"/>
-<area shape="rect" id="node2" href="auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" target="_top" title="A data register containing a 2D array of virtual gates." alt="" coords="5,55,124,80"/>
+<div class="graphviz"><img src="../_images/inheritance-ae7270fb2427f367d5288714a1e91c2e008af2d1.png" alt="Inheritance diagram of samplomatic.virtual_registers.c1_register.C1Register, samplomatic.virtual_registers.group_register.GroupRegister, samplomatic.virtual_registers.pauli_register.PauliRegister, samplomatic.virtual_registers.u2_register.U2Register, samplomatic.virtual_registers.virtual_register.VirtualRegister, samplomatic.virtual_registers.z2_register.Z2Register" usemap="#inheritance70a0cc2cde" class="inheritance graphviz" /></div>
+<map id="inheritance70a0cc2cde" name="inheritance70a0cc2cde">
+<area shape="rect" id="node1" href="auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register" target="_top" title="Virtual register of C1 gates." alt="" coords="533,5,627,31"/>
+<area shape="rect" id="node3" href="auto/samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" target="_top" title="A virtual register whose elements form a group." alt="" coords="172,80,287,105"/>
+<area shape="rect" id="node5" href="auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister" target="_top" title="Virtual register of virtual projective Pauli gates." alt="" coords="357,55,463,80"/>
+<area shape="rect" id="node6" href="auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register" target="_top" title="Virtual register of 2x2 Unitary matrices." alt="" coords="363,104,457,129"/>
+<area shape="rect" id="node7" href="auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register" target="_top" title="Virtual register of elements of Z2, the cyclic group of order 2." alt="" coords="363,153,457,179"/>
+<area shape="rect" id="node4" href="auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" target="_top" title="A data register containing a 2D array of virtual gates." alt="" coords="5,80,124,105"/>
 </map></section>
 </section>
 

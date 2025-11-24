@@ -232,6 +232,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.Distribution.html">Distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.UniformC1.html">UniformC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
 </ul>
 </li>
@@ -347,6 +348,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.virtual_registers.virtual_register_from_json.html">virtual_register_from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
@@ -573,6 +575,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType.C1">C1 (samplomatic.annotations.VirtualType attribute)</a>
 </li>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register">C1Register (class in samplomatic.virtual_registers)</a>
+</li>
         <li><a href="api/auto/samplomatic.ChangeBasis.html#samplomatic.ChangeBasis">ChangeBasis (class in samplomatic)</a>
 </li>
         <li><a href="api/auto/samplomatic.annotations.ChangeBasisMode.html#samplomatic.annotations.ChangeBasisMode">ChangeBasisMode (class in samplomatic.annotations)</a>
@@ -609,15 +613,19 @@
         </ul></li>
         <li><a href="api/auto/samplomatic.samplex.nodes.ConversionNode.html#samplomatic.samplex.nodes.ConversionNode">ConversionNode (class in samplomatic.samplex.nodes)</a>
 </li>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.convert_to">convert_to() (samplomatic.virtual_registers.PauliRegister method)</a>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.convert_to">convert_to() (samplomatic.virtual_registers.C1Register method)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.convert_to">(samplomatic.virtual_registers.PauliRegister method)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.convert_to">(samplomatic.virtual_registers.VirtualRegister method)</a>
 </li>
         </ul></li>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.CONVERTABLE_TYPES">CONVERTABLE_TYPES (samplomatic.virtual_registers.PauliRegister attribute)</a>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.CONVERTABLE_TYPES">CONVERTABLE_TYPES (samplomatic.virtual_registers.C1Register attribute)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.CONVERTABLE_TYPES">(samplomatic.virtual_registers.PauliRegister attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register.CONVERTABLE_TYPES">(samplomatic.virtual_registers.U2Register attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.CONVERTABLE_TYPES">(samplomatic.virtual_registers.VirtualRegister attribute)</a>
@@ -767,10 +775,10 @@
 </li>
         <li><a href="api/auto/samplomatic.graph_utils.find_unreachable_nodes.html#samplomatic.graph_utils.find_unreachable_nodes">find_unreachable_nodes() (in module samplomatic.graph_utils)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.pre_samplex.PreEdge.html#samplomatic.pre_samplex.PreEdge.force_register_copy">force_register_copy (samplomatic.pre_samplex.PreEdge attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.tensor_interface.PauliLindbladMapSpecification.html#samplomatic.tensor_interface.PauliLindbladMapSpecification.free_dimensions">free_dimensions (samplomatic.tensor_interface.PauliLindbladMapSpecification attribute)</a>
 
         <ul>
@@ -783,6 +791,8 @@
         </ul></li>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.from_elements">from_elements() (samplomatic.partition.Partition class method)</a>
 </li>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.from_tableau">from_tableau() (samplomatic.virtual_registers.C1Register class method)</a>
+</li>
         <li><a href="api/auto/samplomatic.tensor_interface.TensorInterface.html#samplomatic.tensor_interface.TensorInterface.fully_bound">fully_bound (samplomatic.tensor_interface.TensorInterface attribute)</a>
 </li>
     </ul></td>
@@ -793,9 +803,11 @@
   <h2>G</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.GATE_SHAPE">GATE_SHAPE (samplomatic.virtual_registers.PauliRegister attribute)</a>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.GATE_SHAPE">GATE_SHAPE (samplomatic.virtual_registers.C1Register attribute)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.GATE_SHAPE">(samplomatic.virtual_registers.PauliRegister attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register.GATE_SHAPE">(samplomatic.virtual_registers.U2Register attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.GATE_SHAPE">(samplomatic.virtual_registers.VirtualRegister attribute)</a>
@@ -897,9 +909,11 @@
   <h2>I</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.identity">identity() (samplomatic.virtual_registers.PauliRegister class method)</a>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.identity">identity() (samplomatic.virtual_registers.C1Register class method)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.identity">(samplomatic.virtual_registers.PauliRegister class method)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register.identity">(samplomatic.virtual_registers.U2Register class method)</a>
 </li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.identity">(samplomatic.virtual_registers.VirtualRegister class method)</a>
@@ -946,6 +960,8 @@
 </li>
         </ul></li>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.intersection">intersection() (samplomatic.partition.Partition method)</a>
+</li>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.inverse_table">inverse_table (samplomatic.virtual_registers.C1Register attribute)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister.invert">invert() (samplomatic.virtual_registers.GroupRegister method)</a>
 
@@ -996,6 +1012,8 @@
         <li><a href="api/auto/samplomatic.samplex.nodes.LeftMultiplicationNode.html#samplomatic.samplex.nodes.LeftMultiplicationNode">LeftMultiplicationNode (class in samplomatic.samplex.nodes)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.LeftU2ParametricMultiplicationNode.html#samplomatic.samplex.nodes.LeftU2ParametricMultiplicationNode">LeftU2ParametricMultiplicationNode (class in samplomatic.samplex.nodes)</a>
+</li>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.lookup_table">lookup_table (samplomatic.virtual_registers.C1Register attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1315,6 +1333,8 @@
         <ul>
           <li><a href="api/auto/samplomatic.distributions.HaarU2.html#samplomatic.distributions.HaarU2.register_type">(samplomatic.distributions.HaarU2 attribute)</a>
 </li>
+          <li><a href="api/auto/samplomatic.distributions.UniformC1.html#samplomatic.distributions.UniformC1.register_type">(samplomatic.distributions.UniformC1 attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.distributions.UniformPauli.html#samplomatic.distributions.UniformPauli.register_type">(samplomatic.distributions.UniformPauli attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.pre_samplex.PreChangeBasis.html#samplomatic.pre_samplex.PreChangeBasis.register_type">(samplomatic.pre_samplex.PreChangeBasis attribute)</a>
@@ -1334,10 +1354,10 @@
           <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.removes">(samplomatic.samplex.nodes.Node method)</a>
 </li>
         </ul></li>
-        <li><a href="api/auto/samplomatic.graph_utils.replace_edges_with_one_edge.html#samplomatic.graph_utils.replace_edges_with_one_edge">replace_edges_with_one_edge() (in module samplomatic.graph_utils)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/auto/samplomatic.graph_utils.replace_edges_with_one_edge.html#samplomatic.graph_utils.replace_edges_with_one_edge">replace_edges_with_one_edge() (in module samplomatic.graph_utils)</a>
+</li>
         <li><a href="api/auto/samplomatic.graph_utils.replace_nodes_with_one_node.html#samplomatic.graph_utils.replace_nodes_with_one_node">replace_nodes_with_one_node() (in module samplomatic.graph_utils)</a>
 </li>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.restrict">restrict() (samplomatic.partition.Partition method)</a>
@@ -1392,6 +1412,8 @@
 
         <ul>
           <li><a href="api/auto/samplomatic.distributions.HaarU2.html#samplomatic.distributions.HaarU2.sample">(samplomatic.distributions.HaarU2 method)</a>
+</li>
+          <li><a href="api/auto/samplomatic.distributions.UniformC1.html#samplomatic.distributions.UniformC1.sample">(samplomatic.distributions.UniformC1 method)</a>
 </li>
           <li><a href="api/auto/samplomatic.distributions.UniformPauli.html#samplomatic.distributions.UniformPauli.sample">(samplomatic.distributions.UniformPauli method)</a>
 </li>
@@ -1598,9 +1620,11 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.subgraphs">subgraphs() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.SUBSYSTEM_SIZE">SUBSYSTEM_SIZE (samplomatic.virtual_registers.PauliRegister attribute)</a>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.SUBSYSTEM_SIZE">SUBSYSTEM_SIZE (samplomatic.virtual_registers.C1Register attribute)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.SUBSYSTEM_SIZE">(samplomatic.virtual_registers.PauliRegister attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register.SUBSYSTEM_SIZE">(samplomatic.virtual_registers.U2Register attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.SUBSYSTEM_SIZE">(samplomatic.virtual_registers.VirtualRegister attribute)</a>
@@ -1650,6 +1674,8 @@
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.to_json_dict">to_json_dict() (samplomatic.virtual_registers.VirtualRegister method)</a>
 </li>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.to_tableau">to_tableau() (samplomatic.virtual_registers.C1Register method)</a>
+</li>
         <li><a href="api/auto/samplomatic.Twirl.html#samplomatic.Twirl">Twirl (class in samplomatic)</a>
 </li>
     </ul></td>
@@ -1658,9 +1684,11 @@
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.TwirlSamplingNode.html#samplomatic.samplex.nodes.TwirlSamplingNode">TwirlSamplingNode (class in samplomatic.samplex.nodes)</a>
 </li>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.TYPE">TYPE (samplomatic.virtual_registers.PauliRegister attribute)</a>
+        <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.TYPE">TYPE (samplomatic.virtual_registers.C1Register attribute)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.TYPE">(samplomatic.virtual_registers.PauliRegister attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register.TYPE">(samplomatic.virtual_registers.U2Register attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.TYPE">(samplomatic.virtual_registers.VirtualRegister attribute)</a>
@@ -1682,11 +1710,13 @@
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register">U2Register (class in samplomatic.virtual_registers)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.utils.undress_box.html#samplomatic.utils.undress_box">undress_box() (in module samplomatic.utils)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION">UNIFORM_MODIFICATION (samplomatic.transpiler.NoiseInjectionStrategy attribute)</a>
+</li>
+        <li><a href="api/auto/samplomatic.distributions.UniformC1.html#samplomatic.distributions.UniformC1">UniformC1 (class in samplomatic.distributions)</a>
 </li>
         <li><a href="api/auto/samplomatic.distributions.UniformPauli.html#samplomatic.distributions.UniformPauli">UniformPauli (class in samplomatic.distributions)</a>
 </li>
