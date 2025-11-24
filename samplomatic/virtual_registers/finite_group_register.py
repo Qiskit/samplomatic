@@ -31,8 +31,6 @@ class FiniteGroupRegister(GroupRegister):
     and the inverse.
     """
 
-    GATE_SHAPE = ()
-
     @property
     @abc.abstractmethod
     def lookup_table(self) -> np.ndarray:
