@@ -12,7 +12,7 @@
 
 """Specification Serializers"""
 
-from ..virtual_registers import PauliRegister, U2Register, Z2Register
+from ..virtual_registers import C1Register, PauliRegister, U2Register, Z2Register
 from .type_serializer import DataSerializer, TypeSerializer
 from .utils import array_from_json, array_to_json
 
@@ -69,3 +69,21 @@ class Z2RegisterSerializer(TypeSerializer[Z2Register]):
         @classmethod
         def deserialize(cls, data):
             return Z2Register(array_from_json(data["array"]))
+
+
+class C1RegisterSerializer(TypeSerializer[C1Register]):
+    """Serializer for :class:`~.Z2Register`."""
+
+    TYPE_ID = "V3"
+    TYPE = C1Register
+
+    class SSV1(DataSerializer[C1Register]):
+        MIN_SSV = 2
+
+        @classmethod
+        def serialize(cls, obj):
+            return {"array": array_to_json(obj._array)}  # noqa: SLF001
+
+        @classmethod
+        def deserialize(cls, data):
+            return C1Register(array_from_json(data["array"]))

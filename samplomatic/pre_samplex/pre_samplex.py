@@ -46,7 +46,7 @@ from ..aliases import (
 )
 from ..annotations import VirtualType
 from ..builders.specs import InstructionMode, InstructionSpec
-from ..constants import Direction
+from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -76,6 +76,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
+from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from ..virtual_registers import U2Register
@@ -827,7 +828,6 @@ class PreSamplex:
             are part of the same generation, and have identical directions and operation names, and
             have predecessors in common.
         """
-        fractional = {"rx", "rz"}
         for generation in topological_generations(self.graph):
             for node_idxs in self._cluster_pre_propagate_nodes(generation):
                 if len(node_idxs) == 1:
@@ -835,20 +835,9 @@ class PreSamplex:
                     continue
 
                 nodes = [self.graph[node_idx] for node_idx in node_idxs]
-
-                if any(
-                    node.operation.name in fractional and not node.operation.is_parameterized()
-                    for node in nodes
-                ):
-                    # TODO: for now, merging is not allowed for rx and rz gates when they specify
-                    # numerical values. there's nothing technically more difficult about this
-                    # than the parametric case, we just don't support it yet in this optimization.
-                    continue
-
                 combined_subsystems = QubitIndicesPartition.union(
                     *(node.subsystems for node in nodes)
                 )
-
                 num_elements = nodes[0].partition.num_elements_per_part
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
@@ -858,21 +847,42 @@ class PreSamplex:
                         for i in range(num_parts)
                     ],
                 )
+                if any(
+                    node.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+                    and not node.operation.is_parameterized()
+                    for node in nodes
+                ):
+                    # We rely on the clustering function to not mix parameterized and bounded gates.
+                    params = [param for node in nodes for param in node.operation.params]
+                    # This merges the node but not the edges
+                    new_node_idx = replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            nodes[0].direction,  # all nodes have same direction
+                            nodes[0].operation,  # Besides parameters, all nodes have same operation
+                            combined_partition,
+                            nodes[0].spec,  # all nodes have same spec
+                            bounded_params=params,
+                        ),
+                    )
 
-                params = [param for node in nodes for param in node.spec.params]
-
-                # This merges the node but not the edges
-                new_node_idx = replace_nodes_with_one_node(
-                    self.graph,
-                    node_idxs,
-                    PrePropagate(
-                        combined_subsystems,
-                        self.graph[node_idxs[0]].direction,  # all nodes have same direction
-                        self.graph[node_idxs[0]].operation,  # all nodes have same operation
-                        combined_partition,
-                        InstructionSpec(params=params, mode=nodes[0].spec.mode),
-                    ),
-                )
+                else:
+                    params = [param for node in nodes for param in node.spec.params]
+                    # This merges the node but not the edges
+                    new_node_idx = replace_nodes_with_one_node(
+                        self.graph,
+                        node_idxs,
+                        PrePropagate(
+                            combined_subsystems,
+                            nodes[0].direction,  # all nodes have same direction
+                            nodes[0].operation,  # all nodes have same operation, up to the
+                            # paramaters which are handled separately
+                            combined_partition,
+                            InstructionSpec(params=params, mode=nodes[0].spec.mode),
+                        ),
+                    )
 
                 for successor_idx in set(self.graph.successor_indices(new_node_idx)):
                     new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
@@ -893,6 +903,7 @@ class PreSamplex:
                     mode=node.spec.mode,
                     operation_name=node.operation.name,
                     direction=node.direction,
+                    is_parameterized=node.operation.is_parameterized(),
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -916,7 +927,6 @@ class PreSamplex:
                             "predecessors": set(self.graph.predecessor_indices(node_idx)),
                         }
                     )
-
         return [cluster["nodes"] for cluster_type in clusters.values() for cluster in cluster_type]
 
     def sorted_predecessor_idxs(
@@ -1023,7 +1033,7 @@ class PreSamplex:
         # Validation
         self.validate_no_rightward_danglers()
 
-        # Optmization
+        # Optimization
         self.prune_prenodes_unreachable_from_emission()
         self.merge_parallel_pre_propagate_nodes()
 
@@ -1133,18 +1143,18 @@ class PreSamplex:
                     )
                 )
 
-        if max_param_idx is not None:
-            samplex.add_output(
-                TensorSpecification(
-                    "parameter_values",
-                    (
-                        "num_randomizations",
-                        max_param_idx + 1,
-                    ),
-                    np.dtype(np.float32),
-                    "Parameter values valid for an associated template circuit.",
-                )
+        parameter_values_shape = (
+            "num_randomizations",
+            0 if max_param_idx is None else max_param_idx + 1,
+        )
+        samplex.add_output(
+            TensorSpecification(
+                "parameter_values",
+                parameter_values_shape,
+                np.dtype(np.float32),
+                "Parameter values valid for an associated template circuit.",
             )
+        )
 
         if self._twirled_clbits:
             for reg in self._cregs:
@@ -1338,7 +1348,8 @@ class PreSamplex:
             input_register_name, (source_idxs, destination_idxs, input_type) = next(
                 iter(operands.items())
             )
-            slice_idxs = [source_idxs[idx] for idx in destination_idxs]
+            slice_idxs = np.empty(len(destination_idxs))
+            slice_idxs[destination_idxs] = source_idxs
             combine_node = SliceRegisterNode(
                 input_type=input_type,
                 output_type=combined_register_type,
@@ -1408,7 +1419,12 @@ class PreSamplex:
                         op_name, combined_register_name, param_idxs
                     )
             else:
-                register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
+                if op_name in SUPPORTED_1Q_FRACTIONAL_GATES:
+                    register = get_fractional_gate_register(
+                        op_name, np.array(pre_propagate.bounded_params)
+                    )
+                else:
+                    register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
                 if pre_propagate.direction is Direction.LEFT:
                     propagate_node = RightMultiplicationNode(register, combined_register_name)
                 else:
@@ -1495,10 +1511,9 @@ class PreSamplex:
             VirtualType.U2,
         )
 
-        param_reorder = pre_node.subsystems.get_indices(all_subsystems)
         collect = CollectTemplateValues(
             "parameter_values",
-            pre_node.param_idxs[param_reorder, :],
+            pre_node.param_idxs,
             combined_name,
             VirtualType.U2,
             np.arange(len(all_subsystems)),

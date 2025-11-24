@@ -94,6 +94,21 @@ def make_circuits():
 
     yield circuit, "parametric_right_box"
 
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(dressing="left")]):
+        circuit.rx(1, 0)
+        circuit.rx(a, 1)
+        circuit.rx(b, 2)
+        circuit.rx(2, 3)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.rz(1, 0)
+        circuit.rz(a, 1)
+        circuit.rz(b, 2)
+        circuit.rz(2, 3)
+
+    yield circuit, "merge_mix_static_and_parametric"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:

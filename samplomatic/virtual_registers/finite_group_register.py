@@ -10,47 +10,49 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""U2Register"""
+"""FiniteGroupRegister"""
 
 from __future__ import annotations
+
+import abc
 
 import numpy as np
 
 from ..aliases import SubsystemIndex
-from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
 from .group_register import GroupRegister
 
-EPS12: float = 1e-12
 
+class FiniteGroupRegister(GroupRegister):
+    """A virtual register whose elements form a finite group.
 
-class U2Register(GroupRegister):
-    """Virtual register of 2x2 Unitary matrices.
-
-    The equality method of this class is overridden to ignore global phase.
+    The elements of the group are enumerated and act as indices of the the :attr:`~lookup_table` and
+    :attr:`~inverse_table`. By taking the appropriate slices, this implements the group operation
+    and the inverse.
     """
 
-    TYPE = VirtualType.U2
-    GATE_SHAPE = (2, 2)
-    SUBSYSTEM_SIZE = 1
-    DTYPE = np.complex128
-    CONVERTABLE_TYPES = frozenset({VirtualType.U2})
+    @property
+    @abc.abstractmethod
+    def lookup_table(self) -> np.ndarray:
+        """The lookup table for the group operation."""
 
-    @classmethod
-    def identity(cls, num_subsystems, num_samples):
-        arr = np.zeros((num_subsystems, num_samples) + cls.GATE_SHAPE, dtype=cls.DTYPE)
-        arr[:, :, 0, 0] = arr[:, :, 1, 1] = 1
-        return cls(arr)
+    @property
+    @abc.abstractmethod
+    def inverse_table(self) -> np.ndarray:
+        """The lookup table for the inverse."""
+
+    @property
+    def num_elements(self) -> int:
+        """The number of distinct elements in the group."""
+        return len(self.lookup_table)
+
+    def invert(self):
+        return type(self)(self.inverse_table[self.virtual_gates])
 
     def multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
         try:
-            return U2Register(
-                np.einsum(
-                    "abcx,abxd->abcd",
-                    self._array[subsystem_idxs],
-                    other.virtual_gates,
-                    optimize=True,
-                )
+            return type(self)(
+                self.lookup_table[self._array[subsystem_idxs, :], other.virtual_gates]
             )
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
@@ -60,12 +62,9 @@ class U2Register(GroupRegister):
 
     def inplace_multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
         try:
-            self._array[subsystem_idxs] = np.einsum(
-                "abcx,abxd->abcd",
-                self._array[subsystem_idxs],
-                other.virtual_gates,
-                optimize=True,
-            )
+            self._array[subsystem_idxs, :] = self.lookup_table[
+                self._array[subsystem_idxs, :], other.virtual_gates
+            ]
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
@@ -74,13 +73,8 @@ class U2Register(GroupRegister):
 
     def left_multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
         try:
-            return U2Register(
-                np.einsum(
-                    "abcx,abxd->abcd",
-                    other.virtual_gates,
-                    self._array[subsystem_idxs],
-                    optimize=True,
-                )
+            return type(self)(
+                self.lookup_table[other.virtual_gates, self._array[subsystem_idxs, :]]
             )
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
@@ -92,26 +86,11 @@ class U2Register(GroupRegister):
         self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)
     ):
         try:
-            self._array[subsystem_idxs, :, :, :] = np.einsum(
-                "abcx,abxd->abcd",
-                other.virtual_gates,
-                self._array[subsystem_idxs],
-                optimize=True,
-            )
+            self._array[subsystem_idxs, :] = self.lookup_table[
+                other.virtual_gates, self._array[subsystem_idxs, :]
+            ]
         except (ValueError, IndexError) as exc:
             raise VirtualGateError(
                 f"Register {self} and {other} have incompatible shapes or types, "
                 f"given subsystem_idxs {subsystem_idxs}."
             ) from exc
-
-    def invert(self):
-        return U2Register(self._array.conj().transpose(0, 1, 3, 2))
-
-    def __eq__(self, other):
-        if isinstance(other, U2Register) and self.shape == other.shape:
-            shape = self.shape + (-1,)
-            prefidelities = np.sum(
-                self._array.reshape(shape) * other.virtual_gates.reshape(shape).conj(), axis=-1
-            )
-            return np.all(np.abs(np.real(prefidelities * prefidelities.conj()) / 4 - 1) < EPS12)
-        return False
