@@ -29,7 +29,7 @@ class AbsorbSingleQubitGates(TransformationPass):
     """Absorb all chains of single-qubit gates that are left of a box instruction into the box.
 
     Any instruction that is not a single-qubit gate, including measurements, entanglers, barriers,
-    and boxes, is considerred an interruption, and ends a chain. For example, if an X, a
+    and boxes, is considered an interruption and ends a chain. For example, if an X, a
     measurement, a Y, and a Z gate precede a box in this order, then the Y and the Z will be
     absorbed into the box, but the X and the measurement will not.
     """
