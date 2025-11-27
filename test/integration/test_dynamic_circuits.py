@@ -63,6 +63,7 @@ class TestWithSimulation:
 
     def test_right_dressed_twirled_conditional(self, save_plot):
         """Test a circuit with a conditional in a right-dressed twirl box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(3, 2)
         # circuit.h(0)
         # circuit.measure(0, 0)
@@ -85,6 +86,7 @@ class TestWithSimulation:
 
     def test_right_dressed_twirled_conditional_no_else(self, save_plot):
         """Test a conditional without else clause in a right-dressed twirl box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(3, 2)
         # circuit.h(0)
         # circuit.measure(0, 0)
@@ -104,6 +106,7 @@ class TestWithSimulation:
 
     def test_right_dressed_parametric_twirled_conditional(self, save_plot):
         """Test a circuit with a parametric conditional in a right-dressed twirl box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(3, 1)
         # p = Parameter("p")
         # circuit.h(0)
@@ -129,6 +132,7 @@ class TestWithSimulation:
 
     def test_left_dressed_twirled_conditional(self, save_plot):
         """Test a circuit with a conditional in a left-dressed twirl box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(3, 2)
         # circuit.h(0)
         # circuit.measure(0, 0)
@@ -152,6 +156,7 @@ class TestWithSimulation:
 
     def test_left_dressed_twirled_conditional_no_else(self, save_plot):
         """Test a conditional without else clause in a left-dressed twirl box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(3, 2)
         # circuit.h(0)
         # circuit.measure(0, 0)
@@ -172,6 +177,7 @@ class TestWithSimulation:
 
     def test_left_dressed_parametric_twirled_conditional(self, save_plot):
         """Test a circuit with a parametric conditional in a left-dressed twirl box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(3, 1)
         # p = Parameter("p")
         # circuit.h(0)

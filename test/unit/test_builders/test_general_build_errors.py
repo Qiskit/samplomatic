@@ -39,6 +39,7 @@ class TestGeneralBuildErrors:
 
     def test_bad_order_right_box(self):
         """Verify an error is raised if a gate follows a conditional in a right dressed box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 3)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.noop(1)
@@ -54,6 +55,7 @@ class TestGeneralBuildErrors:
 
     def test_bad_order_left_box(self):
         """Verify an error is raised if a conditional follows a gate in a left dressed box."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 3)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.x(1)
@@ -67,6 +69,7 @@ class TestGeneralBuildErrors:
 
     def test_entangler_bad_order_left_box(self):
         """Verify that an error is raised if a entanglers appear in bad order."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 3)
         # with circuit.box([Twirl(dressing="left")]):
         #     with circuit.if_test((circuit.clbits[0], 1)):
@@ -130,6 +133,7 @@ class TestGeneralBuildErrors:
 
     def test_twirled_clbit_in_right_condition_error(self):
         """Test for error if a right-box conditional depends on a twirled classical bit."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 2)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.measure(0, 0)
@@ -146,6 +150,7 @@ class TestGeneralBuildErrors:
 
     def test_twirled_clregister_in_right_condition_error(self):
         """Test for error if a right-box conditional depends on a twirled classical register."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 2)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.measure(0, 0)
@@ -162,6 +167,7 @@ class TestGeneralBuildErrors:
 
     def test_twirled_clbit_in_left_condition_error(self):
         """Test for error if a left-box conditional depends on a twirled classical bit."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 2)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.measure(0, 0)
@@ -176,6 +182,7 @@ class TestGeneralBuildErrors:
 
     def test_twirled_clregister_in_left_condition_error(self):
         """Test for error if a left-box conditional depends on a twirled classical register."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 2)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.measure(0, 0)
@@ -190,6 +197,7 @@ class TestGeneralBuildErrors:
 
     def test_twirled_expr_in_left_condition_error(self):
         """Test for an error if a left-box conditional depends on a twirled classical expression."""
+        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 2)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.measure(0, 0)
