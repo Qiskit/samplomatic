@@ -119,6 +119,104 @@ def make_circuits():
         "circuit_with_back_to_back_gates_and_unboxed_measurements",
     )
 
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.barrier()
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    circuit.barrier()
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz")
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    with circuit.box():
+        circuit.noop(range(4))
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2])
+    with expected_circuit.box():
+        expected_circuit.noop(range(4))
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_blocked_with_empty_box")
+
+    circuit = QuantumCircuit(4, 4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.measure([0, 1, 2, 3], [0, 1, 2, 3])
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4, 4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2])
+    expected_circuit.measure([0, 1, 2, 3], [0, 1, 2, 3])
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_blocked_with_mcm")
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.swap(0, 1)
+    circuit.swap(2, 3)
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2])
+    expected_circuit.swap(0, 1)
+    expected_circuit.swap(2, 3)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_blocked_gates")
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
