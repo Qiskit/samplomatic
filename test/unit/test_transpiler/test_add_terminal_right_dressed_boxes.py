@@ -133,7 +133,7 @@ def make_circuits():
         expected_circuit.cx(0, 1)
     with expected_circuit.box([Twirl()]):
         expected_circuit.cx(1, 2)
-    circuit.barrier()
+    expected_circuit.barrier()
     with expected_circuit.box([Twirl()]):
         expected_circuit.cx(2, 3)
     with expected_circuit.box([Twirl(dressing="right")]):
