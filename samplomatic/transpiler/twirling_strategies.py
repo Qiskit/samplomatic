@@ -13,7 +13,7 @@
 """TwirlingStrategy"""
 
 from enum import Enum
-from typing import Literal, Union
+from typing import Literal
 
 from ..aliases import TypeAlias
 
@@ -27,10 +27,9 @@ class TwirlingStrategy(str, Enum):
     ALL = "all"
 
 
-TwirlingStrategyLiteral: TypeAlias = Union[
-    TwirlingStrategy, Literal["active", "active_accum", "all", "active_circuit"]
-]
-
+TwirlingStrategyLiteral: TypeAlias = (
+    TwirlingStrategy | Literal["active", "active_accum", "all", "active_circuit"]
+)
 """The twirling strategies supported by the boxing pass manager.
 
 The boxing pass manager begins by constructing twirling boxes that contain one layer of multi-qubit

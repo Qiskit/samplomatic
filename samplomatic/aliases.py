@@ -18,7 +18,6 @@ from collections.abc import Sequence as _Sequence
 from typing import Literal as _Literal
 from typing import Protocol as _Protocol
 from typing import TypeVar as _TypeVar
-from typing import Union as _Union
 
 if _sys.version_info >= (3, 10):
     from typing import TypeAlias
@@ -55,8 +54,8 @@ InterfaceName: TypeAlias = str
 ParamIndex: TypeAlias = int
 ParamIndices: TypeAlias = np.ndarray[tuple[int, int], np.dtype[np.intp]]
 ParamName: TypeAlias = str
-ParamValues: TypeAlias = _Union[_Sequence[float], dict[Parameter, float]]
-ParamSpec: TypeAlias = list[tuple[_Union[ParamIndex, None], ParameterExpression]]
+ParamValues: TypeAlias = _Sequence[float] | dict[Parameter, float]
+ParamSpec: TypeAlias = list[tuple[ParamIndex | None, ParameterExpression]]
 QubitIndex: TypeAlias = int
 ClbitIndex: TypeAlias = int
 PauliBasisChange: TypeAlias = np.ndarray[tuple[int], np.dtype[np.uint8]]
@@ -77,7 +76,7 @@ The arrays need to have at least one entry so that there is somewhere to put the
 The arrays need not include the end-points; those are inferred from a node layout.
 """
 
-GraphLayout: TypeAlias = _Union[NodeLayout, tuple[NodeLayout, EdgeLayout]]
+GraphLayout: TypeAlias = NodeLayout | tuple[NodeLayout, EdgeLayout]
 """A node layout, or a node layout and an edge layout.
 
 The graph plotter will infer linear edges in the former case.
@@ -97,7 +96,7 @@ class LayoutMethod(_Protocol[T, S]):
     """A callable that accepts a graph and returns a coordinate layout."""
 
     def __call__(
-        self, graph: _PyDiGraph[T, S], ranker: _Union[NodeRanker[T], None] = None
+        self, graph: _PyDiGraph[T, S], ranker: NodeRanker[T] | None = None
     ) -> GraphLayout: ...
 
 

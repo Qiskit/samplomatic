@@ -13,7 +13,7 @@
 """ChangeBasisMode"""
 
 from enum import Enum
-from typing import Literal, Union
+from typing import Literal
 
 from ..aliases import TypeAlias
 
@@ -25,7 +25,7 @@ class ChangeBasisMode(str, Enum):
     PREPARE = "prepare"
 
 
-ChangeBasisLiteral: TypeAlias = Union[ChangeBasisMode, Literal["measure", "prepare"]]
+ChangeBasisLiteral: TypeAlias = ChangeBasisMode | Literal["measure", "prepare"]
 """Allowed basis change modes.
 
  * ``measure``: Gate collection templates are placed on the left side of boxes. The adjoint of the
