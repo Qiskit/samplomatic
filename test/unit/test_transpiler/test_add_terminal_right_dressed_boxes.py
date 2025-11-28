@@ -12,8 +12,9 @@
 
 """Test the AddTerminalRightDressedBoxes"""
 
+import numpy as np
 import pytest
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 
@@ -22,6 +23,7 @@ from samplomatic.transpiler.passes import AddTerminalRightDressedBoxes
 
 
 def make_circuits():
+    theta = Parameter("theta")
     circuit = QuantumCircuit(1)
 
     yield circuit, circuit, "empty_circuit"
@@ -41,78 +43,81 @@ def make_circuits():
         expected_circuit.noop(range(2))
 
     yield circuit, expected_circuit, "only_left_dressed_no_meas"
-    # circuit = QuantumCircuit(3, 1)
-    # circuit.cx(0, 1)
-    # circuit.rx(np.pi / 3, 0)
-    # circuit.rz(np.pi / 8, 0)
-    # circuit.h(0)
-    # circuit.y(2)
-    # with circuit.box(annotations):
-    #     circuit.x(0)
-    #     circuit.measure(1, 0)  # this acts as a collector
-    # with circuit.box([Twirl(dressing="right")]):
-    #     circuit.noop(0)
-    # circuit.measure_all()
 
-    # yield circuit, circuit, f"{prefix}_circuit_with_no_uncollected_virtual_gates"
+    circuit = QuantumCircuit(3, 1)
+    circuit.cx(0, 1)
+    circuit.rx(np.pi / 3, 0)
+    circuit.rz(np.pi / 8, 0)
+    circuit.h(0)
+    circuit.y(2)
+    with circuit.box([Twirl()]):
+        circuit.x(0)
+        circuit.measure(1, 0)  # this acts as a collector
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0)
+    circuit.measure_all()
 
-    # circuit = QuantumCircuit(3, 2)
-    # with circuit.box(annotations):
-    #     circuit.cx(0, 1)
-    #     circuit.measure(2, 0)
-    # circuit.x(0)
-    # circuit.rz(theta, 1)
-    # circuit.measure(1, 1)
+    yield circuit, circuit, "circuit_with_no_uncollected_virtual_gates"
 
-    # expected_circuit = QuantumCircuit(3, 2)
-    # with expected_circuit.box(annotations):
-    #     expected_circuit.cx(0, 1)
-    #     expected_circuit.measure(2, 0)
-    # with expected_circuit.box([Twirl(dressing="right")]):
-    #     expected_circuit.x(0)
-    #     expected_circuit.rz(theta, 1)
-    # expected_circuit.measure(1, 1)
+    circuit = QuantumCircuit(3, 2)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+        circuit.measure(2, 0)
+    circuit.x(0)
+    circuit.rz(theta, 1)
+    circuit.measure(1, 1)
 
-    # yield circuit, expected_circuit, f"{prefix}_circuit_with_no_collected_virtual_gates"
+    expected_circuit = QuantumCircuit(3, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.measure(2, 0)
+    expected_circuit.x(0)
+    expected_circuit.rz(theta, 1)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1])
+    expected_circuit.measure(1, 1)
 
-    # circuit = QuantumCircuit(1, 2)
-    # with circuit.box(annotations):
-    #     circuit.x(0)
-    # circuit.measure(0, 0)
-    # circuit.measure(0, 1)
+    yield circuit, expected_circuit, "circuit_with_no_collected_virtual_gates"
 
-    # expected_circuit = QuantumCircuit(1, 2)
-    # with expected_circuit.box(annotations):
-    #     expected_circuit.x(0)
-    # with expected_circuit.box([Twirl(dressing="right")]):
-    #     expected_circuit.noop(0)
-    # expected_circuit.measure(0, 0)
-    # expected_circuit.measure(0, 1)
+    circuit = QuantumCircuit(1, 2)
+    with circuit.box([Twirl()]):
+        circuit.x(0)
+    circuit.measure(0, 0)
+    circuit.measure(0, 1)
 
-    # yield circuit, expected_circuit, f"{prefix}_circuit_with_back_to_back_unboxed_measurements"
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.x(0)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop(0)
+    expected_circuit.measure(0, 0)
+    expected_circuit.measure(0, 1)
 
-    # circuit = QuantumCircuit(1, 2)
-    # with circuit.box(annotations):
-    #     circuit.x(0)
-    # circuit.z(0)
-    # circuit.measure(0, 0)
-    # circuit.y(0)
-    # circuit.measure(0, 1)
+    yield circuit, expected_circuit, "circuit_with_back_to_back_unboxed_measurements"
 
-    # expected_circuit = QuantumCircuit(1, 2)
-    # with expected_circuit.box(annotations):
-    #     expected_circuit.x(0)
-    # with expected_circuit.box([Twirl(dressing="right")]):
-    #     expected_circuit.z(0)
-    # expected_circuit.measure(0, 0)
-    # expected_circuit.y(0)
-    # expected_circuit.measure(0, 1)
+    circuit = QuantumCircuit(1, 2)
+    with circuit.box([Twirl()]):
+        circuit.x(0)
+    circuit.z(0)
+    circuit.measure(0, 0)
+    circuit.y(0)
+    circuit.measure(0, 1)
 
-    # yield (
-    #     circuit,
-    #     expected_circuit,
-    #     f"{prefix}_circuit_with_back_to_back_gates_and_unboxed_measurements",
-    # )
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.x(0)
+    expected_circuit.z(0)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop(0)
+    expected_circuit.measure(0, 0)
+    expected_circuit.y(0)
+    expected_circuit.measure(0, 1)
+
+    yield (
+        circuit,
+        expected_circuit,
+        "circuit_with_back_to_back_gates_and_unboxed_measurements",
+    )
 
 
 def pytest_generate_tests(metafunc):
