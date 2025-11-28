@@ -18,7 +18,7 @@ from collections.abc import Callable, Sequence
 
 from qiskit.circuit import Annotation, Qubit
 
-from ..aliases import CircuitInstruction, TypeAlias
+from ..aliases import CircuitInstruction
 from ..annotations import (
     ChangeBasis,
     ChangeBasisMode,
@@ -29,29 +29,14 @@ from ..annotations import (
 )
 from ..exceptions import BuildError
 from ..partition import QubitPartition
-from ..pre_samplex import PreSamplex
 from ..synths import get_synth
+from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
-from .samplex_builder import (
-    LeftBoxSamplexBuilder,
-    PassthroughSamplexBuilder,
-    RightBoxSamplexBuilder,
-)
-from .specs import CollectionSpec, EmissionSpec, InstructionSpec
-from .template_builder import (
-    LeftBoxTemplateBuilder,
-    PassthroughTemplateBuilder,
-    RightBoxTemplateBuilder,
-    TemplateState,
-)
-
-SamplexBuilder: TypeAlias = Builder[PreSamplex, None]
-TemplateBuilder: TypeAlias = Builder[TemplateState, InstructionSpec]
+from .passthrough_builder import PassthroughBuilder
+from .specs import CollectionSpec, EmissionSpec
 
 
-def get_builders(
-    instr: CircuitInstruction | None, qubits: Sequence[Qubit]
-) -> tuple[TemplateBuilder, SamplexBuilder]:
+def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Builder:
     """Get the builders of a box.
 
     Args:
@@ -67,7 +52,7 @@ def get_builders(
         A tuple containing a template and samplex builder.
     """
     if instr is None or not (annotations := instr.operation.annotations):
-        return PassthroughTemplateBuilder(), PassthroughSamplexBuilder()
+        return PassthroughBuilder()
 
     qubits = QubitPartition.from_elements(q for q in qubits if q in instr.qubits)
     collection = CollectionSpec(qubits)
@@ -88,8 +73,8 @@ def get_builders(
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
     if collection.dressing is DressingMode.LEFT:
-        return LeftBoxTemplateBuilder(collection), LeftBoxSamplexBuilder(collection, emission)
-    return RightBoxTemplateBuilder(collection), RightBoxSamplexBuilder(collection, emission)
+        return LeftBoxBuilder(collection, emission)
+    return RightBoxBuilder(collection, emission)
 
 
 def change_basis_parser(

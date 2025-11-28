@@ -15,16 +15,13 @@
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 
 from ..aliases import (
     CircuitInstruction,
-    ClbitIndex,
     Parameter,
-    ParamIndices,
-    ParamSpec,
     Qubit,
     StrRef,
 )
@@ -96,34 +93,3 @@ class CollectionSpec:
 
     synth: Synth[Qubit, Parameter, CircuitInstruction] | None = None
     """How to synthesize collection gates."""
-
-
-@dataclass
-class InstructionSpec:
-    """Specification of an instruction."""
-
-    params: ParamSpec = field(default_factory=list)
-    """A list of tuples of parameter indices in the template circuit and corresponding expressions.
-
-    An index of ``None`` indicates that the expression is not added to the template."""
-
-    param_idxs: ParamIndices = field(default_factory=lambda: EMPTY_IDXS)
-    """A matrix of parameter indices specifing virtual gate synthesis locations in the template.
-
-    The first axis is over subsystems, the second over parameters in a synthesizer decomposition.
-    """
-
-    mode: InstructionMode = InstructionMode.NONE
-    """The mode of an added instruction."""
-
-    clbit_idxs: list[ClbitIndex] = field(default_factory=list)
-    """The mode of an added instruction."""
-
-    if_else: tuple[list[InstructionSpec], ParamIndices, list[InstructionSpec], ParamIndices] = (
-        field(default_factory=lambda: ([], EMPTY_IDXS, [], EMPTY_IDXS))
-    )
-    """The specs for an `IfElseOp`.
-
-    Each branch of the operation is represented by two fields: a list of `InstructionSpec` for
-    the branch's instructions, followed by `ParamIndices` for the collectors of the branch. The
-    true branch is first in the tuple, and the else branch is second."""

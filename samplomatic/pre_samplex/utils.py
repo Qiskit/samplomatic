@@ -41,7 +41,7 @@ def pre_propagate_nodes_are_mergeable(
     are_mergeable = (
         isinstance(node_a, PrePropagate)
         and isinstance(node_b, PrePropagate)
-        and node_a.spec.mode is node_b.spec.mode
+        and node_a.mode is node_b.mode
         and node_a.direction == node_b.direction
         and node_a.operation.name == node_b.operation.name
         and not node_a.subsystems.overlaps_with(node_b.subsystems.all_elements)
