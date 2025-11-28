@@ -209,7 +209,7 @@ class RightBoxBuilder(BoxBuilder):
             raise BuildError("Measurements are not currently supported in right-dressed boxes.")
 
         if not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
-            raise RuntimeError(
+            raise BuildError(
                 "Cannot handle a dynamic instruction and another instruction on "
                 f"qubits {instr.qubits} in the same dressed box."
             )

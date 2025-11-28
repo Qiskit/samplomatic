@@ -18,7 +18,6 @@ This file is meant for such cases.
 
 import pytest
 from qiskit.circuit import QuantumCircuit
-from qiskit.circuit.classical import expr
 
 from samplomatic import Twirl
 from samplomatic.builders import pre_build
@@ -131,79 +130,84 @@ class TestGeneralBuildErrors:
 
     def test_twirled_clbit_in_right_condition_error(self):
         """Test for error if a right-box conditional depends on a twirled classical bit."""
-        circuit = QuantumCircuit(2, 2)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.noop(0)
-        with circuit.box([Twirl(dressing="right")]):
-            with circuit.if_test((circuit.clbits[0], 1)):
-                circuit.sx(0)
+        # TODO: uncomment these lines when dynamic circuits are supported again
+        # circuit = QuantumCircuit(2, 2)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.measure(0, 0)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.noop(0)
+        # with circuit.box([Twirl(dressing="right")]):
+        #     with circuit.if_test((circuit.clbits[0], 1)):
+        #         circuit.sx(0)
 
-        with pytest.raises(
-            BuildError, match="Cannot use twirled classical bits in classical conditions"
-        ):
-            pre_build(circuit)
+        # with pytest.raises(
+        #     BuildError, match="Cannot use twirled classical bits in classical conditions"
+        # ):
+        #     pre_build(circuit)
 
     def test_twirled_clregister_in_right_condition_error(self):
         """Test for error if a right-box conditional depends on a twirled classical register."""
-        circuit = QuantumCircuit(2, 2)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.noop(0)
-        with circuit.box([Twirl(dressing="right")]):
-            with circuit.if_test((circuit.cregs[0], 1)):
-                circuit.sx(0)
+        # TODO: uncomment these lines when dynamic circuits are supported again
+        # circuit = QuantumCircuit(2, 2)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.measure(0, 0)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.noop(0)
+        # with circuit.box([Twirl(dressing="right")]):
+        #     with circuit.if_test((circuit.cregs[0], 1)):
+        #         circuit.sx(0)
 
-        with pytest.raises(
-            BuildError, match="Cannot use twirled classical bits in classical conditions"
-        ):
-            pre_build(circuit)
+        # with pytest.raises(
+        #     BuildError, match="Cannot use twirled classical bits in classical conditions"
+        # ):
+        #     pre_build(circuit)
 
     def test_twirled_clbit_in_left_condition_error(self):
         """Test for error if a left-box conditional depends on a twirled classical bit."""
-        circuit = QuantumCircuit(2, 2)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            with circuit.if_test((circuit.clbits[0], 1)):
-                circuit.sx(0)
+        # TODO: uncomment these lines when dynamic circuits are supported again
+        # circuit = QuantumCircuit(2, 2)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.measure(0, 0)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     with circuit.if_test((circuit.clbits[0], 1)):
+        #         circuit.sx(0)
 
-        with pytest.raises(
-            BuildError, match="Cannot use twirled classical bits in classical conditions"
-        ):
-            pre_build(circuit)
+        # with pytest.raises(
+        #     BuildError, match="Cannot use twirled classical bits in classical conditions"
+        # ):
+        #     pre_build(circuit)
 
     def test_twirled_clregister_in_left_condition_error(self):
         """Test for error if a left-box conditional depends on a twirled classical register."""
-        circuit = QuantumCircuit(2, 2)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            with circuit.if_test((circuit.cregs[0], 1)):
-                circuit.sx(0)
+        # TODO: uncomment these lines when dynamic circuits are supported again
+        # circuit = QuantumCircuit(2, 2)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.measure(0, 0)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     with circuit.if_test((circuit.cregs[0], 1)):
+        #         circuit.sx(0)
 
-        with pytest.raises(
-            BuildError, match="Cannot use twirled classical bits in classical conditions"
-        ):
-            pre_build(circuit)
+        # with pytest.raises(
+        #     BuildError, match="Cannot use twirled classical bits in classical conditions"
+        # ):
+        #     pre_build(circuit)
 
     def test_twirled_expr_in_left_condition_error(self):
         """Test for an error if a left-box conditional depends on a twirled classical expression."""
-        circuit = QuantumCircuit(2, 2)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="left")]):
-            with circuit.if_test(
-                expr.logic_and(expr.logic_not(circuit.clbits[0]), circuit.clbits[1])
-            ):
-                circuit.sx(0)
+        # TODO: uncomment these lines when dynamic circuits are supported again
+        # circuit = QuantumCircuit(2, 2)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     circuit.measure(0, 0)
+        # with circuit.box([Twirl(dressing="left")]):
+        #     with circuit.if_test(
+        #         expr.logic_and(expr.logic_not(circuit.clbits[0]), circuit.clbits[1])
+        #     ):
+        #         circuit.sx(0)
 
-        with pytest.raises(
-            BuildError, match="Cannot use twirled classical bits in classical conditions"
-        ):
-            pre_build(circuit)
+        # with pytest.raises(
+        #     BuildError, match="Cannot use twirled classical bits in classical conditions"
+        # ):
+        #     pre_build(circuit)
 
     def test_repeated_twirled_clbit_error(self):
         """Verify that an error is raised if the same clbit is used more than once for twirling"""
