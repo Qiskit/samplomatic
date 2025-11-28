@@ -12,19 +12,12 @@
 
 """High-level node specifications"""
 
-from __future__ import annotations
-
 import enum
 from dataclasses import dataclass
 
 import numpy as np
 
-from ..aliases import (
-    CircuitInstruction,
-    Parameter,
-    Qubit,
-    StrRef,
-)
+from ..aliases import CircuitInstruction, Parameter, Qubit, StrRef
 from ..annotations import DressingMode, VirtualType
 from ..partition import QubitPartition
 from ..synths import Synth

@@ -12,8 +12,6 @@
 
 """PreSamplex"""
 
-from __future__ import annotations
-
 from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
@@ -209,7 +207,7 @@ class PreSamplex:
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
 
-    def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> PreSamplex:
+    def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
         """Remap the object to a new :class:`~.PreSamplex` object.
 
         Args:
@@ -1578,7 +1576,7 @@ class PreSamplex:
         cols: int = 2,
         subgraph_idxs: None | int | Sequence[int] = None,
         layout_method: LayoutPresets | LayoutMethod = "auto",
-    ) -> Figure:
+    ) -> "Figure":
         """Draw the graph in this pre-samplex using the :meth:`~plot_graph` method.
 
         Args:

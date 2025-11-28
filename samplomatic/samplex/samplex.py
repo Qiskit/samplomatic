@@ -12,8 +12,6 @@
 
 """Samplex"""
 
-from __future__ import annotations
-
 from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Any
@@ -457,7 +455,7 @@ class Samplex:
         cols: int = 2,
         subgraph_idxs: None | int | Sequence[int] = None,
         layout_method: LayoutPresets | LayoutMethod = "auto",
-    ) -> Figure:
+    ) -> "Figure":
         """Draw the graph in this samplex using the :meth:`~plot_graph` method.
 
         Args:
