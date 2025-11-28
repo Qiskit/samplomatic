@@ -111,13 +111,13 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             # single qubit gates outside of a box are re-applied without further consideration
             return _EMPTY_SET, _EMPTY_SET, _EMPTY_SET
 
-        elif node.op.name == "box":
+        if node.op.name == "box":
             # boxes need special treatment depending on annotations
             if (twirl := get_annotation(node.op, Twirl)) and twirl.dressing == "right":
                 # right-dressed boxes terminate uncollected qubits unconditionally
                 return _EMPTY_SET, _EMPTY_SET, set(node.qargs)
 
-            elif twirl or get_annotation(node.op, ChangeBasis):
+            if twirl or get_annotation(node.op, ChangeBasis):
                 # left-dressed boxes terminate uncollected qubits on all qubits they measure
                 # internally (twirled measurements), but they create/continue uncollected qubits
                 # elsewhere. first, traverse the box and see which qubits are measured.
@@ -129,17 +129,18 @@ class AddTerminalRightDressedBoxes(TransformationPass):
                         measured_qubits.update(qubit_map[qubit] for qubit in instr.qubits)
 
                 return _EMPTY_SET, set(node.qargs).difference(measured_qubits), measured_qubits
-            else:
-                # an un-annotated box might contain stuff that we can't propagate through, so
-                # it is safest to just terminate now. ambitious readers of this code could update
-                # it to be less lazy and traverse the contents to find out.
-                return set(node.qargs), _EMPTY_SET, _EMPTY_SET
-        elif node.op.name == "barrier":
+
+            # an un-annotated box might contain stuff that we can't propagate through, so
+            # it is safest to just terminate now. ambitious readers of this code could update
+            # it to be less lazy and traverse the contents to find out.
+            return set(node.qargs), _EMPTY_SET, _EMPTY_SET
+
+        if node.op.name == "barrier":
             # it's always okay to postpone termination until after a barrier
             return _EMPTY_SET, _EMPTY_SET, _EMPTY_SET
-        else:
-            # in this case, we have a multi-qubit gate, measurement outside a box, etc.
-            return set(node.qargs), _EMPTY_SET, _EMPTY_SET
+
+        # in this case, we have a multi-qubit gate, measurement outside a box, etc.
+        return set(node.qargs), _EMPTY_SET, _EMPTY_SET
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Add right-dressed boxes to collect the uncollected leftwards virtual gates emitted."""
