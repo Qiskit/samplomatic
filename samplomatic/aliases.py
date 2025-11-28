@@ -17,12 +17,8 @@ from collections.abc import Hashable as _Hashable
 from collections.abc import Sequence as _Sequence
 from typing import Literal as _Literal
 from typing import Protocol as _Protocol
+from typing import TypeAlias
 from typing import TypeVar as _TypeVar
-
-if _sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    from typing_extensions import TypeAlias
 
 if _sys.version_info >= (3, 11):
     from typing import Self  # noqa: F401
