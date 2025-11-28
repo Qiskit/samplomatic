@@ -12,9 +12,10 @@ PrePropagate
 
       ~PrePropagate.bounded_params
       ~PrePropagate.direction
+      ~PrePropagate.mode
       ~PrePropagate.operation
+      ~PrePropagate.params
       ~PrePropagate.partition
-      ~PrePropagate.spec
       ~PrePropagate.subsystems
 
    .. rubric:: Methods Summary
@@ -27,9 +28,10 @@ PrePropagate
 
    .. autoattribute:: bounded_params
    .. autoattribute:: direction
+   .. autoattribute:: mode
    .. autoattribute:: operation
+   .. autoattribute:: params
    .. autoattribute:: partition
-   .. autoattribute:: spec
    .. autoattribute:: subsystems
 
    .. rubric:: Methods Documentation
