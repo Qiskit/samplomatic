@@ -10,6 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""Test BoxBuilder for Templates"""
+
 from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic.annotations import Twirl

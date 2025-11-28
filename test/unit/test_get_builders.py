@@ -14,23 +14,23 @@ import pytest
 from qiskit.circuit import Annotation, BoxOp, CircuitInstruction, QuantumCircuit, Qubit
 
 from samplomatic.annotations import DressingMode, Twirl
-from samplomatic.builders.get_builders import get_builders, twirl_parser
+from samplomatic.builders.get_builder import get_builder, twirl_parser
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec
 from samplomatic.exceptions import BuildError
 from samplomatic.partition import QubitPartition
 from samplomatic.synths import RzSxSynth
 
 
-def test_get_builders_errors():
+def test_get_builder_errors():
     """Test the errors when getting builders."""
     circuit = QuantumCircuit(1)
     op = CircuitInstruction(BoxOp(circuit, annotations=[Annotation()]))
     with pytest.raises(BuildError, match="Cannot get a builder"):
-        get_builders(op, circuit.qubits)
+        get_builder(op, circuit.qubits)
 
     op = CircuitInstruction(BoxOp(circuit, annotations=[Twirl(), Twirl()]))
     with pytest.raises(BuildError, match="Cannot specify more than one"):
-        get_builders(op, circuit.qubits)
+        get_builder(op, circuit.qubits)
 
 
 def test_twirl_parser_errors():
