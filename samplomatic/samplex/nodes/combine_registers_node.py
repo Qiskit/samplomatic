@@ -128,7 +128,7 @@ class CombineRegistersNode(EvaluationNode):
             if self._output_type not in VirtualRegister.select(found_type).CONVERTABLE_TYPES:
                 raise SamplexConstructionError(
                     f"{self} expects `{register_name}` to be convertable to type "
-                    f"'{self._output_type}' but found '{found_type}'."
+                    f"'{self._output_type.value}' but found '{found_type.value}'."
                 )
 
     def evaluate(self, registers, *_):
