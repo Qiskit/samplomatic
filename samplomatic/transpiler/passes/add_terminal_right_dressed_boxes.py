@@ -139,7 +139,10 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             # it's always okay to postpone termination until after a barrier
             return _EMPTY_SET, _EMPTY_SET, _EMPTY_SET
 
-        # in this case, we have a multi-qubit gate, measurement outside a box, etc.
+        # we treat every other kind of operation (multi-qubit gates, measurements, etc.) as "unsafe"
+        # by forcing a termination on all of their qubits. note that there is room to be slightly
+        # less restrictive here in the future, for example, by adding a case above to let all gates
+        # live outside of boxes.
         return set(node.qargs), _EMPTY_SET, _EMPTY_SET
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
