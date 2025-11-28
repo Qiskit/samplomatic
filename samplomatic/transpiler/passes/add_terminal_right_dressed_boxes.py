@@ -145,12 +145,13 @@ class AddTerminalRightDressedBoxes(TransformationPass):
         """Add right-dressed boxes to collect the uncollected leftwards virtual gates emitted."""
         new_dag = dag.copy_empty_like()
 
-        # this object keeps track of which box operations we'll later group together as layers
+        # this keeps track of which new boxes we'll merge together at the end into a single new box
         layers = BoxLayers([[]], set())
 
         # qubits that will eventually need to be terminated by a right-dressed box
         unterminated_qubits: set[Qubit] = set()
 
+        # this just helps sorting qubits when creating new boxes
         all_qubits = {qubit: idx for idx, qubit in enumerate(dag.qubits)}
 
         # first, we traverse the circuit and place right-dressed boxes everywhere we think that
