@@ -11,8 +11,6 @@
 # that they have been altered from the originals.
 
 
-from __future__ import annotations
-
 import json
 import os
 import warnings

@@ -12,8 +12,6 @@
 
 """Single-qubit Clifford lookup tables"""
 
-from __future__ import annotations
-
 import numpy as np
 
 C1_INVERSE_TABLE = np.array(

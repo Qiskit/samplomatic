@@ -12,8 +12,6 @@
 
 """PauliRegister"""
 
-from __future__ import annotations
-
 import numpy as np
 
 from ..aliases import SubsystemIndex
@@ -63,7 +61,7 @@ class PauliRegister(GroupRegister):
         return cls(np.zeros((num_subsystems, num_samples), dtype=np.uint8))
 
     @classmethod
-    def from_name(cls, name: str) -> PauliRegister:
+    def from_name(cls, name: str) -> "PauliRegister":
         """Return a Pauli register given a its name.
 
         Args:
