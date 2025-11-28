@@ -38,7 +38,7 @@ class BoxLayers:
     """List of layers of empty right-dressed boxes.
 
     Here, a "layer" has the defining characteristic that they are safe to be eventually merged into
-    a single box. this means that, for example, they can't be partially separated by a barrier
+    a single box. This means that, for example, they can't be partially separated by a barrier
     anywhere.
     """
 
@@ -46,7 +46,7 @@ class BoxLayers:
     """All qubits targeted by the last element of `layers`."""
 
     def add_box(self, box_node: DAGOpNode):
-        """Add a box to an elligible layer."""
+        """Add a box to an eligible layer."""
         if self.last_layer_qubits.isdisjoint(box_node.qargs):
             self.layers[-1].append(box_node)
         else:
@@ -103,7 +103,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
 
         Returns:
             A triple of sets respectively representing:
-             * Those qubits that, if active, must be terminated now.
+             * Those qubits that, if active, must be terminated now by adding a right-dressed box.
              * Those qubits that should become active, if not already.
              * Those qubits that the given operation presently terminates, without intervention.
         """
