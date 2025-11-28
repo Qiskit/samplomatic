@@ -162,7 +162,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             # determine the behaviour of this particular node
             terminate_now, terminate_later, terminated_by_this_op = self._get_terminal_qubits(node)
 
-            # update our states of information, and insert a new box if necessary
+            # update our states of information, and insert a new box before the node if necessary
             if qubits := unterminated_qubits.intersection(terminate_now):
                 qargs, box = self._new_box(qubits, all_qubits)
                 box_node = new_dag.apply_operation_back(box, qargs, [])
@@ -171,7 +171,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             unterminated_qubits.update(terminate_later)
             unterminated_qubits.difference_update(terminated_by_this_op)
 
-            # unconditionally, we need to add the operation we found to the graph
+            # unconditionally apply this node to the new dag
             new_dag.apply_operation_back(node.op, node.qargs, node.cargs)
             layers.maybe_start_new_layer(node.qargs)
 
@@ -181,7 +181,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             box_node = new_dag.apply_operation_back(box, qargs, [])
             layers.add_box(box_node)
 
-        # technically, the above loop constructed a workable dag. however, it is beneficial to
+        # technically, the above loop constructed a buildable dag. however, it is beneficial to
         # group together all those boxes that can be grouped together to reduce the number of
         # unique boxes in the circuit.
         for layer in filter(lambda layer: len(layer) > 1, layers.layers):
