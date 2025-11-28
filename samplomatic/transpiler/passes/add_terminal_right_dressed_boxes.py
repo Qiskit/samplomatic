@@ -54,6 +54,16 @@ class BoxLayers:
             self.last_layer_qubits.clear()
         self.last_layer_qubits.update(box_node.qargs)
 
+    def maybe_start_new_layer(self, qubits: Iterable[Qubit]):
+        """Signal that some qubits might block layer accumulation."""
+        # we only need to worry about a partial overlap, since in the case of a full-overlap,
+        # future boxes added are still compatible with being joined to the last layer
+        if not (
+            self.last_layer_qubits.isdisjoint(qubits) or self.last_layer_qubits.issuperset(qubits)
+        ):
+            self.last_layer_qubits.clear()
+            self.layers.append([])
+
 
 class AddTerminalRightDressedBoxes(TransformationPass):
     """Add right-dressed boxes to collect uncollected virtual gates emitted by left-dressed boxes.
@@ -120,10 +130,15 @@ class AddTerminalRightDressedBoxes(TransformationPass):
 
                 return _EMPTY_SET, set(node.qargs).difference(measured_qubits), measured_qubits
             else:
-                # an un-annotated box should be treated like a barrier
+                # an un-annotated box might contain stuff that we can't propagate through, so
+                # it is safest to just terminate now. ambitious readers of this code could update
+                # it to be less lazy and traverse the contents to find out.
                 return set(node.qargs), _EMPTY_SET, _EMPTY_SET
+        elif node.op.name == "barrier":
+            # it's always okay to postpone termination until after a barrier
+            return _EMPTY_SET, _EMPTY_SET, _EMPTY_SET
         else:
-            # in this case, we have a barrier, multi-qubit gate, measurement outside a box, etc.
+            # in this case, we have a multi-qubit gate, measurement outside a box, etc.
             return set(node.qargs), _EMPTY_SET, _EMPTY_SET
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
@@ -158,6 +173,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
 
             # unconditionally, we need to add the operation we found to the graph
             new_dag.apply_operation_back(node.op, node.qargs, node.cargs)
+            layers.maybe_start_new_layer(node.qargs)
 
         # terminate at the end of the circuit, if necessary
         if unterminated_qubits:
