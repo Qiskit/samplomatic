@@ -59,7 +59,7 @@ class CollectTemplateValues(CollectionNode):
 
         if register_type not in synth.compatible_register_types:
             raise SamplexConstructionError(
-                f"{synth} is not compatible with '{register_type.value}' registers."
+                f"{synth} is not compatible with '{register_type}' registers."
             )
 
         if self._template_idxs.ndim != 2 or self._template_idxs.shape[1] != synth.num_params:

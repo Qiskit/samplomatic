@@ -12,13 +12,13 @@
 
 """TwirlingStrategy"""
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from ..aliases import TypeAlias
 
 
-class TwirlingStrategy(str, Enum):
+class TwirlingStrategy(StrEnum):
     """The twirling strategies supported by the boxing pass manager."""
 
     ACTIVE = "active"

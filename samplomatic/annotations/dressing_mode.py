@@ -12,13 +12,13 @@
 
 """DressingMode"""
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from ..aliases import TypeAlias
 
 
-class DressingMode(str, Enum):
+class DressingMode(StrEnum):
     """Which side of a box to anchor the dressing gates to."""
 
     LEFT = "left"

@@ -12,13 +12,13 @@
 
 """ChangeBasisMode"""
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from ..aliases import TypeAlias
 
 
-class ChangeBasisMode(str, Enum):
+class ChangeBasisMode(StrEnum):
     """Whether to add basis change gates to prepare or measure a given basis."""
 
     MEASURE = "measure"

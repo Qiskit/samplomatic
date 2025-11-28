@@ -12,13 +12,13 @@
 
 """VirtualType"""
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from ..aliases import TypeAlias
 
 
-class VirtualType(str, Enum):
+class VirtualType(StrEnum):
     """Name identifiers for virtual gate types."""
 
     PAULI = "pauli"

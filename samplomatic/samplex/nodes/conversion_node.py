@@ -83,8 +83,7 @@ class ConversionNode(EvaluationNode):
             if self.new_type not in VirtualRegister.select(existing_type).CONVERTABLE_TYPES:
                 raise SamplexConstructionError(
                     f"When validating {self}, the register '{self.existing_name}' of type "
-                    f"'{existing_type.value}' should be convertable to '{self.new_type.value}' "
-                    "but is not."
+                    f"'{existing_type}' should be convertable to '{self.new_type}' but is not."
                 )
 
         super().validate_and_update(register_descriptions)
