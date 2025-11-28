@@ -13,8 +13,6 @@
 
 """Interfaces"""
 
-from __future__ import annotations
-
 import abc
 import re
 import textwrap
@@ -466,7 +464,7 @@ class TensorInterface(MutableMapping):
 
         return self
 
-    def make_broadcastable(self) -> TensorInterface:
+    def make_broadcastable(self) -> "TensorInterface":
         """Return a new interface like this one where all tensor specifications are broadcastable.
 
         Returns:

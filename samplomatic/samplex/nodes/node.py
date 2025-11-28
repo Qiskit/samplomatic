@@ -12,8 +12,6 @@
 
 """Node"""
 
-from __future__ import annotations
-
 import abc
 from numbers import Number
 from typing import Literal
