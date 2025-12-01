@@ -14,7 +14,8 @@
 
 import itertools
 from collections import defaultdict
-from typing import Callable, Literal
+from collections.abc import Callable
+from typing import Literal
 
 from qiskit.circuit import CircuitInstruction
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode

@@ -14,7 +14,8 @@
 
 import abc
 import inspect
-from typing import Any, Callable, ClassVar, Generic, TypeVar
+from collections.abc import Callable
+from typing import Any, ClassVar, Generic, TypeVar
 
 from ..exceptions import SerializationError
 from ..serializable import Serializable
