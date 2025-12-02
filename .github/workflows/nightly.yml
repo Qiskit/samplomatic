@@ -1,0 +1,63 @@
+name: Nightly Dev Tests
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  tests:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"] # qiskit-aer doesn't build wheels for 3.14
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[dev,vis]"
+          python -m pip install build extremal-python-dependencies==0.1.0
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
+      - name: Build Qiskit SDK development wheel
+        run: |
+          cd ..
+          git clone --filter=tree:0 https://github.com/Qiskit/qiskit
+          cd qiskit
+          git rev-parse HEAD
+          python -m build --wheel
+      - name: Pin development versions
+        shell: bash
+        run: >-
+          extremal-python-dependencies pin-dependencies --inplace
+          "qiskit @ file:$(echo qiskit/dist/*.whl)"
+      - name: Pre-commit checks (linting)
+        if: matrix.python-version == '3.12'
+        run: |
+          pre-commit run --all-files
+      - name: Test with pytest
+        run: |
+          # test/performance configured to be ignored in pyproject.toml
+          python -m pytest
+          # test/performance are then ran in a lighter version as a smoke test
+          python -m pytest test/performance --benchmark-disable --performance-light
+      - name: Discover released versions
+        run: echo "RELEASED_VERSIONS=$(curl -s https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/versions.json | jq -r 'join(",")')" >> $GITHUB_ENV
+      - name: Build documentation
+        run: |
+          echo "Using RELEASED_VERSIONS=$RELEASED_VERSIONS"
+          # these commands should match what's in the README
+          cd docs
+          make html
+      - name: Upload built docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sphinx-docs-dev-${{ matrix.python-version }}
+          path: docs/_build/html
