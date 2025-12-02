@@ -1,8 +1,6 @@
 name: Nightly Dev Tests
 
 on:
-  pull_request: # TODO: remove before merge
-    branches: [ "main" ]
   schedule:
     - cron: '0 1 * * *'
 
