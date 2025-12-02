@@ -416,7 +416,7 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
-        rng = default_rng(rng) if isinstance(rng, (int, SeedSequence)) else (rng or RNG)  # noqa: UP038
+        rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
