@@ -61,5 +61,5 @@ jobs:
       - name: Upload built docs
         uses: actions/upload-artifact@v4
         with:
-          name: sphinx-docs
+          name: sphinx-docs-dev
           path: docs/_build/html
