@@ -28,6 +28,7 @@ jobs:
           python -m pip install build extremal-python-dependencies==0.1.0
       - name: Build Qiskit SDK development wheel
         run: |
+          cd ..
           git clone --filter=tree:0 https://github.com/Qiskit/qiskit
           cd qiskit
           git rev-parse HEAD
