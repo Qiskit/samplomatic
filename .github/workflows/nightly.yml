@@ -1,4 +1,4 @@
-name: Development version tests
+name: Nightly Dev Tests
 
 on:
   pull_request: # TODO: remove before merge
@@ -26,6 +26,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ".[dev,vis]"
           python -m pip install build extremal-python-dependencies==0.1.0
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
       - name: Build Qiskit SDK development wheel
         run: |
           cd ..
@@ -48,3 +50,16 @@ jobs:
           python -m pytest
           # test/performance are then ran in a lighter version as a smoke test
           python -m pytest test/performance --benchmark-disable --performance-light
+      - name: Discover released versions
+        run: echo "RELEASED_VERSIONS=$(curl -s https://raw.githubusercontent.com/${{ github.repository }}/gh-pages/versions.json | jq -r 'join(",")')" >> $GITHUB_ENV
+      - name: Build documentation
+        run: |
+          echo "Using RELEASED_VERSIONS=$RELEASED_VERSIONS"
+          # these commands should match what's in the README
+          cd docs
+          make html
+      - name: Upload built docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sphinx-docs
+          path: docs/_build/html
