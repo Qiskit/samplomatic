@@ -315,5 +315,5 @@ def test_annotation_persistence():
     copied_transpiled_circuit = copy.deepcopy(transpiled_circuit)
 
     assert len(copied_transpiled_circuit[0].operation.annotations) == 2
-    assert copied_transpiled_circuit[0].operation.annotations[0] is twirl
+    assert copied_transpiled_circuit[0].operation.annotations[0] == twirl
     assert isinstance(copied_transpiled_circuit[0].operation.annotations[1], InjectNoise)
