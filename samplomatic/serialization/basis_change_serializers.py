@@ -50,7 +50,7 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
             return {
                 "alphabet": obj.alphabet,
                 "action": orjson.dumps(
-                    {"type": obj.action.TYPE, "action": array_to_json(obj.action.virtual_gates)}
+                    {"type": obj.action.TYPE, "array": array_to_json(obj.action.virtual_gates)}
                 ).decode("utf-8"),
             }
 
