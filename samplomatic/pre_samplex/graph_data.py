@@ -14,7 +14,7 @@
 
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 from qiskit.circuit.gate import Gate
@@ -195,7 +195,7 @@ class PrePropagate(PreNode):
     params: ParamSpec
     """The parameters required by the node."""
 
-    bounded_params: Optional[Iterable[float]] = None
+    bounded_params: Iterable[float] | None = None
     """List of bounded params if ``operation`` is a fractional gate with a bounded parameter.
 
     If the node involves a relevant operation with a single subsystem, the parameter is
