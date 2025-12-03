@@ -12,8 +12,6 @@
 
 """GroupMeasIntoBoxes"""
 
-from __future__ import annotations
-
 import itertools
 from collections import defaultdict
 from typing import Literal

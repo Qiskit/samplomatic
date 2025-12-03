@@ -12,10 +12,8 @@
 
 """NoiseInjectionStrategy"""
 
-from __future__ import annotations
-
 from enum import Enum
-from typing import Literal, Union
+from typing import Literal
 
 from ..aliases import TypeAlias
 
@@ -28,10 +26,10 @@ class NoiseInjectionStrategy(str, Enum):
     INDIVIDUAL_MODIFICATION = "individual_modification"
 
 
-NoiseInjectionStrategyLiteral: TypeAlias = Union[
-    NoiseInjectionStrategy,
-    Literal["no_modification", "uniform_modification", "individual_modification"],
-]
+NoiseInjectionStrategyLiteral: TypeAlias = (
+    NoiseInjectionStrategy
+    | Literal["no_modification", "uniform_modification", "individual_modification"]
+)
 """The noise injection strategies supported by the :class:`~AddInjectNoise` pass.
 
 The following options are supported. In all these options, by "equivalent boxes" we mean boxes that

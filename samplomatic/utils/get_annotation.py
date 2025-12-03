@@ -12,8 +12,6 @@
 
 """get_annotation"""
 
-from __future__ import annotations
-
 from qiskit.circuit import Annotation, BoxOp
 
 

@@ -12,10 +12,8 @@
 
 """VirtualType"""
 
-from __future__ import annotations
-
 from enum import Enum
-from typing import Literal, Union
+from typing import Literal
 
 from ..aliases import TypeAlias
 
@@ -40,7 +38,7 @@ TWIRLING_GROUPS = frozenset([VirtualType.PAULI])
 """Those :class:`VirtualType`\\s that represent unitary groups and have twirling support."""
 
 
-GroupLiteral: TypeAlias = Union[VirtualType, Literal["pauli"]]
+GroupLiteral: TypeAlias = VirtualType | Literal["pauli"]
 """The type of group by which to twirl.
 
  * ``pauli``: The projective Pauli group.

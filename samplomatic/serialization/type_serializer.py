@@ -12,11 +12,10 @@
 
 """TypeSerializer"""
 
-from __future__ import annotations
-
 import abc
 import inspect
-from typing import Any, Callable, ClassVar, Generic, TypeVar
+from collections.abc import Callable
+from typing import Any, ClassVar, Generic, TypeVar
 
 from ..exceptions import SerializationError
 from ..serializable import Serializable
@@ -131,7 +130,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
     representation.
     """
 
-    TYPE_ID_REGISTRY: dict[str, type[TypeSerializer]] = {}
+    TYPE_ID_REGISTRY: dict[str, type["TypeSerializer"]] = {}
     """A registry of all :class:`~.TypeSerializer` subclasses, mapping type ids to classes."""
 
     TYPE_REGISTRY: dict[Serializable, str] = {}

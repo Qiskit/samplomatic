@@ -12,8 +12,6 @@
 
 """ChangeBasis"""
 
-from __future__ import annotations
-
 from qiskit.circuit import Annotation
 
 from ..aliases import StrRef

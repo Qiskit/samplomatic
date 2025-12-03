@@ -14,9 +14,12 @@
 
 import pytest
 from qiskit.circuit import ClassicalRegister, Parameter, QuantumCircuit, QuantumRegister
+from qiskit.transpiler import PassManager
+from qiskit.transpiler.passes import RemoveBarriers
 
 from samplomatic import build
 from samplomatic.transpiler import generate_boxing_pass_manager
+from samplomatic.transpiler.passes import InlineBoxes
 
 
 def make_circuits():
@@ -88,11 +91,7 @@ def pytest_generate_tests(metafunc):
 def test_generate_boxing_pass_manager_makes_buildable_circuits(
     circuit, enable_gates, enable_measures, measure_annotations, twirling_strategy, remove_barriers
 ):
-    """Test `generate_boxing_pass_manager`.
-
-    Args:
-        circuit: The circuit to try and build
-    """
+    """Test ``generate_boxing_pass_manager`` produces buildable, logically equivalent circuits."""
     pm = generate_boxing_pass_manager(
         enable_gates=enable_gates,
         enable_measures=enable_measures,
@@ -102,4 +101,11 @@ def test_generate_boxing_pass_manager_makes_buildable_circuits(
     )
     transpiled_circuit = pm.run(circuit)
 
+    # ensure buildable
     build(transpiled_circuit)
+
+    # ensure if we get rid of all barriers and boxes, nothing has been changed
+    flattening_pm = PassManager([RemoveBarriers(), InlineBoxes()])
+    unboxed_transpiled_circuit = flattening_pm.run(transpiled_circuit)
+    unboxed_circuit = flattening_pm.run(circuit)
+    assert unboxed_circuit == unboxed_transpiled_circuit

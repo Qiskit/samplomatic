@@ -53,8 +53,6 @@ removed, or have modified behavior between package versions. To account for this
      and implement a new :class:`~.DataSerializer` for the new SSV.
 """
 
-from __future__ import annotations
-
 from typing import TypedDict, cast, overload
 
 import orjson
@@ -63,9 +61,7 @@ from rustworkx import PyDiGraph, node_link_json, parse_node_link_json
 from .._version import version as samplomatic_version
 from ..exceptions import SerializationError
 from ..samplex import Samplex
-from ..samplex.nodes import (
-    Node,
-)
+from ..samplex.nodes import Node
 from ..ssv import SSV
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
