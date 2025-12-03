@@ -22,7 +22,6 @@ from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 
 from ...aliases import DAGOpNode
-from ...constants import STANDARD_1Q_GATES
 
 
 class AbsorbSingleQubitGates(TransformationPass):
@@ -36,38 +35,39 @@ class AbsorbSingleQubitGates(TransformationPass):
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Perform rightwards absorption of chains of single-qubit gates."""
-        # A map from box op nodes to predecessor runs of single-qubit gates
-        single_qubit_runs: dict[DAGOpNode, dict[Qubit, tuple[DAGOpNode]]] = defaultdict(dict)
+        # we collect runs of single qubit gates, organized by the qubit they act on. these
+        # have the correct circuit order because we'll be looping te circuit topologically
+        single_qubit_runs: dict[Qubit, list[DAGOpNode]] = defaultdict(list)
 
-        # first, we collect the runs but don't move anything
-        for single_qubit_run in dag.collect_runs(list(STANDARD_1Q_GATES)):
-            # the run will always have at least one element, and they are in circuit order
-            last_gate = single_qubit_run[-1]
-            # this loop should have 0 or 1 iteration because the run is on a single qubit
-            for successor in dag.quantum_successors(last_gate):
-                # at the end of a circuit, successor is not a DAGOpNode and has no 'op' attribute
-                if isinstance(successor, DAGOpNode) and successor.op.name == "box":
-                    qubit = last_gate.qargs[0]
-                    single_qubit_runs[successor][qubit] = single_qubit_run
+        for node in dag.topological_op_nodes():
+            if node.is_standard_gate() and node.op.num_qubits == 1:
+                single_qubit_runs[node.qargs[0]].append(node)
 
-        # now we can loop through unique boxes and deal with them one at a time
-        for box_node, per_qubit_runs in single_qubit_runs.items():
-            # we convert to a dag to make it easier to add on the lhs
-            box_dag = circuit_to_dag(box_node.op.body)
-            for qubit, single_qubit_run in per_qubit_runs.items():
-                # convert the outer qubit to the corresponding qubit in the box's circuit
-                box_qubit = box_dag.qubits[box_node.qargs.index(qubit)]
-                # finally, loop through the run, add to the box dag and remove from the outer dag
-                for node in single_qubit_run[::-1]:
-                    box_dag.apply_operation_front(node.op, qargs=[box_qubit])
-                    dag.remove_op_node(node)
+            elif node.op.name == "box":
+                # since looping in topological order, if we encounter a box, we must have already
+                # traversed all single-qubit gates that might precede it.
+                box_dag = circuit_to_dag(node.op.body)
+                for idx_qubit, box_qubit in enumerate(node.qargs):
+                    # loop through the run, add to the box dag and remove from the outer dag
+                    box_body_qubit = box_dag.qubits[idx_qubit]
+                    single_qubit_run = single_qubit_runs[box_qubit]
+                    for sq_node in single_qubit_run[::-1]:
+                        box_dag.apply_operation_front(sq_node.op, qargs=[box_body_qubit])
+                        dag.remove_op_node(sq_node)
 
-            # the new box content is ready, replace the old box
-            new_box = BoxOp(
-                body=dag_to_circuit(box_dag),
-                label=box_node.op.label,
-                annotations=box_node.op.annotations,
-            )
-            dag.substitute_node(box_node, new_box)
+                    single_qubit_run.clear()
+
+                # the new box content is ready, replace the old box
+                new_box = BoxOp(
+                    body=dag_to_circuit(box_dag),
+                    label=node.op.label,
+                    annotations=node.op.annotations,
+                )
+                dag.substitute_node(node, new_box)
+
+            else:
+                # any existing single-qubit gates on these qubits can't ever be moved into a box
+                for qubit in node.qargs:
+                    single_qubit_runs[qubit].clear()
 
         return dag
