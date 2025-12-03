@@ -179,7 +179,6 @@ def make_circuits():
         expected_circuit.rz(phi, 0)
     yield circuit, expected_circuit, "multiple_boxes_back_to_back_absorb_first_only"
 
-    # 11) runs_on_both_wires_absorb
     circuit = QuantumCircuit(2)
     circuit.y(0)
     circuit.rx(theta, 1)
