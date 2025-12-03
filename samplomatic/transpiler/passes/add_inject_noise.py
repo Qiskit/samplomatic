@@ -131,6 +131,9 @@ class AddInjectNoise(TransformationPass):
                                 box_to_ref[box_key],
                                 inject_noise_annotation.modifier_ref,
                             )
+                            # substitute back substitute back into the dag to guarantee that the
+                            # change makes it back to the rust data model.
+                            dag.substitute_node(node, node.op)
                 else:
                     # The box does not have a noise injection annotation.
                     ref = box_to_ref[box_key]
@@ -146,4 +149,7 @@ class AddInjectNoise(TransformationPass):
                         )
 
                     node.op.annotations += [InjectNoise(ref, modifier_ref)]
+                    # substitute back substitute back into the dag to guarantee that the
+                    # change makes it back to the rust data model.
+                    dag.substitute_node(node, node.op)
         return dag
