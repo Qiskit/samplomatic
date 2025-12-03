@@ -22,7 +22,7 @@ from ..virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Re
 from .type_serializer import DataSerializer, TypeSerializer
 
 
-def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
+def _virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
     register_type = VirtualType(data["type"])
     array = array_from_json(data["array"])
     if register_type == VirtualType.U2:
@@ -58,7 +58,7 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
         def deserialize(cls, data):
             return BasisChange(
                 data["alphabet"],
-                virtual_register_from_json(orjson.loads(data["action"])),
+                _virtual_register_from_json(orjson.loads(data["action"])),
             )
 
     class SSV2(DataSerializer[BasisChange]):
