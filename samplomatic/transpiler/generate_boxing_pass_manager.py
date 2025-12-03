@@ -68,17 +68,19 @@ def generate_boxing_pass_manager(
     * If ``remove_barriers`` is ``True``, it removes all the barriers in the input circuit
       using the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
     * If ``enable_gates`` is ``True``, using the :class:`~.GroupGatesIntoBoxes` pass,
-      it creates boxes containing two-qubit gates and the single-qubit gates that
-      preceed them. The resulting boxes are twirl-annotated and left-dressed, and
-      contain a single layer of two-qubit gates.
+      it creates boxes containing two-qubit gates. The resulting boxes are twirl-annotated and
+      left-dressed, and contain a single layer of two-qubit gates.
     * If ``enable_measures`` is ``True``, it uses the :class:`~.GroupMeasIntoBoxes`
       pass to group the measurements. All the resulting boxes are left dressed. Depending
       on the value of ``measure_annotations``, they own a :class:`~.Twirl` annotation, a
       :class:`~.ChangeBasis` annotation, or both.
     * It adds idling qubits to the boxes following the given ``twirling_strategy``.
-    * Using the :class:`~.AddTerminalRightDressedBoxes` pass, it adds right-dressed boxes
+    * Using the :class:`~.AddTerminalRightDressedBoxes` pass, it adds empty right-dressed boxes
       to ensure that the resulting pass manager can produce circuits that can be successfully
       turned into a template/samplex pair by the :meth:`samplomatic.build` function.
+    * It uses the :class:`~.AbsorbSingleQubitGates` pass to absorb any chains of single-qubit gates
+      in the circuit into a box, left- or right-dressed, that immediately succeeds the chain. This
+      will cause the gates to be folded into the dressing once the circuit is built.
     * If ``inject_noise_targets`` is not ``'none'``, it uses the
       :class:`~.AddInjectNoise` pass to add inject noise :class:`~.InjectNoise` annotations.
 
@@ -146,7 +148,7 @@ def generate_boxing_pass_manager(
         )
 
     passes.append(AddTerminalRightDressedBoxes())
-    passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
     passes.append(AbsorbSingleQubitGates())
+    passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
 
     return PassManager(passes)
