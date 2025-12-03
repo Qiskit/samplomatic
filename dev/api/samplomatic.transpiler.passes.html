@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="AddInjectNoise" href="auto/samplomatic.transpiler.passes.AddInjectNoise.html" /><link rel="prev" title="TwirlingStrategy" href="auto/samplomatic.transpiler.TwirlingStrategy.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="AbsorbSingleQubitGates" href="auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html" /><link rel="prev" title="TwirlingStrategy" href="auto/samplomatic.transpiler.TwirlingStrategy.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>samplomatic.transpiler.passes - samplomatic 0.1.dev1</title>
@@ -325,6 +325,7 @@
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.transpiler.NoiseInjectionStrategy.html">NoiseInjectionStrategy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.transpiler.TwirlingStrategy.html">TwirlingStrategy</a></li>
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">samplomatic.transpiler.passes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="auto/samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
@@ -454,19 +455,22 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddInjectNoise.html#samplomatic.transpiler.passes.AddInjectNoise" title="samplomatic.transpiler.passes.AddInjectNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddInjectNoise</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html#samplomatic.transpiler.passes.AbsorbSingleQubitGates" title="samplomatic.transpiler.passes.AbsorbSingleQubitGates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Absorb all chains of single-qubit gates that are left of a box instruction into the box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddInjectNoise.html#samplomatic.transpiler.passes.AddInjectNoise" title="samplomatic.transpiler.passes.AddInjectNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddInjectNoise</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Inserts <a class="reference internal" href="auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotations to all the unique boxes with twirling annotation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html#samplomatic.transpiler.passes.AddTerminalRightDressedBoxes" title="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddTerminalRightDressedBoxes</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html#samplomatic.transpiler.passes.AddTerminalRightDressedBoxes" title="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddTerminalRightDressedBoxes</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Add right-dressed boxes to collect uncollected virtual gates emitted by left-dressed boxes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.GroupGatesIntoBoxes.html#samplomatic.transpiler.passes.GroupGatesIntoBoxes" title="samplomatic.transpiler.passes.GroupGatesIntoBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Collect the gates in a circuit inside left-dressed boxes.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.GroupGatesIntoBoxes.html#samplomatic.transpiler.passes.GroupGatesIntoBoxes" title="samplomatic.transpiler.passes.GroupGatesIntoBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Collect the two-qubit gates in a circuit inside left-dressed boxes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.GroupMeasIntoBoxes.html#samplomatic.transpiler.passes.GroupMeasIntoBoxes" title="samplomatic.transpiler.passes.GroupMeasIntoBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupMeasIntoBoxes</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.GroupMeasIntoBoxes.html#samplomatic.transpiler.passes.GroupMeasIntoBoxes" title="samplomatic.transpiler.passes.GroupMeasIntoBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupMeasIntoBoxes</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Collect the measurements in a circuit inside boxes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.InlineBoxes.html#samplomatic.transpiler.passes.InlineBoxes" title="samplomatic.transpiler.passes.InlineBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InlineBoxes</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.passes.InlineBoxes.html#samplomatic.transpiler.passes.InlineBoxes" title="samplomatic.transpiler.passes.InlineBoxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InlineBoxes</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Inline every box in the input circuit by replacing it with its content.</p></td>
 </tr>
 </tbody>
@@ -494,12 +498,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="auto/samplomatic.transpiler.passes.AddInjectNoise.html">
+          <a class="next-page" href="auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">AddInjectNoise</div>
+                <div class="title">AbsorbSingleQubitGates</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
