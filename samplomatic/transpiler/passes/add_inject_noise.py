@@ -30,8 +30,8 @@ from ..noise_injection_strategies import NoiseInjectionStrategy, NoiseInjectionS
 class AddInjectNoise(TransformationPass):
     """Inserts :class:`~.InjectNoise` annotations to all the unique boxes with twirling annotation.
 
-    This pass finds all the twirl-annotated boxes in the given circuit and adds inject noise
-    annotations to all the boxes that contain entanglers and/or own classical registers.
+    This pass finds boxes matching the conditions implied by ``targets``, adds inject noise
+    annotations, and replaces the box with the modified one.
 
     Args:
         strategy: The noise injection strategy.

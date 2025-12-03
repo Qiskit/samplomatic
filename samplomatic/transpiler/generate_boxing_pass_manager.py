@@ -79,7 +79,8 @@ def generate_boxing_pass_manager(
       to ensure that the resulting pass manager can produce circuits that can be successfully
       turned into a template/samplex pair by the :meth:`samplomatic.build` function.
     * If ``inject_noise_targets`` is not ``'none'``, it uses the
-      :class:`~.AddInjectNoise` pass to add inject noise :class:`~.InjectNoise` annotations.
+      :class:`~.AddInjectNoise` pass to replace boxes with new boxes that have include inject noise
+      :class:`~.InjectNoise` annotations.
 
     Args:
         enable_gates: Whether to collect single- and multi-qubit gates into boxes using the
