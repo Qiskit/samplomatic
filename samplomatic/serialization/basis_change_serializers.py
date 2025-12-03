@@ -14,9 +14,25 @@
 
 import orjson
 
-from ..exceptions import SerializationError
+from ..annotations import VirtualType
+from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes.change_basis_node import BasisChange
+from ..utils.serialization import array_from_json, array_to_json
+from ..virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Register
 from .type_serializer import DataSerializer, TypeSerializer
+
+
+def virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
+    register_type = VirtualType(data["type"])
+    array = array_from_json(data["array"])
+    if register_type == VirtualType.U2:
+        return U2Register(array)
+    elif register_type == VirtualType.Z2:
+        return Z2Register(array)
+    elif register_type == VirtualType.PAULI:
+        return PauliRegister(array)
+    else:
+        raise DeserializationError(f"Invalid register type: {register_type}")
 
 
 class BasisChangeSerializer(TypeSerializer[BasisChange]):
@@ -24,6 +40,26 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
 
     TYPE_ID = "B0"
     TYPE = BasisChange
+
+    class SSV1(DataSerializer[BasisChange]):
+        MIN_SSV = 1
+        MAX_SSV = 1
+
+        @classmethod
+        def serialize(cls, obj):
+            return {
+                "alphabet": obj.alphabet,
+                "action": orjson.dumps(
+                    {"type": obj.action.TYPE, "action": array_to_json(obj.action.virtual_gates)}
+                ).decode("utf-8"),
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return BasisChange(
+                data["alphabet"],
+                virtual_register_from_json(orjson.loads(data["action"])),
+            )
 
     class SSV2(DataSerializer[BasisChange]):
         MIN_SSV = 2
