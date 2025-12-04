@@ -122,7 +122,7 @@ def dummy_serializer():
             MAX_SSV = 3
 
             @classmethod
-            def serialize(cls, obj):
+            def serialize(cls, obj, ssv):
                 return {"old": "old"}
 
             @classmethod
@@ -134,7 +134,7 @@ def dummy_serializer():
             MAX_SSV = 4
 
             @classmethod
-            def serialize(cls, obj):
+            def serialize(cls, obj, ssv):
                 return {"new": "new"}
 
             @classmethod

@@ -46,7 +46,7 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
         MAX_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "alphabet": obj.alphabet,
                 "action": orjson.dumps(
@@ -65,15 +65,12 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
         MIN_SSV = 2
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             try:
                 type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj.action))]
             except KeyError:
                 raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
-            # TODO: we should be specifying the current SSV value here so that we have the same SSV
-            # everywhere in the serialization. As of this writing, SSV=2 is the highest SSV so there
-            # is not yet problem with this line.
-            action = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj.action)
+            action = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj.action, ssv)
             return {
                 "alphabet": obj.alphabet,
                 "action": orjson.dumps(action).decode("utf-8"),
