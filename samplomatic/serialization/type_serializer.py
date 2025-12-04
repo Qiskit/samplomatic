@@ -45,6 +45,9 @@ class DataSerializer(Generic[T]):
     def serialize(self, obj: T, ssv: int) -> dict[str, str]:
         """Serialize into a simple dictionary.
 
+        This method is not required to do bound checking of the SSV and it is therefore recommended
+        to use :meth:`~TypeSerializer.serialize` instead.
+
         Args:
             obj: The object to serialize.
             ssv: The SSV to use.
