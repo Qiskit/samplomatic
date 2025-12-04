@@ -30,7 +30,7 @@ class PauliLindbladMapSpecificationSerializer(TypeSerializer[PauliLindbladMapSpe
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "name": obj.name,
                 "num_qubits": obj.num_qubits,
@@ -54,7 +54,7 @@ class TensorSpecificationSerializer(TypeSerializer[TensorSpecification]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "name": obj.name,
                 "description": obj.description,

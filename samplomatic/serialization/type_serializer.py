@@ -42,11 +42,15 @@ class DataSerializer(Generic[T]):
 
     @classmethod
     @abc.abstractmethod
-    def serialize(self, obj: T) -> dict[str, str]:
+    def serialize(self, obj: T, ssv: int) -> dict[str, str]:
         """Serialize into a simple dictionary.
+
+        This method is not required to do bound checking of the SSV and it is therefore recommended
+        to use :meth:`~TypeSerializer.serialize` instead.
 
         Args:
             obj: The object to serialize.
+            ssv: The SSV to use.
 
         Returns:
             A complete representation of ``obj`` as a dictionary mapping strings to strings.
@@ -194,7 +198,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
         return {
             "id": cls.TYPE_ID,
             "ssv": str(ssv),
-            **serializer(obj),
+            **serializer(obj, ssv),
         }
 
     @staticmethod
