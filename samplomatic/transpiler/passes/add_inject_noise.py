@@ -30,8 +30,8 @@ from ..noise_injection_strategies import NoiseInjectionStrategy, NoiseInjectionS
 class AddInjectNoise(TransformationPass):
     """Inserts :class:`~.InjectNoise` annotations to all the unique boxes with twirling annotation.
 
-    This pass finds all the twirl-annotated boxes in the given circuit and adds inject noise
-    annotations to all the boxes that contain entanglers and/or own classical registers.
+    This pass finds boxes matching the conditions implied by ``targets``, adds inject noise
+    to their annotations, and replaces them with new boxes with the updated annotations.
 
     Args:
         strategy: The noise injection strategy.
@@ -131,6 +131,9 @@ class AddInjectNoise(TransformationPass):
                                 box_to_ref[box_key],
                                 inject_noise_annotation.modifier_ref,
                             )
+                            # substitute back into the dag to guarantee that the
+                            # change makes it back to the rust data model.
+                            dag.substitute_node(node, node.op)
                 else:
                     # The box does not have a noise injection annotation.
                     ref = box_to_ref[box_key]
@@ -146,4 +149,7 @@ class AddInjectNoise(TransformationPass):
                         )
 
                     node.op.annotations += [InjectNoise(ref, modifier_ref)]
+                    # substitute back into the dag to guarantee that the
+                    # change makes it back to the rust data model.
+                    dag.substitute_node(node, node.op)
         return dag

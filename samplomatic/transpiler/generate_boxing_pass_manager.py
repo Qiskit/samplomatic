@@ -82,7 +82,8 @@ def generate_boxing_pass_manager(
       in the circuit into a box, left- or right-dressed, that immediately succeeds the chain. This
       will cause the gates to be folded into the dressing once the circuit is built.
     * If ``inject_noise_targets`` is not ``'none'``, it uses the
-      :class:`~.AddInjectNoise` pass to add inject noise :class:`~.InjectNoise` annotations.
+      :class:`~.AddInjectNoise` pass to replace boxes with new boxes that additionally have
+      inject noise :class:`~.InjectNoise` annotations.
 
     Args:
         enable_gates: Whether to collect single- and multi-qubit gates into boxes using the
