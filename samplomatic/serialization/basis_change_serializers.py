@@ -14,9 +14,25 @@
 
 import orjson
 
+from ..annotations import VirtualType
+from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes.change_basis_node import BasisChange
-from ..virtual_registers.serialization import virtual_register_from_json
+from ..utils.serialization import array_from_json, array_to_json
+from ..virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Register
 from .type_serializer import DataSerializer, TypeSerializer
+
+
+def _virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
+    register_type = VirtualType(data["type"])
+    array = array_from_json(data["array"])
+    if register_type == VirtualType.U2:
+        return U2Register(array)
+    elif register_type == VirtualType.Z2:
+        return Z2Register(array)
+    elif register_type == VirtualType.PAULI:
+        return PauliRegister(array)
+    else:
+        raise DeserializationError(f"Invalid register type: {register_type}")
 
 
 class BasisChangeSerializer(TypeSerializer[BasisChange]):
@@ -27,17 +43,45 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
 
     class SSV1(DataSerializer[BasisChange]):
         MIN_SSV = 1
+        MAX_SSV = 1
 
         @classmethod
         def serialize(cls, obj):
             return {
                 "alphabet": obj.alphabet,
-                "action": orjson.dumps(obj.action.to_json_dict()).decode("utf-8"),
+                "action": orjson.dumps(
+                    {"type": obj.action.TYPE, "array": array_to_json(obj.action.virtual_gates)}
+                ).decode("utf-8"),
             }
 
         @classmethod
         def deserialize(cls, data):
             return BasisChange(
                 data["alphabet"],
-                virtual_register_from_json(orjson.loads(data["action"])),
+                _virtual_register_from_json(orjson.loads(data["action"])),
+            )
+
+    class SSV2(DataSerializer[BasisChange]):
+        MIN_SSV = 2
+
+        @classmethod
+        def serialize(cls, obj):
+            try:
+                type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj.action))]
+            except KeyError:
+                raise SerializationError(f"Cannot serialize virtual register of type {reg_type}.")
+            # TODO: we should be specifying the current SSV value here so that we have the same SSV
+            # everywhere in the serialization. As of this writing, SSV=2 is the highest SSV so there
+            # is not yet problem with this line.
+            action = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj.action)
+            return {
+                "alphabet": obj.alphabet,
+                "action": orjson.dumps(action).decode("utf-8"),
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return BasisChange(
+                data["alphabet"],
+                TypeSerializer.deserialize(orjson.loads(data["action"])),
             )

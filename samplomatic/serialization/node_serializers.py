@@ -47,10 +47,36 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
 
     class SSV1(DataSerializer[ChangeBasisNode]):
         MIN_SSV = 1
+        MAX_SSV = 1
 
         @classmethod
         def serialize(cls, obj):
             basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change, 1)  # noqa: SLF001
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "basis_change": orjson.dumps(basis_change_ser).decode("utf-8"),
+                "basis_ref": obj._basis_ref,  # noqa: SLF001
+                "num_subsystems": str(obj._num_subsystems),  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return ChangeBasisNode(
+                data["register_name"],
+                BasisChangeSerializer.deserialize(orjson.loads(data["basis_change"])),
+                data["basis_ref"],
+                int(data["num_subsystems"]),
+            )
+
+    class SSV2(DataSerializer[ChangeBasisNode]):
+        MIN_SSV = 2
+
+        @classmethod
+        def serialize(cls, obj):
+            # TODO: we should be specifying the current SSV value here so that we have the same SSV
+            # everywhere in the serialization. As of this writing, SSV=2 is the highest SSV so there
+            # is not yet problem with this line.
+            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change)  # noqa: SLF001
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "basis_change": orjson.dumps(basis_change_ser).decode("utf-8"),
