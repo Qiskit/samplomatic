@@ -73,6 +73,9 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
 
         @classmethod
         def serialize(cls, obj):
+            # TODO: we should be specifying the current SSV value here so that we have the same SSV everywhere
+            # in the serialization. As of this writing, SSV=2 is the highest SSV so there is not yet problem with 
+            # this line.
             basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change)  # noqa: SLF001
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
