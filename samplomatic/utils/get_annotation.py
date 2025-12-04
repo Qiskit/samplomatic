@@ -15,15 +15,17 @@
 from qiskit.circuit import Annotation, BoxOp
 
 
-def get_annotation(box: BoxOp, annotation_type: type[Annotation]) -> Annotation | None:
-    """Return a box's first annotation of the given type.
+def get_annotation(
+    box: BoxOp, annotation_type: type[Annotation] | tuple[type[Annotation], ...]
+) -> Annotation | None:
+    """Return a box's first annotation of the given type(s).
 
     Args:
         box: The box to return the annotation for.
         annotation_type: The type of the desired annotation.
 
     Returns:
-        The box's first annotation of the given type, or ``None`` if it does not contain an
-        annotation of the given type.
+        The box's first annotation of the given type(s), or ``None`` if it does not contain an
+        annotation of the given type(s).
     """
     return next((annot for annot in box.annotations if isinstance(annot, annotation_type)), None)

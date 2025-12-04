@@ -18,94 +18,204 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 
-from samplomatic.annotations import ChangeBasis, Twirl
+from samplomatic.annotations import Twirl
 from samplomatic.transpiler.passes import AddTerminalRightDressedBoxes
 
 
 def make_circuits():
     theta = Parameter("theta")
-
     circuit = QuantumCircuit(1)
 
     yield circuit, circuit, "empty_circuit"
 
-    for prefix, annotations in [
-        ("twirl", [Twirl()]),
-        ("change_basis", [ChangeBasis()]),
-        ("all", [Twirl(), ChangeBasis()]),
-    ]:
-        circuit = QuantumCircuit(3, 1)
-        circuit.cx(0, 1)
-        circuit.rx(np.pi / 3, 0)
-        circuit.rz(np.pi / 8, 0)
-        circuit.h(0)
-        circuit.y(2)
-        with circuit.box(annotations):
-            circuit.x(0)
-            circuit.measure(1, 0)  # this acts as a collector
-        with circuit.box([Twirl(dressing="right")]):
-            circuit.noop(0)
-        circuit.measure_all()
+    circuit = QuantumCircuit(3)
+    with circuit.box([Twirl()]):
+        circuit.noop(range(2))
+    with circuit.box([Twirl()]):
+        circuit.noop(range(2))
 
-        yield circuit, circuit, f"{prefix}_circuit_with_no_uncollected_virtual_gates"
+    expected_circuit = QuantumCircuit(3)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.noop(range(2))
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.noop(range(2))
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop(range(2))
 
-        circuit = QuantumCircuit(3, 2)
-        with circuit.box(annotations):
-            circuit.cx(0, 1)
-            circuit.measure(2, 0)
+    yield circuit, expected_circuit, "only_left_dressed_no_meas"
+
+    circuit = QuantumCircuit(3, 1)
+    circuit.cx(0, 1)
+    circuit.rx(np.pi / 3, 0)
+    circuit.rz(np.pi / 8, 0)
+    circuit.h(0)
+    circuit.y(2)
+    with circuit.box([Twirl()]):
         circuit.x(0)
-        circuit.rz(theta, 1)
-        circuit.measure(1, 1)
+        circuit.measure(1, 0)  # this acts as a collector
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0)
+    circuit.measure_all()
 
-        expected_circuit = QuantumCircuit(3, 2)
-        with expected_circuit.box(annotations):
-            expected_circuit.cx(0, 1)
-            expected_circuit.measure(2, 0)
-        with expected_circuit.box([Twirl(dressing="right")]):
-            expected_circuit.x(0)
-            expected_circuit.rz(theta, 1)
-        expected_circuit.measure(1, 1)
+    yield circuit, circuit, "circuit_with_no_uncollected_virtual_gates"
 
-        yield circuit, expected_circuit, f"{prefix}_circuit_with_no_collected_virtual_gates"
+    circuit = QuantumCircuit(3, 2)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+        circuit.measure(2, 0)
+    circuit.x(0)
+    circuit.rz(theta, 1)
+    circuit.measure(1, 1)
 
-        circuit = QuantumCircuit(1, 2)
-        with circuit.box(annotations):
-            circuit.x(0)
-        circuit.measure(0, 0)
-        circuit.measure(0, 1)
+    expected_circuit = QuantumCircuit(3, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.measure(2, 0)
+    expected_circuit.x(0)
+    expected_circuit.rz(theta, 1)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1])
+    expected_circuit.measure(1, 1)
 
-        expected_circuit = QuantumCircuit(1, 2)
-        with expected_circuit.box(annotations):
-            expected_circuit.x(0)
-        with expected_circuit.box([Twirl(dressing="right")]):
-            expected_circuit.noop(0)
-        expected_circuit.measure(0, 0)
-        expected_circuit.measure(0, 1)
+    yield circuit, expected_circuit, "circuit_with_no_collected_virtual_gates"
 
-        yield circuit, expected_circuit, f"{prefix}_circuit_with_back_to_back_unboxed_measurements"
+    circuit = QuantumCircuit(1, 2)
+    with circuit.box([Twirl()]):
+        circuit.x(0)
+    circuit.measure(0, 0)
+    circuit.measure(0, 1)
 
-        circuit = QuantumCircuit(1, 2)
-        with circuit.box(annotations):
-            circuit.x(0)
-        circuit.z(0)
-        circuit.measure(0, 0)
-        circuit.y(0)
-        circuit.measure(0, 1)
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.x(0)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop(0)
+    expected_circuit.measure(0, 0)
+    expected_circuit.measure(0, 1)
 
-        expected_circuit = QuantumCircuit(1, 2)
-        with expected_circuit.box(annotations):
-            expected_circuit.x(0)
-        with expected_circuit.box([Twirl(dressing="right")]):
-            expected_circuit.z(0)
-        expected_circuit.measure(0, 0)
-        expected_circuit.y(0)
-        expected_circuit.measure(0, 1)
+    yield circuit, expected_circuit, "circuit_with_back_to_back_unboxed_measurements"
 
-        yield (
-            circuit,
-            expected_circuit,
-            f"{prefix}_circuit_with_back_to_back_gates_and_unboxed_measurements",
-        )
+    circuit = QuantumCircuit(1, 2)
+    with circuit.box([Twirl()]):
+        circuit.x(0)
+    circuit.z(0)
+    circuit.measure(0, 0)
+    circuit.y(0)
+    circuit.measure(0, 1)
+
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.x(0)
+    expected_circuit.z(0)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop(0)
+    expected_circuit.measure(0, 0)
+    expected_circuit.y(0)
+    expected_circuit.measure(0, 1)
+
+    yield (
+        circuit,
+        expected_circuit,
+        "circuit_with_back_to_back_gates_and_unboxed_measurements",
+    )
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.barrier()
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    expected_circuit.barrier()
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz")
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    with circuit.box():
+        circuit.noop(range(4))
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2])
+    with expected_circuit.box():
+        expected_circuit.noop(range(4))
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_blocked_with_empty_box")
+
+    circuit = QuantumCircuit(4, 4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.measure([0, 1, 2, 3], [0, 1, 2, 3])
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4, 4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2])
+    expected_circuit.measure([0, 1, 2, 3], [0, 1, 2, 3])
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_blocked_with_mcm")
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.swap(0, 1)
+    circuit.swap(2, 3)
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2])
+    expected_circuit.swap(0, 1)
+    expected_circuit.swap(2, 3)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_blocked_gates")
 
 
 def pytest_generate_tests(metafunc):
@@ -128,10 +238,11 @@ def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
         circuits_to_compare: A tuple containing a ``(circuit, expected_circuit)`` pair.
     """
     circuit, expected_circuit = circuits_to_compare
-    pm = PassManager(passes=[AddTerminalRightDressedBoxes()])
-    transpiled_circuit = pm.run(circuit)
+    transpiled_circuit = PassManager(passes=[AddTerminalRightDressedBoxes()]).run(circuit)
 
-    assert transpiled_circuit == expected_circuit
+    assert (
+        transpiled_circuit == expected_circuit
+    ), f"Transpiled:\n{transpiled_circuit.draw()}\nExpected:\n{expected_circuit.draw()}"
 
 
 def test_raises_for_unsupported_ops():
