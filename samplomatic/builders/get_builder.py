@@ -70,7 +70,13 @@ def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Bu
     if emission.noise_ref and not emission.twirl_register_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
+    collection.dynamic_qubits = QubitPartition(1)
     if collection.dressing is DressingMode.LEFT:
+        # TODO: if BoxOp contained a DAG we could look at the first topological generation
+        for box_instr in instr.operation.body:
+            if box_instr.operation.name.startswith("if_else"):
+                for q in box_instr.qubits:
+                    collection.dynamic_qubits.add((q,))
         return LeftBoxBuilder(collection, emission)
     return RightBoxBuilder(collection, emission)
 

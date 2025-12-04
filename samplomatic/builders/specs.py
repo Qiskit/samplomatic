@@ -86,3 +86,13 @@ class CollectionSpec:
 
     synth: Synth[Qubit, Parameter, CircuitInstruction] | None = None
     """How to synthesize collection gates."""
+
+    dynamic_qubits: QubitPartition | None = None
+    """The subset of 'qubits' collected in conditional operations."""
+
+    @property
+    def collect_qubits(self):
+        """The subset of 'qubits' collected in the box boundary."""
+        if self.dynamic_qubits is None:
+            return self.qubits
+        return self.qubits.difference(self.dynamic_qubits.all_elements)
