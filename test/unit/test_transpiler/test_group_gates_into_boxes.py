@@ -104,15 +104,15 @@ def make_circuits():
     circuit.sx(5)
 
     expected_circuit = QuantumCircuit(6)
+    expected_circuit.rz(phi, 1)
+    expected_circuit.y(1)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(4, 3)
-        expected_circuit.rz(phi, 1)
-        expected_circuit.y(1)
         expected_circuit.cx(1, 2)
+    expected_circuit.x(0)
+    expected_circuit.rx(theta, 0)
+    expected_circuit.z(0)
     with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(0)
-        expected_circuit.rx(theta, 0)
-        expected_circuit.z(0)
         expected_circuit.ecr(0, 1)
     expected_circuit.sx(3)
     expected_circuit.y(1)
@@ -133,12 +133,11 @@ def make_circuits():
     expected_circuit = QuantumCircuit(4)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.z(1)
-        expected_circuit.y(2)
+    expected_circuit.z(1)
+    expected_circuit.y(2)
     expected_circuit.barrier(1, 2)
+    expected_circuit.h(3)
     with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.h(3)
         expected_circuit.cx(2, 3)
     expected_circuit.x(0)
 
@@ -157,10 +156,9 @@ def make_circuits():
     expected_circuit = QuantumCircuit(3)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(0)
-        expected_circuit.y(0)
-        expected_circuit.t(1)
+    expected_circuit.x(0)
+    expected_circuit.y(0)
+    expected_circuit.t(1)
     expected_circuit.barrier()
     expected_circuit.z(1)
     expected_circuit.h(2)
@@ -204,22 +202,20 @@ def make_circuits():
     expected_circuit = QuantumCircuit(3)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(1)
+    expected_circuit.x(1)
     with expected_circuit.box():
         expected_circuit.noop(1)
+    expected_circuit.x(0)
+    expected_circuit.z(1)
     with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(0)
-        expected_circuit.z(1)
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(1)
+    expected_circuit.x(1)
     with expected_circuit.box():
         expected_circuit.noop(0, 1)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(0, 1)
+    expected_circuit.x(2)
     with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(2)
         expected_circuit.cx(0, 2)
     with expected_circuit.box():
         expected_circuit.noop(0, 1, 2)
@@ -244,8 +240,7 @@ def make_circuits():
     expected_circuit = QuantumCircuit(4, 2)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(dressing="left")]):
-        expected_circuit.x(0)
+    expected_circuit.x(0)
     expected_circuit.t(1)
     expected_circuit.measure(1, 0)
     expected_circuit.measure(2, 0)
@@ -280,9 +275,9 @@ def make_circuits():
         expected_circuit.cz(0, 1)
         expected_circuit.cz(3, 4)
         expected_circuit.cz(5, 6)
+    expected_circuit.sx([3, 5])
+    expected_circuit.sx([3, 5])
     with expected_circuit.box([Twirl()]):
-        expected_circuit.sx([3, 5])
-        expected_circuit.sx([3, 5])
         expected_circuit.cz(2, 3)
         expected_circuit.cz(4, 5)
         expected_circuit.cz(1, 6)
