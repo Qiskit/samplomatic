@@ -31,7 +31,7 @@ class AddInjectNoise(TransformationPass):
     """Inserts :class:`~.InjectNoise` annotations to all the unique boxes with twirling annotation.
 
     This pass finds boxes matching the conditions implied by ``targets``, adds inject noise
-    annotations, and replaces the box with the modified one.
+    to their annotations, and replaces them with new boxes with the updated annotations.
 
     Args:
         strategy: The noise injection strategy.
