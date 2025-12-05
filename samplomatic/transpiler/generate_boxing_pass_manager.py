@@ -18,7 +18,7 @@ from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
 
-from ..utils import deprecate_arg
+from ..utils import deprecate_arg, validate_literals
 from .passes import (
     AbsorbSingleQubitGates,
     AddInjectNoise,
@@ -29,7 +29,9 @@ from .passes import (
 from .passes.add_inject_noise import InjectNoiseStrategyLiteral, InjectNoiseTargetsLiteral
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 
-TwirlingStrategyLiteral: TypeAlias = Literal["active", "active_accum", "active_circuit", "all"]
+TwirlingStrategyLiteral: TypeAlias = Literal[
+    "active", "active_accum", "active_circuit", "all", True, False
+]
 RemoveBarriersLiteral: TypeAlias = Literal[
     "immediately", "finally", "after_stratification", "never"
 ]
@@ -43,10 +45,17 @@ RemoveBarriersLiteral: TypeAlias = Literal[
     "of ``generate_boxing_pass_manager()``",
     additional_msg="Instead, choose one of the string values.",
 )
+@validate_literals(
+    "measure_annotations",
+    "twirling_strategy",
+    "inject_noise_targets",
+    "inject_noise_strategy",
+    "twirling_strategy",
+)
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measures: bool = True,
-    measure_annotations: str = "twirl",
+    measure_annotations: Literal["twirl", "change_basis", "all"] = "twirl",
     twirling_strategy: TwirlingStrategyLiteral = "active_circuit",
     inject_noise_targets: InjectNoiseTargetsLiteral = "none",
     inject_noise_strategy: InjectNoiseStrategyLiteral = "no_modification",
