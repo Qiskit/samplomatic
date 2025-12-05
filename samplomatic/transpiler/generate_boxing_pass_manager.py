@@ -18,6 +18,7 @@ from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
 
+from ..utils import deprecate_arg
 from .noise_injection_strategies import NoiseInjectionStrategyLiteral
 from .passes import (
     AbsorbSingleQubitGates,
@@ -30,6 +31,14 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
 from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral
 
 
+@deprecate_arg(
+    "remove_barriers",
+    since="0.14.0",
+    predicate=lambda remove_barriers: remove_barriers in {True, False},
+    deprecation_description="Providing boolean values to the ``remove_barriers`` argument "
+    "of ``generate_boxing_pass_manager()``",
+    additional_msg="Instead, choose one of the string values.",
+)
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measures: bool = True,
@@ -37,7 +46,8 @@ def generate_boxing_pass_manager(
     twirling_strategy: TwirlingStrategyLiteral = "active",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
     inject_noise_strategy: NoiseInjectionStrategyLiteral = "no_modification",
-    remove_barriers: bool = True,
+    remove_barriers: bool
+    | Literal["immediately", "finally", "after_stratification", "never"] = "after_stratification",
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -114,10 +124,24 @@ def generate_boxing_pass_manager(
               and/or own classical registers.
 
         inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
-        remove_barriers: Whether to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass
-            to the input circuit before beginning to group gates and measurements into boxes.
-            Setting this to ``True`` generally leads to a smaller number of boxes in the output
-            circuits.
+        remove_barriers: When to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
+            All possible string values are:
+
+            * ``'after_stratification'`` removes barriers, but only after entangler and
+              measurement instructions have been boxed and extended with ``twirling_strategy``, and
+              before single-qubit gates are boxed. This effectively allows barriers to be used as
+              hints to choose the entangler and measurement content of boxes, while also letting
+              single-qubit gates move freely past where there had been a barrier, allowing them be
+              absorbed into adjacent boxes.
+            * ``'immediately'`` removes barriers before doing anything else, so that existing
+              barriers effectively have no role in box grouping.
+            * ``'finally'`` removes barriers, but only as the very last step. This causes, for
+              example, single-qubit gates that are trapped between barriers to not be placed
+              into boxes.
+            * ``'never'`` causes barriers to never be removed.
+
+            Boolean values are deprecated such that ``True`` corresponds to ``'immediately'`` and
+            ``False`` corresponds to ``'never'``.
 
     Returns:
         A pass manager that groups operations into boxes.
@@ -125,7 +149,15 @@ def generate_boxing_pass_manager(
     Raises:
         TranspilerError: If the user selects a combination of inputs that is not supported.
     """
-    passes = [RemoveBarriers()] if remove_barriers else []
+    # coerce legacy values of remove_barriers into equivalent string literal values
+    if remove_barriers is True:
+        remove_barriers = "immediately"
+    elif remove_barriers is False:
+        remove_barriers = "never"
+
+    passes = []
+    if remove_barriers == "immediately":
+        passes.append(RemoveBarriers())
 
     if enable_gates:
         passes.append(GroupGatesIntoBoxes())
@@ -149,7 +181,14 @@ def generate_boxing_pass_manager(
         )
 
     passes.append(AddTerminalRightDressedBoxes())
+
+    if remove_barriers == "after_stratification":
+        passes.append(RemoveBarriers())
+
     passes.append(AbsorbSingleQubitGates())
     passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
+
+    if remove_barriers == "finally":
+        passes.append(RemoveBarriers())
 
     return PassManager(passes)
