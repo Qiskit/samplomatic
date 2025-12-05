@@ -12,14 +12,13 @@
 
 """generate_boxing_pass_manager"""
 
-from typing import Literal
+from typing import Literal, TypeAlias
 
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
 
-from ..utils import deprecate_arg
-from .noise_injection_strategies import NoiseInjectionStrategyLiteral
+from ..utils import deprecate_arg, validate_literals
 from .passes import (
     AbsorbSingleQubitGates,
     AddInjectNoise,
@@ -27,8 +26,15 @@ from .passes import (
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
 )
+from .passes.add_inject_noise import InjectNoiseStrategyLiteral, InjectNoiseTargetsLiteral
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
-from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral
+
+TwirlingStrategyLiteral: TypeAlias = Literal[
+    "active", "active_accum", "active_circuit", "all", True, False
+]
+RemoveBarriersLiteral: TypeAlias = Literal[
+    "immediately", "finally", "after_stratification", "never"
+]
 
 
 @deprecate_arg(
@@ -39,15 +45,21 @@ from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral
     "of ``generate_boxing_pass_manager()``",
     additional_msg="Instead, choose one of the string values.",
 )
+@validate_literals(
+    "measure_annotations",
+    "twirling_strategy",
+    "inject_noise_targets",
+    "inject_noise_strategy",
+    "twirling_strategy",
+)
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measures: bool = True,
-    measure_annotations: str = "twirl",
-    twirling_strategy: TwirlingStrategyLiteral = "active",
-    inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
-    inject_noise_strategy: NoiseInjectionStrategyLiteral = "no_modification",
-    remove_barriers: bool
-    | Literal["immediately", "finally", "after_stratification", "never"] = "after_stratification",
+    measure_annotations: Literal["twirl", "change_basis", "all"] = "twirl",
+    twirling_strategy: TwirlingStrategyLiteral = "active_circuit",
+    inject_noise_targets: InjectNoiseTargetsLiteral = "none",
+    inject_noise_strategy: InjectNoiseStrategyLiteral = "no_modification",
+    remove_barriers: bool | RemoveBarriersLiteral = "after_stratification",
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -109,7 +121,22 @@ def generate_boxing_pass_manager(
               ``measure``.
             * ``'all'`` for both :class:`~.Twirl` and :class:`~.ChangeBasis` annotations.
 
-        twirling_strategy: The twirling strategy.
+        twirling_strategy: The strategy for whether and how twirling boxes are extended to
+            include elligible idle qubits; the boxing pass manager begins by constructing twirling
+            boxes that contain one layer of multi-qubit gates or measurements, preceded by all of
+            the adjacent single-qubit gates, then, according to the value of this option, these
+            boxes are extended idling qubits. The allowed values are:
+
+            * ``'active'``: No idling qubits are added to the boxes, meaning that every box only
+              twirls the qubits that are active within the box.
+            * ``'active_accum'``: Idling qubits are added so that each individual box twirls all
+              qubits that have been acted on by some instruction in the circuit up to and including
+              the box.
+            * ``'active_circuit'``: Idling qubits are added so that each individual box twirls all
+              qubits acted on by any instruction in the circuit.
+            * ``'all'``: Idling qubits are added so that each individual box twirls all of the
+              qubits in the circuit.
+
         inject_noise_targets: The boxes to annotate with an :class:`~.InjectNoise` annotation
             using the :class:`~.AddInjectNoise` pass. The supported values are:
 
@@ -123,7 +150,18 @@ def generate_boxing_pass_manager(
             * ``'all'`` to target all the twirl-annotated boxes that contain entanglers
               and/or own classical registers.
 
-        inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
+        inject_noise_strategy: The noise injection strategies supported by the
+            :class:`~AddInjectNoise` pass. The following options are supported. In all these
+            options, by "equivalent boxes" we mean boxes that are equal up to single-qubit qubit
+            gates on the dressing side.
+
+            * ``'no_modification'``: All the equivalent boxes are assigned an inject noise
+              annotation with the same ``ref`` and with ``modifier_ref=''``.
+            * ``'uniform_modification'``: All the equivalent boxes are assigned an inject noise
+              annotation with the same ``ref`` and with ``modifier_ref=ref``.
+            * ``'individual_modification'``: All the equivalent boxes are assigned an inject noise
+              annotation with the same ``ref``. Every box is assigned a unique ``modifier_ref``.
+
         remove_barriers: When to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
             All possible string values are:
 
@@ -177,7 +215,7 @@ def generate_boxing_pass_manager(
         raise TranspilerError(
             f"``twirling_strategy = '{twirling_strategy}'`` is not supported. "
             "The supported values are "
-            f"{[strategy.name.lower() for strategy in TwirlingStrategy]}."
+            f"{[strategy.name.lower() for strategy in TwirlingStrategyLiteral]}."
         )
 
     passes.append(AddTerminalRightDressedBoxes())
