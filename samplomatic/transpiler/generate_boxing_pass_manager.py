@@ -12,13 +12,12 @@
 
 """generate_boxing_pass_manager"""
 
-from typing import Literal
+from typing import Literal, TypeAlias
 
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
 
-from .noise_injection_strategies import NoiseInjectionStrategyLiteral
 from .passes import (
     AbsorbSingleQubitGates,
     AddInjectNoise,
@@ -27,16 +26,19 @@ from .passes import (
     GroupMeasIntoBoxes,
 )
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
-from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral
+
+TwirlingStrategy: TypeAlias = Literal["active", "active_accum", "active_circuit", "all"]
 
 
 def generate_boxing_pass_manager(
     enable_gates: bool = True,
     enable_measures: bool = True,
     measure_annotations: str = "twirl",
-    twirling_strategy: TwirlingStrategyLiteral = "active",
+    twirling_strategy: TwirlingStrategy = "active_circuit",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
-    inject_noise_strategy: NoiseInjectionStrategyLiteral = "no_modification",
+    inject_noise_strategy: Literal[
+        "no_modification", "uniform_modification", "individual_modification"
+    ] = "no_modification",
     remove_barriers: bool = True,
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
@@ -99,7 +101,22 @@ def generate_boxing_pass_manager(
               ``measure``.
             * ``'all'`` for both :class:`~.Twirl` and :class:`~.ChangeBasis` annotations.
 
-        twirling_strategy: The twirling strategy.
+        twirling_strategy: The strategy for whether and how twirling boxes are extended to
+            include elligible idle qubits; the boxing pass manager begins by constructing twirling
+            boxes that contain one layer of multi-qubit gates or measurements, preceded by all of
+            the adjacent single-qubit gates, then, according to the value of this option, these
+            boxes are extended idling qubits. The allowed values are:
+
+            * ``'active'``: No idling qubits are added to the boxes, meaning that every box only
+              twirls the qubits that are active within the box.
+            * ``'active_accum'``: Idling qubits are added so that each individual box twirls all
+              qubits that have been acted on by some instruction in the circuit up to and including
+              the box.
+            * ``'active_circuit'``: Idling qubits are added so that each individual box twirls all
+              qubits acted on by any instruction in the circuit.
+            * ``'all'``: Idling qubits are added so that each individual box twirls all of the
+              qubits in the circuit.
+
         inject_noise_targets: The boxes to annotate with an :class:`~.InjectNoise` annotation
             using the :class:`~.AddInjectNoise` pass. The supported values are:
 
