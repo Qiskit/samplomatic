@@ -132,10 +132,10 @@ def generate_boxing_pass_manager(
             * ``'finally'`` removes barriers, but only as the very last step. This causes, for
               example, causes single qubit gates that are trapped between barriers to not be placed
               into boxes.
-            * ``'after_stratification'`` removes barriers, but only after entangler and measurement
-              instructions have been boxed and extended with ``twirling_strategy``, and before
-              single-qubit gates are boxed. This effectively allows barriers to be used as hints to
-              choose the entangler and measurement content of boxes, while also letting
+            * ``'after_stratification'`` (default) removes barriers, but only after entangler and
+              measurement instructions have been boxed and extended with ``twirling_strategy``, and
+              before single-qubit gates are boxed. This effectively allows barriers to be used as
+              hints to choose the entangler and measurement content of boxes, while also letting
               single-qubit gates move freely past where there had been a barrier, allowing them be
               absorbed into adjacent boxes.
             * ``'never'`` causes barriers to never be removed.
