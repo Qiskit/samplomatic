@@ -130,7 +130,18 @@ def generate_boxing_pass_manager(
             * ``'all'`` to target all the twirl-annotated boxes that contain entanglers
               and/or own classical registers.
 
-        inject_noise_strategy: The noise injection strategy for the :class:`~.AddInjectNoise` pass.
+        inject_noise_strategy: The noise injection strategies supported by the
+            :class:`~AddInjectNoise` pass. The following options are supported. In all these
+            options, by "equivalent boxes" we mean boxes that are equal up to single-qubit qubit
+            gates on the dressing side.
+
+            * ``'no_modification'``: All the equivalent boxes are assigned an inject noise
+              annotation with the same ``ref`` and with ``modifier_ref=''``.
+            * ``'uniform_modification'``: All the equivalent boxes are assigned an inject noise
+              annotation with the same ``ref`` and with ``modifier_ref=ref``.
+            * ``'individual_modification'``: All the equivalent boxes are assigned an inject noise
+              annotation with the same ``ref``. Every box is assigned a unique ``modifier_ref``.
+
         remove_barriers: Whether to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass
             to the input circuit before beginning to group gates and measurements into boxes.
             Setting this to ``True`` generally leads to a smaller number of boxes in the output
