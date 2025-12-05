@@ -127,17 +127,17 @@ def generate_boxing_pass_manager(
         remove_barriers: When to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
             All possible string values are:
 
-            * ``'immediately'`` removes barriers before doing anything else, so that existing
-              barriers effectively have no role in box grouping.
-            * ``'finally'`` removes barriers, but only as the very last step. This causes, for
-              example, single-qubit gates that are trapped between barriers to not be placed
-              into boxes.
-            * ``'after_stratification'`` (default) removes barriers, but only after entangler and
+            * ``'after_stratification'`` removes barriers, but only after entangler and
               measurement instructions have been boxed and extended with ``twirling_strategy``, and
               before single-qubit gates are boxed. This effectively allows barriers to be used as
               hints to choose the entangler and measurement content of boxes, while also letting
               single-qubit gates move freely past where there had been a barrier, allowing them be
               absorbed into adjacent boxes.
+            * ``'immediately'`` removes barriers before doing anything else, so that existing
+              barriers effectively have no role in box grouping.
+            * ``'finally'`` removes barriers, but only as the very last step. This causes, for
+              example, single-qubit gates that are trapped between barriers to not be placed
+              into boxes.
             * ``'never'`` causes barriers to never be removed.
 
             Boolean values are deprecated such that ``True`` corresponds to ``'immediately'`` and
