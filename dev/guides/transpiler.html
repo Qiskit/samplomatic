@@ -343,6 +343,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.undress_box.html">undress_box</a></li>
@@ -530,8 +531,8 @@ gates are not grouped into boxes, nor are the single-qubit gates that preceed th
 </div>
 </div>
 </section>
-<section id="choose-how-to-dress-your-boxes">
-<h2>Choose how to dress your boxes<a class="headerlink" href="#choose-how-to-dress-your-boxes" title="Link to this heading">¶</a></h2>
+<section id="choose-how-to-annotate-your-boxes">
+<h2>Choose how to annotate your boxes<a class="headerlink" href="#choose-how-to-annotate-your-boxes" title="Link to this heading">¶</a></h2>
 <p>All the two-qubit gates and measurement boxes in the returned circuit own left-dressed annotations. In particular,
 all the boxes that contain two-qubit gates are annotated with a <code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code>, while for measurement boxes, users can
 choose between <code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BasisTranform</span></code> (with <code class="docutils literal notranslate"><span class="pre">mode</span></code> aset to <code class="docutils literal notranslate"><span class="pre">&quot;measure&quot;</span></code>), or both. The following code
@@ -593,34 +594,100 @@ values of <code class="docutils literal notranslate"><span class="pre">modifier_
 </div>
 </div>
 </section>
+<section id="select-a-twirling-strategy">
+<h2>Select a twirling strategy<a class="headerlink" href="#select-a-twirling-strategy" title="Link to this heading">¶</a></h2>
+<p>The boxing pass manager begins by choosing which entangling gates and measurement instructions should appear in the same boxes.
+Once this is accomplished, boxes will not, in general, be full-width—they will likely include only a subset of the qubits that are active in the circuit or present in the backend target.
+In typical configurations of the boxing pass manager, since all qubits a box instruction acts on are twirled (even those for which no instruction inside the box act on), having partial-width boxes affects the noise-tailoring effects of twirling; the idling qubits are not twirled and can, for example, build up coherent errors while the box is applied.
+The <code class="docutils literal notranslate"><span class="pre">twirling_strategy</span></code> provides options for extending the qubits owned by each box, thereby modifying the number of idling qubits:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;active&quot;</span></code> (default) does not extend the boxes to any idling qubits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;active_accum&quot;</span></code> extends all boxes to those qubits that have already been acted on by some prior instruction in the circuit. This is useful if you want to leave qubits at the start of the circuit in their ground state for as long as possible by not twirling them until they become active.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;active_circuit&quot;</span></code> extends all boxes to those qubits that are acted on by any instruction in the entire circuit. This is useful if you have a structured circuit with repeated entangling layers and you want to minimize the number of unique boxes because each one will need to have its noise learned.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> extends all boxes to all qubits in all quantum registers of the circuit. This is useful as an extension to <code class="docutils literal notranslate"><span class="pre">&quot;active_circuit&quot;</span></code> where you want all qubits in the QPU to always be twirled.</p></li>
+</ul>
+<p>To demonstrate, we apply each of the strategies to our base circuit and draw the resulting outcomes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">circuit</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">measure</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3006ac89cd34be51ab9dfa38770202be91c5d758f166f9d18eadb8910c449212.png" src="../_images/3006ac89cd34be51ab9dfa38770202be91c5d758f166f9d18eadb8910c449212.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;active_accum&quot;</span><span class="p">,</span> <span class="s2">&quot;active_circuit&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">twirling_strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">remove_barriers</span><span class="o">=</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
+    <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;twirling_strategy=&#39;</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/04e5d533bcd43384a9c014931da57debc2cbfa8bde0355732a901e7bbeda0fb1.png" src="../_images/04e5d533bcd43384a9c014931da57debc2cbfa8bde0355732a901e7bbeda0fb1.png" />
+</div>
+</div>
+</section>
 <section id="specify-how-to-treat-barriers">
 <h2>Specify how to treat barriers<a class="headerlink" href="#specify-how-to-treat-barriers" title="Link to this heading">¶</a></h2>
-<p>By default, barriers are removed from the circuit prior to grouping the operations, as shown in the following
-snippet.</p>
+<p>By default, barriers are removed from the circuit after all entangling gates and measurement instructions have been boxed as instructed, including their extensions due to the <code class="docutils literal notranslate"><span class="pre">twirling_strategy</span></code> selection, but prior to single-qubit gates being added to the box immediately on their right, if possible.</p>
+<p>For example, if we start with the following circuit that contains a barrier:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">circuit_with_barrier</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 <span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 <span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>
 
-<span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
+<span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/91362b789afdf1cf401ddb22088a5104aa6024f6cc95bf8c581b64de97c257cc.png" src="../_images/91362b789afdf1cf401ddb22088a5104aa6024f6cc95bf8c581b64de97c257cc.png" />
+</div>
+</div>
+<p>Then the default behaviour will prevent the two entangling gates from ending up in the same box, though it will let the single-qubit gates be absorbed into the next available box despite the barrier.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
 <span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/321a5bcc73ac750ebf86eb5032fcb4f8e78ce338174dd463f9e34d7fba25e0ac.png" src="../_images/321a5bcc73ac750ebf86eb5032fcb4f8e78ce338174dd463f9e34d7fba25e0ac.png" />
+<img alt="../_images/5a950a513c758e8a709e3623dddd747b2968dc1262447459c0f2a0f5ef510efb.png" src="../_images/5a950a513c758e8a709e3623dddd747b2968dc1262447459c0f2a0f5ef510efb.png" />
 </div>
 </div>
-<p>Setting <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code> allows preserving the barriers.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">'never'</span></code> preserves the barriers so that single-qubit gates are constrained.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
-    <span class="n">remove_barriers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">remove_barriers</span><span class="o">=</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
 
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
 <span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
@@ -628,14 +695,23 @@ snippet.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/62ec1651002369d91b6982f944d22e8819f79a0eaa4bd5a60c29862ae86a4bcf.png" src="../_images/62ec1651002369d91b6982f944d22e8819f79a0eaa4bd5a60c29862ae86a4bcf.png" />
+<img alt="../_images/9793f1c53c80b631094c740023375b254974576122e41156c9dd4b988edf2d51.png" src="../_images/9793f1c53c80b631094c740023375b254974576122e41156c9dd4b988edf2d51.png" />
 </div>
 </div>
-<p>Notice that when two gates are separated by a barrier, setting <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> potentially
-allows them to be placed into the same box. However, if <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, they are
-sure to be placed into different boxes. Thus, choosing to preserve the barriers guarantees that the
-alignment and schedule of gates in the input circuit are respected, but it generally results in circuits
-with larger depths.</p>
+<p>And finally, if we elect to remove the barriers immediately, then the entanglers are no longer constrained to end up in separate boxes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">remove_barriers</span><span class="o">=</span><span class="s2">&quot;immediately&quot;</span><span class="p">)</span>
+
+<span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/382ecb21e2d7352537cbc1749eaa058b4d5944a0f36f1ad096e9d1eb62ce16c4.png" src="../_images/382ecb21e2d7352537cbc1749eaa058b4d5944a0f36f1ad096e9d1eb62ce16c4.png" />
+</div>
+</div>
 </section>
 <section id="incorporate-samplomatic-s-pass-manager-into-qiskit-s-preset-pass-managers">
 <h2>Incorporate Samplomatic’s pass manager into <code class="docutils literal notranslate"><span class="pre">Qiskit</span></code>’s preset pass managers<a class="headerlink" href="#incorporate-samplomatic-s-pass-manager-into-qiskit-s-preset-pass-managers" title="Link to this heading">¶</a></h2>
@@ -666,7 +742,7 @@ with larger depths.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f27e7cb1d3afd940a6b8346f685f842aeddb21357c0d6704b5a3c34bebf334e9.png" src="../_images/f27e7cb1d3afd940a6b8346f685f842aeddb21357c0d6704b5a3c34bebf334e9.png" />
+<img alt="../_images/cf1aa2050a5b8018b9e209d4b3e6caa1f789a401373173d3df94ec28c8411b4e.png" src="../_images/cf1aa2050a5b8018b9e209d4b3e6caa1f789a401373173d3df94ec28c8411b4e.png" />
 </div>
 </div>
 </section>
@@ -789,7 +865,7 @@ uncollected due to the unboxed measurements.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/12/04</div>
+              Last updated on 2025/12/05</div>
           </div>
           <div class="right-details">
             
@@ -812,8 +888,9 @@ uncollected due to the unboxed measurements.</p>
             <ul>
 <li><a class="reference internal" href="#">Transpiler</a><ul>
 <li><a class="reference internal" href="#group-operations-into-boxes">Group operations into boxes</a></li>
-<li><a class="reference internal" href="#choose-how-to-dress-your-boxes">Choose how to dress your boxes</a></li>
+<li><a class="reference internal" href="#choose-how-to-annotate-your-boxes">Choose how to annotate your boxes</a></li>
 <li><a class="reference internal" href="#prepare-your-circuit-for-noise-injection">Prepare your circuit for noise injection</a></li>
+<li><a class="reference internal" href="#select-a-twirling-strategy">Select a twirling strategy</a></li>
 <li><a class="reference internal" href="#specify-how-to-treat-barriers">Specify how to treat barriers</a></li>
 <li><a class="reference internal" href="#incorporate-samplomatic-s-pass-manager-into-qiskit-s-preset-pass-managers">Incorporate Samplomatic’s pass manager into <code class="docutils literal notranslate"><span class="pre">Qiskit</span></code>’s preset pass managers</a></li>
 <li><a class="reference internal" href="#build-your-circuit">Build your circuit</a></li>
