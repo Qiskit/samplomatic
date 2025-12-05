@@ -69,7 +69,7 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from ..samplex.nodes.change_basis_node import LOCAL_CLIFFORD, MEAS_PAULI_BASIS, PREP_PAULI_BASIS
 from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
@@ -678,12 +678,15 @@ class PreSamplex:
         )
         return self._add_emit_right(node)
 
-    def add_emit_meas_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
-        """Add a node that emits virtual gates left to measure in a basis.
+    def add_emit_left_basis_change(
+        self, qubits: QubitPartition, basis_ref: StrRef, virtual_type: VirtualType
+    ) -> NodeIndex:
+        """Add a node that emits virtual gates left to change frames.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             basis_ref: Unique identifier of this basis change.
+            virtual_type: The virtual type to emit.
 
         Raises:
             SamplexBuildError: If a basis change with the same `basis_ref` but of different
@@ -694,18 +697,20 @@ class PreSamplex:
         """
         if (num_subsys := self._basis_changes.get(basis_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add basis change `{basis_ref}` on `{qubits}` and a "
+                f"Cannot add frame change `{basis_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
             self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreChangeBasis(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
+        node = PreChangeBasis(subsystems, Direction.LEFT, virtual_type, basis_ref)
         return self._add_emit_left(node)
 
-    def add_emit_prep_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
-        """Add a node that emits virtual gates right to prepare a basis.
+    def add_emit_right_basis_change(
+        self, qubits: QubitPartition, basis_ref: StrRef, virtual_type: VirtualType
+    ) -> NodeIndex:
+        """Add a node that emits virtual gates right to change frames.
 
         Args:
             qubits: The qubits to emit virtual gates on.
@@ -727,7 +732,7 @@ class PreSamplex:
             self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreChangeBasis(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
+        node = PreChangeBasis(subsystems, Direction.RIGHT, virtual_type, basis_ref)
         return self._add_emit_right(node)
 
     def add_propagate(self, instr: CircuitInstruction, mode: InstructionMode, params: ParamSpec):
@@ -1106,13 +1111,14 @@ class PreSamplex:
             )
 
         for basis_ref, length in self._basis_changes.items():
+            description = (
+                "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3."
+                if basis_ref.startswith("basis_changes")
+                else "Local Clifford gates."
+            )
+
             samplex.add_input(
-                TensorSpecification(
-                    f"basis_changes.{basis_ref}",
-                    (length,),
-                    np.dtype(np.uint8),
-                    "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3. ",
-                )
+                TensorSpecification(basis_ref, (length,), np.dtype(np.uint8), description)
             )
 
         for noise_ref, num_qubits in self._pauli_lindblad_maps.items():
@@ -1206,10 +1212,14 @@ class PreSamplex:
         """
         pre_basis = cast(PreChangeBasis, self.graph[pre_basis_idx])
         reg_idx = order[pre_basis_idx]
+        if pre_basis.register_type is VirtualType.C1:
+            basis = LOCAL_CLIFFORD
+        else:
+            basis = MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS
         node = ChangeBasisNode(
             reg_name := f"basis_change_{reg_idx}",
-            MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS,
-            "basis_changes." + pre_basis.basis_ref,
+            basis,
+            pre_basis.basis_ref,
             len(pre_basis.subsystems),
         )
         node_idx = samplex.add_node(node)

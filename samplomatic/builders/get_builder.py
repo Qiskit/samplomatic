@@ -21,6 +21,7 @@ from ..annotations import (
     ChangeBasis,
     ChangeBasisMode,
     DressingMode,
+    InjectLocalClifford,
     InjectNoise,
     Twirl,
     VirtualType,
@@ -93,8 +94,11 @@ def change_basis_parser(
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `change_basis.decomposition`.
     """
+    if emission.basis_ref:
+        raise BuildError()
+
     emission.basis_register_type = VirtualType.U2
-    emission.basis_ref = change_basis.ref
+    emission.basis_ref = f"basis_changes.{change_basis.ref}"
 
     synth = get_synth(change_basis.decomposition)
     if (current_synth := collection.synth) is not None:
@@ -115,6 +119,51 @@ def change_basis_parser(
             raise BuildError(
                 f"Cannot use {mode} basis change with another annotation that uses "
                 f"{current_dressing}."
+            )
+    else:
+        collection.dressing = dressing
+        emission.dressing = dressing
+
+
+def inject_local_clifford_parser(
+    local_clifford: InjectLocalClifford,
+    collection: CollectionSpec,
+    emission: EmissionSpec,
+):
+    """Parse a inject local Clifford annotation by mutating emission and collection specs.
+
+    Args:
+        local_clifford: The annotation to parse.
+        collection: The collection spec to modify.
+        emission: The emission spec to modify.
+
+    Raises:
+        BuildError: If `dressing` is already specified on one of the specs and is incompatible
+            with the annotation's dressing.
+        BuildError: If `synth` is already specified on the `collection` and not equal to the
+            synth corresponding to `local_clifford.decomposition`.
+    """
+    if emission.basis_ref:
+        raise BuildError()
+
+    emission.basis_register_type = VirtualType.C1
+    emission.basis_ref = f"local_cliffords.{local_clifford.ref}"
+
+    synth = get_synth(local_clifford.decomposition)
+    if (current_synth := collection.synth) is not None:
+        if synth != current_synth:
+            raise BuildError(
+                "Cannot use different synthesizers on different annotations on the same box."
+            )
+    else:
+        collection.synth = synth
+
+    dressing = local_clifford.dressing
+    if (current_dressing := collection.dressing) is not None:
+        if dressing != current_dressing:
+            raise BuildError(
+                f"Cannot use {dressing} on when injecting local Clifford with another annotation "
+                f"that uses {current_dressing}."
             )
     else:
         collection.dressing = dressing
@@ -176,4 +225,9 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
 
 SUPPORTED_ANNOTATIONS: dict[
     Annotation, Callable[[type[Annotation], CollectionSpec, EmissionSpec], None]
-] = {ChangeBasis: change_basis_parser, Twirl: twirl_parser, InjectNoise: inject_noise_parser}
+] = {
+    ChangeBasis: change_basis_parser,
+    Twirl: twirl_parser,
+    InjectLocalClifford: inject_local_clifford_parser,
+    InjectNoise: inject_noise_parser,
+}

@@ -12,11 +12,15 @@
 
 """C1Register"""
 
+from functools import cache
+
 import numpy as np
+from qiskit.quantum_info import Clifford
 
 from ..annotations import VirtualType
 from .finite_group_register import FiniteGroupRegister
 from .tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
+from .u2_register import U2Register
 
 C1_TO_TABLEAU = np.array(
     [
@@ -52,6 +56,17 @@ C1_TO_TABLEAU = np.array(
 This is the order used by :class:`~.C1Register`."""
 
 
+@cache
+def c1_to_u2() -> np.ndarray:
+    """Return a cached array containing the U2 representation of the single-qubit Cliffords.
+
+    The order matches :const:`~C1_TO_TABLEAU`.
+    """
+    return np.array(
+        [Clifford(tableau, False).to_matrix() for tableau in C1_TO_TABLEAU], dtype=U2Register.DTYPE
+    )
+
+
 class C1Register(FiniteGroupRegister):
     """Virtual register of C1 gates.
 
@@ -76,7 +91,7 @@ class C1Register(FiniteGroupRegister):
 
     def convert_to(self, register_type):
         if register_type is VirtualType.U2:
-            NotImplementedError("Not yet implemented.")
+            return U2Register(c1_to_u2()[self._array, :, :])
         return super().convert_to(register_type)
 
     @classmethod

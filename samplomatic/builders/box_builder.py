@@ -141,13 +141,13 @@ class LeftBoxBuilder(BoxBuilder):
     def rhs(self):
         self._append_barrier("R")
 
+        if self.emission.basis_ref:
+            self.samplex_state.add_emit_left_basis_change(
+                self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
+            )
         if self.emission.noise_ref:
             self.samplex_state.add_emit_noise_left(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
-            )
-        if self.emission.basis_ref:
-            self.samplex_state.add_emit_meas_basis_change(
-                self.emission.qubits, self.emission.basis_ref
             )
         if twirl_type := self.emission.twirl_register_type:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
@@ -201,8 +201,8 @@ class RightBoxBuilder(BoxBuilder):
         self._append_barrier("L")
 
         if self.emission.basis_ref:
-            self.samplex_state.add_emit_prep_basis_change(
-                self.emission.qubits, self.emission.basis_ref
+            self.samplex_state.add_emit_right_basis_change(
+                self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
             )
         if self.emission.noise_ref:
             self.samplex_state.add_emit_noise_right(
