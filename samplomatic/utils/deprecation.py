@@ -28,7 +28,7 @@ def deprecate_arg(
     new_alias: str | None = None,
     predicate: Callable[[Any], bool] | None = None,
     removal_timeline: str = "no earlier than 1 month after the release date",
-):
+) -> Callable:
     """Return a decorator to indicate an argument has been deprecated in some way.
 
     This decorator may be used multiple times on the same function, once per deprecated argument.
@@ -61,7 +61,7 @@ def deprecate_arg(
             like "no sooner than 6 months after the latest release" or "in release 9.99".
 
     Returns:
-        Callable: The decorated callable.
+        The decorated callable.
     """
     return _deprecate_arg(
         name,

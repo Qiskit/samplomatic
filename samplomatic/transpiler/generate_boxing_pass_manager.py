@@ -36,7 +36,7 @@ from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral
     since="0.14.0",
     predicate=lambda remove_barriers: remove_barriers in {True, False},
     deprecation_description="Providing boolean values to the ``remove_barriers`` argument "
-    "``generate_boxing_pass_manager()``",
+    "of ``generate_boxing_pass_manager()``",
     additional_msg="Instead, choose one of the string values.",
 )
 def generate_boxing_pass_manager(
@@ -130,7 +130,7 @@ def generate_boxing_pass_manager(
             * ``'immediately'`` removes barriers before doing anything else, so that existing
               barriers effectively have no role in box grouping.
             * ``'finally'`` removes barriers, but only as the very last step. This causes, for
-              example, causes single qubit gates that are trapped between barriers to not be placed
+              example, single-qubit gates that are trapped between barriers to not be placed
               into boxes.
             * ``'after_stratification'`` (default) removes barriers, but only after entangler and
               measurement instructions have been boxed and extended with ``twirling_strategy``, and
