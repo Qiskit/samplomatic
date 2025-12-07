@@ -70,7 +70,7 @@ def validate_literals(*arg_names: str) -> Callable[[Callable[[*Ts], T]], Callabl
                 if value not in valid_values:
                     raise ValueError(
                         f"Invalid value for argument '{name}': {value!r}. "
-                        f"Allowed values are: {sorted(valid_values)}."
+                        f"Allowed values are: {valid_values}."
                     )
 
             return fn(*args, **kwargs)

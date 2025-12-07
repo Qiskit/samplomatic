@@ -109,7 +109,7 @@ def pytest_generate_tests(metafunc):
 @pytest.mark.parametrize("measure_annotations", ["twirl", "change_basis", "all"])
 @pytest.mark.parametrize("twirling_strategy", ["active", "active_accum", "active_circuit", "all"])
 @pytest.mark.parametrize(
-    "remove_barriers", ["immediately", "finally", "after_stratefication", "never"]
+    "remove_barriers", ["immediately", "finally", "after_stratification", "never"]
 )
 def test_generate_boxing_pass_manager_makes_buildable_circuits(
     circuit, enable_gates, enable_measures, measure_annotations, twirling_strategy, remove_barriers

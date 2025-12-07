@@ -12,10 +12,9 @@
 
 """generate_boxing_pass_manager"""
 
-from typing import Literal, TypeAlias
+from typing import Literal
 
 from qiskit.transpiler import PassManager
-from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import RemoveBarriers
 
 from ..utils import deprecate_arg, validate_literals
@@ -27,14 +26,8 @@ from .passes import (
     GroupMeasIntoBoxes,
 )
 from .passes.add_inject_noise import InjectNoiseStrategyLiteral, InjectNoiseTargetsLiteral
+from .passes.group_meas_into_boxes import MeasAnnotationLiteral
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
-
-TwirlingStrategyLiteral: TypeAlias = Literal[
-    "active", "active_accum", "active_circuit", "all", True, False
-]
-RemoveBarriersLiteral: TypeAlias = Literal[
-    "immediately", "finally", "after_stratification", "never"
-]
 
 
 @deprecate_arg(
@@ -50,16 +43,21 @@ RemoveBarriersLiteral: TypeAlias = Literal[
     "twirling_strategy",
     "inject_noise_targets",
     "inject_noise_strategy",
-    "twirling_strategy",
+    "remove_barriers",
 )
 def generate_boxing_pass_manager(
+    *,
     enable_gates: bool = True,
     enable_measures: bool = True,
-    measure_annotations: Literal["twirl", "change_basis", "all"] = "twirl",
-    twirling_strategy: TwirlingStrategyLiteral = "active_circuit",
+    measure_annotations: MeasAnnotationLiteral = "twirl",
+    twirling_strategy: Literal[
+        "active", "active_accum", "active_circuit", "all"
+    ] = "active_circuit",
     inject_noise_targets: InjectNoiseTargetsLiteral = "none",
     inject_noise_strategy: InjectNoiseStrategyLiteral = "no_modification",
-    remove_barriers: bool | RemoveBarriersLiteral = "after_stratification",
+    remove_barriers: Literal[
+        "immediately", "finally", "after_stratification", "never", True, False
+    ] = "after_stratification",
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -211,12 +209,6 @@ def generate_boxing_pass_manager(
         passes.append(AddNoopsActiveCircuit())
     elif twirling_strategy == "all":
         passes.append(AddNoopsAll())
-    else:
-        raise TranspilerError(
-            f"``twirling_strategy = '{twirling_strategy}'`` is not supported. "
-            "The supported values are "
-            f"{[strategy.name.lower() for strategy in TwirlingStrategyLiteral]}."
-        )
 
     passes.append(AddTerminalRightDressedBoxes())
 
