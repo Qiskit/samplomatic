@@ -28,7 +28,8 @@ class AddNoops(TransformationPass):
     """
 
     def __init__(self, qubits: Iterable[int] | Iterable[Qubit]):
-        TransformationPass.__init__(self)
+        super().__init__()
+
         if not (
             all(isinstance(qubit, int) for qubit in qubits)
             or all(isinstance(qubit, Qubit) for qubit in qubits)

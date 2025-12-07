@@ -57,7 +57,7 @@ class GroupMeasIntoBoxes(TransformationPass):
         annotations: Literal["twirl", "change_basis", "all"] = "twirl",
         prefix_ref: str = "basis",
     ):
-        TransformationPass.__init__(self)
+        super().__init__()
 
         if annotations not in SUPPORTED_ANNOTATIONS:
             raise ValueError(
