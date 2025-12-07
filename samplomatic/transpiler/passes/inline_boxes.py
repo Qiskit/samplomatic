@@ -26,9 +26,6 @@ class InlineBoxes(TransformationPass):
     Every annotation that is present in the boxes is ignored.
     """
 
-    def __init__(self):
-        TransformationPass.__init__(self)
-
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         inlined_dag = dag.copy_empty_like()
         for node in dag.op_nodes():

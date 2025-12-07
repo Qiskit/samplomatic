@@ -24,9 +24,6 @@ class AddNoopsActiveAccum(TransformationPass):
     part of a previous box.
     """
 
-    def __init__(self):
-        TransformationPass.__init__(self)
-
     def run(self, dag: DAGCircuit):
         # create a new dag to allow for mid-circuit modifications
         modified_dag: DAGCircuit = dag.copy_empty_like()

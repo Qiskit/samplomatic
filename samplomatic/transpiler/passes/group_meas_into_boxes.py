@@ -54,7 +54,7 @@ class GroupMeasIntoBoxes(TransformationPass):
 
     @validate_literals("annotations")
     def __init__(self, annotations: MeasAnnotationLiteral = "twirl", prefix_ref: str = "basis"):
-        TransformationPass.__init__(self)
+        super().__init__()
 
         self.annotations = annotations
         self.prefix_ref = prefix_ref
