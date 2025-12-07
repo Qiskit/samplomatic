@@ -36,7 +36,7 @@ def validate_literals(*arg_names: str) -> Callable[[Callable[[*Ts], T]], Callabl
         from samplomatic.utils import validate_literals
 
         @validate_literals("color", "shape")
-        def draw(color:Literal["red", "green"], shape:Literal["circle", "square"]):
+        def draw(color: Literal["red", "green"], shape: Literal["circle", "square"]):
             ...
 
     Args:
