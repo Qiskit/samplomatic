@@ -13,9 +13,15 @@
 """validate_literals"""
 
 import inspect
+import sys
 from collections.abc import Callable
 from functools import wraps
-from typing import TypeVar, TypeVarTuple, get_args
+from typing import TypeVar, get_args
+
+if sys.version_info >= (3, 11):
+    from typing import TypeVarTuple  # noqa: F401
+else:
+    from typing_extensions import TypeVarTuple  # noqa: F401
 
 Ts = TypeVarTuple("Ts")
 T = TypeVar("T")
