@@ -25,8 +25,5 @@ class AddNoopsAll(TransformationPass):
     defined when initializing the `QuantumCircuit` object.
     """
 
-    def __init__(self):
-        TransformationPass.__init__(self)
-
     def run(self, dag: DAGCircuit):
         return AddNoops(dag.qubits).run(dag)

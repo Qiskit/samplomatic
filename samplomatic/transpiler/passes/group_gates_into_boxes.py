@@ -45,9 +45,6 @@ class GroupGatesIntoBoxes(TransformationPass):
         either use :class`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
     """
 
-    def __init__(self):
-        TransformationPass.__init__(self)
-
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.
 

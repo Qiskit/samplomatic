@@ -66,7 +66,7 @@ class AddInjectNoise(TransformationPass):
         prefix_modifier_ref: str = "m",
         targets: Literal["none", "gates", "measures", "all"] = "none",
     ):
-        TransformationPass.__init__(self)
+        super().__init__()
         self.strategy = NoiseInjectionStrategy(strategy)
         self.overwrite = overwrite
         self.prefix_ref = prefix_ref
