@@ -133,6 +133,12 @@ class TestTensorSpecification:
         with pytest.raises(ValueError, match=r"must have at least 2 axes"):
             spec.validate_and_coerce(arr)
 
+    def test_validate_and_coerce_too_many_dimensions(self):
+        spec = TensorSpecification("x", (3,), np.uint8)
+
+        with pytest.raises(ValueError, match=r"expects .* \(3,\), but received .* \(2, 3\)"):
+            spec.validate_and_coerce([[0, 1, 2], [3, 4, 5]])
+
     def test_validate_and_coerce_inconsistent_free_dimensions(self):
         spec = TensorSpecification("x", ("d", "d"), np.float32)
         arr = np.ones((2, 3), dtype=np.float32)
