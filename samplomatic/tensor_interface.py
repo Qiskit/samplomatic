@@ -247,10 +247,10 @@ class TensorSpecification(Specification[np.ndarray]):
                     f"Input '{self.name}' expects an array ending with shape {self.shape} "
                     f"but received one with shape {value.shape}."
                 )
-        elif not trailing_shapes_agree:
+        elif not trailing_shapes_agree or value.ndim != self.ndim:
             raise ValueError(
                 f"Input '{self.name}' expects an array of shape {self.shape}, "
-                f"but received one with shape {value.shape} and dtype {value.dtype}."
+                f"but received one with shape {value.shape}."
             )
         return value, bound_dimensions
 
