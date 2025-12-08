@@ -12,6 +12,7 @@
 
 """Synths"""
 
+from .corspe_synth import CorpseSynth
 from .get_synth import get_synth
 from .rzrx_synth import RzRxSynth
 from .rzsx_synth import RzSxSynth
