@@ -39,7 +39,6 @@ class TestGeneralBuildErrors:
 
     def test_bad_order_right_box(self):
         """Verify an error is raised if a gate follows a conditional in a right dressed box."""
-        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 3)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.noop(1)
@@ -55,7 +54,6 @@ class TestGeneralBuildErrors:
 
     def test_bad_order_left_box(self):
         """Verify an error is raised if a conditional follows a gate in a left dressed box."""
-        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 3)
         # with circuit.box([Twirl(dressing="left")]):
         #     circuit.x(1)
@@ -69,7 +67,6 @@ class TestGeneralBuildErrors:
 
     def test_entangler_bad_order_left_box(self):
         """Verify that an error is raised if a entanglers appear in bad order."""
-        # TODO: uncomment these lines when dynamic circuits are supported again
         # circuit = QuantumCircuit(2, 3)
         # with circuit.box([Twirl(dressing="left")]):
         #     with circuit.if_test((circuit.clbits[0], 1)):

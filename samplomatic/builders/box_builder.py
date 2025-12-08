@@ -13,13 +13,14 @@
 """BoxBuilder"""
 
 import numpy as np
-from qiskit.circuit import Barrier
+from qiskit.circuit import Barrier, IfElseOp
 
 from ..aliases import CircuitInstruction, ParamIndices
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
+from .dynamic_builder import BoxLeftIfElseBuilder, BoxRightIfElseBuilder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
 from .template_state import TemplateState
 
@@ -32,12 +33,14 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
 
         self.collection = collection
         self.emission = emission
-        self.measured_qubits = QubitPartition(1, [])
         self.entangled_qubits = set()
+        self.measured_qubits = QubitPartition(1, [])
 
     def _append_dressed_layer(self) -> ParamIndices:
         """Add a dressed layer."""
-        qubits = self.collection.qubits
+        qubits = self.collection.collect_qubits
+        if len(qubits) == 0:
+            return
         try:
             remapped_qubits = [
                 list(map(lambda k: self.template_state.qubit_map[k], subsys)) for subsys in qubits
@@ -66,11 +69,20 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
 
         return param_idxs.reshape(len(qubits), -1)
 
-    def _append_barrier(self, label: str):
+    def _append_barrier(self, label: str, qubits=None):
         label = f"{label}{'_'.join(map(str, self.template_state.scope_idx))}"
-        all_qubits = self.template_state.qubit_map.values()
+        all_qubits = (
+            self.template_state.qubit_map.values()
+            if qubits is None
+            else [v for k, v in self.template_state.qubit_map.items() if (k,) in qubits]
+        )
         barrier = CircuitInstruction(Barrier(len(all_qubits), label), all_qubits)
         self.template_state.template.append(barrier)
+
+    def _validate_if_else(self, if_else: IfElseOp):
+        self.samplex_state.verify_no_twirled_clbits(
+            self.template_state.get_condition_clbits(if_else.condition)
+        )
 
 
 class LeftBoxBuilder(BoxBuilder):
@@ -86,6 +98,22 @@ class LeftBoxBuilder(BoxBuilder):
         if (name := instr.operation.name) == "barrier":
             self.template_state.append_remapped_gate(instr)
             return
+
+        if name.startswith("if_else"):
+            self._validate_if_else(instr.operation)
+            builder = BoxLeftIfElseBuilder(
+                instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
+            )
+            if_else = builder.build()
+            new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
+            self.template_state.template.append(if_else, new_qubits, instr.clbits)
+            return
+
+        elif not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
+            raise RuntimeError(
+                "Cannot handle a dynamic instruction and another instruction on "
+                f"qubits {instr.qubits} in the same dressed box."
+            )
 
         if name.startswith("meas"):
             for qubit in instr.qubits:
@@ -125,8 +153,9 @@ class LeftBoxBuilder(BoxBuilder):
                     "left-dressed box."
                 )
             self.entangled_qubits.update(instr.qubits)
-            params = self.template_state.append_remapped_gate(instr)
             mode = InstructionMode.PROPAGATE
+            params = self.template_state.append_remapped_gate(instr)
+
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
@@ -135,8 +164,9 @@ class LeftBoxBuilder(BoxBuilder):
     def lhs(self):
         self._append_barrier("L")
         param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
-        self._append_barrier("M")
+        collect_qubits = self.collection.collect_qubits
+        self.samplex_state.add_collect(collect_qubits, self.collection.synth, param_idxs)
+        self._append_barrier("M", collect_qubits)
 
     def rhs(self):
         self._append_barrier("R")
@@ -170,19 +200,37 @@ class RightBoxBuilder(BoxBuilder):
 
     def parse(self, instr: CircuitInstruction):
         if (name := instr.operation.name).startswith("barrier"):
-            params = self.template_state.append_remapped_gate(instr)
+            self.template_state.append_remapped_gate(instr)
             return
 
         if name.startswith("meas"):
             raise BuildError("Measurements are not currently supported in right-dressed boxes.")
 
-        elif (num_qubits := instr.operation.num_qubits) == 1:
+        if not self.collection.dynamic_qubits.all_elements.isdisjoint(instr.qubits):
+            raise BuildError(
+                "Cannot handle a dynamic instruction and another instruction on "
+                f"qubits {instr.qubits} in the same dressed box."
+            )
+
+        if name.startswith("if_else"):
+            for q in instr.qubits:
+                self.collection.dynamic_qubits.add((q,))
+            self._validate_if_else(instr.operation)
+            builder = BoxRightIfElseBuilder(
+                instr, self.samplex_state, self.collection.synth, self.template_state.param_iter
+            )
+            if_else = builder.build()
+            new_qubits = [self.template_state.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
+            self.template_state.template.append(if_else, new_qubits, instr.clbits)
+            return
+
+        if (num_qubits := instr.operation.num_qubits) == 1:
             self.entangled_qubits.update(instr.qubits)
             # the action of this single-qubit gate will be absorbed into the dressing
+            mode = InstructionMode.MULTIPLY
             params = []
             if instr.operation.is_parameterized():
                 params.extend((None, param) for param in instr.operation.params)
-            mode = InstructionMode.MULTIPLY
 
         elif num_qubits > 1:
             if not self.entangled_qubits.isdisjoint(instr.qubits):
@@ -214,7 +262,8 @@ class RightBoxBuilder(BoxBuilder):
             )
 
     def rhs(self):
-        self._append_barrier("M")
+        collect_qubits = self.collection.collect_qubits
+        self._append_barrier("M", collect_qubits)
         param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
+        self.samplex_state.add_collect(collect_qubits, self.collection.synth, param_idxs)
         self._append_barrier("R")

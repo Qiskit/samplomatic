@@ -60,6 +60,7 @@ from ..samplex.nodes import (
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
+    CopyNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
@@ -82,6 +83,7 @@ from ..visualization import plot_graph
 from .graph_data import (
     PreChangeBasis,
     PreCollect,
+    PreCopy,
     PreEdge,
     PreEmit,
     PreInjectNoise,
@@ -163,10 +165,6 @@ class PreSamplex:
             circuit.
         passthrough_params: List of :class:`~.ParamSpec` for parameters which exist in the template
             but are not generated in the collectors.
-        forced_copy_node_idxs: List of node indices for which copying of registers will be forced.
-            The nodes behave differently for edges with left/right direction. For left direction,
-            the incoming node is checked against `forced_copy_node_idxs`, while for right direction,
-            the outgoing node is.
     """
 
     def __init__(
@@ -182,7 +180,6 @@ class PreSamplex:
         basis_changes: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
-        forced_copy_node_idxs: set[NodeIndex] | None = None,
     ):
         self.graph = PyDiGraph[PreNode, PreEdge](multigraph=True) if graph is None else graph
         self.qubit_map: dict[Qubit, QubitIndex] = {} if qubit_map is None else qubit_map
@@ -202,9 +199,6 @@ class PreSamplex:
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
         self.passthrough_params: ParamSpec = (
             [] if passthrough_params is None else passthrough_params
-        )
-        self._forced_copy_node_idxs: set[NodeIndex] = (
-            set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
@@ -228,7 +222,6 @@ class PreSamplex:
             self._basis_changes,
             self._twirled_clbits,
             self.passthrough_params,
-            self._forced_copy_node_idxs,
         )
 
     def find_danglers(
@@ -354,7 +347,7 @@ class PreSamplex:
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
 
-        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreCopy, PreEmit, PrePropagate), direction=Direction.RIGHT)
         if any(True for _ in self.find_danglers(match, subsystems)):
             raise SamplexBuildError(f"Cannot propagate through {instr.operation.name} instruction.")
         match = DanglerMatch(direction=Direction.LEFT)
@@ -391,14 +384,6 @@ class PreSamplex:
             qubits.num_elements_per_part, [tuple(self.qubit_map[q] for q in sys) for sys in qubits]
         )
 
-    def add_force_copy_nodes(self, node_idxs: Iterable[NodeIndex]):
-        """Add node indices for which a register will be forced to copy."""
-        self._forced_copy_node_idxs.update(node_idxs)
-
-    def remove_force_copy_nodes(self, node_idxs: Iterable[NodeIndex]):
-        """Remove node indices for which a register will be forced to copy."""
-        self._forced_copy_node_idxs.difference_update(node_idxs)
-
     def add_collect(
         self,
         qubits: QubitPartition,
@@ -432,19 +417,12 @@ class PreSamplex:
             )
 
         # collect any nodes that need collecting and unmark them as dangling
-        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreCopy, PreEmit, PrePropagate), direction=Direction.RIGHT)
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             if self.graph.has_edge(found_idx, node_idx):
-                # The force_register_copy stays the same and doesn't need update.
                 self.graph.get_edge_data(found_idx, node_idx).add_subsystems(found_subsystems)
             else:
-                self.graph.add_edge(
-                    found_idx,
-                    node_idx,
-                    PreEdge(
-                        found_subsystems, Direction.RIGHT, found_idx in self._forced_copy_node_idxs
-                    ),
-                )
+                self.graph.add_edge(found_idx, node_idx, PreEdge(found_subsystems, Direction.RIGHT))
 
         # prevent dangling pre-propagate left nodes from catching any further action because
         # this collection is in the way
@@ -498,7 +476,7 @@ class PreSamplex:
         # Collect relevant nodes which are an optional dangler, and leave them optionally dangling
         # This needs to happen first, so the new optional danglers created later won't be counted.
         match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate),
+            node_types=(PreCopy, PreEmit, PrePropagate),
             direction=Direction.RIGHT,
             dangler_type=DanglerType.OPTIONAL,
         )
@@ -510,7 +488,7 @@ class PreSamplex:
         # Collect every relevant node which is a required dangler,
         # then convert it to an optional dangler.
         match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate),
+            node_types=(PreCopy, PreEmit, PrePropagate),
             direction=Direction.RIGHT,
             dangler_type=DanglerType.REQUIRED,
         )
@@ -556,7 +534,9 @@ class PreSamplex:
         # connect this emmision there. we do NOT want to remove them as dangling because they
         # might need to be used again for future emissions, for example, a Pauli twirl followed by
         # a noise injection.
-        match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
+        match = DanglerMatch(
+            node_types=(PreCollect, PreCopy, PrePropagate), direction=Direction.LEFT
+        )
 
         aggregate_found_subsystems = set()
         for found_idx, found_subsystems in self.find_danglers(match, subsystems):
@@ -564,7 +544,7 @@ class PreSamplex:
             self.graph.add_edge(
                 node_idx,
                 found_idx,
-                PreEdge(found_subsystems, Direction.LEFT, found_idx in self._forced_copy_node_idxs),
+                PreEdge(found_subsystems, Direction.LEFT),
             )
 
         if aggregate_found_subsystems != set(subsystems):
@@ -578,22 +558,24 @@ class PreSamplex:
 
         return node_idx
 
-    def _add_emit_left(self, node: PreEmit):
+    def _add_left(self, node: PreNode):
         """Add a pre-emit with `Direction.LEFT`.
 
         This method adds edges to any node that is dangling with overlapping subsystems.
         """
         node_idx = self.graph.add_node(node)
-        match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
+        match = DanglerMatch(
+            node_types=(PreCopy, PreCollect, PrePropagate), direction=Direction.LEFT
+        )
         for found_idx, found_subsystems in self.find_danglers(match, node.subsystems):
             self.graph.add_edge(node_idx, found_idx, PreEdge(found_subsystems, Direction.LEFT))
 
         return node_idx
 
-    def _add_emit_right(self, node: PreEmit):
+    def _add_right(self, node: PreNode):
         """Add a pre-emit with `Direction.RIGHT`.
 
-        This method sets the pre-emit as dangling.
+        This method sets the node as dangling.
         """
         node_idx = self.graph.add_node(node)
         self.add_dangler(node.subsystems.all_elements, node_idx)
@@ -637,7 +619,7 @@ class PreSamplex:
             modifier_ref,
             next(self._pauli_lindblad_map_count),
         )
-        return self._add_emit_left(node)
+        return self._add_left(node)
 
     def add_emit_noise_right(
         self, qubits: QubitPartition, noise_ref: StrRef, modifier_ref: StrRef = ""
@@ -676,7 +658,7 @@ class PreSamplex:
             modifier_ref,
             next(self._pauli_lindblad_map_count),
         )
-        return self._add_emit_right(node)
+        return self._add_right(node)
 
     def add_emit_meas_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
         """Add a node that emits virtual gates left to measure in a basis.
@@ -702,7 +684,7 @@ class PreSamplex:
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreChangeBasis(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
-        return self._add_emit_left(node)
+        return self._add_left(node)
 
     def add_emit_prep_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
         """Add a node that emits virtual gates right to prepare a basis.
@@ -728,7 +710,7 @@ class PreSamplex:
 
         subsystems = self.qubits_to_indices(qubits)
         node = PreChangeBasis(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
-        return self._add_emit_right(node)
+        return self._add_right(node)
 
     def add_propagate(self, instr: CircuitInstruction, mode: InstructionMode, params: ParamSpec):
         """Add a node that propagates virtual gates through an operation.
@@ -774,13 +756,11 @@ class PreSamplex:
         rightward_node_candidate = NodeCandidate(
             self.graph, PrePropagate(subsystems, Direction.RIGHT, op, partition, mode, params)
         )
-        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreCopy, PreEmit, PrePropagate), direction=Direction.RIGHT)
         all_found_qubit_idxs = set()
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             all_found_qubit_idxs.update(found_subsystems.all_elements)
-            edge = PreEdge(
-                found_subsystems, Direction.RIGHT, found_idx in self._forced_copy_node_idxs
-            )
+            edge = PreEdge(found_subsystems, Direction.RIGHT)
             # if the node candidate hasn't been added to the graph yet, it will be here:
             self.graph.add_edge(found_idx, rightward_node_candidate.node_idx, edge)
 
@@ -796,12 +776,12 @@ class PreSamplex:
             self.graph, PrePropagate(subsystems, Direction.LEFT, op, partition, mode, params)
         )
         all_found_qubit_idxs = set()
-        match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
+        match = DanglerMatch(
+            node_types=(PreCollect, PreCopy, PrePropagate), direction=Direction.LEFT
+        )
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             all_found_qubit_idxs.update(found_subsystems.all_elements)
-            edge = PreEdge(
-                found_subsystems, Direction.LEFT, found_idx in self._forced_copy_node_idxs
-            )
+            edge = PreEdge(found_subsystems, Direction.LEFT)
             # if the node candidate hasn't been added to the graph yet, it will be here:
             self.graph.add_edge(leftward_node_candidate.node_idx, found_idx, edge)
 
@@ -983,7 +963,7 @@ class PreSamplex:
         Raises:
             SamplexBuildError: If any nodes are expecting collections.
         """
-        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
+        match = DanglerMatch(node_types=(PreCopy, PreEmit, PrePropagate), direction=Direction.RIGHT)
         uncollected_qubit_idxs = set()
         for qubit_idx, node_idxs in self._dangling.items():
             for node_idx in node_idxs:
@@ -1077,6 +1057,14 @@ class PreSamplex:
                 )
             elif isinstance(pre_node, PreZ2Collect):
                 self.add_collect_z2_to_output_node(
+                    samplex,
+                    pre_node_idx,
+                    pre_nodes_to_nodes,
+                    order,
+                    register_names,
+                )
+            elif isinstance(pre_node, PreCopy):
+                self.add_copy_node(
                     samplex,
                     pre_node_idx,
                     pre_nodes_to_nodes,
@@ -1219,6 +1207,59 @@ class PreSamplex:
         for pre_successor_idx in self.graph.successor_indices(pre_basis_idx):
             register_names[pre_successor_idx][pre_basis_idx] = reg_name
 
+    def add_copy_node(
+        self,
+        samplex: Samplex,
+        pre_copy_idx: NodeIndex,
+        pre_nodes_to_nodes: dict[NodeIndex, NodeIndex],
+        order: dict[NodeIndex, int],
+        register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
+    ) -> None:
+        """Add copy node to a samplex, mutating it in place.
+
+        Args:
+            samplex: The samplex to add nodes to.
+            pre_copy_idx: The index of the pre-copy node to turn into a copy node.
+            pre_nodes_to_nodes: A map from pre-node indices to node indices.
+            order: A map from pre-node indices to integers representing their position in a
+                topological sort of the samplex state graph.
+            register_names: A map such that ``register_names[a][b]`` is the name of the register
+                implied by the edge (a, b) in the samplex state graph.
+        """
+        reg_idx = order[pre_copy_idx]
+        pre_pred_idx = next(iter(self.sorted_predecessor_idxs(pre_copy_idx, order)))
+        register_name = register_names[pre_copy_idx][pre_pred_idx]
+
+        node_predecessor = samplex.graph[pre_nodes_to_nodes[pre_pred_idx]]
+        if register_name in node_predecessor.writes_to():
+            virtual_type = node_predecessor.writes_to()[register_name][1]
+        else:
+            virtual_type = node_predecessor.instantiates()[register_name][1]
+
+        combine_node_idx = self.add_combine_node(
+            samplex,
+            pre_copy_idx,
+            pre_nodes_to_nodes,
+            order,
+            register_names,
+            combine_name := f"combine_{reg_idx}",
+            virtual_type,
+        )
+
+        copy_node = CopyNode(
+            combine_name,
+            copy_name := f"copy_{reg_idx}",
+            virtual_type,
+            len(self.graph[pre_copy_idx].subsystems),
+        )
+
+        node_idx = samplex.add_node(copy_node)
+        samplex.add_edge(combine_node_idx, node_idx)
+        pre_nodes_to_nodes[pre_copy_idx] = node_idx
+
+        for pre_successor_idx in self.graph.successor_indices(pre_copy_idx):
+            register_names[pre_successor_idx][pre_copy_idx] = copy_name
+
     def add_inject_noise_node(
         self,
         samplex: Samplex,
@@ -1357,7 +1398,6 @@ class PreSamplex:
                 input_register_name=input_register_name,
                 output_register_name=combined_register_name,
                 slice_idxs=slice_idxs,
-                force_copy=pre_edge.force_register_copy,
             )
         else:
             combine_node = CombineRegistersNode(

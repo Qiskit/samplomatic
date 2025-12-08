@@ -23,6 +23,7 @@ from ..samplex.nodes import (
     CollectZ2ToOutputNode,
     CombineRegistersNode,
     ConversionNode,
+    CopyNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
@@ -490,4 +491,32 @@ class RightU2ParametricMultiplicationNodeSerializer(
                 data["operand"],
                 data["register_name"],
                 orjson.loads(data["param_indices"]),
+            )
+
+
+class CopyNodeSerializer(TypeSerializer[CopyNode]):
+    """Serializer for :class:`~.CopyNode`."""
+
+    TYPE_ID = "N13"
+    TYPE = CopyNode
+
+    class SSV1(DataSerializer[CopyNode]):
+        MIN_SSV = 2
+
+        @classmethod
+        def serialize(cls, obj):
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "ouput_name": obj._output_name,  # noqa: SLF001
+                "output_type": obj._output_type.value,  # noqa: SLF001
+                "num_subsystems": obj._num_subsystems,  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return CopyNode(
+                data["register_name"],
+                data["output_name"],
+                VirtualType(data["output_type"]),
+                int(data["num_subsystems"]),
             )
