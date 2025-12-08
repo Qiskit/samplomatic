@@ -13,8 +13,13 @@
 import pytest
 from qiskit.circuit import Annotation, BoxOp, CircuitInstruction, QuantumCircuit, Qubit
 
-from samplomatic.annotations import DressingMode, Twirl
-from samplomatic.builders.get_builder import get_builder, twirl_parser
+from samplomatic.annotations import ChangeBasis, DressingMode, InjectLocalClifford, Twirl
+from samplomatic.builders.get_builder import (
+    change_basis_parser,
+    get_builder,
+    inject_local_clifford_parser,
+    twirl_parser,
+)
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec
 from samplomatic.exceptions import BuildError
 from samplomatic.partition import QubitPartition
@@ -44,3 +49,16 @@ def test_twirl_parser_errors():
 
     with pytest.raises(BuildError, match="Cannot use different synthesizers"):
         twirl_parser(Twirl(decomposition="rzrx"), collection, emission)
+
+
+def test_change_frame_parser_errors():
+    """Test the errors when parsing frame changing annotations."""
+    qubits = QubitPartition(1, [(Qubit(),)])
+    collection = CollectionSpec(qubits, dressing=DressingMode.LEFT, synth=RzSxSynth())
+    emission = EmissionSpec(qubits, dressing=DressingMode.LEFT, basis_ref="my_basis")
+
+    with pytest.raises(BuildError, match="Cannot specify multiple frame changing annotations"):
+        change_basis_parser(ChangeBasis(), collection, emission)
+
+    with pytest.raises(BuildError, match="Cannot specify multiple frame changing annotations"):
+        inject_local_clifford_parser(InjectLocalClifford("my_basis"), collection, emission)

@@ -108,6 +108,7 @@ PREP_PAULI_BASIS = BasisChange[np.uint8](
 LOCAL_CLIFFORD = BasisChange[np.uint8](
     range(24), C1Register(np.arange(24, dtype=np.uint8).reshape(24, 1))
 )
+"""A frame change with a local Clifford."""
 
 
 class ChangeBasisNode(SamplingNode):

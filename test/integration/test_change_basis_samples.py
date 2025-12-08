@@ -94,8 +94,8 @@ def make_circuits():
         circuit.noop(0)
 
     expected = QuantumCircuit(1)
-    expected.rx(np.pi / 4, 0)
     expected.h(0)
+    expected.rx(np.pi / 4, 0)
 
     pauli = np.array([2], dtype=np.uint8)
     yield (circuit, expected, {"measure": pauli}), "x_basis_twirl_measure"

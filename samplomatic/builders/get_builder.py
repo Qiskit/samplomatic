@@ -89,13 +89,14 @@ def change_basis_parser(
         emission: The emission spec to modify.
 
     Raises:
+        BuildError: If `emission.basis_ref` is already specified.
         BuildError: If `dressing` is already specified on one of the specs and is incompatible
             with the basis change mode.
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `change_basis.decomposition`.
     """
     if emission.basis_ref:
-        raise BuildError()
+        raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
 
     emission.basis_register_type = VirtualType.U2
     emission.basis_ref = f"basis_changes.{change_basis.ref}"
@@ -130,7 +131,7 @@ def inject_local_clifford_parser(
     collection: CollectionSpec,
     emission: EmissionSpec,
 ):
-    """Parse a inject local Clifford annotation by mutating emission and collection specs.
+    """Parse an inject local Clifford annotation by mutating emission and collection specs.
 
     Args:
         local_clifford: The annotation to parse.
@@ -138,13 +139,14 @@ def inject_local_clifford_parser(
         emission: The emission spec to modify.
 
     Raises:
+        BuildError: If `emission.basis_ref` is already specified.
         BuildError: If `dressing` is already specified on one of the specs and is incompatible
             with the annotation's dressing.
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `local_clifford.decomposition`.
     """
     if emission.basis_ref:
-        raise BuildError()
+        raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
 
     emission.basis_register_type = VirtualType.C1
     emission.basis_ref = f"local_cliffords.{local_clifford.ref}"

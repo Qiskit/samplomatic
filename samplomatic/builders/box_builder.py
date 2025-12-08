@@ -138,13 +138,18 @@ class LeftBoxBuilder(BoxBuilder):
         self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
         self._append_barrier("M")
 
-    def rhs(self):
-        self._append_barrier("R")
-
         if self.emission.basis_ref:
             self.samplex_state.add_emit_left_basis_change(
                 self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
             )
+
+    def rhs(self):
+        self._append_barrier("R")
+
+        # if self.emission.basis_ref:
+        #     self.samplex_state.add_emit_left_basis_change(
+        #         self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
+        #     )
         if self.emission.noise_ref:
             self.samplex_state.add_emit_noise_left(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref

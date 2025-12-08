@@ -16,20 +16,37 @@ import numpy as np
 from qiskit.circuit import QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
 
-from samplomatic.annotations import InjectLocalClifford
+from samplomatic.annotations import InjectLocalClifford, Twirl
 from samplomatic.builders import pre_build
 
 
 def make_circuits():
     circuit = QuantumCircuit(1)
-    with circuit.box([InjectLocalClifford("i1")]):
+    with circuit.box([InjectLocalClifford("c1")]):
         circuit.measure_all()
 
     expected = QuantumCircuit(1)
     expected.x(0)
 
     local_cliff = np.array([2], dtype=np.uint8)
-    yield (circuit, expected, {"i1": local_cliff}), "inject_x"
+    yield (circuit, expected, {"c1": local_cliff}), "inject_x"
+
+    expected = QuantumCircuit(1)
+    expected.h(0)
+
+    local_cliff = np.array([4], dtype=np.uint8)
+    yield (circuit, expected, {"c1": local_cliff}), "inject_h"
+
+    circuit = QuantumCircuit(2)
+    for i in range(8):
+        with circuit.box([InjectLocalClifford(f"c{i}"), Twirl()]):
+            circuit.cx(0, 1)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(range(2))
+
+    local_cliffords = {f"c{i}": np.array([0, 0]) for i in range(8)}
+    yield (circuit, QuantumCircuit(2), local_cliffords), "rb_like"
 
 
 def pytest_generate_tests(metafunc):
