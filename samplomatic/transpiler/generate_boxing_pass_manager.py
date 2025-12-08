@@ -50,7 +50,7 @@ def generate_boxing_pass_manager(
     measure_annotations: Literal["twirl", "change_basis", "all"] = "twirl",
     twirling_strategy: Literal[
         "active", "active_accum", "active_circuit", "all"
-    ] = "active_circuit",
+    ] = "active",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
     inject_noise_strategy: Literal[
         "no_modification", "uniform_modification", "individual_modification"
