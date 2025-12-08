@@ -13,21 +13,12 @@
 """validate_literals"""
 
 import inspect
-import sys
 from collections.abc import Callable
 from functools import wraps
-from typing import TypeVar, get_args
-
-if sys.version_info >= (3, 11):
-    from typing import TypeVarTuple  # noqa: F401
-else:
-    from typing_extensions import TypeVarTuple  # noqa: F401
-
-Ts = TypeVarTuple("Ts")
-T = TypeVar("T")
+from typing import get_args
 
 
-def validate_literals(*arg_names: str) -> Callable[[Callable[[*Ts], T]], Callable[[*Ts], T]]:
+def validate_literals(*arg_names: str) -> Callable:
     """Return a decorator to validate function arguments against literal type annotations.
 
     .. plot::
@@ -47,7 +38,7 @@ def validate_literals(*arg_names: str) -> Callable[[Callable[[*Ts], T]], Callabl
         A decorator that wraps a function in a validation routine.
     """
 
-    def _wrapper(fn: Callable[[*Ts], T]) -> Callable[[*Ts], T]:
+    def decorator(fn):
         signature = inspect.signature(fn)
         annotations = fn.__annotations__
 
@@ -65,7 +56,7 @@ def validate_literals(*arg_names: str) -> Callable[[Callable[[*Ts], T]], Callabl
             arg_valid_values[arg_name] = set(values)
 
         @wraps(fn)
-        def _wrapped(*args, **kwargs) -> T:
+        def decorated(*args, **kwargs):
             bound = signature.bind(*args, **kwargs)
             bound.apply_defaults()
 
@@ -79,6 +70,6 @@ def validate_literals(*arg_names: str) -> Callable[[Callable[[*Ts], T]], Callabl
 
             return fn(*args, **kwargs)
 
-        return _wrapped
+        return decorated
 
-    return _wrapper
+    return decorator
