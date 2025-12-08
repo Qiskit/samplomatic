@@ -320,8 +320,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/samplomatic.transpiler.html">samplomatic.transpiler</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.transpiler.NoiseInjectionStrategy.html">NoiseInjectionStrategy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.transpiler.TwirlingStrategy.html">TwirlingStrategy</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
@@ -345,6 +343,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.validate_literals.html">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.BoxKey.html">BoxKey</a></li>
 </ul>
 </li>
@@ -466,12 +465,6 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html#samplomatic.transpiler.passes.AbsorbSingleQubitGates">AbsorbSingleQubitGates (class in samplomatic.transpiler.passes)</a>
 </li>
-        <li><a href="api/auto/samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy.ACTIVE">ACTIVE (samplomatic.transpiler.TwirlingStrategy attribute)</a>
-</li>
-        <li><a href="api/auto/samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy.ACTIVE_ACCUM">ACTIVE_ACCUM (samplomatic.transpiler.TwirlingStrategy attribute)</a>
-</li>
-        <li><a href="api/auto/samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy.ACTIVE_CIRCUIT">ACTIVE_CIRCUIT (samplomatic.transpiler.TwirlingStrategy attribute)</a>
-</li>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.add">add() (samplomatic.partition.Partition method)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_change_basis_node">add_change_basis_node() (samplomatic.pre_samplex.PreSamplex method)</a>
@@ -500,10 +493,10 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_force_copy_nodes">add_force_copy_nodes() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_inject_noise_node">add_inject_noise_node() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.add_input">add_input() (samplomatic.samplex.Samplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.add_node">add_node() (samplomatic.samplex.Samplex method)</a>
@@ -535,8 +528,6 @@
         <li><a href="api/auto/samplomatic.transpiler.passes.insert_noops.AddNoopsAll.html#samplomatic.transpiler.passes.insert_noops.AddNoopsAll">AddNoopsAll (class in samplomatic.transpiler.passes.insert_noops)</a>
 </li>
         <li><a href="api/auto/samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html#samplomatic.transpiler.passes.AddTerminalRightDressedBoxes">AddTerminalRightDressedBoxes (class in samplomatic.transpiler.passes)</a>
-</li>
-        <li><a href="api/auto/samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy.ALL">ALL (samplomatic.transpiler.TwirlingStrategy attribute)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.ParameterExpressionTable.html#samplomatic.samplex.ParameterExpressionTable.append">append() (samplomatic.samplex.ParameterExpressionTable method)</a>
 </li>
@@ -928,8 +919,6 @@
           <li><a href="api/auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register.identity">(samplomatic.virtual_registers.Z2Register class method)</a>
 </li>
         </ul></li>
-        <li><a href="api/auto/samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION">INDIVIDUAL_MODIFICATION (samplomatic.transpiler.NoiseInjectionStrategy attribute)</a>
-</li>
         <li><a href="api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise">InjectNoise (class in samplomatic)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode">InjectNoiseNode (class in samplomatic.samplex.nodes)</a>
@@ -948,8 +937,6 @@
         </ul></li>
         <li><a href="api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.inputs">inputs() (samplomatic.samplex.Samplex method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.nodes.ChangeBasisNode.html#samplomatic.samplex.nodes.ChangeBasisNode.instantiates">instantiates() (samplomatic.samplex.nodes.ChangeBasisNode method)</a>
 
         <ul>
@@ -966,6 +953,8 @@
           <li><a href="api/auto/samplomatic.samplex.nodes.TwirlSamplingNode.html#samplomatic.samplex.nodes.TwirlSamplingNode.instantiates">(samplomatic.samplex.nodes.TwirlSamplingNode method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.intersection">intersection() (samplomatic.partition.Partition method)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.inverse_table">inverse_table (samplomatic.virtual_registers.C1Register attribute)</a>
@@ -1135,8 +1124,6 @@
           <li><a href="api/auto/samplomatic.tensor_interface.TensorSpecification.html#samplomatic.tensor_interface.TensorSpecification.ndim">(samplomatic.tensor_interface.TensorSpecification attribute)</a>
 </li>
         </ul></li>
-        <li><a href="api/auto/samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy.NO_MODIFICATION">NO_MODIFICATION (samplomatic.transpiler.NoiseInjectionStrategy attribute)</a>
-</li>
         <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node">Node (class in samplomatic.samplex.nodes)</a>
 </li>
         <li><a href="api/auto/samplomatic.graph_utils.NodeCandidate.html#samplomatic.graph_utils.NodeCandidate.node_idx">node_idx (samplomatic.graph_utils.NodeCandidate attribute)</a>
@@ -1151,8 +1138,6 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/auto/samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy">NoiseInjectionStrategy (class in samplomatic.transpiler)</a>
-</li>
         <li><a href="api/auto/samplomatic.samplex.ParameterExpressionTable.html#samplomatic.samplex.ParameterExpressionTable.num_expressions">num_expressions (samplomatic.samplex.ParameterExpressionTable attribute)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.num_parameters">num_parameters (samplomatic.samplex.nodes.Node attribute)</a>
@@ -1689,8 +1674,6 @@
 </li>
         <li><a href="api/auto/samplomatic.Twirl.html#samplomatic.Twirl">Twirl (class in samplomatic)</a>
 </li>
-        <li><a href="api/auto/samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy">TwirlingStrategy (class in samplomatic.transpiler)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.nodes.TwirlSamplingNode.html#samplomatic.samplex.nodes.TwirlSamplingNode">TwirlSamplingNode (class in samplomatic.samplex.nodes)</a>
@@ -1721,11 +1704,9 @@
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register">U2Register (class in samplomatic.virtual_registers)</a>
 </li>
-        <li><a href="api/auto/samplomatic.utils.undress_box.html#samplomatic.utils.undress_box">undress_box() (in module samplomatic.utils)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/auto/samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION">UNIFORM_MODIFICATION (samplomatic.transpiler.NoiseInjectionStrategy attribute)</a>
+        <li><a href="api/auto/samplomatic.utils.undress_box.html#samplomatic.utils.undress_box">undress_box() (in module samplomatic.utils)</a>
 </li>
         <li><a href="api/auto/samplomatic.distributions.UniformC1.html#samplomatic.distributions.UniformC1">UniformC1 (class in samplomatic.distributions)</a>
 </li>
@@ -1765,6 +1746,8 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/auto/samplomatic.utils.validate_literals.html#samplomatic.utils.validate_literals">validate_literals() (in module samplomatic.utils)</a>
+</li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers">validate_no_rightward_danglers() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits">verify_no_twirled_clbits() (samplomatic.pre_samplex.PreSamplex method)</a>

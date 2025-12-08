@@ -322,8 +322,6 @@
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">samplomatic.transpiler</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.transpiler.NoiseInjectionStrategy.html">NoiseInjectionStrategy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.transpiler.TwirlingStrategy.html">TwirlingStrategy</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="auto/samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
@@ -347,6 +345,7 @@
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.validate_literals.html">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.BoxKey.html">BoxKey</a></li>
 </ul>
 </li>
@@ -455,23 +454,8 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_boxing_pass_manager</span></code></a>([enable_gates, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_boxing_pass_manager</span></code></a>(*[, ...])</p></td>
 <td><p>Construct a pass manager to group the operations in a circuit into boxes.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy" title="samplomatic.transpiler.NoiseInjectionStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NoiseInjectionStrategy</span></code></a>(value)</p></td>
-<td><p>The noise inejection strategies supported by the boxing pass manager.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy" title="samplomatic.transpiler.TwirlingStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TwirlingStrategy</span></code></a>(value)</p></td>
-<td><p>The twirling strategies supported by the boxing pass manager.</p></td>
 </tr>
 </tbody>
 </table>
@@ -560,7 +544,6 @@
             <ul>
 <li><a class="reference internal" href="#">samplomatic.transpiler</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 </ul>
 </li>

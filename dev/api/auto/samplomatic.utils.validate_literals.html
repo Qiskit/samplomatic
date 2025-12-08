@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.transpiler.passes" href="../samplomatic.transpiler.passes.html" /><link rel="prev" title="NoiseInjectionStrategy" href="samplomatic.transpiler.NoiseInjectionStrategy.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="BoxKey" href="samplomatic.utils.BoxKey.html" /><link rel="prev" title="undress_box" href="samplomatic.utils.undress_box.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>TwirlingStrategy - samplomatic 0.1.dev1</title>
+        <title>validate_literals - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -320,10 +320,8 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.tensor_interface.TensorSpecification.html">TensorSpecification</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.NoiseInjectionStrategy.html">NoiseInjectionStrategy</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">TwirlingStrategy</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
@@ -342,11 +340,12 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.BoxKey.html">BoxKey</a></li>
 </ul>
 </li>
@@ -427,7 +426,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.transpiler.TwirlingStrategy.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.utils.validate_literals.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -447,53 +446,21 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="twirlingstrategy">
-<h1>TwirlingStrategy<a class="headerlink" href="#twirlingstrategy" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="samplomatic.transpiler.TwirlingStrategy">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.transpiler.</span></span><span class="sig-name descname"><span class="pre">TwirlingStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/transpiler/twirling_strategies.py#L21-L27"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.transpiler.TwirlingStrategy" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>The twirling strategies supported by the boxing pass manager.</p>
-<p class="rubric">Attributes Summary</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE" title="samplomatic.transpiler.TwirlingStrategy.ACTIVE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACTIVE</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE_ACCUM" title="samplomatic.transpiler.TwirlingStrategy.ACTIVE_ACCUM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACTIVE_ACCUM</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE_CIRCUIT" title="samplomatic.transpiler.TwirlingStrategy.ACTIVE_CIRCUIT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACTIVE_CIRCUIT</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ALL" title="samplomatic.transpiler.TwirlingStrategy.ALL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ALL</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Attributes Documentation</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.TwirlingStrategy.ACTIVE">
-<span class="sig-name descname"><span class="pre">ACTIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'active'</span></em><a class="headerlink" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.TwirlingStrategy.ACTIVE_ACCUM">
-<span class="sig-name descname"><span class="pre">ACTIVE_ACCUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'active_accum'</span></em><a class="headerlink" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE_ACCUM" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.TwirlingStrategy.ACTIVE_CIRCUIT">
-<span class="sig-name descname"><span class="pre">ACTIVE_CIRCUIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'active_circuit'</span></em><a class="headerlink" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE_CIRCUIT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.TwirlingStrategy.ALL">
-<span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'all'</span></em><a class="headerlink" href="#samplomatic.transpiler.TwirlingStrategy.ALL" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
+          <section id="validate-literals">
+<h1>validate_literals<a class="headerlink" href="#validate-literals" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="samplomatic.utils.validate_literals">
+<span class="sig-prename descclassname"><span class="pre">samplomatic.utils.</span></span><span class="sig-name descname"><span class="pre">validate_literals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/validate_literals.py#L21-L75"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.validate_literals" title="Link to this definition">¶</a></dt>
+<dd><p>Return a decorator to validate function arguments against literal type annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*arg_names</strong> – The arguments to validate the values of against their <code class="xref py py-class docutils literal notranslate"><span class="pre">Literal</span></code> type
+annotations.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A decorator that wraps a function in a validation routine.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -503,23 +470,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samplomatic.transpiler.passes.html">
+          <a class="next-page" href="samplomatic.utils.BoxKey.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">samplomatic.transpiler.passes</div>
+                <div class="title">BoxKey</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.transpiler.NoiseInjectionStrategy.html">
+          <a class="prev-page" href="samplomatic.utils.undress_box.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">NoiseInjectionStrategy</div>
+                <div class="title">undress_box</div>
                 
               </div>
             </a>
@@ -554,14 +521,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">TwirlingStrategy</a><ul>
-<li><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy"><code class="docutils literal notranslate"><span class="pre">TwirlingStrategy</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE"><code class="docutils literal notranslate"><span class="pre">TwirlingStrategy.ACTIVE</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE_ACCUM"><code class="docutils literal notranslate"><span class="pre">TwirlingStrategy.ACTIVE_ACCUM</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ACTIVE_CIRCUIT"><code class="docutils literal notranslate"><span class="pre">TwirlingStrategy.ACTIVE_CIRCUIT</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.transpiler.TwirlingStrategy.ALL"><code class="docutils literal notranslate"><span class="pre">TwirlingStrategy.ALL</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">validate_literals</a><ul>
+<li><a class="reference internal" href="#samplomatic.utils.validate_literals"><code class="docutils literal notranslate"><span class="pre">validate_literals()</span></code></a></li>
 </ul>
 </li>
 </ul>
