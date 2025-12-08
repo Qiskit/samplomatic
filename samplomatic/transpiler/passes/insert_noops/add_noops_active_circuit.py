@@ -27,9 +27,6 @@ class AddNoopsActiveCircuit(TransformationPass):
     marked as active at any other point in the circuit.
     """
 
-    def __init__(self):
-        TransformationPass.__init__(self)
-
     def run(self, dag: DAGCircuit):
         qubits = set(qubit for box_node in dag.op_nodes(BoxOp) for qubit in box_node.qargs)
         return AddNoops(qubits).run(dag)
