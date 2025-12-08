@@ -73,6 +73,10 @@ class AddTerminalRightDressedBoxes(TransformationPass):
         into the boxes this pass adds.
     """
 
+    def __init__(self):
+        # without a trivial constructor, sphinx unfortunately renders as __init__(*args, **kwargs)
+        super().__init__()
+
     @classmethod
     def _new_box(cls, qubits: Iterable[Qubit], qubit_map: dict[Qubit, int]) -> BoxOp:
         # we go a bit out of our way to use the same qubit instances as the original circuit and

@@ -33,6 +33,10 @@ class AbsorbSingleQubitGates(TransformationPass):
     absorbed into the box, but the X and the measurement will not.
     """
 
+    def __init__(self):
+        # without a trivial constructor, sphinx unfortunately renders as __init__(*args, **kwargs)
+        super().__init__()
+
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Perform rightwards absorption of chains of single-qubit gates."""
         # we collect runs of single qubit gates, organized by the qubit they act on. these

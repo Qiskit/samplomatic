@@ -45,6 +45,10 @@ class GroupGatesIntoBoxes(TransformationPass):
         either use :class`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
     """
 
+    def __init__(self):
+        # without a trivial constructor, sphinx unfortunately renders as __init__(*args, **kwargs)
+        super().__init__()
+
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.
 

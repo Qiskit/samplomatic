@@ -24,6 +24,10 @@ class AddNoopsActiveAccum(TransformationPass):
     part of a previous box.
     """
 
+    def __init__(self):
+        # without a trivial constructor, sphinx unfortunately renders as __init__(*args, **kwargs)
+        super().__init__()
+
     def run(self, dag: DAGCircuit):
         # create a new dag to allow for mid-circuit modifications
         modified_dag: DAGCircuit = dag.copy_empty_like()

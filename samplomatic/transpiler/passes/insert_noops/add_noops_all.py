@@ -25,5 +25,9 @@ class AddNoopsAll(TransformationPass):
     defined when initializing the `QuantumCircuit` object.
     """
 
+    def __init__(self):
+        # without a trivial constructor, sphinx unfortunately renders as __init__(*args, **kwargs)
+        super().__init__()
+
     def run(self, dag: DAGCircuit):
         return AddNoops(dag.qubits).run(dag)

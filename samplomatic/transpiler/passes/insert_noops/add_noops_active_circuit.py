@@ -27,6 +27,10 @@ class AddNoopsActiveCircuit(TransformationPass):
     marked as active at any other point in the circuit.
     """
 
+    def __init__(self):
+        # without a trivial constructor, sphinx unfortunately renders as __init__(*args, **kwargs)
+        super().__init__()
+
     def run(self, dag: DAGCircuit):
         qubits = set(qubit for box_node in dag.op_nodes(BoxOp) for qubit in box_node.qargs)
         return AddNoops(qubits).run(dag)
