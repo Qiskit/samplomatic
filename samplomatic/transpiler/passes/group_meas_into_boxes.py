@@ -23,10 +23,8 @@ from qiskit.transpiler.exceptions import TranspilerError
 
 from ...aliases import DAGOpNode
 from ...annotations import ChangeBasis, Twirl
+from ...utils import validate_literals
 from .utils import make_and_insert_box, validate_op_is_supported
-
-SUPPORTED_ANNOTATIONS = ["twirl", "change_basis", "all"]
-"""The supported values of ``annotations``."""
 
 
 class GroupMeasIntoBoxes(TransformationPass):
@@ -52,18 +50,13 @@ class GroupMeasIntoBoxes(TransformationPass):
 
     _REF_COUNTER = itertools.count()
 
+    @validate_literals("annotations")
     def __init__(
         self,
         annotations: Literal["twirl", "change_basis", "all"] = "twirl",
         prefix_ref: str = "basis",
     ):
         super().__init__()
-
-        if annotations not in SUPPORTED_ANNOTATIONS:
-            raise ValueError(
-                f"{annotations} is not a valid input for field 'annotations'. "
-                f"The supported values are '{SUPPORTED_ANNOTATIONS}.'"
-            )
 
         self.annotations = annotations
         self.prefix_ref = prefix_ref
@@ -77,10 +70,8 @@ class GroupMeasIntoBoxes(TransformationPass):
         if self.annotations == "all":
             return [Twirl(), ChangeBasis(ref=f"{self.prefix_ref}{next(self._REF_COUNTER)}")]
 
-        raise TranspilerError(
-            f"{self.annotations} is not a valid input for field 'annotations'. "
-            f"The supported values are '{SUPPORTED_ANNOTATIONS}.'"
-        )
+        # should be unreachable given validate_literals() call in constructor
+        raise
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.

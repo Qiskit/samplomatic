@@ -23,8 +23,7 @@ from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
 
 from ...annotations import InjectNoise, Twirl
-from ...utils import BoxKey, get_annotation, undress_box
-from ..noise_injection_strategies import NoiseInjectionStrategy, NoiseInjectionStrategyLiteral
+from ...utils import BoxKey, get_annotation, undress_box, validate_literals
 
 
 class AddInjectNoise(TransformationPass):
@@ -58,16 +57,19 @@ class AddInjectNoise(TransformationPass):
     _REF_COUNTER = itertools.count()
     _MODIFIER_REF_COUNTER = itertools.count()
 
+    @validate_literals("strategy", "targets")
     def __init__(
         self,
-        strategy: NoiseInjectionStrategyLiteral = "no_modification",
+        strategy: Literal[
+            "no_modification", "uniform_modification", "individual_modification"
+        ] = "no_modification",
         overwrite: bool = False,
         prefix_ref: str = "r",
         prefix_modifier_ref: str = "m",
         targets: Literal["none", "gates", "measures", "all"] = "none",
     ):
         super().__init__()
-        self.strategy = NoiseInjectionStrategy(strategy)
+        self.strategy = strategy
         self.overwrite = overwrite
         self.prefix_ref = prefix_ref
         self.prefix_modifier_ref = prefix_modifier_ref
@@ -138,9 +140,9 @@ class AddInjectNoise(TransformationPass):
                     # The box does not have a noise injection annotation.
                     ref = box_to_ref[box_key]
 
-                    if self.strategy == NoiseInjectionStrategy.NO_MODIFICATION:
+                    if self.strategy == "no_modification":
                         modifier_ref = ""
-                    elif self.strategy == NoiseInjectionStrategy.UNIFORM_MODIFICATION:
+                    elif self.strategy == "uniform_modification":
                         modifier_ref = ref
                     else:
                         # individual modification
