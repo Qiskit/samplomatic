@@ -14,7 +14,7 @@
 
 import itertools
 from collections import defaultdict
-from typing import Literal, TypeAlias
+from typing import Literal
 
 from qiskit.circuit import Annotation, Bit
 from qiskit.dagcircuit import DAGCircuit
@@ -25,8 +25,6 @@ from ...aliases import DAGOpNode
 from ...annotations import ChangeBasis, Twirl
 from ...utils import validate_literals
 from .utils import make_and_insert_box, validate_op_is_supported
-
-MeasAnnotationLiteral: TypeAlias = Literal["twirl", "change_basis", "all"]
 
 
 class GroupMeasIntoBoxes(TransformationPass):
@@ -53,7 +51,11 @@ class GroupMeasIntoBoxes(TransformationPass):
     _REF_COUNTER = itertools.count()
 
     @validate_literals("annotations")
-    def __init__(self, annotations: MeasAnnotationLiteral = "twirl", prefix_ref: str = "basis"):
+    def __init__(
+        self,
+        annotations: Literal["twirl", "change_basis", "all"] = "twirl",
+        prefix_ref: str = "basis",
+    ):
         super().__init__()
 
         self.annotations = annotations

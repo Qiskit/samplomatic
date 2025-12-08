@@ -15,7 +15,7 @@
 import itertools
 from collections import defaultdict
 from collections.abc import Callable
-from typing import Literal, TypeAlias
+from typing import Literal
 
 from qiskit.circuit import CircuitInstruction
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
@@ -24,11 +24,6 @@ from qiskit.transpiler.exceptions import TranspilerError
 
 from ...annotations import InjectNoise, Twirl
 from ...utils import BoxKey, get_annotation, undress_box, validate_literals
-
-InjectNoiseStrategyLiteral: TypeAlias = Literal[
-    "no_modification", "uniform_modification", "individual_modification"
-]
-InjectNoiseTargetsLiteral: TypeAlias = Literal["none", "gates", "measures", "all"]
 
 
 class AddInjectNoise(TransformationPass):
@@ -65,11 +60,13 @@ class AddInjectNoise(TransformationPass):
     @validate_literals("strategy", "targets")
     def __init__(
         self,
-        strategy: InjectNoiseStrategyLiteral = "no_modification",
+        strategy: Literal[
+            "no_modification", "uniform_modification", "individual_modification"
+        ] = "no_modification",
         overwrite: bool = False,
         prefix_ref: str = "r",
         prefix_modifier_ref: str = "m",
-        targets: InjectNoiseTargetsLiteral = "none",
+        targets: Literal["none", "gates", "measures", "all"] = "none",
     ):
         super().__init__()
         self.strategy = strategy

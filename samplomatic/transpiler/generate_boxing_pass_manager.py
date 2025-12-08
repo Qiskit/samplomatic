@@ -25,8 +25,6 @@ from .passes import (
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
 )
-from .passes.add_inject_noise import InjectNoiseStrategyLiteral, InjectNoiseTargetsLiteral
-from .passes.group_meas_into_boxes import MeasAnnotationLiteral
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 
 
@@ -49,12 +47,14 @@ def generate_boxing_pass_manager(
     *,
     enable_gates: bool = True,
     enable_measures: bool = True,
-    measure_annotations: MeasAnnotationLiteral = "twirl",
+    measure_annotations: Literal["twirl", "change_basis", "all"] = "twirl",
     twirling_strategy: Literal[
         "active", "active_accum", "active_circuit", "all"
     ] = "active_circuit",
-    inject_noise_targets: InjectNoiseTargetsLiteral = "none",
-    inject_noise_strategy: InjectNoiseStrategyLiteral = "no_modification",
+    inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
+    inject_noise_strategy: Literal[
+        "no_modification", "uniform_modification", "individual_modification"
+    ] = "no_modification",
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
