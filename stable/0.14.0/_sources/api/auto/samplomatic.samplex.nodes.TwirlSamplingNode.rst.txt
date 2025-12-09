@@ -1,0 +1,31 @@
+TwirlSamplingNode
+=================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: TwirlSamplingNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~TwirlSamplingNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~TwirlSamplingNode.get_style
+      ~TwirlSamplingNode.instantiates
+      ~TwirlSamplingNode.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: sample

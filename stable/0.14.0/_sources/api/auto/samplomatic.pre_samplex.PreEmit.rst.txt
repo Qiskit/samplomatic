@@ -1,0 +1,31 @@
+PreEmit
+=======
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreEmit
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreEmit.direction
+      ~PreEmit.register_type
+      ~PreEmit.subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreEmit.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: direction
+   .. autoattribute:: register_type
+   .. autoattribute:: subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
