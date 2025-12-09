@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="0.2.0 - 2025-08-20" href="release_notes_0.2.0.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.13.0 - 2025-11-06" href="release_notes_0.13.0.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>0.1.0 - 2025-08-15 - samplomatic 0.1.dev1</title>
+        <title>0.14.0 - 2025-12-09 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -365,7 +365,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
@@ -379,7 +379,7 @@
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.3.0.html">Release notes for 0.3.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.2.0.html">Release notes for 0.2.0</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0.1.0.html">Release notes for 0.1.0</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/Qiskit/samplomatic">GitHub</a></li>
@@ -427,7 +427,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/release_notes/release_notes_0.1.0.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/release_notes/release_notes_0.14.0.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -448,19 +448,40 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="id1">
-<h1>0.1.0 - 2025-08-15<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1>0.14.0 - 2025-12-09<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="removed">
+<h2>Removed<a class="headerlink" href="#removed" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Removed the <code class="docutils literal notranslate"><span class="pre">VirtualRegister.to_json_dict</span></code> and the <code class="docutils literal notranslate"><span class="pre">virtual_register_from_json</span></code> function. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/223">#223</a>)</p></li>
+<li><p>Removed support for Python 3.9 following its end-of-life date. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/244">#244</a>)</p></li>
+<li><p>The modules <code class="docutils literal notranslate"><span class="pre">.transpiler.noise_injection_strategies</span></code>, <code class="docutils literal notranslate"><span class="pre">.transpiler.twirling_strategies</span></code>, and their contents have been removed. These files contained enum classes for specifying arguments to some of the transpiler passes; these arguments must now be specified as strings. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/257">#257</a>)</p></li>
+<li><p><em>Temporarily</em> removed support for <code class="docutils literal notranslate"><span class="pre">IfElseOp</span></code> instructions inside of boxes—we are in the middle of refactoring this to make it more general, but we cannot wait for it to be complete to make a new release. Please refrain from upgrading if this breaks your workflow, and apologies.</p></li>
+</ul>
+</section>
+<section id="deprecated">
+<h2>Deprecated<a class="headerlink" href="#deprecated" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Deprecated boolean values for the <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> argument of <code class="docutils literal notranslate"><span class="pre">samplomatic.transpiler.generate_boxing_pass_manager</span></code>. Now, the four options are <code class="docutils literal notranslate"><span class="pre">'immediately'</span></code>, <code class="docutils literal notranslate"><span class="pre">'finally,</span></code>, <code class="docutils literal notranslate"><span class="pre">'after_stratification'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'never'</span></code>, where <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code> are equivalent to the first and last string values, respectively. The default value is <code class="docutils literal notranslate"><span class="pre">'after_stratification'</span></code> which is a change in behavior, but should be a better choice in most cases. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/238">#238</a>)</p></li>
+</ul>
+</section>
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Initial population of the library with features, including:</p>
-<ul>
-<li><p>transpiler passes to aid in the boxing of circuits with annotations</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">samplomatic.Samplex</span></code> object and all necessary infrastructure to
-describe certain types of basic Pauli randomization and noise injection</p></li>
-<li><p>certain but not comprehensive support for dynamic circuits</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">build()</span></code> method for interpretting boxed-up circuits into template/samplex pairs (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/38">#38</a>)</p></li>
+<li><p>Added SSV <code class="docutils literal notranslate"><span class="pre">2</span></code> serializers for <code class="docutils literal notranslate"><span class="pre">BasisChange</span></code> and <code class="docutils literal notranslate"><span class="pre">ChangeBasisNode</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/223">#223</a>)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">C1Register</span></code>, a virtual register of single-qubit Cliffords, and the <code class="docutils literal notranslate"><span class="pre">UniformC1</span></code> distribution.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">FiniteGroupRegister</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/224">#224</a>)</p></li>
+<li><p>Added support to <code class="docutils literal notranslate"><span class="pre">samplomatic.utils.get_annotation</span></code> for specifying multiple annotation types. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/237">#237</a>)</p></li>
 </ul>
-</li>
+</section>
+<section id="changed">
+<h2>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Increased the default SSV from <code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">2</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/224">#224</a>)</p></li>
+<li><p>Changed the scope of the transpiler passes <code class="docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code>, <code class="docutils literal notranslate"><span class="pre">GroupMeasIntoBoxes</span></code>, and <code class="docutils literal notranslate"><span class="pre">AddTerminalRightDressedBoxes</span></code>. Formerly, all three of these passes were responsible for discovering single-qubit gates in the input circuit and moving them into newly created boxes. Now, to simplify their implementations and make the pass manager more modular, these three passes no longer have this responsibility, which has instead been delegated to the new pass <code class="docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code>. In particular, <code class="docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code> and  <code class="docutils literal notranslate"><span class="pre">GroupMeasIntoBoxes</span></code> are now responsible only for inserting new left-dressed boxes populated only with entangling and measurement instructions. Similarly, <code class="docutils literal notranslate"><span class="pre">AddTerminalRightDressedBoxes</span></code> inserts empty right-dressed boxes boxes. The <code class="docutils literal notranslate"><span class="pre">generate_boxing_pass_manager</span></code> function has been updated to include <code class="docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/237">#237</a>)</p></li>
+<li><p>Changed the behaviour of the pass manager returned by <code class="docutils literal notranslate"><span class="pre">samplomatic.transpiler.generate_boxing_pass_manager</span></code> under default settings with respect to how it treats barriers. Before, it would discard all barriers before attempting to put entangling gates into boxes. Now, it discards barriers after entangling gates are put into boxes, but before single-qubit gates are moved into adjacent boxes. This means that barriers can effectively be used as hints to choose how to stratify entangling gates without constraining single-qubit gates to end up in their own boxes. This also has better interaction with the Qiskit transpiler in the case that the original circuit is programmed in terms of a different entangling gate than the target. See the new possible values of the argument <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> for details. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/238">#238</a>)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">DataSerializer.serialize</span></code> now requires the SSV as an argument. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/254">#254</a>)</p></li>
+<li><p>Arguments to <code class="docutils literal notranslate"><span class="pre">samplomatic.transpiler.generate_boxing_pass_manager</span></code> are now required to be keyword arguments. Moreover, all string-valued selection arguments (e.g. <code class="docutils literal notranslate"><span class="pre">twirling_strategy</span></code>) are required to be specified as strings because the enum classes have been removed. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/257">#257</a>)</p></li>
+<li><p>Changed the default <code class="docutils literal notranslate"><span class="pre">twirling_strategy</span></code> of <code class="docutils literal notranslate"><span class="pre">samplomatic.transpiler.generate_boxing_pass_manager</span></code> from <code class="docutils literal notranslate"><span class="pre">&quot;active&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;active_circit&quot;</span></code>. This was done because the latter is a safer default. Typically, when twirling, one wants to eliminate all coherent error on active qubits. The <code class="docutils literal notranslate"><span class="pre">&quot;active&quot;</span></code> strategy is only able to do this under certain assumptions about noise processes. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/265">#265</a>)</p></li>
 </ul>
 </section>
 </section>
@@ -470,15 +491,23 @@ describe certain types of basic Pauli randomization and noise injection</p></li>
       <footer>
         
         <div class="related-pages">
-          
-          <a class="prev-page" href="release_notes_0.2.0.html">
+          <a class="next-page" href="release_notes_0.13.0.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">0.13.0 - 2025-11-06</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0.2.0 - 2025-08-20</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -513,8 +542,11 @@ describe certain types of basic Pauli randomization and noise injection</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0.1.0 - 2025-08-15</a><ul>
+<li><a class="reference internal" href="#">0.14.0 - 2025-12-09</a><ul>
+<li><a class="reference internal" href="#removed">Removed</a></li>
+<li><a class="reference internal" href="#deprecated">Deprecated</a></li>
 <li><a class="reference internal" href="#added">Added</a></li>
+<li><a class="reference internal" href="#changed">Changed</a></li>
 </ul>
 </li>
 </ul>
