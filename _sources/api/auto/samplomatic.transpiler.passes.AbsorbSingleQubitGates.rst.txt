@@ -1,0 +1,17 @@
+AbsorbSingleQubitGates
+======================
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: AbsorbSingleQubitGates
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AbsorbSingleQubitGates.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

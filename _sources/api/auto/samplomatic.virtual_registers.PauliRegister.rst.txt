@@ -20,6 +20,7 @@ PauliRegister
    .. autosummary::
 
       ~PauliRegister.convert_to
+      ~PauliRegister.from_name
       ~PauliRegister.identity
       ~PauliRegister.inplace_multiply
       ~PauliRegister.invert
@@ -35,6 +36,7 @@ PauliRegister
    .. rubric:: Methods Documentation
 
    .. automethod:: convert_to
+   .. automethod:: from_name
    .. automethod:: identity
    .. automethod:: inplace_multiply
    .. automethod:: invert

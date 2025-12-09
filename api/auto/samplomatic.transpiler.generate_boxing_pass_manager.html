@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="NoiseInjectionStrategy" href="samplomatic.transpiler.NoiseInjectionStrategy.html" /><link rel="prev" title="samplomatic.transpiler" href="../samplomatic.transpiler.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.transpiler.passes" href="../samplomatic.transpiler.passes.html" /><link rel="prev" title="samplomatic.transpiler" href="../samplomatic.transpiler.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>generate_boxing_pass_manager - samplomatic 0.13.0</title>
+        <title>generate_boxing_pass_manager - samplomatic 0.14.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">samplomatic 0.13.0</div></a>
+      <a href="../../index.html"><div class="brand">samplomatic 0.14.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.13.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.14.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -234,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.Distribution.html">Distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformC1.html">UniformC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
 </ul>
 </li>
@@ -321,9 +322,8 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">generate_boxing_pass_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.NoiseInjectionStrategy.html">NoiseInjectionStrategy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.TwirlingStrategy.html">TwirlingStrategy</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
@@ -341,14 +341,16 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.validate_literals.html">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.BoxKey.html">BoxKey</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.virtual_register_from_json.html">virtual_register_from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
@@ -363,6 +365,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
@@ -394,6 +397,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.13.0/index.html" rel="nofollow noindex">0.13.0</a></li>
         
             <li><a href="/samplomatic/stable/0.12.0/index.html" rel="nofollow noindex">0.12.0</a></li>
         
@@ -446,7 +451,7 @@
 <h1>generate_boxing_pass_manager<a class="headerlink" href="#generate-boxing-pass-manager" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="samplomatic.transpiler.generate_boxing_pass_manager">
-<span class="sig-prename descclassname"><span class="pre">samplomatic.transpiler.</span></span><span class="sig-name descname"><span class="pre">generate_boxing_pass_manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable_gates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_measures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'twirl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twirling_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.transpiler.TwirlingStrategy.html#samplomatic.transpiler.TwirlingStrategy" title="samplomatic.transpiler.twirling_strategies.TwirlingStrategy"><span class="pre">TwirlingStrategy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'active'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'active_accum'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'all'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'active_circuit'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'active'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inject_noise_targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gates'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'measures'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'all'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inject_noise_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.transpiler.NoiseInjectionStrategy.html#samplomatic.transpiler.NoiseInjectionStrategy" title="samplomatic.transpiler.noise_injection_strategies.NoiseInjectionStrategy"><span class="pre">NoiseInjectionStrategy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'no_modification'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uniform_modification'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'individual_modification'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'no_modification'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_barriers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.PassManager" title="(in Qiskit v2.2)"><span class="pre">PassManager</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.13/samplomatic/transpiler/generate_boxing_pass_manager.py#L34-L152"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.transpiler.generate_boxing_pass_manager" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">samplomatic.transpiler.</span></span><span class="sig-name descname"><span class="pre">generate_boxing_pass_manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_gates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_measures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'twirl'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'change_basis'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'all'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'twirl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twirling_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'active'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'active_accum'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'active_circuit'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'all'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'active_circuit'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inject_noise_targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gates'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'measures'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'all'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inject_noise_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'no_modification'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uniform_modification'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'individual_modification'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'no_modification'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_barriers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'immediately'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'finally'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'after_stratification'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'never'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">False</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'after_stratification'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.PassManager" title="(in Qiskit v2.2)"><span class="pre">PassManager</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.14/samplomatic/transpiler/generate_boxing_pass_manager.py#L31-L224"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.transpiler.generate_boxing_pass_manager" title="Link to this definition">¶</a></dt>
 <dd><p>Construct a pass manager to group the operations in a circuit into boxes.</p>
 <p>This function can be used to construct a new <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.PassManager" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.transpiler.PassManager</span></code></a> that
 puts the instructions of the circuit into annotated boxes.</p>
@@ -474,20 +479,26 @@ steps in order:</p>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it removes all the barriers in the input circuit
 using the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.passes.RemoveBarriers" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.transpiler.passes.RemoveBarriers</span></code></a> pass.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">enable_gates</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, using the <a class="reference internal" href="samplomatic.transpiler.passes.GroupGatesIntoBoxes.html#samplomatic.transpiler.passes.GroupGatesIntoBoxes" title="samplomatic.transpiler.passes.GroupGatesIntoBoxes"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code></a> pass,
-it creates boxes containing two-qubit gates and the single-qubit gates that
-preceed them. The resulting boxes are twirl-annotated and left-dressed, and
-contain a single layer of two-qubit gates.</p></li>
+it creates boxes containing two-qubit gates. The resulting boxes are twirl-annotated and
+left-dressed, and contain a single layer of two-qubit gates.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">enable_measures</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it uses the <a class="reference internal" href="samplomatic.transpiler.passes.GroupMeasIntoBoxes.html#samplomatic.transpiler.passes.GroupMeasIntoBoxes" title="samplomatic.transpiler.passes.GroupMeasIntoBoxes"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupMeasIntoBoxes</span></code></a>
 pass to group the measurements. All the resulting boxes are left dressed. Depending
 on the value of <code class="docutils literal notranslate"><span class="pre">measure_annotations</span></code>, they own a <a class="reference internal" href="samplomatic.Twirl.html#samplomatic.Twirl" title="samplomatic.Twirl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code></a> annotation, a
 <a class="reference internal" href="samplomatic.ChangeBasis.html#samplomatic.ChangeBasis" title="samplomatic.ChangeBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChangeBasis</span></code></a> annotation, or both.</p></li>
 <li><p>It adds idling qubits to the boxes following the given <code class="docutils literal notranslate"><span class="pre">twirling_strategy</span></code>.</p></li>
-<li><p>Using the <a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html#samplomatic.transpiler.passes.AddTerminalRightDressedBoxes" title="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddTerminalRightDressedBoxes</span></code></a> pass, it adds right-dressed boxes
+<li><p>Using the <a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html#samplomatic.transpiler.passes.AddTerminalRightDressedBoxes" title="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddTerminalRightDressedBoxes</span></code></a> pass, it adds empty right-dressed boxes
 to ensure that the resulting pass manager can produce circuits that can be successfully
 turned into a template/samplex pair by the <a class="reference internal" href="samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">samplomatic.build()</span></code></a> function.</p></li>
+<li><p>It uses the <a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html#samplomatic.transpiler.passes.AbsorbSingleQubitGates" title="samplomatic.transpiler.passes.AbsorbSingleQubitGates"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code></a> pass to absorb any chains of single-qubit gates
+in the circuit into a box, left- or right-dressed, that immediately succeeds the chain. This
+will cause the gates to be folded into the dressing once the circuit is built.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">inject_noise_targets</span></code> is not <code class="docutils literal notranslate"><span class="pre">'none'</span></code>, it uses the
-<a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html#samplomatic.transpiler.passes.AddInjectNoise" title="samplomatic.transpiler.passes.AddInjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddInjectNoise</span></code></a> pass to add inject noise <a class="reference internal" href="samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotations.</p></li>
+<a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html#samplomatic.transpiler.passes.AddInjectNoise" title="samplomatic.transpiler.passes.AddInjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddInjectNoise</span></code></a> pass to replace boxes with new boxes that additionally have
+inject noise <a class="reference internal" href="samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotations.</p></li>
 </ul>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.14.0: </span>Providing boolean values to the <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> argument of <code class="docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code> is deprecated as of samplomatic 0.14.0. It will be removed no earlier than 1 month after the release date. Instead, choose one of the string values.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -505,7 +516,23 @@ are:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">'all'</span></code> for both <a class="reference internal" href="samplomatic.Twirl.html#samplomatic.Twirl" title="samplomatic.Twirl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code></a> and <a class="reference internal" href="samplomatic.ChangeBasis.html#samplomatic.ChangeBasis" title="samplomatic.ChangeBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChangeBasis</span></code></a> annotations.</p></li>
 </ul>
 </p></li>
-<li><p><strong>twirling_strategy</strong> – The twirling strategy.</p></li>
+<li><p><strong>twirling_strategy</strong> – <p>The strategy for whether and how twirling boxes are extended to
+include elligible idle qubits; the boxing pass manager begins by constructing twirling
+boxes that contain one layer of multi-qubit gates or measurements, preceded by all of
+the adjacent single-qubit gates, then, according to the value of this option, these
+boxes are extended idling qubits. The allowed values are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'active'</span></code>: No idling qubits are added to the boxes, meaning that every box only
+twirls the qubits that are active within the box.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'active_accum'</span></code>: Idling qubits are added so that each individual box twirls all
+qubits that have been acted on by some instruction in the circuit up to and including
+the box.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'active_circuit'</span></code>: Idling qubits are added so that each individual box twirls all
+qubits acted on by any instruction in the circuit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'all'</span></code>: Idling qubits are added so that each individual box twirls all of the
+qubits in the circuit.</p></li>
+</ul>
+</p></li>
 <li><p><strong>inject_noise_targets</strong> – <p>The boxes to annotate with an <a class="reference internal" href="samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation
 using the <a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html#samplomatic.transpiler.passes.AddInjectNoise" title="samplomatic.transpiler.passes.AddInjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddInjectNoise</span></code></a> pass. The supported values are:</p>
 <ul>
@@ -520,11 +547,38 @@ annotating all the other boxes.</p></li>
 and/or own classical registers.</p></li>
 </ul>
 </p></li>
-<li><p><strong>inject_noise_strategy</strong> – The noise injection strategy for the <a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html#samplomatic.transpiler.passes.AddInjectNoise" title="samplomatic.transpiler.passes.AddInjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">AddInjectNoise</span></code></a> pass.</p></li>
-<li><p><strong>remove_barriers</strong> – Whether to apply the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.passes.RemoveBarriers" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.transpiler.passes.RemoveBarriers</span></code></a> pass
-to the input circuit before beginning to group gates and measurements into boxes.
-Setting this to <code class="docutils literal notranslate"><span class="pre">True</span></code> generally leads to a smaller number of boxes in the output
-circuits.</p></li>
+<li><p><strong>inject_noise_strategy</strong> – <p>The noise injection strategies supported by the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">AddInjectNoise</span></code> pass. The following options are supported. In all these
+options, by “equivalent boxes” we mean boxes that are equal up to single-qubit qubit
+gates on the dressing side.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'no_modification'</span></code>: All the equivalent boxes are assigned an inject noise
+annotation with the same <code class="docutils literal notranslate"><span class="pre">ref</span></code> and with <code class="docutils literal notranslate"><span class="pre">modifier_ref=''</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'uniform_modification'</span></code>: All the equivalent boxes are assigned an inject noise
+annotation with the same <code class="docutils literal notranslate"><span class="pre">ref</span></code> and with <code class="docutils literal notranslate"><span class="pre">modifier_ref=ref</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'individual_modification'</span></code>: All the equivalent boxes are assigned an inject noise
+annotation with the same <code class="docutils literal notranslate"><span class="pre">ref</span></code>. Every box is assigned a unique <code class="docutils literal notranslate"><span class="pre">modifier_ref</span></code>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>remove_barriers</strong> – <p>When to apply the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.passes.RemoveBarriers" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.transpiler.passes.RemoveBarriers</span></code></a> pass.
+All possible string values are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'after_stratification'</span></code> removes barriers, but only after entangler and
+measurement instructions have been boxed and extended with <code class="docutils literal notranslate"><span class="pre">twirling_strategy</span></code>, and
+before single-qubit gates are boxed. This effectively allows barriers to be used as
+hints to choose the entangler and measurement content of boxes, while also letting
+single-qubit gates move freely past where there had been a barrier, allowing them be
+absorbed into adjacent boxes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'immediately'</span></code> removes barriers before doing anything else, so that existing
+barriers effectively have no role in box grouping.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'finally'</span></code> removes barriers, but only as the very last step. This causes, for
+example, single-qubit gates that are trapped between barriers to not be placed
+into boxes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'never'</span></code> causes barriers to never be removed.</p></li>
+</ul>
+<p>Boolean values are deprecated such that <code class="docutils literal notranslate"><span class="pre">True</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">'immediately'</span></code> and
+<code class="docutils literal notranslate"><span class="pre">False</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">'never'</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -543,12 +597,12 @@ circuits.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samplomatic.transpiler.NoiseInjectionStrategy.html">
+          <a class="next-page" href="../samplomatic.transpiler.passes.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">NoiseInjectionStrategy</div>
+                <div class="title">samplomatic.transpiler.passes</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -573,7 +627,7 @@ circuits.</p></li>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/11/07</div>
+              Last updated on 2025/12/09</div>
           </div>
           <div class="right-details">
             
@@ -607,7 +661,7 @@ circuits.</p></li>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1019fba8"></script>
+</div><script src="../../_static/documentation_options.js?v=9e420a66"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

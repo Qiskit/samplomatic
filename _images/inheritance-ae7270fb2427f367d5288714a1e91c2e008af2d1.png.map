@@ -1,0 +1,9 @@
+<map id="inheritance70a0cc2cde" name="inheritance70a0cc2cde">
+<area shape="rect" id="node1" href="auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register" target="_top" title="Virtual register of C1 gates." alt="" coords="533,5,627,31"/>
+<area shape="rect" id="node2" title="A virtual register whose elements form a finite group." alt="" coords="335,5,485,31"/>
+<area shape="rect" id="node3" href="auto/samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" target="_top" title="A virtual register whose elements form a group." alt="" coords="172,80,287,105"/>
+<area shape="rect" id="node5" href="auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister" target="_top" title="Virtual register of virtual projective Pauli gates." alt="" coords="357,55,463,80"/>
+<area shape="rect" id="node6" href="auto/samplomatic.virtual_registers.U2Register.html#samplomatic.virtual_registers.U2Register" target="_top" title="Virtual register of 2x2 Unitary matrices." alt="" coords="363,104,457,129"/>
+<area shape="rect" id="node7" href="auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register" target="_top" title="Virtual register of elements of Z2, the cyclic group of order 2." alt="" coords="363,153,457,179"/>
+<area shape="rect" id="node4" href="auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" target="_top" title="A data register containing a 2D array of virtual gates." alt="" coords="5,80,124,105"/>
+</map>

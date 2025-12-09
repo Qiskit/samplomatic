@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="LeftMultiplicationNode" href="samplomatic.samplex.nodes.LeftMultiplicationNode.html" /><link rel="prev" title="EvaluationNode" href="samplomatic.samplex.nodes.EvaluationNode.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>InjectNoiseNode - samplomatic 0.13.0</title>
+        <title>InjectNoiseNode - samplomatic 0.14.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">samplomatic 0.13.0</div></a>
+      <a href="../../index.html"><div class="brand">samplomatic 0.14.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.13.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.14.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -234,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.Distribution.html">Distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformC1.html">UniformC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
 </ul>
 </li>
@@ -321,9 +322,8 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.NoiseInjectionStrategy.html">NoiseInjectionStrategy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.TwirlingStrategy.html">TwirlingStrategy</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
@@ -341,14 +341,16 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.validate_literals.html">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.BoxKey.html">BoxKey</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.virtual_register_from_json.html">virtual_register_from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
@@ -363,6 +365,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
@@ -394,6 +397,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.13.0/index.html" rel="nofollow noindex">0.13.0</a></li>
         
             <li><a href="/samplomatic/stable/0.12.0/index.html" rel="nofollow noindex">0.12.0</a></li>
         
@@ -446,7 +451,7 @@
 <h1>InjectNoiseNode<a class="headerlink" href="#injectnoisenode" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.InjectNoiseNode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">InjectNoiseNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifier_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.13/samplomatic/samplex/nodes/inject_noise_node.py#L24-L116"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">InjectNoiseNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifier_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.14/samplomatic/samplex/nodes/inject_noise_node.py#L24-L116"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="samplomatic.samplex.nodes.SamplingNode.html#samplomatic.samplex.nodes.SamplingNode" title="samplomatic.samplex.nodes.sampling_node.SamplingNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplingNode</span></code></a></p>
 <p>A node that produces samples for injecting noise.</p>
 <p>The node uses a <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.quantum_info.PauliLindbladMap" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.quantum_info.PauliLindbladMap</span></code></a> as the distribution
@@ -515,13 +520,13 @@ sampling.</p></li>
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.InjectNoiseNode.get_style">
-<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.13/samplomatic/samplex/nodes/inject_noise_node.py#L108-L116"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode.get_style" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.14/samplomatic/samplex/nodes/inject_noise_node.py#L108-L116"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode.get_style" title="Link to this definition">¶</a></dt>
 <dd><p>Return the style of this node when plotted.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.InjectNoiseNode.instantiates">
-<span class="sig-name descname"><span class="pre">instantiates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType" title="samplomatic.annotations.virtual_type.VirtualType"><span class="pre">VirtualType</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.13/samplomatic/samplex/nodes/inject_noise_node.py#L73-L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode.instantiates" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">instantiates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType" title="samplomatic.annotations.virtual_type.VirtualType"><span class="pre">VirtualType</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.14/samplomatic/samplex/nodes/inject_noise_node.py#L73-L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode.instantiates" title="Link to this definition">¶</a></dt>
 <dd><p>Return a manifest of new virtual registers that this node instantiates.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -535,7 +540,7 @@ these powers are implicit.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.InjectNoiseNode.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_randomizations</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.13/samplomatic/samplex/nodes/inject_noise_node.py#L79-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode.sample" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_randomizations</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.14/samplomatic/samplex/nodes/inject_noise_node.py#L79-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.InjectNoiseNode.sample" title="Link to this definition">¶</a></dt>
 <dd><p>Sample this node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -588,7 +593,7 @@ these powers are implicit.</p></li>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/11/07</div>
+              Last updated on 2025/12/09</div>
           </div>
           <div class="right-details">
             
@@ -628,7 +633,7 @@ these powers are implicit.</p></li>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1019fba8"></script>
+</div><script src="../../_static/documentation_options.js?v=9e420a66"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

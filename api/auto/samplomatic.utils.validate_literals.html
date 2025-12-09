@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="TwirlingStrategy" href="samplomatic.transpiler.TwirlingStrategy.html" /><link rel="prev" title="generate_boxing_pass_manager" href="samplomatic.transpiler.generate_boxing_pass_manager.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="BoxKey" href="samplomatic.utils.BoxKey.html" /><link rel="prev" title="undress_box" href="samplomatic.utils.undress_box.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>NoiseInjectionStrategy - samplomatic 0.13.0</title>
+        <title>validate_literals - samplomatic 0.14.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">samplomatic 0.13.0</div></a>
+      <a href="../../index.html"><div class="brand">samplomatic 0.14.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.13.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.14.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -234,6 +234,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.Distribution.html">Distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformC1.html">UniformC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
 </ul>
 </li>
@@ -319,11 +320,10 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.tensor_interface.TensorSpecification.html">TensorSpecification</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">NoiseInjectionStrategy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.TwirlingStrategy.html">TwirlingStrategy</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
@@ -340,15 +340,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.BoxKey.html">BoxKey</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.virtual_register_from_json.html">virtual_register_from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
@@ -363,6 +365,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
@@ -395,6 +398,8 @@
     <div class="qiskit-previous-releases-list-container">
         <ul>
         
+            <li><a href="/samplomatic/stable/0.13.0/index.html" rel="nofollow noindex">0.13.0</a></li>
+        
             <li><a href="/samplomatic/stable/0.12.0/index.html" rel="nofollow noindex">0.12.0</a></li>
         
             <li><a href="/samplomatic/stable/0.11.0/index.html" rel="nofollow noindex">0.11.0</a></li>
@@ -422,7 +427,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.transpiler.NoiseInjectionStrategy.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.utils.validate_literals.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -442,45 +447,21 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="noiseinjectionstrategy">
-<h1>NoiseInjectionStrategy<a class="headerlink" href="#noiseinjectionstrategy" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="samplomatic.transpiler.NoiseInjectionStrategy">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.transpiler.</span></span><span class="sig-name descname"><span class="pre">NoiseInjectionStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.13/samplomatic/transpiler/noise_injection_strategies.py#L23-L28"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.transpiler.NoiseInjectionStrategy" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>The noise inejection strategies supported by the boxing pass manager.</p>
-<p class="rubric">Attributes Summary</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION" title="samplomatic.transpiler.NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INDIVIDUAL_MODIFICATION</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy.NO_MODIFICATION" title="samplomatic.transpiler.NoiseInjectionStrategy.NO_MODIFICATION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NO_MODIFICATION</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION" title="samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNIFORM_MODIFICATION</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Attributes Documentation</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION">
-<span class="sig-name descname"><span class="pre">INDIVIDUAL_MODIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'individual_modification'</span></em><a class="headerlink" href="#samplomatic.transpiler.NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.NoiseInjectionStrategy.NO_MODIFICATION">
-<span class="sig-name descname"><span class="pre">NO_MODIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'no_modification'</span></em><a class="headerlink" href="#samplomatic.transpiler.NoiseInjectionStrategy.NO_MODIFICATION" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION">
-<span class="sig-name descname"><span class="pre">UNIFORM_MODIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uniform_modification'</span></em><a class="headerlink" href="#samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
+          <section id="validate-literals">
+<h1>validate_literals<a class="headerlink" href="#validate-literals" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="samplomatic.utils.validate_literals">
+<span class="sig-prename descclassname"><span class="pre">samplomatic.utils.</span></span><span class="sig-name descname"><span class="pre">validate_literals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.14/samplomatic/utils/validate_literals.py#L21-L75"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.validate_literals" title="Link to this definition">¶</a></dt>
+<dd><p>Return a decorator to validate function arguments against literal type annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*arg_names</strong> – The arguments to validate the values of against their <code class="xref py py-class docutils literal notranslate"><span class="pre">Literal</span></code> type
+annotations.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A decorator that wraps a function in a validation routine.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -490,23 +471,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samplomatic.transpiler.TwirlingStrategy.html">
+          <a class="next-page" href="samplomatic.utils.BoxKey.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">TwirlingStrategy</div>
+                <div class="title">BoxKey</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.transpiler.generate_boxing_pass_manager.html">
+          <a class="prev-page" href="samplomatic.utils.undress_box.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">generate_boxing_pass_manager</div>
+                <div class="title">undress_box</div>
                 
               </div>
             </a>
@@ -520,7 +501,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/11/07</div>
+              Last updated on 2025/12/09</div>
           </div>
           <div class="right-details">
             
@@ -541,13 +522,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">NoiseInjectionStrategy</a><ul>
-<li><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy"><code class="docutils literal notranslate"><span class="pre">NoiseInjectionStrategy</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION"><code class="docutils literal notranslate"><span class="pre">NoiseInjectionStrategy.INDIVIDUAL_MODIFICATION</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy.NO_MODIFICATION"><code class="docutils literal notranslate"><span class="pre">NoiseInjectionStrategy.NO_MODIFICATION</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.transpiler.NoiseInjectionStrategy.UNIFORM_MODIFICATION"><code class="docutils literal notranslate"><span class="pre">NoiseInjectionStrategy.UNIFORM_MODIFICATION</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">validate_literals</a><ul>
+<li><a class="reference internal" href="#samplomatic.utils.validate_literals"><code class="docutils literal notranslate"><span class="pre">validate_literals()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -559,7 +535,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=1019fba8"></script>
+</div><script src="../../_static/documentation_options.js?v=9e420a66"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

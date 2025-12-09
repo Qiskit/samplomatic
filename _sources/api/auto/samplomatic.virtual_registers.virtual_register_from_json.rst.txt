@@ -1,6 +1,0 @@
-virtual_register_from_json
-==========================
-
-.. currentmodule:: samplomatic.virtual_registers
-
-.. autofunction:: virtual_register_from_json

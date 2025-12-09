@@ -30,7 +30,6 @@ VirtualRegister
       ~VirtualRegister.empty
       ~VirtualRegister.identity
       ~VirtualRegister.select
-      ~VirtualRegister.to_json_dict
 
    .. rubric:: Attributes Documentation
 
@@ -52,4 +51,3 @@ VirtualRegister
    .. automethod:: empty
    .. automethod:: identity
    .. automethod:: select
-   .. automethod:: to_json_dict
