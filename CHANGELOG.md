@@ -5,6 +5,7 @@
 - Removed the `VirtualRegister.to_json_dict` and the `virtual_register_from_json` function. ([#223](https://github.com/Qiskit/samplomatic/issues/223))
 - Removed support for Python 3.9 following its end-of-life date. ([#244](https://github.com/Qiskit/samplomatic/issues/244))
 - The modules `.transpiler.noise_injection_strategies`, `.transpiler.twirling_strategies`, and their contents have been removed. These files contained enum classes for specifying arguments to some of the transpiler passes; these arguments must now be specified as strings. ([#257](https://github.com/Qiskit/samplomatic/issues/257))
+- *Temporarily* removed support for `IfElseOp` instructions inside of boxes---we are in the middle of refactoring this to make it more general, but we cannot wait for it to be complete to make a new release. Please refrain from upgrading if this breaks your workflow, and apologies.
 
 ### Deprecated
 
