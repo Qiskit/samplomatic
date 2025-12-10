@@ -38,8 +38,9 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     """
     save_plot(lambda: circuit.draw("mpl"), "Base Circuit", delayed=True)
 
-    template, pre_samplex = pre_build(circuit)
-    save_plot(lambda: template.template.draw("mpl"), "Template Circuit", delayed=True)
+    template_state, pre_samplex = pre_build(circuit)
+    template = template_state.finalize()
+    save_plot(lambda: template.draw("mpl"), "Template Circuit", delayed=True)
     save_plot(lambda: pre_samplex.draw(), "Unfinalized Pre-Samplex", delayed=True)
 
     samplex = pre_samplex.finalize()
@@ -58,7 +59,7 @@ def sample_simulate_and_compare_counts(circuit: QuantumCircuit, save_plot):
     )
     parameter_values = samplex_output["parameter_values"]
 
-    twirled_circuit_result = _simulate(template.template, parameter_values)
+    twirled_circuit_result = _simulate(template, parameter_values)
     for creg in circuit.cregs:
         creg_name = creg.name
         twirled_creg_data = getattr(twirled_circuit_result.data, creg_name)

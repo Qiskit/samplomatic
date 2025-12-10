@@ -192,8 +192,9 @@ def test_sampling(circuit, expected, basis_changes, save_plot):
     """
     save_plot(lambda: circuit.draw("mpl"), "Base Circuit", delayed=True)
 
-    template, samplex_state = pre_build(circuit)
-    save_plot(lambda: template.template.draw("mpl"), "Template Circuit", delayed=True)
+    template_state, samplex_state = pre_build(circuit)
+    template = template_state.finalize()
+    save_plot(lambda: template.draw("mpl"), "Template Circuit", delayed=True)
     save_plot(lambda: samplex_state.draw(), "Unfinalized Pre-Samplex", delayed=True)
 
     samplex = samplex_state.finalize()
@@ -206,7 +207,7 @@ def test_sampling(circuit, expected, basis_changes, save_plot):
     parameter_values = samplex_output["parameter_values"]
 
     expected_op = Operator(expected)
-    template.template.remove_final_measurements()
+    template.remove_final_measurements()
     for row in parameter_values:
-        op = Operator(template.template.assign_parameters(row))
+        op = Operator(template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f

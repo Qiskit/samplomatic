@@ -24,7 +24,7 @@ class TestTemplateBuilder:
     def test_empty(self):
         """Test building an empty circuit."""
         template_state, _ = pre_build(QuantumCircuit())
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 0
         assert template.num_clbits == 0
@@ -41,7 +41,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -71,7 +71,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -106,7 +106,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -139,7 +139,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -189,7 +189,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 5
         assert template.num_clbits == 5

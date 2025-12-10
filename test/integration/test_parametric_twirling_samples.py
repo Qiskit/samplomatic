@@ -124,7 +124,8 @@ def test_sampling(rng, circuit, save_plot):
     """
     save_plot(lambda: circuit.draw("mpl"), "Base Circuit", delayed=True)
 
-    template, pre_samplex = pre_build(circuit)
+    template_state, pre_samplex = pre_build(circuit)
+    template = template_state.finalize()
     save_plot(lambda: template.template.draw("mpl"), "Template Circuit", delayed=True)
     save_plot(lambda: pre_samplex.draw(), "Unfinalized Pre-Samplex", delayed=True)
 
@@ -144,5 +145,5 @@ def test_sampling(rng, circuit, save_plot):
         PassManager([InlineBoxes()]).run(circuit).assign_parameters(circuit_params)
     )
     for row in parameter_values:
-        op = Operator(template.template.assign_parameters(row))
+        op = Operator(template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f

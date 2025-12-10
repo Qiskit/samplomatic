@@ -13,8 +13,9 @@
 """Test BoxBuilder for PreSamplex"""
 
 import pytest
-from qiskit.circuit import CircuitInstruction, ClassicalRegister, QuantumCircuit, QuantumRegister
+from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import Measure
+from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 
 from samplomatic.annotations import VirtualType
 from samplomatic.builders.box_builder import LeftBoxBuilder
@@ -36,7 +37,10 @@ class TestBoxBuilder:
         """Return left box builder with empty PreSamplex."""
         creg = ClassicalRegister(len(qreg)) if creg is None else creg
         qubit_map = {q: idx for idx, q in enumerate(qreg)}
-        template_state = TemplateState(QuantumCircuit(qreg, creg), qubit_map, ParamIter(), [0])
+        circuit = DAGCircuit()
+        circuit.add_qreg(qreg)
+        circuit.add_creg(creg)
+        template_state = TemplateState(circuit, qubit_map, ParamIter(), [0])
         pre_samplex = PreSamplex(qubit_map=qubit_map, cregs=[creg])
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxBuilder(
@@ -51,7 +55,7 @@ class TestBoxBuilder:
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(2)
         builder = self.get_builder(qreg, creg)
-        builder.parse(CircuitInstruction(Measure(), [qreg[0]], [creg[0]]))
+        builder.parse(DAGOpNode(Measure(), [qreg[0]], [creg[0]]))
 
         assert builder.samplex_state.graph.num_nodes() == 0
         assert len(builder.measured_qubits) == 1
@@ -63,7 +67,7 @@ class TestBoxBuilder:
         creg = ClassicalRegister(3)
         builder = self.get_builder(qreg, creg)
         builder.lhs()
-        builder.parse(CircuitInstruction(Measure(), qreg, [creg[0], creg[2]]))
+        builder.parse(DAGOpNode(Measure(), qreg, [creg[0], creg[2]]))
         builder.rhs()
         idxs = QubitIndicesPartition.from_elements(builder.samplex_state.qubit_map.values())
 
@@ -105,11 +109,13 @@ class TestBoxBuilder:
             EmissionSpec(qubits, "Right", VirtualType.U2),
         )
         builder.set_samplex_state(pre_samplex)
-        builder.set_template_state(
-            TemplateState(QuantumCircuit(qreg, creg), qubit_map, ParamIter(), [0])
-        )
+
+        circuit = DAGCircuit()
+        circuit.add_qreg(qreg)
+        circuit.add_creg(creg)
+        builder.set_template_state(TemplateState(circuit, qubit_map, ParamIter(), [0]))
         builder.lhs()
-        builder.parse(CircuitInstruction(Measure(), qreg, creg))
+        builder.parse(DAGOpNode(Measure(), qreg, creg))
 
         with pytest.raises(BuildError, match="Cannot use u2 twirl in a box with measurements"):
             builder.rhs()
@@ -120,9 +126,9 @@ class TestBoxBuilder:
         creg = ClassicalRegister(2)
         builder = self.get_builder(qreg)
         builder.set_template_state(TemplateState.construct_for_circuit(QuantumCircuit(qreg, creg)))
-        builder.parse(CircuitInstruction(Measure(), qreg, creg))
+        builder.parse(DAGOpNode(Measure(), qreg, creg))
 
         with pytest.raises(
             BuildError, match="Cannot measure the same qubit more than once in a dressed box"
         ):
-            builder.parse(CircuitInstruction(Measure(), qreg, creg))
+            builder.parse(DAGOpNode(Measure(), qreg, creg))
