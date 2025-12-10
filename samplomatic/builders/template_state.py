@@ -94,6 +94,7 @@ class TemplateState:
         return cls(template_circuit, qubit_map, param_iter, [])
 
     def qubits(self, idxs: Iterable[int] | None = None) -> Sequence[Qubit]:
+        """Return the qubits in the template at the given indices."""
         idxs = self.qubit_map.values() if idxs is None else idxs
         return [self.template.qubits[i] for i in idxs]
 
@@ -167,4 +168,5 @@ class TemplateState:
             )
 
     def finalize(self) -> QuantumCircuit:
+        """Return the quantum circuit template."""
         return dag_to_circuit(self.template)
