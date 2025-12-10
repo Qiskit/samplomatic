@@ -91,7 +91,14 @@ def maybe_clear_assets():
 
 
 def circuit_description(circuit: QuantumCircuit) -> list[str]:
-    """Return a detailed description of a circuit."""
+    """Return a detailed description of a circuit.
+
+    Args:
+        circuit: The circuit to describe.
+
+    Returns:
+        A list of string lines.
+    """
     return [
         repr(circuit),
         f" * num_qubits={circuit.num_qubits} (qubits hash is {hash(tuple(circuit.qubits))})",
