@@ -38,8 +38,8 @@ def _build_stream(stream: DAGOpNode, builder: Builder) -> Iterator[DAGOpNode]:
     """
     builder.lhs()
 
-    for instr in stream.topological_op_nodes():
-        if instr.op.name == "box":
+    for instr in builder.yield_from_dag(stream):
+        if instr is not None and instr.op.name == "box":
             yield instr
         else:
             builder.parse(instr)

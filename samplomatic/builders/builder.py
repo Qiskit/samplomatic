@@ -13,7 +13,10 @@
 """Builder"""
 
 import abc
+from collections.abc import Iterable
 from typing import Generic, TypeVar
+
+from qiskit.dagcircuit import DAGCircuit
 
 from ..aliases import DAGOpNode, Self
 from ..exceptions import BuildError
@@ -70,6 +73,10 @@ class Builder(Generic[TemplateT, SamplexT], abc.ABC):
                 f"Attempted to access the template state of {self} before it has been set."
             )
         return self._template_state
+
+    @abc.abstractmethod
+    def yield_from_dag(self, dag: DAGCircuit) -> Iterable[DAGOpNode]:
+        """Yield nodes from a dag."""
 
     @abc.abstractmethod
     def parse(self, instr: DAGOpNode):

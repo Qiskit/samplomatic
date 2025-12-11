@@ -83,8 +83,21 @@ class LeftBoxBuilder(BoxBuilder):
 
         self.measured_qubits = QubitPartition(1, [])
         self.clbit_idxs = []
+        self._mode = InstructionMode.MULTIPLY
 
     def parse(self, instr: DAGOpNode):
+        if instr is None:
+            if self.emission.basis_ref:
+                self.samplex_state.add_emit_meas_basis_change(
+                    self.emission.qubits, self.emission.basis_ref
+                )
+            if self.emission.noise_ref:
+                self.samplex_state.add_emit_noise_left(
+                    self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+                )
+            self._mode = InstructionMode.PROPAGATE
+            return
+
         if (name := instr.op.name) == "barrier":
             self.template_state.append_remapped_gate(instr)
             return
@@ -109,16 +122,12 @@ class LeftBoxBuilder(BoxBuilder):
                     "Cannot handle single-qubit gate to the right of a measurement in a "
                     "left-dressed box. "
                 )
-            if not self.entangled_qubits.isdisjoint(instr.qargs):
-                raise BuildError(
-                    "Cannot handle single-qubit gate to the right of an entangler in a "
-                    "left-dressed box."
-                )
-            # the action of this single-qubit gate will be absorbed into the dressing
-            mode = InstructionMode.MULTIPLY
-            params = []
-            if instr.op.is_parameterized():
-                params.extend((None, param) for param in instr.op.params)
+            if self._mode is InstructionMode.PROPAGATE:
+                params = self.template_state.append_remapped_gate(instr)
+            else:
+                params = []
+                if instr.op.is_parameterized():
+                    params.extend((None, param) for param in instr.op.params)
 
         elif num_qubits > 1:
             if self.measured_qubits.overlaps_with(instr.qargs):
@@ -128,11 +137,28 @@ class LeftBoxBuilder(BoxBuilder):
                 )
             self.entangled_qubits.update(instr.qargs)
             params = self.template_state.append_remapped_gate(instr)
-            mode = InstructionMode.PROPAGATE
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, mode, params)
+        self.samplex_state.add_propagate(instr, self._mode, params)
+
+    def yield_from_dag(self, dag):
+        qubits = set(dag.qubits)
+
+        hard = []
+        for node in dag.topological_op_nodes():
+            if (
+                qubits.issuperset(node.qargs)
+                and node.is_standard_gate()
+                and node.op.num_qubits == 1
+            ):
+                yield node
+            else:
+                hard.append(node)
+                qubits.difference_update(node.qargs)
+
+        yield None
+        yield from hard
 
     def lhs(self):
         self._append_barrier("L")
@@ -143,14 +169,7 @@ class LeftBoxBuilder(BoxBuilder):
     def rhs(self):
         self._append_barrier("R")
 
-        if self.emission.noise_ref:
-            self.samplex_state.add_emit_noise_left(
-                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
-            )
-        if self.emission.basis_ref:
-            self.samplex_state.add_emit_meas_basis_change(
-                self.emission.qubits, self.emission.basis_ref
-            )
+        twirl_type = self.emission.twirl_register_type
         if twirl_type := self.emission.twirl_register_type:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
             if len(self.measured_qubits) != 0:
@@ -169,8 +188,21 @@ class RightBoxBuilder(BoxBuilder):
 
         self.measured_qubits = QubitPartition(1, [])
         self.clbit_idxs = []
+        self._mode = InstructionMode.PROPAGATE
 
     def parse(self, instr: DAGOpNode):
+        if instr is None:
+            if self.emission.noise_ref:
+                self.samplex_state.add_emit_noise_right(
+                    self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+                )
+            if self.emission.basis_ref:
+                self.samplex_state.add_emit_prep_basis_change(
+                    self.emission.qubits, self.emission.basis_ref
+                )
+            self._mode = InstructionMode.MULTIPLY
+            return
+
         if (name := instr.op.name).startswith("barrier"):
             params = self.template_state.append_remapped_gate(instr)
             return
@@ -181,35 +213,42 @@ class RightBoxBuilder(BoxBuilder):
         elif (num_qubits := instr.num_qubits) == 1:
             self.entangled_qubits.update(instr.qargs)
             # the action of this single-qubit gate will be absorbed into the dressing
-            params = []
-            if instr.op.is_parameterized():
-                params.extend((None, param) for param in instr.op.params)
-            mode = InstructionMode.MULTIPLY
+            if self._mode is InstructionMode.PROPAGATE:
+                params = self.template_state.append_remapped_gate(instr)
+            else:
+                params = []
+                if instr.op.is_parameterized():
+                    params.extend((None, param) for param in instr.op.params)
 
         elif num_qubits > 1:
-            if not self.entangled_qubits.isdisjoint(instr.qargs):
-                raise BuildError(
-                    "Cannot handle single-qubit gate to the left of an entangler in a "
-                    "right-dressed box."
-                )
             params = self.template_state.append_remapped_gate(instr)
-            mode = InstructionMode.PROPAGATE
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, mode, params)
+        self.samplex_state.add_propagate(instr, self._mode, params)
+
+    def yield_from_dag(self, dag):
+        qubits = set(dag.qubits)
+
+        easy = []
+        hard = []
+        for node in dag.reverse_ops().topological_op_nodes():
+            if (
+                qubits.issuperset(node.qargs)
+                and node.is_standard_gate()
+                and node.op.num_qubits == 1
+            ):
+                easy.append(node)
+            else:
+                hard.append(node)
+                qubits.difference_update(node.qargs)
+
+        yield from reversed(hard)
+        yield None
+        yield from reversed(easy)
 
     def lhs(self):
         self._append_barrier("L")
-
-        if self.emission.basis_ref:
-            self.samplex_state.add_emit_prep_basis_change(
-                self.emission.qubits, self.emission.basis_ref
-            )
-        if self.emission.noise_ref:
-            self.samplex_state.add_emit_noise_right(
-                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
-            )
         if self.emission.twirl_register_type:
             self.samplex_state.add_emit_twirl(
                 self.emission.qubits, self.emission.twirl_register_type

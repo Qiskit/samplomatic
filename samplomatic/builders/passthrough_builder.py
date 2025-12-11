@@ -67,6 +67,9 @@ class PassthroughBuilder(Builder[TemplateState, PreSamplex]):
                 Barrier(len(all_qubits), label), all_qubits
             )
 
+    def yield_from_dag(self, dag):
+        yield from dag.topological_op_nodes()
+
     def lhs(self):
         self._append_barrier("L")
 
