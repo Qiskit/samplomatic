@@ -41,12 +41,13 @@ from .utils import make_layered_circuit
         ),
     ],
 )
-def test_transpiling_5k_circuit(benchmark, num_qubits, num_gates):
-    """Test the default boxing transpiler"""
+@pytest.mark.parametrize("inject_noise_strategy", ["no_modification", "individual_modification"])
+def test_transpiling_5k_circuit(benchmark, num_qubits, num_gates, inject_noise_strategy):
+    """Test the boxing pass manager performance."""
     num_boxes = num_gates // (num_qubits // 2)
     boxed_circuit = make_layered_circuit(num_qubits, num_boxes)
     unboxed_circuit = PassManager([InlineBoxes()]).run(boxed_circuit)
-    pm = generate_boxing_pass_manager()
+    pm = generate_boxing_pass_manager(inject_noise_strategy=inject_noise_strategy)
 
     transpiled_circuit = benchmark(pm.run, unboxed_circuit)
 
