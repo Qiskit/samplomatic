@@ -22,6 +22,7 @@ from rustworkx.rustworkx import PyDiGraph, weakly_connected_components
 
 from ..aliases import EdgeLayout, GraphLayout, LayoutMethod, LayoutPresets, NodeLayout, NodeRanker
 from ..optionals import HAS_GRAPHVIZ, HAS_NBFORMAT, HAS_PLOTLY
+from ..utils import FrozenDict
 from .graphviz_layout import graphviz_layout
 from .hover_style import HoverStyle, NodeStyle
 
@@ -45,13 +46,15 @@ def _auto_layout_method(
     return LAYOUT_METHODS["spring"](graph, ranker)
 
 
-LAYOUT_METHODS: dict[str, LayoutMethod] = {
-    "auto": _auto_layout_method,
-    "spring": lambda graph, _: spring_layout(graph, repulsive_exponent=3),
-    "graphviz": partial(graphviz_layout, layout="dot", spline="spline"),
-    "graphviz_curved": partial(graphviz_layout, layout="dot", spline="curved"),
-    "graphviz_line": partial(graphviz_layout, layout="dot", spline="line"),
-}
+LAYOUT_METHODS: dict[str, LayoutMethod] = FrozenDict(
+    {
+        "auto": _auto_layout_method,
+        "spring": lambda graph, _: spring_layout(graph, repulsive_exponent=3),
+        "graphviz": partial(graphviz_layout, layout="dot", spline="spline"),
+        "graphviz_curved": partial(graphviz_layout, layout="dot", spline="curved"),
+        "graphviz_line": partial(graphviz_layout, layout="dot", spline="line"),
+    }
+)
 
 
 def _add_edge_layout(graph: PyDiGraph, layout: GraphLayout) -> tuple[NodeLayout, EdgeLayout]:
