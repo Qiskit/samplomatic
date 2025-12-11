@@ -16,7 +16,7 @@ from collections.abc import Callable, Sequence
 
 from qiskit.circuit import Annotation, Qubit
 
-from ..aliases import CircuitInstruction
+from ..aliases import DAGOpNode
 from ..annotations import (
     ChangeBasis,
     ChangeBasisMode,
@@ -34,7 +34,7 @@ from .passthrough_builder import PassthroughBuilder
 from .specs import CollectionSpec, EmissionSpec
 
 
-def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Builder:
+def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
     """Get the builders of a box.
 
     Args:
@@ -49,10 +49,10 @@ def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Bu
     Returns:
         A tuple containing a template and samplex builder.
     """
-    if instr is None or not (annotations := instr.operation.annotations):
+    if instr is None or not (annotations := instr.op.annotations):
         return PassthroughBuilder()
 
-    qubits = QubitPartition.from_elements(q for q in qubits if q in instr.qubits)
+    qubits = QubitPartition.from_elements(q for q in qubits if q in instr.qargs)
     collection = CollectionSpec(qubits)
     emission = EmissionSpec(qubits)
 

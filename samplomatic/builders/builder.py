@@ -15,7 +15,7 @@
 import abc
 from typing import Generic, TypeVar
 
-from ..aliases import CircuitInstruction, Self
+from ..aliases import DAGOpNode, Self
 from ..exceptions import BuildError
 
 SamplexT = TypeVar("SamplexT")
@@ -72,7 +72,7 @@ class Builder(Generic[TemplateT, SamplexT], abc.ABC):
         return self._template_state
 
     @abc.abstractmethod
-    def parse(self, instr: CircuitInstruction):
+    def parse(self, instr: DAGOpNode):
         """Parse a single circuit instruction."""
 
     @abc.abstractmethod
