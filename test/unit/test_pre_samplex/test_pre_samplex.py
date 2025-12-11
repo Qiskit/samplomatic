@@ -440,8 +440,8 @@ class TestPrePropagateClustering:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(dag.qubits)})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        pre_samplex.add_propagate(dag.op_nodes()[0], InstructionMode.MULTIPLY, [])
-        pre_samplex.add_propagate(dag.op_nodes()[1], InstructionMode.PROPAGATE, [])
+        for n, m in zip(dag.op_nodes(), [InstructionMode.MULTIPLY, InstructionMode.PROPAGATE]):
+            pre_samplex.add_propagate(n, m, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
         clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001

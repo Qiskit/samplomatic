@@ -16,6 +16,22 @@ from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
+from samplomatic.builders.template_state import TemplateState
+
+
+class TestTemplateState:
+    """Test the template state class."""
+
+    def test_qubits(self):
+        """Test the qubits method."""
+        state = TemplateState.construct_for_circuit(QuantumCircuit(4))
+        assert state.qubits() == state.template.qubits
+        assert state.qubits([]) == []
+        assert state.qubits([0, 3]) == [state.template.qubits[i] for i in [0, 3]]
+
+        new_state = state.remap({1: state.template.qubits[2]})
+        assert len(new_state.qubits()) == 1
+        assert new_state.qubits() == [state.template.qubits[2]]
 
 
 class TestTemplateBuilder:
