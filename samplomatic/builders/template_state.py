@@ -94,7 +94,14 @@ class TemplateState:
         return cls(template_circuit, qubit_map, param_iter, [])
 
     def qubits(self, idxs: Iterable[int] | None = None) -> Sequence[Qubit]:
-        """Return the qubits in the template at the given indices."""
+        """Return the qubits in the template at the given indices.
+        
+        Args:
+            idxs: The indices of qubits to collect, or ``None`` to get all of them.
+            
+        Returns:
+            A sequence of qubits, in order.
+        """
         idxs = self.qubit_map.values() if idxs is None else idxs
         return [self.template.qubits[i] for i in idxs]
 
