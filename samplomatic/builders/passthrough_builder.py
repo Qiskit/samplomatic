@@ -21,15 +21,10 @@ from .specs import InstructionMode
 from .template_state import TemplateState
 
 
-class PassthroughBuilder(Builder[TemplateState, PreSamplex]):
+class PassthroughBuilder(Builder[TemplateState, PreSamplex, DAGOpNode]):
     """Builder that passes all instructions through."""
 
-    def parse(self, instr: DAGOpNode):
-        """Parse a single non-box instruction.
-
-        Args:
-            instr: The instruction to parse.
-        """
+    def parse(self, instr):
         if instr.op.name.startswith("if_else"):
             true_body, true_params = self.template_state.remap_subcircuit(instr.op.params[0])
             false_body, false_params = (

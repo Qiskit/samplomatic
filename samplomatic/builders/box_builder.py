@@ -23,8 +23,10 @@ from .builder import Builder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
 from .template_state import TemplateState
 
+ParsableType = DAGOpNode | None
 
-class BoxBuilder(Builder[TemplateState, PreSamplex]):
+
+class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
     """Builds dressed boxes."""
 
     def __init__(self, collection: CollectionSpec, emission: EmissionSpec):

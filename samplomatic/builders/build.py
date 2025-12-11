@@ -26,7 +26,7 @@ from .get_builder import get_builder
 from .template_state import TemplateState
 
 
-def _build_stream(stream: DAGOpNode, builder: Builder) -> Iterator[DAGOpNode]:
+def _build_stream(stream: DAGCircuit, builder: Builder) -> Iterator[DAGOpNode]:
     """Build while iterating an instruction stream, but halting to yield each ``box``.
 
     Args:
