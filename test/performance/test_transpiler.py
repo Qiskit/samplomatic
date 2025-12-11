@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the transpiler method."""
+"""Test the transpiler."""
 
 import pytest
 from qiskit.transpiler import PassManager
