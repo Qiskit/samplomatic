@@ -21,7 +21,7 @@ class FrozenDict(Mapping):
     """An immutable and hashable dictionary-like mapping.
 
     Keys and values must be hashable. Views onto keys, items, and values are read-only and
-    present insertion order. Standard operands like ``|`` are supported, but return copies when
+    preserve insertion order. Standard operands like ``|`` are supported, but return copies when
     necessary.
     """
 
