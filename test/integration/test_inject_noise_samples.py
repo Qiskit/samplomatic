@@ -68,7 +68,7 @@ def make_circuits():
 
     pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])}
     noise_ops = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
-    expected = [(Operator(CXGate()) ^ Operator(CXGate())) & op for op in noise_ops]
+    expected = [op & (Operator(CXGate()) ^ Operator(CXGate())) for op in noise_ops]
 
     yield (circuit, expected, pauli_lindblad_maps), "xx_noise_permuted"
 
