@@ -68,5 +68,6 @@ class PassthroughBuilder(Builder[TemplateState, PreSamplex, DAGOpNode]):
     def rhs(self):
         self._append_barrier("R")
 
+    @staticmethod
     def yield_from_dag(dag):
         yield from dag.topological_op_nodes()

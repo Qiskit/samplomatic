@@ -163,6 +163,7 @@ class LeftBoxBuilder(BoxBuilder):
                     )
                 self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
 
+    @staticmethod
     def yield_from_dag(dag):
         qubits = set(dag.qubits)
 
@@ -242,6 +243,7 @@ class RightBoxBuilder(BoxBuilder):
         self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
         self._append_barrier("R")
 
+    @staticmethod
     def yield_from_dag(dag):
         qubits = set(dag.qubits)
 
