@@ -345,6 +345,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.undress_box.html">undress_box</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.validate_literals.html">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.BoxKey.html">BoxKey</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.FrozenDict.html">FrozenDict</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -444,7 +445,7 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#Z"><strong>Z</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#Z"><strong>Z</strong></a></div>
 </section>
 <section id="_" class="genindex-section">
   <h2>_</h2>
@@ -598,8 +599,6 @@
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.CombineRegistersNode.html#samplomatic.samplex.nodes.CombineRegistersNode">CombineRegistersNode (class in samplomatic.samplex.nodes)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.synths.RzRxSynth.html#samplomatic.synths.RzRxSynth.compatible_register_types">compatible_register_types (samplomatic.synths.RzRxSynth attribute)</a>
 
         <ul>
@@ -608,6 +607,8 @@
           <li><a href="api/auto/samplomatic.synths.Synth.html#samplomatic.synths.Synth.compatible_register_types">(samplomatic.synths.Synth attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.nodes.ConversionNode.html#samplomatic.samplex.nodes.ConversionNode">ConversionNode (class in samplomatic.samplex.nodes)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.convert_to">convert_to() (samplomatic.virtual_registers.C1Register method)</a>
@@ -633,6 +634,8 @@
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.copy">copy() (samplomatic.partition.Partition method)</a>
 
         <ul>
+          <li><a href="api/auto/samplomatic.utils.FrozenDict.html#samplomatic.utils.FrozenDict.copy">(samplomatic.utils.FrozenDict method)</a>
+</li>
           <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.copy">(samplomatic.virtual_registers.VirtualRegister method)</a>
 </li>
         </ul></li>
@@ -776,8 +779,6 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreEdge.html#samplomatic.pre_samplex.PreEdge.force_register_copy">force_register_copy (samplomatic.pre_samplex.PreEdge attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.tensor_interface.PauliLindbladMapSpecification.html#samplomatic.tensor_interface.PauliLindbladMapSpecification.free_dimensions">free_dimensions (samplomatic.tensor_interface.PauliLindbladMapSpecification attribute)</a>
 
         <ul>
@@ -788,11 +789,15 @@
           <li><a href="api/auto/samplomatic.tensor_interface.TensorSpecification.html#samplomatic.tensor_interface.TensorSpecification.free_dimensions">(samplomatic.tensor_interface.TensorSpecification attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.from_elements">from_elements() (samplomatic.partition.Partition class method)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.from_name">from_name() (samplomatic.virtual_registers.PauliRegister class method)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.from_tableau">from_tableau() (samplomatic.virtual_registers.C1Register class method)</a>
+</li>
+        <li><a href="api/auto/samplomatic.utils.FrozenDict.html#samplomatic.utils.FrozenDict">FrozenDict (class in samplomatic.utils)</a>
 </li>
         <li><a href="api/auto/samplomatic.tensor_interface.TensorInterface.html#samplomatic.tensor_interface.TensorInterface.fully_bound">fully_bound (samplomatic.tensor_interface.TensorInterface attribute)</a>
 </li>
@@ -826,6 +831,8 @@
           <li><a href="api/auto/samplomatic.synths.Synth.html#samplomatic.synths.Synth.generate_template_values">(samplomatic.synths.Synth method)</a>
 </li>
         </ul></li>
+        <li><a href="api/auto/samplomatic.utils.FrozenDict.html#samplomatic.utils.FrozenDict.get">get() (samplomatic.utils.FrozenDict method)</a>
+</li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.get_all_danglers">get_all_danglers() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.utils.get_annotation.html#samplomatic.utils.get_annotation">get_annotation() (in module samplomatic.utils)</a>
@@ -975,6 +982,18 @@
         <li><a href="api/auto/samplomatic.graph_utils.NodeCandidate.html#samplomatic.graph_utils.NodeCandidate.is_added">is_added (samplomatic.graph_utils.NodeCandidate attribute)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PrePropagateKey.html#samplomatic.pre_samplex.PrePropagateKey.is_parameterized">is_parameterized (samplomatic.pre_samplex.PrePropagateKey attribute)</a>
+</li>
+        <li><a href="api/auto/samplomatic.utils.FrozenDict.html#samplomatic.utils.FrozenDict.items">items() (samplomatic.utils.FrozenDict method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="K" class="genindex-section">
+  <h2>K</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/auto/samplomatic.utils.FrozenDict.html#samplomatic.utils.FrozenDict.keys">keys() (samplomatic.utils.FrozenDict method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1753,6 +1772,8 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers">validate_no_rightward_danglers() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
+        <li><a href="api/auto/samplomatic.utils.FrozenDict.html#samplomatic.utils.FrozenDict.values">values() (samplomatic.utils.FrozenDict method)</a>
+</li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits">verify_no_twirled_clbits() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.virtual_gates">virtual_gates (samplomatic.virtual_registers.VirtualRegister attribute)</a>
@@ -1815,7 +1836,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/12/11</div>
+              Last updated on 2025/12/12</div>
           </div>
           <div class="right-details">
             

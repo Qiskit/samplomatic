@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.constants" href="../samplomatic.constants.html" /><link rel="prev" title="samplomatic.builders" href="../samplomatic.builders.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.virtual_registers" href="../samplomatic.virtual_registers.html" /><link rel="prev" title="BoxKey" href="samplomatic.utils.BoxKey.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>pre_build - samplomatic 0.1.dev1</title>
+        <title>FrozenDict - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -222,8 +222,8 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.builders.html">samplomatic.builders</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of samplomatic.builders</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">pre_build</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.builders.html">samplomatic.builders</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of samplomatic.builders</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.builders.pre_build.html">pre_build</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.build.html">samplomatic.build</a></li>
 </ul>
 </li>
@@ -340,14 +340,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.validate_literals.html">validate_literals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.BoxKey.html">BoxKey</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.FrozenDict.html">FrozenDict</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">FrozenDict</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -430,7 +430,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.builders.pre_build.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.utils.FrozenDict.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -450,21 +450,65 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="pre-build">
-<h1>pre_build<a class="headerlink" href="#pre-build" title="Link to this heading">¶</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="samplomatic.builders.pre_build">
-<span class="sig-prename descclassname"><span class="pre">samplomatic.builders.</span></span><span class="sig-name descname"><span class="pre">pre_build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.2)"><span class="pre">QuantumCircuit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">TemplateState</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex" title="samplomatic.pre_samplex.pre_samplex.PreSamplex"><span class="pre">PreSamplex</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/builders/build.py#L71-L88"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.builders.pre_build" title="Link to this definition">¶</a></dt>
-<dd><p>Build a template state and a pre-samplex for the given boxed-up circuit.</p>
-<p>This is a helper method to <code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code> and is not intended to be useful in standard workflows.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>circuit</strong> – The circuit to build.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The built template state and the corresponding pre-samplex.</p>
-</dd>
-</dl>
+          <section id="frozendict">
+<h1>FrozenDict<a class="headerlink" href="#frozendict" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="samplomatic.utils.FrozenDict">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.utils.</span></span><span class="sig-name descname"><span class="pre">FrozenDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/frozen_dict.py#L20-L110"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.FrozenDict" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a></p>
+<p>An immutable and hashable dictionary-like mapping.</p>
+<p>Keys and values must be hashable. Views onto keys, items, and values are read-only and
+preserve insertion order. Standard operands like <code class="docutils literal notranslate"><span class="pre">|</span></code> are supported, but return copies when
+necessary.</p>
+<p class="rubric">Methods Summary</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.utils.FrozenDict.copy" title="samplomatic.utils.FrozenDict.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">self</span></code>, since this instance is immutable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.utils.FrozenDict.get" title="samplomatic.utils.FrozenDict.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>(k[,d])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.utils.FrozenDict.items" title="samplomatic.utils.FrozenDict.items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.utils.FrozenDict.keys" title="samplomatic.utils.FrozenDict.keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.utils.FrozenDict.values" title="samplomatic.utils.FrozenDict.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.utils.FrozenDict.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/frozen_dict.py#L92-L94"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.FrozenDict.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">self</span></code>, since this instance is immutable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.utils.FrozenDict.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">D[k]</span> <span class="pre">if</span> <span class="pre">k</span> <span class="pre">in</span> <span class="pre">D,</span> <span class="pre">else</span> <span class="pre">d.</span>&#160; <span class="pre">d</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">None.</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/frozen_dict.py#L57-L58"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.FrozenDict.get" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.utils.FrozenDict.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">items</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/frozen_dict.py#L51-L52"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.FrozenDict.items" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.utils.FrozenDict.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">keys</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/frozen_dict.py#L48-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.FrozenDict.keys" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.utils.FrozenDict.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">an</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">values</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/frozen_dict.py#L54-L55"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.FrozenDict.values" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -474,23 +518,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samplomatic.constants.html">
+          <a class="next-page" href="../samplomatic.virtual_registers.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">samplomatic.constants</div>
+                <div class="title">samplomatic.virtual_registers</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../samplomatic.builders.html">
+          <a class="prev-page" href="samplomatic.utils.BoxKey.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">samplomatic.builders</div>
+                <div class="title">BoxKey</div>
                 
               </div>
             </a>
@@ -525,8 +569,15 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">pre_build</a><ul>
-<li><a class="reference internal" href="#samplomatic.builders.pre_build"><code class="docutils literal notranslate"><span class="pre">pre_build()</span></code></a></li>
+<li><a class="reference internal" href="#">FrozenDict</a><ul>
+<li><a class="reference internal" href="#samplomatic.utils.FrozenDict"><code class="docutils literal notranslate"><span class="pre">FrozenDict</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.utils.FrozenDict.copy"><code class="docutils literal notranslate"><span class="pre">FrozenDict.copy()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.utils.FrozenDict.get"><code class="docutils literal notranslate"><span class="pre">FrozenDict.get()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.utils.FrozenDict.items"><code class="docutils literal notranslate"><span class="pre">FrozenDict.items()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.utils.FrozenDict.keys"><code class="docutils literal notranslate"><span class="pre">FrozenDict.keys()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.utils.FrozenDict.values"><code class="docutils literal notranslate"><span class="pre">FrozenDict.values()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
