@@ -13,16 +13,20 @@
 """Builder"""
 
 import abc
+from collections.abc import Iterable
 from typing import Generic, TypeVar
 
-from ..aliases import DAGOpNode, Self
+from qiskit.dagcircuit import DAGCircuit
+
+from ..aliases import Self
 from ..exceptions import BuildError
 
 SamplexT = TypeVar("SamplexT")
 TemplateT = TypeVar("TemplateT")
+ParseT = TypeVar("ParseT")
 
 
-class Builder(Generic[TemplateT, SamplexT], abc.ABC):
+class Builder(Generic[TemplateT, SamplexT, ParseT], abc.ABC):
     """Generic abstraction for parsing a :class:`~.QuantumCircuit` scope."""
 
     def __init__(self):
@@ -72,7 +76,7 @@ class Builder(Generic[TemplateT, SamplexT], abc.ABC):
         return self._template_state
 
     @abc.abstractmethod
-    def parse(self, instr: DAGOpNode):
+    def parse(self, instr: ParseT):
         """Parse a single circuit instruction."""
 
     @abc.abstractmethod
@@ -82,3 +86,8 @@ class Builder(Generic[TemplateT, SamplexT], abc.ABC):
     @abc.abstractmethod
     def rhs(self):
         """Perform some action after the current scope's stream is iterated."""
+
+    @staticmethod
+    @abc.abstractmethod
+    def yield_from_dag(dag: DAGCircuit) -> Iterable[ParseT]:
+        """Yield nodes from a dag."""

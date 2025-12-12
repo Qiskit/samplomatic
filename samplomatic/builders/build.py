@@ -26,7 +26,7 @@ from .get_builder import get_builder
 from .template_state import TemplateState
 
 
-def _build_stream(stream: DAGOpNode, builder: Builder) -> Iterator[DAGOpNode]:
+def _build_stream(stream: DAGCircuit, builder: Builder) -> Iterator[DAGOpNode]:
     """Build while iterating an instruction stream, but halting to yield each ``box``.
 
     Args:
@@ -38,8 +38,8 @@ def _build_stream(stream: DAGOpNode, builder: Builder) -> Iterator[DAGOpNode]:
     """
     builder.lhs()
 
-    for instr in stream.topological_op_nodes():
-        if instr.op.name == "box":
+    for instr in builder.yield_from_dag(stream):
+        if instr is not None and instr.op.name == "box":
             yield instr
         else:
             builder.parse(instr)
