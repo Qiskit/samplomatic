@@ -144,24 +144,6 @@ class LeftBoxBuilder(BoxBuilder):
 
         self.samplex_state.add_propagate(instr, self._mode, params)
 
-    def yield_from_dag(self, dag):
-        qubits = set(dag.qubits)
-
-        hard = []
-        for node in dag.topological_op_nodes():
-            if (
-                qubits.issuperset(node.qargs)
-                and node.is_standard_gate()
-                and node.op.num_qubits == 1
-            ):
-                yield node
-            else:
-                hard.append(node)
-                qubits.difference_update(node.qargs)
-
-        yield None
-        yield from hard
-
     def lhs(self):
         self._append_barrier("L")
         param_idxs = self._append_dressed_layer()
@@ -180,6 +162,24 @@ class LeftBoxBuilder(BoxBuilder):
                         f"Cannot use {twirl_type.value} twirl in a box with measurements."
                     )
                 self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
+
+    def yield_from_dag(dag):
+        qubits = set(dag.qubits)
+
+        hard = []
+        for node in dag.topological_op_nodes():
+            if (
+                qubits.issuperset(node.qargs)
+                and node.is_standard_gate()
+                and node.op.num_qubits == 1
+            ):
+                yield node
+            else:
+                hard.append(node)
+                qubits.difference_update(node.qargs)
+
+        yield None
+        yield from hard
 
 
 class RightBoxBuilder(BoxBuilder):
@@ -229,7 +229,20 @@ class RightBoxBuilder(BoxBuilder):
 
         self.samplex_state.add_propagate(instr, self._mode, params)
 
-    def yield_from_dag(self, dag):
+    def lhs(self):
+        self._append_barrier("L")
+        if self.emission.twirl_register_type:
+            self.samplex_state.add_emit_twirl(
+                self.emission.qubits, self.emission.twirl_register_type
+            )
+
+    def rhs(self):
+        self._append_barrier("M")
+        param_idxs = self._append_dressed_layer()
+        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
+        self._append_barrier("R")
+
+    def yield_from_dag(dag):
         qubits = set(dag.qubits)
 
         easy = []
@@ -248,16 +261,3 @@ class RightBoxBuilder(BoxBuilder):
         yield from reversed(hard)
         yield None
         yield from reversed(easy)
-
-    def lhs(self):
-        self._append_barrier("L")
-        if self.emission.twirl_register_type:
-            self.samplex_state.add_emit_twirl(
-                self.emission.qubits, self.emission.twirl_register_type
-            )
-
-    def rhs(self):
-        self._append_barrier("M")
-        param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
-        self._append_barrier("R")

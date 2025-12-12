@@ -87,6 +87,7 @@ class Builder(Generic[TemplateT, SamplexT, ParseT], abc.ABC):
     def rhs(self):
         """Perform some action after the current scope's stream is iterated."""
 
+    @staticmethod
     @abc.abstractmethod
-    def yield_from_dag(self, dag: DAGCircuit) -> Iterable[ParseT]:
+    def yield_from_dag(dag: DAGCircuit) -> Iterable[ParseT]:
         """Yield nodes from a dag."""
