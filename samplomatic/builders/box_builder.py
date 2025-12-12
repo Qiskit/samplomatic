@@ -12,6 +12,8 @@
 
 """BoxBuilder"""
 
+from typing import TypeAlias
+
 import numpy as np
 from qiskit.circuit import Barrier
 
@@ -23,7 +25,12 @@ from .builder import Builder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
 from .template_state import TemplateState
 
-ParsableType = DAGOpNode | None
+ParsableType: TypeAlias = DAGOpNode | None
+"""Types the :meth:`~.BoxBuilder.parse` method is expected to receive.
+
+Here, ``None`` is the sentinel used to denote the transition from
+easy to hard gates within a dressed box.
+"""
 
 
 class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
@@ -87,7 +94,7 @@ class LeftBoxBuilder(BoxBuilder):
         self.clbit_idxs = []
         self._mode = InstructionMode.MULTIPLY
 
-    def parse(self, instr: DAGOpNode):
+    def parse(self, instr):
         if instr is None:
             if self.emission.basis_ref:
                 self.samplex_state.add_emit_left_basis_change(
@@ -193,7 +200,7 @@ class RightBoxBuilder(BoxBuilder):
         self.clbit_idxs = []
         self._mode = InstructionMode.PROPAGATE
 
-    def parse(self, instr: DAGOpNode):
+    def parse(self, instr):
         if instr is None:
             if self.emission.noise_ref:
                 self.samplex_state.add_emit_noise_right(
