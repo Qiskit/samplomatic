@@ -11,7 +11,8 @@
 # that they have been altered from the originals.
 
 import pytest
-from qiskit.circuit import Annotation, BoxOp, CircuitInstruction, QuantumCircuit, Qubit
+from qiskit.circuit import Annotation, BoxOp, QuantumCircuit, Qubit
+from qiskit.dagcircuit import DAGOpNode
 
 from samplomatic.annotations import ChangeBasis, DressingMode, InjectLocalClifford, Twirl
 from samplomatic.builders.get_builder import (
@@ -29,11 +30,11 @@ from samplomatic.synths import RzSxSynth
 def test_get_builder_errors():
     """Test the errors when getting builders."""
     circuit = QuantumCircuit(1)
-    op = CircuitInstruction(BoxOp(circuit, annotations=[Annotation()]))
+    op = DAGOpNode(BoxOp(circuit, annotations=[Annotation()]))
     with pytest.raises(BuildError, match="Cannot get a builder"):
         get_builder(op, circuit.qubits)
 
-    op = CircuitInstruction(BoxOp(circuit, annotations=[Twirl(), Twirl()]))
+    op = DAGOpNode(BoxOp(circuit, annotations=[Twirl(), Twirl()]))
     with pytest.raises(BuildError, match="Cannot specify more than one"):
         get_builder(op, circuit.qubits)
 

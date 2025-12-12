@@ -15,7 +15,7 @@
 import numpy as np
 from qiskit.circuit import Barrier
 
-from ..aliases import CircuitInstruction, ParamIndices
+from ..aliases import DAGOpNode, ParamIndices
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
@@ -62,15 +62,17 @@ class BoxBuilder(Builder[TemplateState, PreSamplex]):
             for instr in self.collection.synth.make_template(
                 subsys_remapped_qubits, self.template_state.param_iter
             ):
-                self.template_state.template.append(instr)
+                new_qubits = self.template_state.qubits(instr.qubits)
+                self.template_state.template.apply_operation_back(instr.operation, new_qubits)
 
         return param_idxs.reshape(len(qubits), -1)
 
     def _append_barrier(self, label: str):
         label = f"{label}{'_'.join(map(str, self.template_state.scope_idx))}"
-        all_qubits = self.template_state.qubit_map.values()
-        barrier = CircuitInstruction(Barrier(len(all_qubits), label), all_qubits)
-        self.template_state.template.append(barrier)
+        all_qubits = self.template_state.qubits()
+        self.template_state.template.apply_operation_back(
+            Barrier(len(all_qubits), label), all_qubits
+        )
 
 
 class LeftBoxBuilder(BoxBuilder):
@@ -82,13 +84,13 @@ class LeftBoxBuilder(BoxBuilder):
         self.measured_qubits = QubitPartition(1, [])
         self.clbit_idxs = []
 
-    def parse(self, instr: CircuitInstruction):
-        if (name := instr.operation.name) == "barrier":
+    def parse(self, instr: DAGOpNode):
+        if (name := instr.op.name) == "barrier":
             self.template_state.append_remapped_gate(instr)
             return
 
         if name.startswith("meas"):
-            for qubit in instr.qubits:
+            for qubit in instr.qargs:
                 if (qubit,) not in self.measured_qubits:
                     self.measured_qubits.add((qubit,))
                 else:
@@ -97,17 +99,17 @@ class LeftBoxBuilder(BoxBuilder):
                     )
             self.template_state.append_remapped_gate(instr)
             self.clbit_idxs.extend(
-                [self.template_state.template.find_bit(clbit)[0] for clbit in instr.clbits]
+                [self.template_state.template.find_bit(clbit)[0] for clbit in instr.cargs]
             )
             return
 
-        if (num_qubits := instr.operation.num_qubits) == 1:
-            if self.measured_qubits.overlaps_with(instr.qubits):
+        if (num_qubits := instr.num_qubits) == 1:
+            if self.measured_qubits.overlaps_with(instr.qargs):
                 raise BuildError(
                     "Cannot handle single-qubit gate to the right of a measurement in a "
                     "left-dressed box. "
                 )
-            if not self.entangled_qubits.isdisjoint(instr.qubits):
+            if not self.entangled_qubits.isdisjoint(instr.qargs):
                 raise BuildError(
                     "Cannot handle single-qubit gate to the right of an entangler in a "
                     "left-dressed box."
@@ -115,16 +117,16 @@ class LeftBoxBuilder(BoxBuilder):
             # the action of this single-qubit gate will be absorbed into the dressing
             mode = InstructionMode.MULTIPLY
             params = []
-            if instr.operation.is_parameterized():
-                params.extend((None, param) for param in instr.operation.params)
+            if instr.op.is_parameterized():
+                params.extend((None, param) for param in instr.op.params)
 
         elif num_qubits > 1:
-            if self.measured_qubits.overlaps_with(instr.qubits):
+            if self.measured_qubits.overlaps_with(instr.qargs):
                 raise BuildError(
                     f"Cannot handle instruction {name} to the right of a measurement in a "
                     "left-dressed box."
                 )
-            self.entangled_qubits.update(instr.qubits)
+            self.entangled_qubits.update(instr.qargs)
             params = self.template_state.append_remapped_gate(instr)
             mode = InstructionMode.PROPAGATE
         else:
@@ -173,24 +175,24 @@ class RightBoxBuilder(BoxBuilder):
         self.measured_qubits = QubitPartition(1, [])
         self.clbit_idxs = []
 
-    def parse(self, instr: CircuitInstruction):
-        if (name := instr.operation.name).startswith("barrier"):
+    def parse(self, instr: DAGOpNode):
+        if (name := instr.op.name).startswith("barrier"):
             params = self.template_state.append_remapped_gate(instr)
             return
 
         if name.startswith("meas"):
             raise BuildError("Measurements are not currently supported in right-dressed boxes.")
 
-        elif (num_qubits := instr.operation.num_qubits) == 1:
-            self.entangled_qubits.update(instr.qubits)
+        elif (num_qubits := instr.num_qubits) == 1:
+            self.entangled_qubits.update(instr.qargs)
             # the action of this single-qubit gate will be absorbed into the dressing
             params = []
-            if instr.operation.is_parameterized():
-                params.extend((None, param) for param in instr.operation.params)
+            if instr.op.is_parameterized():
+                params.extend((None, param) for param in instr.op.params)
             mode = InstructionMode.MULTIPLY
 
         elif num_qubits > 1:
-            if not self.entangled_qubits.isdisjoint(instr.qubits):
+            if not self.entangled_qubits.isdisjoint(instr.qargs):
                 raise BuildError(
                     "Cannot handle single-qubit gate to the left of an entangler in a "
                     "right-dressed box."

@@ -23,6 +23,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pytest
 from numpy.random import Generator, SeedSequence, default_rng
+from qiskit.circuit import QuantumCircuit
 
 # enable scipy-style doctests
 pytest_plugins = "scipy_doctest"
@@ -87,6 +88,36 @@ def maybe_clear_assets():
             cleared_folders.add(test_dir)
 
     return _clear_assets
+
+
+def circuit_description(circuit: QuantumCircuit) -> list[str]:
+    """Return a detailed description of a circuit.
+
+    Args:
+        circuit: The circuit to describe.
+
+    Returns:
+        A list of string lines.
+    """
+    return [
+        repr(circuit),
+        f" * num_qubits={circuit.num_qubits} (qubits hash is {hash(tuple(circuit.qubits))})",
+        f" * num_clbits={circuit.num_clbits} (clbits hash is {hash(tuple(circuit.clbits))})",
+        f" * ops={dict(circuit.count_ops())}",
+        *str(circuit.draw(measure_arrows=False)).split("\n"),
+    ]
+
+
+def pytest_assertrepr_compare(op, left, right):
+    if isinstance(left, QuantumCircuit) and isinstance(right, QuantumCircuit) and op == "==":
+        return [
+            "QuantumCircuit comparison failed:",
+            "LHS:",
+            *circuit_description(left),
+            "",
+            "RHS:",
+            *circuit_description(right),
+        ]
 
 
 @pytest.fixture

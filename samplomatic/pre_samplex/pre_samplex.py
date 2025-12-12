@@ -29,8 +29,8 @@ from rustworkx.rustworkx import (
 )
 
 from ..aliases import (
-    CircuitInstruction,
     ClbitIndex,
+    DAGOpNode,
     LayoutMethod,
     LayoutPresets,
     NodeIndex,
@@ -77,6 +77,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
+from ..utils import FrozenDict
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
@@ -97,10 +98,12 @@ if TYPE_CHECKING:
 
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
 
-REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = {
-    VirtualType.U2: HaarU2,
-    VirtualType.PAULI: UniformPauli,
-}
+REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
+    {
+        VirtualType.U2: HaarU2,
+        VirtualType.PAULI: UniformPauli,
+    }
+)
 
 
 class DanglerType(Enum):
@@ -338,7 +341,7 @@ class PreSamplex:
                 for qubit_idx in found_subsystems.all_elements:
                     self._optional_dangling[qubit_idx].discard(found_idx)
 
-    def enforce_no_propagation(self, instr: CircuitInstruction):
+    def enforce_no_propagation(self, instr: DAGOpNode):
         """Make sure the instruction doesn't participate in virtual gate propagation.
 
         We check to see if there are left-to-right danglers, and error if they exist.
@@ -352,11 +355,11 @@ class PreSamplex:
             SamplexBuildError: If `instr` involves active left-to-right danglers.
         """
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
-        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
+        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
 
         match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         if any(True for _ in self.find_danglers(match, subsystems)):
-            raise SamplexBuildError(f"Cannot propagate through {instr.operation.name} instruction.")
+            raise SamplexBuildError(f"Cannot propagate through {instr.op.name} instruction.")
         match = DanglerMatch(direction=Direction.LEFT)
         all(self.find_then_remove_danglers(match, subsystems))
 
@@ -735,7 +738,7 @@ class PreSamplex:
         node = PreChangeBasis(subsystems, Direction.RIGHT, virtual_type, basis_ref)
         return self._add_emit_right(node)
 
-    def add_propagate(self, instr: CircuitInstruction, mode: InstructionMode, params: ParamSpec):
+    def add_propagate(self, instr: DAGOpNode, mode: InstructionMode, params: ParamSpec):
         """Add a node that propagates virtual gates through an operation.
 
         This method deduces which direction to propagate virtual gates by inspecting the previous
@@ -753,12 +756,12 @@ class PreSamplex:
         Returns:
             The index of the new node in the graph.
         """
-        op = instr.operation
+        op = instr.op
         if op.name in NO_PROPAGATE:
             return
 
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
-        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
+        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
 
         if op.name.startswith("meas"):
             self.enforce_no_propagation(instr)
@@ -772,7 +775,7 @@ class PreSamplex:
             self.passthrough_params.extend(params)
 
         # recall that this is indexing out of `subsystems`, not qubits
-        num_qubits = instr.operation.num_qubits
+        num_qubits = instr.num_qubits
         partition = SubsystemIndicesPartition(num_qubits, [tuple(range(num_qubits))])
 
         # time ordering: (emit> | propagate>) --> new propagate>

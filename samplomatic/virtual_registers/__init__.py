@@ -14,7 +14,6 @@
 from .c1_register import C1Register
 from .group_register import GroupRegister
 from .pauli_register import PauliRegister
-from .serialization import virtual_register_from_json
 from .u2_register import U2Register
 from .virtual_register import VirtualRegister
 from .z2_register import Z2Register

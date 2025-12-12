@@ -27,7 +27,7 @@ class PauliRegisterSerializer(TypeSerializer[PauliRegister]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {"array": array_to_json(obj._array)}  # noqa: SLF001
 
         @classmethod
@@ -45,7 +45,7 @@ class U2RegisterSerializer(TypeSerializer[U2Register]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {"array": array_to_json(obj._array)}  # noqa: SLF001
 
         @classmethod
@@ -63,7 +63,7 @@ class Z2RegisterSerializer(TypeSerializer[Z2Register]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {"array": array_to_json(obj._array)}  # noqa: SLF001
 
         @classmethod
@@ -81,7 +81,7 @@ class C1RegisterSerializer(TypeSerializer[C1Register]):
         MIN_SSV = 2
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {"array": array_to_json(obj._array)}  # noqa: SLF001
 
         @classmethod

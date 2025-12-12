@@ -32,7 +32,7 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             # qiskit doesn't have a direct way to serialize a list of parameter expressions. in
             # stick to the public qpy interface, the simplest solution is to put them inside of an
             # object that qpy can serialize.

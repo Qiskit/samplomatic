@@ -47,10 +47,33 @@ class ChangeBasisNodeSerializer(TypeSerializer[ChangeBasisNode]):
 
     class SSV1(DataSerializer[ChangeBasisNode]):
         MIN_SSV = 1
+        MAX_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
-            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change, 1)  # noqa: SLF001
+        def serialize(cls, obj, ssv):
+            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change, ssv)  # noqa: SLF001
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "basis_change": orjson.dumps(basis_change_ser).decode("utf-8"),
+                "basis_ref": obj._basis_ref,  # noqa: SLF001
+                "num_subsystems": str(obj._num_subsystems),  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return ChangeBasisNode(
+                data["register_name"],
+                BasisChangeSerializer.deserialize(orjson.loads(data["basis_change"])),
+                data["basis_ref"],
+                int(data["num_subsystems"]),
+            )
+
+    class SSV2(DataSerializer[ChangeBasisNode]):
+        MIN_SSV = 2
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            basis_change_ser = BasisChangeSerializer.serialize(obj._basis_change, ssv)  # noqa: SLF001
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "basis_change": orjson.dumps(basis_change_ser).decode("utf-8"),
@@ -78,7 +101,7 @@ class CollectTemplateValuesSerializer(TypeSerializer[CollectTemplateValues]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "template_param_names": obj._template_params_name,  # noqa: SLF001
                 "template_idxs": array_to_json(obj._template_idxs),  # noqa: SLF001
@@ -118,7 +141,7 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "output_name": obj._output_name,  # noqa: SLF001
@@ -146,7 +169,7 @@ class CombineRegistersNodeSerializer(TypeSerializer[CombineRegistersNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             operands_dict = {}
             for key, values in obj._operands.items():  # noqa: SLF001
                 value_list = []
@@ -199,7 +222,7 @@ class ConversionNodeSerializer(TypeSerializer[ConversionNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "existing_name": obj.existing_name,
                 "existing_type": obj.existing_type.value,
@@ -231,7 +254,7 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "sign_register_name": obj._sign_register_name,  # noqa: SLF001
@@ -261,7 +284,7 @@ class LeftMultiplicationNodeSerializer(TypeSerializer[LeftMultiplicationNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             try:
                 type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj._operand))]  # noqa: SLF001
             except KeyError:
@@ -290,7 +313,7 @@ class RightMultiplicationNodeSerializer(TypeSerializer[RightMultiplicationNode])
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             try:
                 type_id = TypeSerializer.TYPE_REGISTRY[(reg_type := type(obj._operand))]  # noqa: SLF001
             except KeyError:
@@ -319,7 +342,7 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "op_name": obj._op_name,  # noqa: SLF001
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
@@ -345,7 +368,7 @@ class SliceRegisterNodeSerializer(TypeSerializer[SliceRegisterNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             if isinstance(obj._slice_idxs, slice):  # noqa: SLF001
                 is_slice = "true"
                 slice_idxs = slice_to_json(obj._slice_idxs)  # noqa: SLF001
@@ -387,7 +410,7 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             if isinstance(obj._distribution, HaarU2):  # noqa: SLF001
                 distribution_type = "haar_u2"
             else:
@@ -426,7 +449,7 @@ class LeftU2ParametricMultiplicationNodeSerializer(
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "operand": obj._operand,  # noqa: SLF001
                 "param_indices": orjson.dumps(obj._param_idxs).decode("utf-8"),  # noqa: SLF001
@@ -454,7 +477,7 @@ class RightU2ParametricMultiplicationNodeSerializer(
         MIN_SSV = 1
 
         @classmethod
-        def serialize(cls, obj):
+        def serialize(cls, obj, ssv):
             return {
                 "operand": obj._operand,  # noqa: SLF001
                 "param_indices": orjson.dumps(obj._param_idxs).decode("utf-8"),  # noqa: SLF001

@@ -12,6 +12,8 @@
 
 """Test AddInjectNoise"""
 
+import copy
+
 import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager
@@ -294,3 +296,24 @@ def test_targets(targets):
 
     measure_annotation = get_annotation(transpiled_circuit.data[1].operation, InjectNoise)
     assert (measure_annotation is None) == (targets in {"none", "gates"})
+
+
+def test_annotation_persistence():
+    """Check that annotations persist through a deep copy.
+
+    Since annotation containers live in the qiskit rust data model, this test checks that we are
+    adding to the annotations in a robust way, rather than to any transient python object that
+    doesn't communicate back to the source of truth.
+    """
+    circuit = QuantumCircuit(2)
+    with circuit.box([twirl := Twirl()]):
+        circuit.cx(0, 1)
+
+    pm = PassManager([AddInjectNoise("uniform_modification", targets="all")])
+    transpiled_circuit = pm.run(circuit)
+
+    copied_transpiled_circuit = copy.deepcopy(transpiled_circuit)
+
+    assert len(copied_transpiled_circuit[0].operation.annotations) == 2
+    assert copied_transpiled_circuit[0].operation.annotations[0] == twirl
+    assert isinstance(copied_transpiled_circuit[0].operation.annotations[1], InjectNoise)

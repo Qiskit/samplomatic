@@ -45,12 +45,12 @@ def make_circuits():
     circuit.sx(1)
 
     expected_circuit = QuantumCircuit(2, 2)
+    expected_circuit.y(1)
+    expected_circuit.sdg(0)
+    expected_circuit.x(0)
+    expected_circuit.z(0)
     with expected_circuit.box([Twirl()]):
-        expected_circuit.y(1)
         expected_circuit.measure(1, 1)
-        expected_circuit.sdg(0)
-        expected_circuit.x(0)
-        expected_circuit.z(0)
         expected_circuit.measure(0, 0)
     expected_circuit.t(0)
     expected_circuit.h(0)
@@ -70,12 +70,12 @@ def make_circuits():
     circuit.sx(1)
 
     expected_circuit = QuantumCircuit(qreg_a, creg_a, creg_b)
+    expected_circuit.y(1)
+    expected_circuit.sdg(0)
+    expected_circuit.x(0)
+    expected_circuit.z(0)
     with expected_circuit.box([Twirl()]):
-        expected_circuit.y(1)
         expected_circuit.measure(1, 1)
-        expected_circuit.sdg(0)
-        expected_circuit.x(0)
-        expected_circuit.z(0)
         expected_circuit.measure(0, 0)
     expected_circuit.t(0)
     expected_circuit.h(0)
@@ -100,10 +100,10 @@ def make_circuits():
     expected_circuit.barrier(0)
     expected_circuit.y(1)
     expected_circuit.barrier(1)
+    expected_circuit.x(0)
+    expected_circuit.z(0)
     with expected_circuit.box([Twirl()]):
         expected_circuit.measure(2, 2)
-        expected_circuit.x(0)
-        expected_circuit.z(0)
         expected_circuit.measure(0, 0)
     expected_circuit.barrier(0, 1)
     with expected_circuit.box([Twirl()]):
@@ -133,10 +133,10 @@ def make_circuits():
     expected_circuit.y(1)
     with expected_circuit.box():
         expected_circuit.noop(1)
+    expected_circuit.x(0)
+    expected_circuit.z(0)
     with expected_circuit.box([Twirl()]):
         expected_circuit.measure(2, 2)
-        expected_circuit.x(0)
-        expected_circuit.z(0)
         expected_circuit.measure(0, 0)
     with expected_circuit.box():
         expected_circuit.noop(0, 1)
@@ -163,11 +163,11 @@ def make_circuits():
     expected_circuit.cz(0, 1)
     expected_circuit.y(1)
     expected_circuit.cx(1, 2)
+    expected_circuit.t(1)
+    expected_circuit.x(0)
+    expected_circuit.z(0)
     with expected_circuit.box([Twirl()]):
-        expected_circuit.t(1)
         expected_circuit.measure(1, 1)
-        expected_circuit.x(0)
-        expected_circuit.z(0)
         expected_circuit.measure(0, 0)
     expected_circuit.ecr(0, 2)
     with expected_circuit.box([Twirl()]):
@@ -223,7 +223,7 @@ def test_annotations(annotations):
 
 def test_annotations_raise():
     """Test that `GroupMeasIntoBoxes` raises for incorrect annotations."""
-    with pytest.raises(ValueError, match="none is not a valid input"):
+    with pytest.raises(ValueError, match="Invalid value for argument 'annotations'"):
         GroupMeasIntoBoxes("none")
 
 
