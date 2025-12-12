@@ -700,7 +700,7 @@ class PreSamplex:
         """
         if (num_subsys := self._basis_changes.get(basis_ref)) and num_subsys != len(qubits):
             raise SamplexBuildError(
-                f"Cannot add frame change `{basis_ref}` on `{qubits}` and a "
+                f"Cannot add basis change `{basis_ref}` on `{qubits}` and a "
                 f"different subsystem with length `{num_subsys}`."
             )
         else:
