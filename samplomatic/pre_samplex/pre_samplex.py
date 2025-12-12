@@ -77,6 +77,7 @@ from ..samplex.nodes.pauli_past_clifford_node import (
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
+from ..utils import FrozenDict
 from ..virtual_registers import U2Register
 from ..visualization import plot_graph
 from .graph_data import (
@@ -97,10 +98,12 @@ if TYPE_CHECKING:
 
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
 
-REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = {
-    VirtualType.U2: HaarU2,
-    VirtualType.PAULI: UniformPauli,
-}
+REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
+    {
+        VirtualType.U2: HaarU2,
+        VirtualType.PAULI: UniformPauli,
+    }
+)
 
 
 class DanglerType(Enum):
