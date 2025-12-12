@@ -23,7 +23,12 @@ from .builder import Builder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
 from .template_state import TemplateState
 
-ParsableType = DAGOpNode | None
+ParsableType: TypeAlias = DAGOpNode | None
+"""Types the :meth:`~.BoxBuilder.parse` method is expected to receive.
+
+Here, ``None`` is the sentinel used to denote the transition from 
+easy to hard gates within a dressed layer.
+"""
 
 
 class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
