@@ -10,56 +10,56 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""ChangeBasis"""
+"""InjectLocalClifford"""
 
 from qiskit.circuit import Annotation
 
 from ..aliases import StrRef
-from .change_basis_mode import ChangeBasisLiteral, ChangeBasisMode
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
+from .dressing_mode import DressingLiteral, DressingMode
 
 
-class ChangeBasis(Annotation):
-    """Directive to add basis changing gates.
+class InjectLocalClifford(Annotation):
+    """Directive to inject local Cliffords.
 
     The resulting :class:`~.Samplex` built from a circuit with a box with this annotation has
-    a tensor input with name ``basis_changes.ref`` and shape ``'(len(box_instruction.qubits),)'``.
+    a tensor input with name ``local_cliffords.ref`` and shape ``'(len(box_instruction.qubits),)'``.
     The tensor is indexed in physical qubit order, in other words, the order of the qubits in the
     outer-most circuit, restricted to those used by the box.
 
     Args:
-        decomposition: How to decompose basis changing gates.
-        mode: Whether to add gates to prepare or measure in a given basis.
-        ref: A unique identifier of this basis change. If ``None``, it is set to ``mode.value``.
+        ref: A unique identifier of the Cliffords.
+        decomposition: How to decompose the Cliffords.
+        dressing: Which side of the box to attach the dressing instructions.
     """
 
-    namespace = "samplomatic.change_basis"
+    namespace = "samplomatic.inject_local_clifford"
 
-    __slots__ = ("decomposition", "mode", "ref")
+    __slots__ = ("decomposition", "dressing", "ref")
 
     def __init__(
         self,
+        ref: StrRef,
         decomposition: DecompositionLiteral = DecompositionMode.RZSX,
-        mode: ChangeBasisLiteral = ChangeBasisMode.MEASURE,
-        ref: StrRef | None = None,
+        dressing: DressingLiteral = DressingMode.LEFT,
     ):
         self.decomposition = DecompositionMode(decomposition)
-        self.mode = ChangeBasisMode(mode)
-        self.ref = ref or self.mode.value
+        self.dressing = DressingMode(dressing)
+        self.ref = ref
 
     def __eq__(self, other):
         return (
-            isinstance(other, ChangeBasis)
+            isinstance(other, InjectLocalClifford)
             and self.decomposition == other.decomposition
-            and self.mode == other.mode
+            and self.dressing == other.dressing
             and self.ref == other.ref
         )
 
     def __hash__(self):
-        return hash((self.decomposition, self.mode, self.ref))
+        return hash((self.decomposition, self.dressing, self.ref))
 
     def __repr__(self):
         return (
-            f"{type(self).__name__}(decomposition='{self.decomposition.name.lower()}', "
-            f"mode='{self.mode.name.lower()}', ref='{self.ref}')"
+            f"{type(self).__name__}(ref='{self.ref}', decomposition="
+            f"'{self.decomposition.name.lower()}', dressing='{self.dressing.name.lower()}')"
         )
