@@ -11,6 +11,8 @@
 # that they have been altered from the originals.
 
 
+import re
+
 import pytest
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit
 
@@ -20,7 +22,7 @@ from samplomatic.exceptions import SerializationError
 from samplomatic.serialization import samplex_from_json, samplex_to_json
 from samplomatic.ssv import SSV
 
-SUPPORTED_SSVS = {SSV}
+SUPPORTED_SSVS = set(range(1, SSV))
 
 
 class TestSamplexSerialization:
@@ -153,3 +155,31 @@ class TestSamplexSerialization:
         samplex_new.finalize()
 
         assert samplex == samplex_new
+
+    @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
+    def test_ssv_version_is_obeyed(self, ssv):
+        """Scan through the JSON and ensure every occurrence of an SSV key has correct value."""
+        circuit = QuantumCircuit(2)
+        with circuit.box([ChangeBasis()]):
+            circuit.noop(range(2))
+
+        with circuit.box([Twirl(), InjectNoise("my_noise", "my_modifier")]):
+            circuit.noop(range(2))
+
+        with circuit.box([Twirl()]):
+            circuit.measure_all()
+
+        _, samplex = build(circuit)
+        samplex_new = samplex_from_json(samplex_to_json(samplex, ssv=ssv))
+        samplex_new.finalize()
+
+        json_samplex = samplex_to_json(samplex, ssv=ssv)
+
+        count = 0
+        for occurrence in re.finditer(r'"ssv\\*"\:\\*"(\d+)', json_samplex):
+            assert int(occurrence.group(1)) == ssv
+            count += 1
+
+        # this is to verify that the REGEX is capturing all of the ssvs, there are some minor
+        # differences in the number of escaped backslashes and so forth.
+        assert count == json_samplex.count("ssv")
