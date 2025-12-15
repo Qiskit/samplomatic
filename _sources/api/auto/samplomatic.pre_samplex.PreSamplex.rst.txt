@@ -22,10 +22,10 @@ PreSamplex
       ~PreSamplex.add_collect_z2_to_output_node
       ~PreSamplex.add_combine_node
       ~PreSamplex.add_dangler
-      ~PreSamplex.add_emit_meas_basis_change
+      ~PreSamplex.add_emit_left_basis_change
       ~PreSamplex.add_emit_noise_left
       ~PreSamplex.add_emit_noise_right
-      ~PreSamplex.add_emit_prep_basis_change
+      ~PreSamplex.add_emit_right_basis_change
       ~PreSamplex.add_emit_twirl
       ~PreSamplex.add_force_copy_nodes
       ~PreSamplex.add_inject_noise_node
@@ -62,10 +62,10 @@ PreSamplex
    .. automethod:: add_collect_z2_to_output_node
    .. automethod:: add_combine_node
    .. automethod:: add_dangler
-   .. automethod:: add_emit_meas_basis_change
+   .. automethod:: add_emit_left_basis_change
    .. automethod:: add_emit_noise_left
    .. automethod:: add_emit_noise_right
-   .. automethod:: add_emit_prep_basis_change
+   .. automethod:: add_emit_right_basis_change
    .. automethod:: add_emit_twirl
    .. automethod:: add_force_copy_nodes
    .. automethod:: add_inject_noise_node
