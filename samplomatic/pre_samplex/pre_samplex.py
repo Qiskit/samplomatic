@@ -1117,7 +1117,9 @@ class PreSamplex:
             description = (
                 "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3."
                 if basis_ref.startswith("basis_changes")
-                else "Local Clifford gates."
+                else "Local Clifford gates, where each non-negative value c less than 24 "
+                "corresponds to the unitary (HS)^i H^j P(k) with k = c % 4, j = c // 4 % 2, and "
+                "i = c // 8 % 3, and P(k) is the k^th Pauli in symplectic order."
             )
 
             samplex.add_input(
