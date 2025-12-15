@@ -21,7 +21,7 @@ from qiskit.circuit.library import HGate, IGate, RXGate
 from ...aliases import RegisterName, StrRef
 from ...annotations import VirtualType
 from ...serializable import Serializable
-from ...virtual_registers import U2Register, VirtualRegister
+from ...virtual_registers import C1Register, U2Register, VirtualRegister
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")
@@ -104,6 +104,11 @@ PREP_PAULI_BASIS = BasisChange[np.uint8](
     U2Register(np.array([IGate(), IGate(), HGate(), RXGate(-np.pi / 2)]).reshape(4, 1, 2, 2)),
 )
 """A basis change from the computational basis into Pauli eigenstates."""
+
+LOCAL_CLIFFORD = BasisChange[np.uint8](
+    range(24), C1Register(np.arange(24, dtype=np.uint8).reshape(24, 1))
+)
+"""A frame change with a local Clifford."""
 
 
 class ChangeBasisNode(SamplingNode):

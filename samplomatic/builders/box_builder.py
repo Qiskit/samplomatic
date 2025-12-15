@@ -97,8 +97,8 @@ class LeftBoxBuilder(BoxBuilder):
     def parse(self, instr):
         if instr is None:
             if self.emission.basis_ref:
-                self.samplex_state.add_emit_meas_basis_change(
-                    self.emission.qubits, self.emission.basis_ref
+                self.samplex_state.add_emit_left_basis_change(
+                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
                 )
             if self.emission.noise_ref:
                 self.samplex_state.add_emit_noise_left(
@@ -207,8 +207,8 @@ class RightBoxBuilder(BoxBuilder):
                     self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
                 )
             if self.emission.basis_ref:
-                self.samplex_state.add_emit_prep_basis_change(
-                    self.emission.qubits, self.emission.basis_ref
+                self.samplex_state.add_emit_right_basis_change(
+                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
                 )
             self._mode = InstructionMode.MULTIPLY
             return

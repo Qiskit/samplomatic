@@ -17,6 +17,7 @@ import numpy as np
 from ..aliases import SubsystemIndex
 from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
+from .c1_register import C1Register
 from .group_register import GroupRegister
 from .u2_register import U2Register
 from .z2_register import Z2Register
@@ -50,7 +51,9 @@ class PauliRegister(GroupRegister):
     GATE_SHAPE = ()
     SUBSYSTEM_SIZE = 1
     DTYPE = np.uint8
-    CONVERTABLE_TYPES = frozenset({VirtualType.Z2, VirtualType.U2, VirtualType.PAULI})
+    CONVERTABLE_TYPES = frozenset(
+        {VirtualType.Z2, VirtualType.U2, VirtualType.PAULI, VirtualType.C1}
+    )
 
     def __init__(self, virtual_gates):
         super().__init__(virtual_gates)
@@ -83,6 +86,8 @@ class PauliRegister(GroupRegister):
         if register_type is VirtualType.Z2:
             # I, Z, X, and Y are 0, 1, 2, and 3 respectively
             return Z2Register(np.right_shift(self._array, 1))
+        if register_type is VirtualType.C1:
+            return C1Register(self.virtual_gates)
         return super().convert_to(register_type)
 
     def multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
