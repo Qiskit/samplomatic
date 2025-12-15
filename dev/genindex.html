@@ -214,6 +214,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.annotations.ChangeBasisMode.html">ChangeBasisMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.annotations.DressingMode.html">DressingMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.annotations.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
@@ -485,13 +486,13 @@
 </li>
         <li><a href="api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.add_edge">add_edge() (samplomatic.samplex.Samplex method)</a>
 </li>
-        <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_meas_basis_change">add_emit_meas_basis_change() (samplomatic.pre_samplex.PreSamplex method)</a>
+        <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_left_basis_change">add_emit_left_basis_change() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_noise_left">add_emit_noise_left() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_noise_right">add_emit_noise_right() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
-        <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_prep_basis_change">add_emit_prep_basis_change() (samplomatic.pre_samplex.PreSamplex method)</a>
+        <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_right_basis_change">add_emit_right_basis_change() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.add_emit_twirl">add_emit_twirl() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
@@ -651,6 +652,8 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch">DanglerMatch (class in samplomatic.pre_samplex)</a>
 </li>
+        <li><a href="api/auto/samplomatic.annotations.InjectLocalClifford.html#samplomatic.annotations.InjectLocalClifford.decomposition">decomposition (samplomatic.annotations.InjectLocalClifford attribute)</a>
+</li>
         <li><a href="api/auto/samplomatic.annotations.DecompositionMode.html#samplomatic.annotations.DecompositionMode">DecompositionMode (class in samplomatic.annotations)</a>
 </li>
         <li><a href="api/auto/samplomatic.utils.deprecate_arg.html#samplomatic.utils.deprecate_arg">deprecate_arg() (in module samplomatic.utils)</a>
@@ -711,6 +714,8 @@
           <li><a href="api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.draw">(samplomatic.samplex.Samplex method)</a>
 </li>
         </ul></li>
+        <li><a href="api/auto/samplomatic.annotations.InjectLocalClifford.html#samplomatic.annotations.InjectLocalClifford.dressing">dressing (samplomatic.annotations.InjectLocalClifford attribute)</a>
+</li>
         <li><a href="api/auto/samplomatic.annotations.DressingMode.html#samplomatic.annotations.DressingMode">DressingMode (class in samplomatic.annotations)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister.DTYPE">DTYPE (samplomatic.virtual_registers.VirtualRegister attribute)</a>
@@ -929,6 +934,8 @@
           <li><a href="api/auto/samplomatic.virtual_registers.Z2Register.html#samplomatic.virtual_registers.Z2Register.identity">(samplomatic.virtual_registers.Z2Register class method)</a>
 </li>
         </ul></li>
+        <li><a href="api/auto/samplomatic.annotations.InjectLocalClifford.html#samplomatic.annotations.InjectLocalClifford">InjectLocalClifford (class in samplomatic.annotations)</a>
+</li>
         <li><a href="api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise">InjectNoise (class in samplomatic)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode">InjectNoiseNode (class in samplomatic.samplex.nodes)</a>
@@ -1140,6 +1147,8 @@
           <li><a href="api/auto/samplomatic.tensor_interface.TensorSpecification.html#samplomatic.tensor_interface.TensorSpecification.name">(samplomatic.tensor_interface.TensorSpecification attribute)</a>
 </li>
         </ul></li>
+        <li><a href="api/auto/samplomatic.annotations.InjectLocalClifford.html#samplomatic.annotations.InjectLocalClifford.namespace">namespace (samplomatic.annotations.InjectLocalClifford attribute)</a>
+</li>
         <li><a href="api/auto/samplomatic.tensor_interface.TensorInterface.html#samplomatic.tensor_interface.TensorInterface.ndim">ndim (samplomatic.tensor_interface.TensorInterface attribute)</a>
 
         <ul>
@@ -1156,10 +1165,10 @@
 </li>
         <li><a href="api/samplomatic.aliases.html#samplomatic.aliases.NodeLayout">NodeLayout (in module samplomatic.aliases)</a>
 </li>
-        <li><a href="api/samplomatic.aliases.html#samplomatic.aliases.NodeRanker">NodeRanker (class in samplomatic.aliases)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/samplomatic.aliases.html#samplomatic.aliases.NodeRanker">NodeRanker (class in samplomatic.aliases)</a>
+</li>
         <li><a href="api/auto/samplomatic.samplex.ParameterExpressionTable.html#samplomatic.samplex.ParameterExpressionTable.num_expressions">num_expressions (samplomatic.samplex.ParameterExpressionTable attribute)</a>
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.num_parameters">num_parameters (samplomatic.samplex.nodes.Node attribute)</a>
@@ -1346,8 +1355,12 @@
           <li><a href="api/auto/samplomatic.samplex.nodes.SliceRegisterNode.html#samplomatic.samplex.nodes.SliceRegisterNode.reads_from">(samplomatic.samplex.nodes.SliceRegisterNode method)</a>
 </li>
         </ul></li>
-        <li><a href="api/auto/samplomatic.pre_samplex.PreInjectNoise.html#samplomatic.pre_samplex.PreInjectNoise.ref">ref (samplomatic.pre_samplex.PreInjectNoise attribute)</a>
+        <li><a href="api/auto/samplomatic.annotations.InjectLocalClifford.html#samplomatic.annotations.InjectLocalClifford.ref">ref (samplomatic.annotations.InjectLocalClifford attribute)</a>
+
+        <ul>
+          <li><a href="api/auto/samplomatic.pre_samplex.PreInjectNoise.html#samplomatic.pre_samplex.PreInjectNoise.ref">(samplomatic.pre_samplex.PreInjectNoise attribute)</a>
 </li>
+        </ul></li>
         <li><a href="api/auto/samplomatic.distributions.Distribution.html#samplomatic.distributions.Distribution.register_type">register_type (samplomatic.distributions.Distribution attribute)</a>
 
         <ul>
@@ -1374,10 +1387,10 @@
           <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.removes">(samplomatic.samplex.nodes.Node method)</a>
 </li>
         </ul></li>
-        <li><a href="api/auto/samplomatic.graph_utils.replace_edges_with_one_edge.html#samplomatic.graph_utils.replace_edges_with_one_edge">replace_edges_with_one_edge() (in module samplomatic.graph_utils)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/auto/samplomatic.graph_utils.replace_edges_with_one_edge.html#samplomatic.graph_utils.replace_edges_with_one_edge">replace_edges_with_one_edge() (in module samplomatic.graph_utils)</a>
+</li>
         <li><a href="api/auto/samplomatic.graph_utils.replace_nodes_with_one_node.html#samplomatic.graph_utils.replace_nodes_with_one_node">replace_nodes_with_one_node() (in module samplomatic.graph_utils)</a>
 </li>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.restrict">restrict() (samplomatic.partition.Partition method)</a>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.builders" href="../samplomatic.builders.html" /><link rel="prev" title="InjectLocalClifford" href="samplomatic.annotations.InjectLocalClifford.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="VirtualType" href="samplomatic.annotations.VirtualType.html" /><link rel="prev" title="DressingMode" href="samplomatic.annotations.DressingMode.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>VirtualType - samplomatic 0.1.dev1</title>
+        <title>InjectLocalClifford - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -216,8 +216,8 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.ChangeBasisMode.html">ChangeBasisMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DressingMode.html">DressingMode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">VirtualType</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">InjectLocalClifford</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
@@ -431,7 +431,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.annotations.VirtualType.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.annotations.InjectLocalClifford.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -451,56 +451,65 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="virtualtype">
-<h1>VirtualType<a class="headerlink" href="#virtualtype" title="Link to this heading">¶</a></h1>
+          <section id="injectlocalclifford">
+<h1>InjectLocalClifford<a class="headerlink" href="#injectlocalclifford" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.annotations.</span></span><span class="sig-name descname"><span class="pre">VirtualType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/annotations/virtual_type.py#L21-L34"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.annotations.VirtualType" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>Name identifiers for virtual gate types.</p>
+<dt class="sig sig-object py" id="samplomatic.annotations.InjectLocalClifford">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.annotations.</span></span><span class="sig-name descname"><span class="pre">InjectLocalClifford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">decomposition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html#samplomatic.annotations.DecompositionMode" title="samplomatic.annotations.decomposition_mode.DecompositionMode"><span class="pre">DecompositionMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'rzsx'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rzrx'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DecompositionMode.RZSX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dressing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.DressingMode.html#samplomatic.annotations.DressingMode" title="samplomatic.annotations.dressing_mode.DressingMode"><span class="pre">DressingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'left'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'right'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DressingMode.LEFT</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/annotations/inject_local_clifford.py#L22-L65"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.Annotation" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a></p>
+<p>Directive to inject local Cliffords.</p>
+<p>The resulting <a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.Samplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Samplex</span></code></a> built from a circuit with a box with this annotation has
+a tensor input with name <code class="docutils literal notranslate"><span class="pre">local_cliffords.ref</span></code> and shape <code class="docutils literal notranslate"><span class="pre">'(len(box_instruction.qubits),)'</span></code>.
+The tensor is indexed in physical qubit order, in other words, the order of the qubits in the
+outer-most circuit, restricted to those used by the box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref</strong> – A unique identifier of the Cliffords.</p></li>
+<li><p><strong>decomposition</strong> – How to decompose the Cliffords.</p></li>
+<li><p><strong>dressing</strong> – Which side of the box to attach the dressing instructions.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Attributes Summary</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.C1" title="samplomatic.annotations.VirtualType.C1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">C1</span></code></a></p></td>
-<td><p>The single-qubit Clifford group.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.decomposition" title="samplomatic.annotations.InjectLocalClifford.decomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decomposition</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.PAULI" title="samplomatic.annotations.VirtualType.PAULI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PAULI</span></code></a></p></td>
-<td><p>The projective Pauli group.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.dressing" title="samplomatic.annotations.InjectLocalClifford.dressing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dressing</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.U2" title="samplomatic.annotations.VirtualType.U2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U2</span></code></a></p></td>
-<td><p>The <span class="math notranslate nohighlight">\(2 \times 2\)</span> unitary group.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.namespace" title="samplomatic.annotations.InjectLocalClifford.namespace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">namespace</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.Z2" title="samplomatic.annotations.VirtualType.Z2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Z2</span></code></a></p></td>
-<td><p>The two-element cyclic group.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.ref" title="samplomatic.annotations.InjectLocalClifford.ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ref</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.C1">
-<span class="sig-name descname"><span class="pre">C1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c1'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.C1" title="Link to this definition">¶</a></dt>
-<dd><p>The single-qubit Clifford group.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="samplomatic.annotations.InjectLocalClifford.decomposition">
+<span class="sig-name descname"><span class="pre">decomposition</span></span><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford.decomposition" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.PAULI">
-<span class="sig-name descname"><span class="pre">PAULI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pauli'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.PAULI" title="Link to this definition">¶</a></dt>
-<dd><p>The projective Pauli group.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="samplomatic.annotations.InjectLocalClifford.dressing">
+<span class="sig-name descname"><span class="pre">dressing</span></span><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford.dressing" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.U2">
-<span class="sig-name descname"><span class="pre">U2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'u2'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.U2" title="Link to this definition">¶</a></dt>
-<dd><p>The <span class="math notranslate nohighlight">\(2 \times 2\)</span> unitary group.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="samplomatic.annotations.InjectLocalClifford.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'samplomatic.inject_local_clifford'</span></em><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford.namespace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.Z2">
-<span class="sig-name descname"><span class="pre">Z2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'z2'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.Z2" title="Link to this definition">¶</a></dt>
-<dd><p>The two-element cyclic group.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="samplomatic.annotations.InjectLocalClifford.ref">
+<span class="sig-name descname"><span class="pre">ref</span></span><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford.ref" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -511,23 +520,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samplomatic.builders.html">
+          <a class="next-page" href="samplomatic.annotations.VirtualType.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">samplomatic.builders</div>
+                <div class="title">VirtualType</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.annotations.InjectLocalClifford.html">
+          <a class="prev-page" href="samplomatic.annotations.DressingMode.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">InjectLocalClifford</div>
+                <div class="title">DressingMode</div>
                 
               </div>
             </a>
@@ -562,12 +571,12 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">VirtualType</a><ul>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType"><code class="docutils literal notranslate"><span class="pre">VirtualType</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.C1"><code class="docutils literal notranslate"><span class="pre">VirtualType.C1</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.PAULI"><code class="docutils literal notranslate"><span class="pre">VirtualType.PAULI</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.U2"><code class="docutils literal notranslate"><span class="pre">VirtualType.U2</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.Z2"><code class="docutils literal notranslate"><span class="pre">VirtualType.Z2</span></code></a></li>
+<li><a class="reference internal" href="#">InjectLocalClifford</a><ul>
+<li><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford"><code class="docutils literal notranslate"><span class="pre">InjectLocalClifford</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.decomposition"><code class="docutils literal notranslate"><span class="pre">InjectLocalClifford.decomposition</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.dressing"><code class="docutils literal notranslate"><span class="pre">InjectLocalClifford.dressing</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.namespace"><code class="docutils literal notranslate"><span class="pre">InjectLocalClifford.namespace</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.annotations.InjectLocalClifford.ref"><code class="docutils literal notranslate"><span class="pre">InjectLocalClifford.ref</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -585,6 +594,5 @@
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
