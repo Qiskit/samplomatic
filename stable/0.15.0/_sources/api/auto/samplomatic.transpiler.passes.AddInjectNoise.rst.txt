@@ -1,0 +1,17 @@
+AddInjectNoise
+==============
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: AddInjectNoise
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AddInjectNoise.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

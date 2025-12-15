@@ -1,0 +1,21 @@
+Direction
+=========
+
+.. currentmodule:: samplomatic.constants
+
+.. autoclass:: Direction
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Direction.BOTH
+      ~Direction.LEFT
+      ~Direction.RIGHT
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: BOTH
+   .. autoattribute:: LEFT
+   .. autoattribute:: RIGHT
