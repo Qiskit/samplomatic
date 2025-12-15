@@ -63,7 +63,7 @@ def make_circuits():
         expected.cz(0, 1)
         expected.cx(0, 1)
 
-    # inserting IH on every other layer transforms all even indexed CXs to CZs
+    # inserting IH on every layer transforms all even indexed CXs to CZs
     local_cliffords = {f"c{i}": np.array([0, 4]) for i in range(num_layers)}
     yield (circuit, expected, local_cliffords), "pauli_lindblad_like_cx_to_cz"
 
