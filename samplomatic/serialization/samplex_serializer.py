@@ -86,15 +86,15 @@ class HeaderV1(Header):
     output_specification: str
     passthrough_params: str
 
-    def from_samplex(samplex: Samplex):
+    def from_samplex(samplex: Samplex, ssv: int = SSV):
         return HeaderV1(
-            ssv=str(SSV),
+            ssv=str(ssv),
             samplomatic_version=samplomatic_version,
             param_table=orjson.dumps(
-                ParameterExpressionTableSerializer.serialize(samplex._param_table)  # noqa: SLF001
+                ParameterExpressionTableSerializer.serialize(samplex._param_table, ssv=ssv)  # noqa: SLF001
             ).decode("utf-8"),
-            input_specification=serialize_specifications(samplex._input_specifications),  # noqa: SLF001
-            output_specification=serialize_specifications(samplex._output_specifications),  # noqa: SLF001
+            input_specification=serialize_specifications(samplex._input_specifications, ssv=ssv),  # noqa: SLF001
+            output_specification=serialize_specifications(samplex._output_specifications, ssv=ssv),  # noqa: SLF001
             passthrough_params=serialize_passthrough_params(samplex._passthrough_params),  # noqa: SLF001
         )
 
@@ -132,7 +132,7 @@ def samplex_to_json(samplex, filename=None, ssv=SSV):
     Raises:
         SerializationError: If ``ssv`` is incompatible.
     """
-    header = HeaderV1.from_samplex(samplex)
+    header = HeaderV1.from_samplex(samplex, ssv=ssv)
 
     def serialize_node(node: Node):
         try:
