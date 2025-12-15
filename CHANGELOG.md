@@ -1,8 +1,3 @@
-## [0.15.0](https://github.com/Qiskit/samplomatic/tree/0.15.0) - 2025-12-15
-
-No significant changes.
-
-
 ## [0.15.0](https://github.com/Qiskit/samplomatic/tree/0.16.0) - 2025-12-15
 
 ### Added
