@@ -139,11 +139,11 @@ def inject_local_clifford_parser(
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `emission.basis_ref` is already specified.
-        BuildError: If `dressing` is already specified on one of the specs and is incompatible
+        BuildError: If ``emission.basis_ref`` is already specified.
+        BuildError: If ``dressing`` is already specified on one of the specs and is incompatible
             with the annotation's dressing.
-        BuildError: If `synth` is already specified on the `collection` and not equal to the
-            synth corresponding to `local_clifford.decomposition`.
+        BuildError: If ``synth`` is already specified on the ``collection`` and not equal to the
+            synth corresponding to ``local_clifford.decomposition``.
     """
     if emission.basis_ref:
         raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
