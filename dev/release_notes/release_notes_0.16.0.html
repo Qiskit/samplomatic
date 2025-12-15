@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.1.0 - 2025-08-15" href="release_notes_0.1.0.html" /><link rel="prev" title="0.3.0 - 2025-08-22" href="release_notes_0.3.0.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.14.0 - 2025-12-09" href="release_notes_0.14.0.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>0.2.0 - 2025-08-20 - samplomatic 0.1.dev1</title>
+        <title>0.16.0 - 2025-12-15 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -367,7 +367,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.16.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
@@ -381,7 +381,7 @@
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.5.0.html">Release notes for 0.5.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.3.0.html">Release notes for 0.3.0</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0.2.0.html">Release notes for 0.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.1.0.html">Release notes for 0.1.0</a></li>
 </ul>
 </li>
@@ -432,7 +432,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/release_notes/release_notes_0.2.0.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/release_notes/release_notes_0.16.0.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -453,21 +453,25 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="id1">
-<h1>0.2.0 - 2025-08-20<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1>0.16.0 - 2025-12-15<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Added the <code class="docutils literal notranslate"><span class="pre">Samplex.inputs()</span></code> and <code class="docutils literal notranslate"><span class="pre">Samplex.outputs()</span></code> methods to query the required inputs and promised outputs of <code class="docutils literal notranslate"><span class="pre">Samplex.sample()</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/75">#75</a>)</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">TemplateState.finalize</span></code> and <code class="docutils literal notranslate"><span class="pre">TemplateState.qubits</span></code> methods to facilitate constructing the template circuit as a <code class="docutils literal notranslate"><span class="pre">qiskit.dagcircuit.DAGCircuit</span></code> during the <code class="docutils literal notranslate"><span class="pre">build</span></code> process. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/270">#270</a>)</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">Builder.yield_from_dag</span></code> method. This method provides an iteration order such that all of the easy gates and hard gates will be yielded topologically in two separate groups separated by a sentinel, defining the easy-hard boundary of a dressed box. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/273">#273</a>)</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">InjectLocalClifford</span></code> annotation. This annotation allows for the specification of single-qubit Clifford frame changes at <code class="docutils literal notranslate"><span class="pre">Samplex.sample</span></code> time by adding a <code class="docutils literal notranslate"><span class="pre">local_clifford.ref</span></code> argument to its inputs. The input expects an integer array following the same convention as the <code class="docutils literal notranslate"><span class="pre">C1Register</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/275">#275</a>)</p></li>
 </ul>
 </section>
 <section id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Renamed the parameter <code class="docutils literal notranslate"><span class="pre">size</span></code> to <code class="docutils literal notranslate"><span class="pre">num_randomizations</span></code> in the <code class="docutils literal notranslate"><span class="pre">Samplex.sample()</span></code> method. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/69">#69</a>)</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">build()</span></code> function now calls <code class="docutils literal notranslate"><span class="pre">Samplex.finalize()</span></code> so that it does not need to be called afterwards manually.
-Additionally, the <code class="docutils literal notranslate"><span class="pre">Samplex.finalize()</span></code> method now returns itself for chaining calls. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/72">#72</a>)</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">Samplex.sample()</span></code> method now takes a <code class="docutils literal notranslate"><span class="pre">SamplexInput</span></code> as argument rather than keyword arguments.
-This object can be constructed with the new <code class="docutils literal notranslate"><span class="pre">Samplex.inputs()</span></code> method and only includes arguments pertinent to a given instance of <code class="docutils literal notranslate"><span class="pre">Samplex</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/75">#75</a>)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">pre_build</span></code> function now constructs the template as a <code class="docutils literal notranslate"><span class="pre">qiskit.dagcircuit.DAGCircuit</span></code> as opposed to a <code class="docutils literal notranslate"><span class="pre">qiskit.QuantumCircuit</span></code>. Methods on <code class="docutils literal notranslate"><span class="pre">BoxBuilder</span></code>, <code class="docutils literal notranslate"><span class="pre">PassthroughBuilder</span></code>, <code class="docutils literal notranslate"><span class="pre">PreSamplex</span></code>, and <code class="docutils literal notranslate"><span class="pre">TemplateState</span></code> that previously had <code class="docutils literal notranslate"><span class="pre">qiskit.circuit.CircuitInstruction</span></code> in their signature now have <code class="docutils literal notranslate"><span class="pre">qiskit.dagcircuit.DAGOpNode</span></code> instead. The signature of the <code class="docutils literal notranslate"><span class="pre">build</span></code> function has not changed, but now calls the <code class="docutils literal notranslate"><span class="pre">TemplateState.finalize</span></code> method to construct the <code class="docutils literal notranslate"><span class="pre">qiskit.QuantumCircuit</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/270">#270</a>)</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h2>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed the samplex serializer to encode all information in the header at the specified SSV, rather than encoding some of it at the most recent SSV irrespective of the specified version. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/276">#276</a>)</p></li>
 </ul>
 </section>
 </section>
@@ -477,23 +481,23 @@ This object can be constructed with the new <code class="docutils literal notran
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_0.1.0.html">
+          <a class="next-page" href="release_notes_0.14.0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">0.1.0 - 2025-08-15</div>
+                <div class="title">0.14.0 - 2025-12-09</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="release_notes_0.3.0.html">
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0.3.0 - 2025-08-22</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -528,9 +532,10 @@ This object can be constructed with the new <code class="docutils literal notran
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0.2.0 - 2025-08-20</a><ul>
+<li><a class="reference internal" href="#">0.16.0 - 2025-12-15</a><ul>
 <li><a class="reference internal" href="#added">Added</a></li>
 <li><a class="reference internal" href="#changed">Changed</a></li>
+<li><a class="reference internal" href="#fixed">Fixed</a></li>
 </ul>
 </li>
 </ul>
