@@ -103,7 +103,7 @@ class AddInjectNoise(TransformationPass):
 
         # A dictionary to map unique boxes to their ``ref``
         box_to_ref: dict[BoxKey, tuple[int, str]] = defaultdict(
-            lambda: f"{self.prefix_ref}{next(self._REF_COUNTER)}", self.site
+            lambda: (f"{self.prefix_ref}{next(self._REF_COUNTER)}", self.site)
         )
 
         skip_undressed_box: Callable[[DAGOpNode], bool] = self._skip_undressed_box()
