@@ -37,16 +37,35 @@ def make_circuits():
     local_cliff = np.array([4], dtype=np.uint8)
     yield (circuit, expected, {"c1": local_cliff}), "inject_h"
 
+    num_layers = 8
+
     circuit = QuantumCircuit(2)
-    for i in range(8):
+    for i in range(num_layers):
         with circuit.box([InjectLocalClifford(f"c{i}"), Twirl()]):
             circuit.cx(0, 1)
 
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(range(2))
 
-    local_cliffords = {f"c{i}": np.array([0, 0]) for i in range(8)}
-    yield (circuit, QuantumCircuit(2), local_cliffords), "rb_like"
+    local_cliffords = {f"c{i}": np.array([0, 0]) for i in range(num_layers)}
+    yield (circuit, QuantumCircuit(2), local_cliffords), "pauli_lindblad_like"
+
+    expected = QuantumCircuit(2)
+    expected.h(0)
+    expected.h(1)
+
+    local_cliffords = {f"c{i}": np.array([0, 0]) for i in range(num_layers)}
+    local_cliffords["c0"] = np.array([4, 4])
+    yield (circuit, expected, local_cliffords), "pauli_lindblad_like_x_basis"
+
+    expected = QuantumCircuit(2)
+    for i in range(num_layers // 2):
+        expected.cz(0, 1)
+        expected.cx(0, 1)
+
+    # inserting IH on every other layer transforms all even indexed CXs to CZs
+    local_cliffords = {f"c{i}": np.array([0, 4]) for i in range(num_layers)}
+    yield (circuit, expected, local_cliffords), "pauli_lindblad_like_cx_to_cz"
 
 
 def pytest_generate_tests(metafunc):
