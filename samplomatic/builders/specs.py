@@ -67,7 +67,7 @@ class EmissionSpec:
     basis_ref: StrRef = ""
     """A unique identifier of the basis change."""
 
-    noise_ref: StrRef = ""
+    noise_ref: StrRef | None = None
     """A unique identifier of the Pauli Lindblad map to use for noise injection."""
 
     noise_modifier_ref: StrRef = ""
