@@ -41,8 +41,8 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
 def make_and_insert_box(
     dag: DAGCircuit,
     nodes: list[DAGOpNode],
-    annotations: list[Annotation] = [Twirl()],
-) -> None:
+    annotations: list[Annotation] = (Twirl(),),
+):
     """Make a box and insert it into a dag.
 
     Args:
@@ -70,7 +70,7 @@ def make_and_insert_box(
             [clbit_map[carg] for carg in node.cargs],
         )
 
-    box = BoxOp(body=content, annotations=annotations)
+    box = BoxOp(body=content, annotations=list(annotations))
     dag.replace_block_with_op(nodes, box, qubit_map | clbit_map)
 
 
