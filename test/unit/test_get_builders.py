@@ -14,11 +14,18 @@ import pytest
 from qiskit.circuit import Annotation, BoxOp, QuantumCircuit, Qubit
 from qiskit.dagcircuit import DAGOpNode
 
-from samplomatic.annotations import ChangeBasis, DressingMode, InjectLocalClifford, Twirl
+from samplomatic.annotations import (
+    ChangeBasis,
+    DressingMode,
+    InjectLocalClifford,
+    InjectNoise,
+    Twirl,
+)
 from samplomatic.builders.get_builder import (
     change_basis_parser,
     get_builder,
     inject_local_clifford_parser,
+    inject_noise_parser,
     twirl_parser,
 )
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec
@@ -63,3 +70,13 @@ def test_change_frame_parser_errors():
 
     with pytest.raises(BuildError, match="Cannot specify multiple frame changing annotations"):
         inject_local_clifford_parser(InjectLocalClifford("my_basis"), collection, emission)
+
+
+def test_inject_noise_parser_errors():
+    """Test the errors when parsing inject noise annotations."""
+    qubits = QubitPartition(1, [(Qubit(),)])
+    collection = CollectionSpec(qubits, dressing=DressingMode.LEFT, synth=RzSxSynth())
+    emission = EmissionSpec(qubits, dressing=DressingMode.LEFT, noise_ref="my_noise")
+
+    with pytest.raises(BuildError, match="with noise reference 'my_noise'"):
+        inject_noise_parser(InjectNoise(ref="other_ref"), collection, emission)

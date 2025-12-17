@@ -43,6 +43,7 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
     "decomposition",
     "inject_noise_targets",
     "inject_noise_strategy",
+    "inject_noise_site",
     "remove_barriers",
 )
 def generate_boxing_pass_manager(
@@ -58,6 +59,7 @@ def generate_boxing_pass_manager(
     inject_noise_strategy: Literal[
         "no_modification", "uniform_modification", "individual_modification"
     ] = "no_modification",
+    inject_noise_site: Literal["before", "after"] = "before",
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
@@ -168,6 +170,12 @@ def generate_boxing_pass_manager(
             * ``'individual_modification'``: All the equivalent boxes are assigned an inject noise
               annotation with the same ``ref``. Every box is assigned a unique ``modifier_ref``.
 
+        inject_noise_site: The noise injection sites supported by the :class:`~AddInjectNoise` pass.
+            All possible string values are:
+
+            * ``'before'`` to inject noise before the hard content of the box.
+            * ``'after'`` to inject noise after the content of the box.
+
         remove_barriers: When to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
             All possible string values are:
 
@@ -226,7 +234,11 @@ def generate_boxing_pass_manager(
         passes.append(RemoveBarriers())
 
     passes.append(AbsorbSingleQubitGates())
-    passes.append(AddInjectNoise(strategy=inject_noise_strategy, targets=inject_noise_targets))
+    passes.append(
+        AddInjectNoise(
+            strategy=inject_noise_strategy, site=inject_noise_site, targets=inject_noise_targets
+        )
+    )
 
     if remove_barriers == "finally":
         passes.append(RemoveBarriers())

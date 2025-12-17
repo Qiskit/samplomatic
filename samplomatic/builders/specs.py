@@ -18,7 +18,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from ..aliases import CircuitInstruction, Parameter, Qubit, StrRef
-from ..annotations import DressingMode, VirtualType
+from ..annotations import DressingMode, InjectionSite, VirtualType
 from ..partition import QubitPartition
 from ..synths import Synth
 
@@ -67,11 +67,14 @@ class EmissionSpec:
     basis_ref: StrRef = ""
     """A unique identifier of the basis change."""
 
-    noise_ref: StrRef = ""
+    noise_ref: StrRef | None = None
     """A unique identifier of the Pauli Lindblad map to use for noise injection."""
 
     noise_modifier_ref: StrRef = ""
     """A unique identifier for modifiers to apply to the Pauli Lindblad map."""
+
+    noise_site: InjectionSite | None = None
+    """Whether to inject noise before or after the hard content."""
 
 
 @dataclass

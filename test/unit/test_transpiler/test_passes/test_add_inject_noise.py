@@ -168,7 +168,7 @@ def test_overwrite(overwrite):
     with circuit.box([Twirl()]):
         circuit.measure_all()
 
-    pm = PassManager([AddInjectNoise("no_modification", overwrite, targets="all")])
+    pm = PassManager([AddInjectNoise("no_modification", overwrite=overwrite, targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     noise_annotations = [
@@ -193,7 +193,7 @@ def test_overwrite_when_the_box_is_encountered_for_the_first_time(overwrite):
         circuit.z(0)
         circuit.cx(0, 1)
 
-    pm = PassManager([AddInjectNoise("no_modification", overwrite, targets="all")])
+    pm = PassManager([AddInjectNoise("no_modification", overwrite=overwrite, targets="all")])
     transpiled_circuit = pm.run(circuit)
 
     noise_annotations = [
