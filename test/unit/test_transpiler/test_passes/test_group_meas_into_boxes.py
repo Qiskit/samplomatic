@@ -203,12 +203,19 @@ def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
 
 
 @pytest.mark.parametrize("annotations", ["twirl", "change_basis", "all"])
-def test_annotations(annotations):
+@pytest.mark.parametrize("decomposition", ["rzsx", "rzrx"])
+def test_annotations(annotations, decomposition):
     """Test that `GroupMeasIntoBoxes` attaches the correct annotations."""
     circuit = QuantumCircuit(1, 1)
     circuit.measure(0, 0)
 
-    pm = PassManager(passes=[GroupMeasIntoBoxes(annotations=annotations, prefix_ref="ciao")])
+    pm = PassManager(
+        passes=[
+            GroupMeasIntoBoxes(
+                annotations=annotations, decomposition=decomposition, prefix_ref="ciao"
+            )
+        ]
+    )
     box = pm.run(circuit).data[0].operation
     twirl = get_annotation(box, Twirl)
     change_basis = get_annotation(box, ChangeBasis)
@@ -219,6 +226,10 @@ def test_annotations(annotations):
     if change_basis:
         assert change_basis.mode == "measure"
         assert change_basis.ref.startswith("ciao")
+        assert change_basis.decomposition == decomposition
+
+    if twirl:
+        assert twirl.decomposition == decomposition
 
 
 def test_annotations_raise():

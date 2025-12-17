@@ -341,6 +341,27 @@ def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
     assert transpiled_circuit == expected_circuit
 
 
+@pytest.mark.parametrize("annotations", [(), (Twirl(dressing="right"),), (Twirl(),)])
+def test_annotations(annotations):
+    """Test that we can set the annotation."""
+    circuit = QuantumCircuit(4)
+    circuit.cx(0, 1)
+    circuit.barrier()
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box(list(annotations)):
+        expected_circuit.cx(0, 1)
+    expected_circuit.barrier()
+    with expected_circuit.box(list(annotations)):
+        expected_circuit.cx(2, 3)
+
+    pm = PassManager(passes=[GroupGatesIntoBoxes(annotations)])
+    transpiled_circuit = pm.run(circuit)
+
+    assert transpiled_circuit == expected_circuit
+
+
 def test_raises_for_unsupported_ops():
     """Test that `GroupGatesIntoBoxes` raises when the circuit contains unsupported ops."""
     pm = PassManager(passes=[GroupGatesIntoBoxes()])

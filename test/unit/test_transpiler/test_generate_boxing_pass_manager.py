@@ -18,7 +18,9 @@ This function is more comprehensively tested in integration tests.
 import pytest
 from qiskit.circuit import QuantumCircuit
 
+from samplomatic.annotations import ChangeBasis, Twirl
 from samplomatic.transpiler import generate_boxing_pass_manager
+from samplomatic.utils import get_annotation
 
 
 def test_remove_barriers_deprecation():
@@ -42,3 +44,32 @@ def test_remove_barriers_deprecation():
 
     pm_never = generate_boxing_pass_manager(remove_barriers="never")
     assert pm_false.run(circuit) == pm_never.run(circuit)
+
+
+@pytest.mark.parametrize(
+    "decomposition,measure_annotations", [("rzrx", "all"), ("rzsx", "change_basis")]
+)
+def test_decomposition(decomposition, measure_annotations):
+    """Test the decomposition argument changes all decompositions."""
+    circuit = QuantumCircuit(2)
+    circuit.x(0)
+    circuit.barrier()
+    circuit.cx(0, 1)
+    circuit.x(0)
+    circuit.barrier()
+    circuit.cx(0, 1)
+    circuit.measure_all()
+
+    pm = generate_boxing_pass_manager(
+        decomposition=decomposition, measure_annotations=measure_annotations
+    )
+    transpiled_circuit = pm.run(circuit)
+
+    for instr in transpiled_circuit:
+        box = instr.operation
+
+        if change_basis := get_annotation(box, ChangeBasis):
+            assert change_basis.decomposition == decomposition
+
+        if twirl := get_annotation(box, Twirl):
+            assert twirl.decomposition == decomposition
