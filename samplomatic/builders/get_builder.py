@@ -89,10 +89,10 @@ def change_basis_parser(
 
     Raises:
         BuildError: If `emission.basis_ref` is already specified.
-        BuildError: If `dressing` is already specified on one of the specs and is not equal to
-            `change_basis.dressing`.
-        BuildError: If `synth` is already specified on the `collection` and not equal to the
-            synth corresponding to `change_basis.decomposition`.
+        BuildError: If ``dressing`` is already specified on one of the specs and is not equal to
+            ``change_basis.dressing``.
+        BuildError: If ``synth`` is already specified on the ``collection`` and not equal to the
+            synth corresponding to ``change_basis.decomposition``.
     """
     if emission.basis_ref:
         raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
