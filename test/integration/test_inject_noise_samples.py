@@ -70,7 +70,20 @@ def make_circuits():
     noise_ops = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
     expected = [op & (Operator(CXGate()) ^ Operator(CXGate())) for op in noise_ops]
 
-    yield (circuit, expected, pauli_lindblad_maps), "xx_noise_permuted"
+    yield (circuit, expected, pauli_lindblad_maps), "xx_noise_permuted_before"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise("my_noise", site="after")]):
+        circuit.cx(0, 1)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])}
+    noise_ops = [Operator(np.identity(16)), Operator(Pauli("XXXX").to_matrix())]
+    expected = [(Operator(CXGate()) ^ Operator(CXGate())) & op for op in noise_ops]
+
+    yield (circuit, expected, pauli_lindblad_maps), "xx_noise_permuted_after"
 
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise("my_noise")]):

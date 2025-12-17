@@ -18,6 +18,7 @@ import numpy as np
 from qiskit.circuit import Barrier
 
 from ..aliases import DAGOpNode, ParamIndices
+from ..annotations import InjectionSite
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
@@ -100,7 +101,7 @@ class LeftBoxBuilder(BoxBuilder):
                 self.samplex_state.add_emit_left_basis_change(
                     self.emission.qubits, self.emission.basis_ref, self.emission.basis_change
                 )
-            if self.emission.noise_ref:
+            if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
                 self.samplex_state.add_emit_noise_left(
                     self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
                 )
@@ -160,6 +161,10 @@ class LeftBoxBuilder(BoxBuilder):
     def rhs(self):
         self._append_barrier("R")
 
+        if self.emission.noise_ref and self.emission.noise_site is InjectionSite.AFTER:
+            self.samplex_state.add_emit_noise_left(
+                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+            )
         twirl_type = self.emission.twirl_register_type
         if twirl_type := self.emission.twirl_register_type:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
@@ -202,7 +207,7 @@ class RightBoxBuilder(BoxBuilder):
 
     def parse(self, instr):
         if instr is None:
-            if self.emission.noise_ref:
+            if self.emission.noise_ref and self.emission.noise_site is InjectionSite.AFTER:
                 self.samplex_state.add_emit_noise_right(
                     self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
                 )
@@ -242,6 +247,10 @@ class RightBoxBuilder(BoxBuilder):
         if self.emission.twirl_register_type:
             self.samplex_state.add_emit_twirl(
                 self.emission.qubits, self.emission.twirl_register_type
+            )
+        if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
+            self.samplex_state.add_emit_noise_right(
+                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
             )
 
     def rhs(self):

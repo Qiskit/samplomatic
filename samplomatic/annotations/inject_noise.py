@@ -12,9 +12,22 @@
 
 """InjectNoise"""
 
+from enum import Enum
+from typing import Literal, TypeAlias
+
 from qiskit.circuit import Annotation
 
 from ..aliases import StrRef
+
+
+class InjectionSite(str, Enum):
+    """Whether to inject noise before or after the hard content of a dressed box."""
+
+    BEFORE = "before"
+    AFTER = "after"
+
+
+InjectionSiteLiteral: TypeAlias = InjectionSite | Literal["before", "after"]
 
 
 class InjectNoise(Annotation):
@@ -29,25 +42,36 @@ class InjectNoise(Annotation):
         ref: A unique identifier of the Pauli Lindblad map from which to inject noise.
         modifier_ref: A unique identifer for modifiers to apply to the Pauli Lindblad map before
             injection.
+        site: Whether to inject the noise before or after the hard content of the box.
     """
 
     namespace = "samplomatic.inject_noise"
 
-    __slots__ = ("ref", "modifier_ref")
+    __slots__ = ("ref", "modifier_ref", "site")
 
-    def __init__(self, ref: StrRef, modifier_ref: StrRef = ""):
+    def __init__(
+        self,
+        ref: StrRef,
+        modifier_ref: StrRef = "",
+        site: InjectionSiteLiteral = "before",
+    ):
         self.ref = ref
         self.modifier_ref = modifier_ref
+        self.site = InjectionSite(site)
 
     def __eq__(self, other):
         return (
             isinstance(other, InjectNoise)
             and self.ref == other.ref
             and self.modifier_ref == other.modifier_ref
+            and self.site == other.site
         )
 
     def __hash__(self):
-        return hash((self.ref, self.modifier_ref))
+        return hash((self.ref, self.modifier_ref, self.site))
 
     def __repr__(self):
-        return f"{type(self).__name__}(ref='{self.ref}', modifier_ref={self.modifier_ref!r})"
+        return (
+            f"{type(self).__name__}(ref='{self.ref}', modifier_ref={self.modifier_ref!r}, "
+            f"site='{self.site.name.lower()}')"
+        )

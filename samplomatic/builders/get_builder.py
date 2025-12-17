@@ -176,9 +176,18 @@ def inject_noise_parser(
         inject_noise: The inject noise annotation to parse.
         collection: The collection spec to modify.
         emission: The emission spec to modify.
+
+    Raises:
+        BuildError: If `emission.noise_ref` is not ``None``.
     """
+    if emission.noise_ref is not None:
+        raise BuildError(
+            f"Cannot inject noise with reference '{inject_noise.ref}' on a dressed box "
+            f"with noise reference '{emission.noise_ref}' already present."
+        )
     emission.noise_ref = inject_noise.ref
     emission.noise_modifier_ref = inject_noise.modifier_ref
+    emission.noise_site = inject_noise.site
 
 
 def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpec):
