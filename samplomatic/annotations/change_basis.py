@@ -42,9 +42,9 @@ class ChangeBasis(Annotation):
     def __init__(
         self,
         decomposition: DecompositionLiteral = DecompositionMode.RZSX,
-        dressing: DressingLiteral = DressingMode.LEFT,
         mode: ChangeBasisLiteral = ChangeBasisMode.MEASURE,
         ref: StrRef | None = None,
+        dressing: DressingLiteral = DressingMode.LEFT,
     ):
         self.decomposition = DecompositionMode(decomposition)
         self.dressing = DressingMode(dressing)

@@ -97,7 +97,7 @@ def change_basis_parser(
     if emission.basis_ref:
         raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
 
-    emission.basis_change = change_basis.mode
+    emission.basis_change = f"pauli_{change_basis.mode.name.lower()}"
     emission.basis_ref = f"basis_changes.{change_basis.ref}"
 
     synth = get_synth(change_basis.decomposition)

@@ -108,7 +108,11 @@ REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
 )
 
 FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
-    {"measure": MEAS_PAULI_BASIS, "prepare": PREP_PAULI_BASIS, "local_clifford": LOCAL_CLIFFORD}
+    {
+        "pauli_measure": MEAS_PAULI_BASIS,
+        "pauli_prepare": PREP_PAULI_BASIS,
+        "local_clifford": LOCAL_CLIFFORD,
+    }
 )
 
 

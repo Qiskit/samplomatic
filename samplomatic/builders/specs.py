@@ -19,14 +19,14 @@ from typing import Literal, TypeAlias
 import numpy as np
 
 from ..aliases import CircuitInstruction, Parameter, Qubit, StrRef
-from ..annotations import ChangeBasisMode, DressingMode, InjectionSite, VirtualType
+from ..annotations import DressingMode, InjectionSite, VirtualType
 from ..partition import QubitPartition
 from ..synths import Synth
 
 EMPTY_IDXS = np.empty((0, 0), dtype=np.intp)
 EMPTY_IDXS.setflags(write=False)
 
-FrameChangeMode: TypeAlias = ChangeBasisMode | Literal["local_clifford"]
+FrameChangeMode: TypeAlias = Literal["local_clifford", "pauli_prepare", "pauli_measure"]
 
 
 class InstructionMode(enum.Enum):
