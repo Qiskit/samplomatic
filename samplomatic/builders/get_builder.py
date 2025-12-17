@@ -183,7 +183,7 @@ def inject_noise_parser(
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `emission.noise_ref` is not `None`.
+        BuildError: If `emission.noise_ref` is not ``None``.
     """
     if emission.noise_ref is not None:
         raise BuildError(
