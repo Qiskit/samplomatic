@@ -17,6 +17,7 @@ from typing import Literal
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.passes import RemoveBarriers
 
+from ..annotations import Twirl
 from ..utils import deprecate_arg, validate_literals
 from .passes import (
     AbsorbSingleQubitGates,
@@ -39,6 +40,7 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
 @validate_literals(
     "measure_annotations",
     "twirling_strategy",
+    "decomposition",
     "inject_noise_targets",
     "inject_noise_strategy",
     "inject_noise_site",
@@ -52,6 +54,7 @@ def generate_boxing_pass_manager(
     twirling_strategy: Literal[
         "active", "active_accum", "active_circuit", "all"
     ] = "active_circuit",
+    decomposition: Literal["rzsx", "rzrx"] = "rzsx",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
     inject_noise_strategy: Literal[
         "no_modification", "uniform_modification", "individual_modification"
@@ -137,6 +140,11 @@ def generate_boxing_pass_manager(
             * ``'all'``: Idling qubits are added so that each individual box twirls all of the
               qubits in the circuit.
 
+        decomposition: The gate sequence into which single-qubit dressing gates are synthesized.
+
+            * ``'rzsx'`` synthesizes single-qubit gates with rz-sx-rz-sx-rz.
+            * ``'rzrx'`` synthesizes single-qubit gates with rz-rx-rz.
+
         inject_noise_targets: The boxes to annotate with an :class:`~.InjectNoise` annotation
             using the :class:`~.AddInjectNoise` pass. The supported values are:
 
@@ -204,10 +212,12 @@ def generate_boxing_pass_manager(
         passes.append(RemoveBarriers())
 
     if enable_gates:
-        passes.append(GroupGatesIntoBoxes())
+        passes.append(GroupGatesIntoBoxes([Twirl(decomposition=decomposition)]))
 
     if enable_measures:
-        passes.append(GroupMeasIntoBoxes(measure_annotations))
+        passes.append(
+            GroupMeasIntoBoxes(annotations=measure_annotations, decomposition=decomposition)
+        )
 
     if twirling_strategy == "active":
         pass
