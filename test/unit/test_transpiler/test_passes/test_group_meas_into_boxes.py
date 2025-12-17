@@ -208,7 +208,7 @@ def test_annotations(annotations):
     circuit = QuantumCircuit(1, 1)
     circuit.measure(0, 0)
 
-    pm = PassManager(passes=[GroupMeasIntoBoxes(annotations, "ciao")])
+    pm = PassManager(passes=[GroupMeasIntoBoxes(annotations=annotations, prefix_ref="ciao")])
     box = pm.run(circuit).data[0].operation
     twirl = get_annotation(box, Twirl)
     change_basis = get_annotation(box, ChangeBasis)
@@ -224,7 +224,7 @@ def test_annotations(annotations):
 def test_annotations_raise():
     """Test that `GroupMeasIntoBoxes` raises for incorrect annotations."""
     with pytest.raises(ValueError, match="Invalid value for argument 'annotations'"):
-        GroupMeasIntoBoxes("none")
+        GroupMeasIntoBoxes(annotations="none")
 
 
 def test_raises_when_measurements_overwrite_clbit():
