@@ -88,7 +88,7 @@ def change_basis_parser(
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `emission.basis_ref` is already specified.
+        BuildError: If ``emission.basis_ref`` is already specified.
         BuildError: If ``dressing`` is already specified on one of the specs and is not equal to
             ``change_basis.dressing``.
         BuildError: If ``synth`` is already specified on the ``collection`` and not equal to the
