@@ -98,7 +98,7 @@ class LeftBoxBuilder(BoxBuilder):
         if instr is None:
             if self.emission.basis_ref:
                 self.samplex_state.add_emit_left_basis_change(
-                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
+                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_change
                 )
             if self.emission.noise_ref:
                 self.samplex_state.add_emit_noise_left(
@@ -208,7 +208,7 @@ class RightBoxBuilder(BoxBuilder):
                 )
             if self.emission.basis_ref:
                 self.samplex_state.add_emit_right_basis_change(
-                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_register_type
+                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_change
                 )
             self._mode = InstructionMode.MULTIPLY
             return

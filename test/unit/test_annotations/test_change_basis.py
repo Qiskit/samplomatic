@@ -45,4 +45,7 @@ def test_hash():
 
 def test_repr():
     """Test repr."""
-    assert repr(ChangeBasis()) == "ChangeBasis(decomposition='rzsx', mode='measure', ref='measure')"
+    assert (
+        repr(ChangeBasis()) == "ChangeBasis(decomposition='rzsx', dressing='left', "
+        "mode='measure', ref='measure')"
+    )

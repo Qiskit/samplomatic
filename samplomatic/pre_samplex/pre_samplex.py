@@ -42,8 +42,8 @@ from ..aliases import (
     RegisterName,
     StrRef,
 )
-from ..annotations import VirtualType
-from ..builders.specs import InstructionMode
+from ..annotations import ChangeBasisMode, VirtualType
+from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
@@ -69,7 +69,12 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.change_basis_node import LOCAL_CLIFFORD, MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from ..samplex.nodes.change_basis_node import (
+    LOCAL_CLIFFORD,
+    MEAS_PAULI_BASIS,
+    PREP_PAULI_BASIS,
+    BasisChange,
+)
 from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
@@ -99,10 +104,11 @@ if TYPE_CHECKING:
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
 
 REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
-    {
-        VirtualType.U2: HaarU2,
-        VirtualType.PAULI: UniformPauli,
-    }
+    {VirtualType.U2: HaarU2, VirtualType.PAULI: UniformPauli}
+)
+
+FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
+    {"measure": MEAS_PAULI_BASIS, "prepare": PREP_PAULI_BASIS, "local_clifford": LOCAL_CLIFFORD}
 )
 
 
@@ -682,14 +688,17 @@ class PreSamplex:
         return self._add_emit_right(node)
 
     def add_emit_left_basis_change(
-        self, qubits: QubitPartition, basis_ref: StrRef, virtual_type: VirtualType
+        self,
+        qubits: QubitPartition,
+        basis_ref: StrRef,
+        basis_change: FrameChangeMode,
     ) -> NodeIndex:
         """Add a node that emits virtual gates left to change frames.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             basis_ref: Unique identifier of this basis change.
-            virtual_type: The virtual type to emit.
+            basis_change: What basis change to use.
 
         Raises:
             SamplexBuildError: If a basis change with the same `basis_ref` but of different
@@ -707,17 +716,22 @@ class PreSamplex:
             self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreChangeBasis(subsystems, Direction.LEFT, virtual_type, basis_ref)
+        virtual_type = VirtualType.U2 if type(basis_change) is ChangeBasisMode else VirtualType.C1
+        node = PreChangeBasis(subsystems, Direction.LEFT, virtual_type, basis_ref, basis_change)
         return self._add_emit_left(node)
 
     def add_emit_right_basis_change(
-        self, qubits: QubitPartition, basis_ref: StrRef, virtual_type: VirtualType
+        self,
+        qubits: QubitPartition,
+        basis_ref: StrRef,
+        basis_change: FrameChangeMode,
     ) -> NodeIndex:
         """Add a node that emits virtual gates right to change frames.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             basis_ref: Unique identifier of this basis change.
+            basis_change: What basis change to use.
 
         Raises:
             SamplexBuildError: If a basis change with the same `basis_ref` but of different
@@ -735,7 +749,8 @@ class PreSamplex:
             self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreChangeBasis(subsystems, Direction.RIGHT, virtual_type, basis_ref)
+        virtual_type = VirtualType.U2 if type(basis_change) is ChangeBasisMode else VirtualType.C1
+        node = PreChangeBasis(subsystems, Direction.RIGHT, virtual_type, basis_ref, basis_change)
         return self._add_emit_right(node)
 
     def add_propagate(self, instr: DAGOpNode, mode: InstructionMode, params: ParamSpec):
@@ -1217,13 +1232,9 @@ class PreSamplex:
         """
         pre_basis = cast(PreChangeBasis, self.graph[pre_basis_idx])
         reg_idx = order[pre_basis_idx]
-        if pre_basis.register_type is VirtualType.C1:
-            basis = LOCAL_CLIFFORD
-        else:
-            basis = MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS
         node = ChangeBasisNode(
             reg_name := f"basis_change_{reg_idx}",
-            basis,
+            FRAME_CHANGE_TO_BASIS_CHANGE[pre_basis.basis_change],
             pre_basis.basis_ref,
             len(pre_basis.subsystems),
         )

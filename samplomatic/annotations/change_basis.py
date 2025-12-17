@@ -17,6 +17,7 @@ from qiskit.circuit import Annotation
 from ..aliases import StrRef
 from .change_basis_mode import ChangeBasisLiteral, ChangeBasisMode
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
+from .dressing_mode import DressingLiteral, DressingMode
 
 
 class ChangeBasis(Annotation):
@@ -29,21 +30,24 @@ class ChangeBasis(Annotation):
 
     Args:
         decomposition: How to decompose basis changing gates.
+        dressing: Which side of the box to attach the dressing instructions.
         mode: Whether to add gates to prepare or measure in a given basis.
         ref: A unique identifier of this basis change. If ``None``, it is set to ``mode.value``.
     """
 
     namespace = "samplomatic.change_basis"
 
-    __slots__ = ("decomposition", "mode", "ref")
+    __slots__ = ("decomposition", "dressing", "mode", "ref")
 
     def __init__(
         self,
         decomposition: DecompositionLiteral = DecompositionMode.RZSX,
+        dressing: DressingLiteral = DressingMode.LEFT,
         mode: ChangeBasisLiteral = ChangeBasisMode.MEASURE,
         ref: StrRef | None = None,
     ):
         self.decomposition = DecompositionMode(decomposition)
+        self.dressing = DressingMode(dressing)
         self.mode = ChangeBasisMode(mode)
         self.ref = ref or self.mode.value
 
@@ -51,15 +55,17 @@ class ChangeBasis(Annotation):
         return (
             isinstance(other, ChangeBasis)
             and self.decomposition == other.decomposition
+            and self.dressing == other.dressing
             and self.mode == other.mode
             and self.ref == other.ref
         )
 
     def __hash__(self):
-        return hash((self.decomposition, self.mode, self.ref))
+        return hash((self.decomposition, self.dressing, self.mode, self.ref))
 
     def __repr__(self):
         return (
             f"{type(self).__name__}(decomposition='{self.decomposition.name.lower()}', "
-            f"mode='{self.mode.name.lower()}', ref='{self.ref}')"
+            f"dressing='{self.dressing.name.lower()}', mode='{self.mode.name.lower()}', "
+            f"ref='{self.ref}')"
         )
