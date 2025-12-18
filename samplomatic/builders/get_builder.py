@@ -19,7 +19,6 @@ from qiskit.circuit import Annotation, Qubit
 from ..aliases import DAGOpNode
 from ..annotations import (
     ChangeBasis,
-    ChangeBasisMode,
     DressingMode,
     InjectLocalClifford,
     InjectNoise,
@@ -89,16 +88,16 @@ def change_basis_parser(
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `emission.basis_ref` is already specified.
-        BuildError: If `dressing` is already specified on one of the specs and is incompatible
-            with the basis change mode.
-        BuildError: If `synth` is already specified on the `collection` and not equal to the
-            synth corresponding to `change_basis.decomposition`.
+        BuildError: If ``emission.basis_ref`` is already specified.
+        BuildError: If ``dressing`` is already specified on one of the specs and is not equal to
+            ``change_basis.dressing``.
+        BuildError: If ``synth`` is already specified on the ``collection`` and not equal to the
+            synth corresponding to ``change_basis.decomposition``.
     """
     if emission.basis_ref:
         raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
 
-    emission.basis_register_type = VirtualType.U2
+    emission.basis_change = f"pauli_{change_basis.mode.name.lower()}"
     emission.basis_ref = f"basis_changes.{change_basis.ref}"
 
     synth = get_synth(change_basis.decomposition)
@@ -110,15 +109,11 @@ def change_basis_parser(
     else:
         collection.synth = synth
 
-    dressing = (
-        DressingMode.LEFT
-        if (mode := change_basis.mode) is ChangeBasisMode.MEASURE
-        else DressingMode.RIGHT
-    )
+    dressing = change_basis.dressing
     if (current_dressing := collection.dressing) is not None:
         if dressing != current_dressing:
             raise BuildError(
-                f"Cannot use {mode} basis change with another annotation that uses "
+                f"Cannot use a `{dressing}` basis change with another annotation that uses "
                 f"{current_dressing}."
             )
     else:
@@ -148,7 +143,7 @@ def inject_local_clifford_parser(
     if emission.basis_ref:
         raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
 
-    emission.basis_register_type = VirtualType.C1
+    emission.basis_change = "local_clifford"
     emission.basis_ref = f"local_cliffords.{local_clifford.ref}"
 
     synth = get_synth(local_clifford.decomposition)

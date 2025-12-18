@@ -14,6 +14,7 @@
 
 import enum
 from dataclasses import dataclass
+from typing import Literal, TypeAlias
 
 import numpy as np
 
@@ -24,6 +25,8 @@ from ..synths import Synth
 
 EMPTY_IDXS = np.empty((0, 0), dtype=np.intp)
 EMPTY_IDXS.setflags(write=False)
+
+FrameChangeMode: TypeAlias = Literal["local_clifford", "pauli_prepare", "pauli_measure"]
 
 
 class InstructionMode(enum.Enum):
@@ -61,8 +64,8 @@ class EmissionSpec:
     twirl_register_type: VirtualType | None = None
     """What type of virtual gates to emit for twirling."""
 
-    basis_register_type: VirtualType | None = None
-    """What type of virtual gates to emit for basis changes."""
+    basis_change: FrameChangeMode | None = None
+    """What type of basis change to use."""
 
     basis_ref: StrRef = ""
     """A unique identifier of the basis change."""

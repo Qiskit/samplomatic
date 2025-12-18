@@ -21,7 +21,7 @@ from qiskit.circuit.gate import Gate
 
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
 from ..annotations import VirtualType
-from ..builders.specs import InstructionMode
+from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
@@ -274,6 +274,9 @@ class PreChangeBasis(PreEmit):
 
     basis_ref: StrRef
     """Unique identifier of this basis change."""
+
+    basis_change: FrameChangeMode
+    """What kind of basis change to use."""
 
     def get_style(self) -> NodeStyle:
         return super().get_style().append_data("Basis Identifier", self.basis_ref)

@@ -28,8 +28,6 @@ class ChangeBasisMode(str, Enum):
 ChangeBasisLiteral: TypeAlias = ChangeBasisMode | Literal["measure", "prepare"]
 """Allowed basis change modes.
 
- * ``measure``: Gate collection templates are placed on the left side of boxes. The adjoint of the
-    basis changing gate is absorbed into the template.
- * ``prepare``: Gate collection templates are placed on the right side of boxes. The basis changing
-    gate is absorbed into the template.
+ * ``measure``: The adjoint of the basis changing gate is absorbed into the template.
+ * ``prepare``: The basis changing gate is absorbed into the template.
 """

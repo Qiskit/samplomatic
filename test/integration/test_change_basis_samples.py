@@ -76,7 +76,7 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "x_basis_sq_gate_measure"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([ChangeBasis(mode="prepare")]):
+    with circuit.box([ChangeBasis(mode="prepare", dressing="right")]):
         circuit.rx(np.pi / 4, 0)
 
     expected = QuantumCircuit(1)
@@ -101,10 +101,10 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "x_basis_twirl_measure"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([Twirl()]):
+    with circuit.box([Twirl(), ChangeBasis(mode="prepare")]):
         circuit.noop(0)
 
-    with circuit.box([ChangeBasis(mode="prepare"), Twirl(dressing="right")]):
+    with circuit.box([Twirl(dressing="right")]):
         circuit.rx(np.pi / 4, 0)
 
     expected = QuantumCircuit(1)
@@ -112,7 +112,16 @@ def make_circuits():
     expected.rx(np.pi / 4, 0)
 
     pauli = np.array([2], dtype=np.uint8)
-    yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare"
+    yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare_left"
+
+    circuit = QuantumCircuit(1)
+    with circuit.box([Twirl()]):
+        circuit.noop(0)
+
+    with circuit.box([ChangeBasis(mode="prepare", dressing="right"), Twirl(dressing="right")]):
+        circuit.rx(np.pi / 4, 0)
+
+    yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare_right"
 
     circuit = QuantumCircuit(2)
     with circuit.box([ChangeBasis()]):
@@ -164,14 +173,16 @@ def make_circuits():
     expected.h(0)
     for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
-        with circuit.box([ChangeBasis(mode="prepare")]):
+        with circuit.box([ChangeBasis(mode="prepare", dressing="right")]):
             circuit.noop(*perm)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
     for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
         circuit = QuantumCircuit(3)
-        box_op = BoxOp(QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare")])
+        box_op = BoxOp(
+            QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare", dressing="right")]
+        )
         circuit.append(box_op, perm)
         expected = QuantumCircuit(3)
         expected.h(idx)
