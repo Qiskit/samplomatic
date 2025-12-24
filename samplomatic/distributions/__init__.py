@@ -12,6 +12,7 @@
 
 """Distributions"""
 
+from .balanced_uniform_pauli import BalancedUniformPauli
 from .distribution import Distribution
 from .haar_u2 import HaarU2
 from .uniform_c1 import UniformC1
