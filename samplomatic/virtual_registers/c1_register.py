@@ -15,6 +15,7 @@
 from functools import cache
 
 import numpy as np
+import numpy.typing as npt
 from qiskit.quantum_info import Clifford
 
 from ..annotations import VirtualType
@@ -99,7 +100,7 @@ class C1Register(FiniteGroupRegister):
         return cls(np.zeros((num_subsystems, num_samples), dtype=np.uint8))
 
     @classmethod
-    def from_tableau(cls, tableaus: np.typing.ArrayLike) -> "C1Register":
+    def from_tableau(cls, tableaus: npt.ArrayLike) -> "C1Register":
         """Return a new register from an array of tableaus.
 
         Args:
