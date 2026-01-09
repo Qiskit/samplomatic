@@ -10,7 +10,7 @@ repos:
     hooks:
       - id: run-python-script
         name: Verify headers
-        entry: .venv/bin/python3 assets/verify_headers.py --omit samplomatic/_version.py
+        entry: python assets/verify_headers.py --omit samplomatic/_version.py
         language: python
 
   - repo: local
