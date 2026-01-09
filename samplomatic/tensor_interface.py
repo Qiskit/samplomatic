@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -49,6 +49,20 @@ class Specification(Generic[T], metaclass=Serializable):
     @abc.abstractmethod
     def description(self) -> str:
         """A description of this specification."""
+
+    @property
+    @abc.abstractmethod
+    def num_bytes(self) -> int:
+        """The number of bytes required to represent data for this specification.
+
+        Implementations of this attribute should not be overly concerned with accounting for
+        memory required, say, for builtin Python container objects. They should be more interested
+        in the large data limit where memory is dominated by sources like NumPy buffers.
+
+        If the specification has :attr:`~.free_dimensions`, implementations should return the number
+        of bytes per unit of each free dimension. For example, if the specification has a free
+        dimension ``"n"`` and requires ``8 * n`` bytes, this property should return ``8``.
+        """
 
     @property
     @abc.abstractmethod
@@ -118,6 +132,13 @@ class PauliLindbladMapSpecification(Specification[PauliLindbladMap]):
     @property
     def free_dimensions(self):
         return {self.num_terms}
+
+    @property
+    def num_bytes(self):
+        # Just a heuristic based on the current data model, probably overkill.
+        # per term: rates (8) + probabilities (8) + non_negative_rates (1) + boundaries (8)
+        # per qubit per term (assuming no trivial terms): paulis (1) + indices (4)
+        return 25 + 5 * self.num_qubits
 
     def describe(self) -> str:
         return f"'{self.name}' <PauliLindbladMap>: {self.description}"
@@ -196,6 +217,11 @@ class TensorSpecification(Specification[np.ndarray]):
     @property
     def free_dimensions(self):
         return set(self._free_dimensions)
+
+    @property
+    def num_bytes(self):
+        bound_dims = [dim for dim in self.shape if not isinstance(dim, str)]
+        return int(np.prod(bound_dims)) * self.dtype.itemsize
 
     @property
     def ndim(self) -> int:
@@ -343,6 +369,37 @@ class TensorInterface(MutableMapping):
             for free_dimension, size in self._dimension_constraints.items()
             if size is not ABSENT
         }
+
+    def num_bytes(self, **dimensions: int) -> int:
+        """Return the total number of bytes required to represent all data in this interface.
+
+        This sums :attr:`~.Specification.num_bytes` over all specifications, multiplied by the
+        product of all free dimensions that each specification depends on.
+
+        This estimate is not overly concerned with accounting for memory required, say, for builtin
+        Python container objects. It is more interested in the large data limit where memory is
+        dominated by sources like NumPy buffers.
+
+        Args:
+            **dimensions: Values for free dimensions. These override any already-bound dimensions.
+
+        Raises:
+            ValueError: If any free dimensions are not specified.
+        """
+        bound = {**self.bound_dimensions, **dimensions}
+        unbound = self.free_dimensions - set(bound)
+        if unbound:
+            raise ValueError(
+                f"Cannot compute num_bytes because the following dimensions are unbound or "
+                f"unknown: {', '.join(sorted(unbound))}"
+            )
+        total = 0
+        for spec in self._specs.values():
+            multiplier = 1
+            for dim in spec.free_dimensions:
+                multiplier *= bound[dim]
+            total += spec.num_bytes * multiplier
+        return total
 
     @property
     def _unbound_specs(self) -> set[str]:
