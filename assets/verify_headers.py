@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2024, 2025.
+# (C) Copyright IBM 2024, 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,15 +18,16 @@ import re
 import sys
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor
+from datetime import datetime
 from pathlib import Path
 
 # regex for character encoding from PEP 263
 pep263 = re.compile(r"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 allow_path = re.compile(r"^[-_a-zA-Z0-9]+")
 
-HEADER = """# This code is a Qiskit project.
+HEADER = f"""# This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM {datetime.now().year}.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -50,6 +51,8 @@ def discover_files(
             for file in path.rglob("*"):
                 if file.suffix in extensions and not file.match(omit):
                     yield str(file)
+        elif path.suffix in extensions and not path.match(omit):
+            yield str(path)
 
 
 def validate_header(file_path: str) -> tuple[str, bool, str]:
@@ -70,10 +73,13 @@ def validate_header(file_path: str) -> tuple[str, bool, str]:
             start = index
             break
 
+    year = datetime.now().year
+    # Matches: "2026", "2024-2026", "2024, 2026", or "2024, 2025, 2026" (must end with current year)
+    copyright_pattern = re.compile(rf"^# \(C\) Copyright IBM (\d{{4}}(, |-))*(, )?{year}\.$")
     for idx, (actual, required) in enumerate(zip(lines[start:], HEADER.split("\n"))):
         if idx == 2:
-            if not actual.startswith("# (C) Copyright IBM 20"):
-                return (file_path, False, "Header copyright year line not found or invalid")
+            if not copyright_pattern.match(actual.strip()):
+                return (file_path, False, "Header copyright year line not found or invalid.")
         elif (actual := actual.strip()) != (required := required.strip()):
             return (
                 file_path,

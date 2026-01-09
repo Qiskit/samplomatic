@@ -10,18 +10,15 @@ repos:
     hooks:
       - id: run-python-script
         name: Verify headers
-        entry: python assets/verify_headers.py --omit samplomatic/_version.py samplomatic test tools
-        language: system
-        types: [python]
-        exclude: ^docs
+        entry: python assets/verify_headers.py --omit samplomatic/_version.py
+        language: python
 
   - repo: local
     hooks:
       - id: spelling-check
         name: Verify spelling
         entry: python assets/verify_spelling.py
-        language: system
-        types: [python]
+        language: python
         pass_filenames: false
         args: [-b, indexes-indices, -b, graphvis-graphviz]
 
