@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -157,6 +157,15 @@ class TestTensorSpecification:
         with pytest.raises(ValueError, match=r"expects an array of shape"):
             spec.validate_and_coerce(arr)
 
+    def test_num_bytes_no_free_dimensions(self):
+        spec = TensorSpecification("x", (2, 3), np.float64)
+        assert spec.num_bytes == 2 * 3 * 8
+
+    def test_num_bytes_with_free_dimensions(self):
+        spec = TensorSpecification("x", ("batch", 3, "channels"), np.float32)
+        # only bound dimensions (3) contribute, free dimensions are excluded
+        assert spec.num_bytes == 3 * 4
+
     def test_equal_specs(self):
         spec1 = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
         spec2 = TensorSpecification("x", (2, 3), np.float32, broadcastable=False)
@@ -228,6 +237,11 @@ class TestPauliLindbladMapSpecification:
         lindblad = PauliLindbladMap.from_list([("IZ", 0.5)])
         with pytest.raises(ValueError, match=r"Expected a PauliLindbladMap acting on 3"):
             spec.validate_and_coerce(lindblad)
+
+    def test_num_bytes(self):
+        spec = PauliLindbladMapSpecification("noise", num_qubits=4, num_terms="n_terms")
+        # 25 + 5 * num_qubits per term
+        assert spec.num_bytes == 25 + 5 * 4
 
     def test_equal_specs(self):
         spec1 = PauliLindbladMapSpecification("noise", num_qubits=3, num_terms="n_terms")
@@ -410,3 +424,53 @@ class TestTensorInterface:
         # wrapping
         desc_wrapped = interface.describe(width=60)
         assert all(len(line) <= 60 for line in desc_wrapped.splitlines())
+
+    def test_num_bytes_all_bound(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", (2, 3), np.float64),
+                TensorSpecification("y", (4,), np.float32),
+            ]
+        )
+        # x: 2 * 3 * 8 = 48, y: 4 * 4 = 16
+        assert interface.num_bytes() == 48 + 16
+
+    def test_num_bytes_with_free_dimensions_bound_by_data(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", ("n", 3), np.float64),
+                TensorSpecification("y", ("n",), np.float32),
+            ]
+        )
+        interface["x"] = np.ones((5, 3), dtype=np.float64)
+        # x: 3 * 8 * 5 = 120, y: 4 * 5 = 20
+        assert interface.num_bytes() == 120 + 20
+
+    def test_num_bytes_with_free_dimensions_passed_as_kwargs(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", ("n", 3), np.float64),
+                TensorSpecification("y", ("n",), np.float32),
+            ]
+        )
+        # x: 3 * 8 * 10 = 240, y: 4 * 10 = 40
+        assert interface.num_bytes(n=10) == 240 + 40
+
+    def test_num_bytes_kwargs_override_bound_dimensions(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", ("n",), np.float64),
+            ]
+        )
+        interface["x"] = np.ones((5,), dtype=np.float64)
+        # bound n=5, but override with n=100
+        assert interface.num_bytes(n=100) == 8 * 100
+
+    def test_num_bytes_raises_on_unbound_dimensions(self):
+        interface = TensorInterface(
+            [
+                TensorSpecification("x", ("n", 3), np.float64),
+            ]
+        )
+        with pytest.raises(ValueError, match=r"the following dimensions are unbound"):
+            interface.num_bytes()
