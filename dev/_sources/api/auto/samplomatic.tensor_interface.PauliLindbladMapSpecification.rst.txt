@@ -13,6 +13,7 @@ PauliLindbladMapSpecification
       ~PauliLindbladMapSpecification.description
       ~PauliLindbladMapSpecification.free_dimensions
       ~PauliLindbladMapSpecification.name
+      ~PauliLindbladMapSpecification.num_bytes
       ~PauliLindbladMapSpecification.optional
 
    .. rubric:: Methods Summary
@@ -27,6 +28,7 @@ PauliLindbladMapSpecification
    .. autoattribute:: description
    .. autoattribute:: free_dimensions
    .. autoattribute:: name
+   .. autoattribute:: num_bytes
    .. autoattribute:: optional
 
    .. rubric:: Methods Documentation

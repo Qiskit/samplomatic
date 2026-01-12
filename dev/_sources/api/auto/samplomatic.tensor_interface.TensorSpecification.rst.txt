@@ -14,6 +14,7 @@ TensorSpecification
       ~TensorSpecification.free_dimensions
       ~TensorSpecification.name
       ~TensorSpecification.ndim
+      ~TensorSpecification.num_bytes
       ~TensorSpecification.optional
 
    .. rubric:: Methods Summary
@@ -29,6 +30,7 @@ TensorSpecification
    .. autoattribute:: free_dimensions
    .. autoattribute:: name
    .. autoattribute:: ndim
+   .. autoattribute:: num_bytes
    .. autoattribute:: optional
 
    .. rubric:: Methods Documentation
