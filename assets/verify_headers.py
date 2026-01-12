@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2024, 2025.
+# (C) Copyright IBM 2024, 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,9 +15,11 @@
 
 import argparse
 import re
+import subprocess
 import sys
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor
+from datetime import datetime
 from pathlib import Path
 
 # regex for character encoding from PEP 263
@@ -26,7 +28,7 @@ allow_path = re.compile(r"^[-_a-zA-Z0-9]+")
 
 HEADER = """# This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM {year}.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -35,6 +37,34 @@ HEADER = """# This code is a Qiskit project.
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals."""
+
+
+def is_shallow_clone() -> bool:
+    """Check if the current repo is a shallow clone."""
+    return Path(".git/shallow").exists()
+
+
+def get_last_modified_year(file_path: str) -> int:
+    """Get the year of the last git commit that modified this file.
+
+    Falls back to the current year if the file is not tracked by git, git fails,
+    or this is a shallow clone (where git history is unreliable).
+    """
+    if is_shallow_clone():
+        return datetime.now().year
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%cd", "--date=format:%Y", "--", file_path],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        if year_str := result.stdout.strip():
+            return int(year_str)
+    except (subprocess.CalledProcessError, ValueError):
+        pass
+    # Fall back to current year for untracked files or if git fails
+    return datetime.now().year
 
 
 def discover_files(
@@ -50,6 +80,8 @@ def discover_files(
             for file in path.rglob("*"):
                 if file.suffix in extensions and not file.match(omit):
                     yield str(file)
+        elif path.suffix in extensions and not path.match(omit):
+            yield str(path)
 
 
 def validate_header(file_path: str) -> tuple[str, bool, str]:
@@ -70,10 +102,14 @@ def validate_header(file_path: str) -> tuple[str, bool, str]:
             start = index
             break
 
-    for idx, (actual, required) in enumerate(zip(lines[start:], HEADER.split("\n"))):
+    year = get_last_modified_year(file_path)
+    # Matches: "2026", "2024-2026", "2024, 2026", etc. (must end with expected year)
+    copyright_pattern = re.compile(rf"^# \(C\) Copyright IBM (\d{{4}}(, |-))*(, )?{year}\.$")
+    header_lines = HEADER.format(year=year).split("\n")
+    for idx, (actual, required) in enumerate(zip(lines[start:], header_lines)):
         if idx == 2:
-            if not actual.startswith("# (C) Copyright IBM 20"):
-                return (file_path, False, "Header copyright year line not found or invalid")
+            if not copyright_pattern.match(actual.strip()):
+                return (file_path, False, f"Header copyright year line must end with {year}.")
         elif (actual := actual.strip()) != (required := required.strip()):
             return (
                 file_path,
