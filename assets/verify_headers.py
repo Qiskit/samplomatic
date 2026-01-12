@@ -39,11 +39,19 @@ HEADER = """# This code is a Qiskit project.
 # that they have been altered from the originals."""
 
 
+def is_shallow_clone() -> bool:
+    """Check if the current repo is a shallow clone."""
+    return Path(".git/shallow").exists()
+
+
 def get_last_modified_year(file_path: str) -> int:
     """Get the year of the last git commit that modified this file.
 
-    Falls back to the current year if the file is not tracked by git or git fails.
+    Falls back to the current year if the file is not tracked by git, git fails,
+    or this is a shallow clone (where git history is unreliable).
     """
+    if is_shallow_clone():
+        return datetime.now().year
     try:
         result = subprocess.run(
             ["git", "log", "-1", "--format=%cd", "--date=format:%Y", "--", file_path],

@@ -28,7 +28,7 @@ jobs:
     - name: Pre-commit checks (linting)
       if: matrix.python-version == '3.12'
       run: |
-        pre-commit run --all-files
+        pre-commit run
     - name: Test with pytest
       run: |
         # test/performance configured to be ignored in pyproject.toml
