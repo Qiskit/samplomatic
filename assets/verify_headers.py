@@ -15,6 +15,7 @@
 
 import argparse
 import re
+import subprocess
 import sys
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor
@@ -25,9 +26,9 @@ from pathlib import Path
 pep263 = re.compile(r"^[ \t\f]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)")
 allow_path = re.compile(r"^[-_a-zA-Z0-9]+")
 
-HEADER = f"""# This code is a Qiskit project.
+HEADER = """# This code is a Qiskit project.
 #
-# (C) Copyright IBM {datetime.now().year}.
+# (C) Copyright IBM {year}.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -36,6 +37,26 @@ HEADER = f"""# This code is a Qiskit project.
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals."""
+
+
+def get_last_modified_year(file_path: str) -> int:
+    """Get the year of the last git commit that modified this file.
+
+    Falls back to the current year if the file is not tracked by git or git fails.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%cd", "--date=format:%Y", "--", file_path],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        if year_str := result.stdout.strip():
+            return int(year_str)
+    except (subprocess.CalledProcessError, ValueError):
+        pass
+    # Fall back to current year for untracked files or if git fails
+    return datetime.now().year
 
 
 def discover_files(
@@ -73,13 +94,14 @@ def validate_header(file_path: str) -> tuple[str, bool, str]:
             start = index
             break
 
-    year = datetime.now().year
-    # Matches: "2026", "2024-2026", "2024, 2026", or "2024, 2025, 2026" (must end with current year)
+    year = get_last_modified_year(file_path)
+    # Matches: "2026", "2024-2026", "2024, 2026", etc. (must end with expected year)
     copyright_pattern = re.compile(rf"^# \(C\) Copyright IBM (\d{{4}}(, |-))*(, )?{year}\.$")
-    for idx, (actual, required) in enumerate(zip(lines[start:], HEADER.split("\n"))):
+    header_lines = HEADER.format(year=year).split("\n")
+    for idx, (actual, required) in enumerate(zip(lines[start:], header_lines)):
         if idx == 2:
             if not copyright_pattern.match(actual.strip()):
-                return (file_path, False, "Header copyright year line not found or invalid.")
+                return (file_path, False, f"Header copyright year line must end with {year}.")
         elif (actual := actual.strip()) != (required := required.strip()):
             return (
                 file_path,
