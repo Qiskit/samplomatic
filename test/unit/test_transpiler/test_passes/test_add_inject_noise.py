@@ -65,6 +65,44 @@ def test_no_modification_strategy():
     assert transpiled_circuit == expected_circuit
 
 
+def test_consistent_naming():
+    """Test `AddInjectNoise` assigns references consistently."""
+    circuit0 = QuantumCircuit(3)
+    with circuit0.box([Twirl()]):
+        circuit0.h(0)
+        circuit0.cx(0, 1)
+    with circuit0.box([Twirl()]):
+        circuit0.h(0)
+        circuit0.cx(0, 1)
+    with circuit0.box([Twirl()]):
+        circuit0.measure_all()
+
+    circuit1 = QuantumCircuit(3)
+    with circuit1.box([Twirl()]):
+        circuit1.h(0)
+        circuit1.cx(0, 1)
+    with circuit1.box([Twirl()]):
+        circuit1.h(1)
+        circuit1.cx(1, 2)
+    with circuit1.box([Twirl()]):
+        circuit1.measure_all()
+
+    pm = PassManager([AddInjectNoise("individual_modification", targets="gates")])
+    transpiled_circuit0, transpiled_circuit1 = pm.run([circuit0, circuit1])
+
+    annotation00 = get_annotation(transpiled_circuit0[0].operation, InjectNoise)
+    annotation01 = get_annotation(transpiled_circuit0[1].operation, InjectNoise)
+    annotation10 = get_annotation(transpiled_circuit1[0].operation, InjectNoise)
+    annotation11 = get_annotation(transpiled_circuit1[1].operation, InjectNoise)
+
+    assert len(set(a.ref for a in [annotation00, annotation01, annotation10])) == 1
+    assert annotation00.ref != annotation11.ref
+
+    assert annotation00.modifier_ref == annotation10.modifier_ref
+    assert annotation01.modifier_ref == annotation11.modifier_ref
+    assert annotation01.modifier_ref != annotation10.modifier_ref
+
+
 def test_uniform_modification_strategy():
     """Test `AddInjectNoise` with the ``"uniform_modification"`` strategy."""
     circuit = QuantumCircuit(2)

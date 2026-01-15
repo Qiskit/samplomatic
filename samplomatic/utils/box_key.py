@@ -28,7 +28,7 @@ class BoxKey:
     set. Mutating the original box does not mutate this class.
 
     At construction time, this class computes a standardized, immutable form of the instruction,
-    which is the used when comparing two instances of this class, or when hashing one. In
+    which is then used when comparing two instances of this class, or when hashing one. In
     particular, this form is chosen so that properties such as instruction order within topological
     layers of the box, or order of symmetric instructions like ``"cz"`` are not relevant; we do not
     want ``cz(0, 1)`` and ``cz(1, 0)``, for example, to result in inequality or distinct hashes.
