@@ -141,6 +141,7 @@ class AddInjectNoise(TransformationPass):
                     current_site = inject_noise_annotation.site
                     if (box_key, current_site) not in self._BOX_KEYS:
                         self._BOX_KEYS[box_key, current_site] = inject_noise_annotation.ref
+                        self._REFS.add(inject_noise_annotation.ref)
                     if (box_key, current_site) not in run_references:
                         run_references[box_key, current_site] = inject_noise_annotation.ref
                     else:
