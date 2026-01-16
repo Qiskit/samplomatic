@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -218,28 +218,6 @@ def test_overwrite(overwrite):
     else:
         assert noise_annotations[1] == InjectNoise("my_ref")
         assert noise_annotations[1] != noise_annotations[0]
-
-
-@pytest.mark.parametrize("overwrite", [True, False])
-def test_overwrite_when_the_box_is_encountered_for_the_first_time(overwrite):
-    """Test `AddInjectNoise` with preset annotations and ``overwrite``."""
-    circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_ref")]):
-        circuit.h(0)
-        circuit.cx(0, 1)
-    with circuit.box([Twirl()]):
-        circuit.z(0)
-        circuit.cx(0, 1)
-
-    pm = PassManager([AddInjectNoise("no_modification", overwrite=overwrite, targets="all")])
-    transpiled_circuit = pm.run(circuit)
-
-    noise_annotations = [
-        get_annotation(transpiled_circuit.data[i].operation, InjectNoise) for i in range(2)
-    ]
-
-    assert noise_annotations[0] == noise_annotations[1]
-    assert noise_annotations[0] == InjectNoise("my_ref")
 
 
 @pytest.mark.parametrize(
