@@ -129,6 +129,11 @@ def plot_graph(
     rows = (num_figs // cols + num_figs % cols) or 1
     fig = make_subplots(rows=rows, cols=cols)
 
+    # store the total number of nodes to plot
+    total_nodes = 0
+    for subgraph_idx, subgraph_node_idxs in enumerate(subgraphs_node_idxs):
+        subgraph = graph.subgraph(list(subgraph_node_idxs))
+        total_nodes += len(subgraph.nodes())
     # draw the subgraphs
     for subgraph_idx, subgraph_node_idxs in enumerate(subgraphs_node_idxs):
         subgraph = graph.subgraph(list(subgraph_node_idxs))
@@ -136,7 +141,6 @@ def plot_graph(
 
         layout = layout_method(subgraph, ranker)
         node_layout, raw_edge_coords = _add_edge_layout(subgraph, layout)
-
         # Coordinates of nodes, shape (num_nodes, 2), last axis for (x, y)
         node_coords = np.asarray([node_layout[node_idx] for node_idx in subgraph.node_indices()])
 
@@ -161,7 +165,6 @@ def plot_graph(
             pos += num_intermediate + 3
 
             mid_point_idx = int(num_intermediate * ARROW_POS) + 1
-
             edge_hovertexts.extend(
                 HoverStyle.from_object(edge).html if idx == mid_point_idx else None
                 for idx in range(num_intermediate + 3)
@@ -172,7 +175,6 @@ def plot_graph(
             edge_marker_symbols.extend(
                 "arrow" if idx == mid_point_idx else "circle" for idx in range(num_intermediate + 3)
             )
-
         traces = []
         if edge_coords.size:
             # add edges
@@ -210,7 +212,7 @@ def plot_graph(
                 mode="markers+text",
                 text=list(subgraph_node_idxs),
                 marker=dict(size=node_sizes, color=node_colors, symbol=node_marker_symbols),
-                hoverinfo="text",
+                hoverinfo="text" if total_nodes <= 150 else "skip",
                 hovertext=node_hovertexts,
                 hoverlabel=dict(
                     bgcolor="lightyellow", font=dict(family="Times New Roman", color="black")
