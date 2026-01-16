@@ -465,7 +465,7 @@
 <p>Instances of this class can be used, for example, as keys for a dictionary or as elements of a
 set. Mutating the original box does not mutate this class.</p>
 <p>At construction time, this class computes a standardized, immutable form of the instruction,
-which is the used when comparing two instances of this class, or when hashing one. In
+which is then used when comparing two instances of this class, or when hashing one. In
 particular, this form is chosen so that properties such as instruction order within topological
 layers of the box, or order of symmetric instructions like <code class="docutils literal notranslate"><span class="pre">&quot;cz&quot;</span></code> are not relevant; we do not
 want <code class="docutils literal notranslate"><span class="pre">cz(0,</span> <span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">cz(1,</span> <span class="pre">0)</span></code>, for example, to result in inequality or distinct hashes.</p>
@@ -519,7 +519,7 @@ are present.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/01/12</div>
+              Last updated on 2026/01/16</div>
           </div>
           <div class="right-details">
             
