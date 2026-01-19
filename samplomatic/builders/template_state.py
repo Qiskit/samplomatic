@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -109,12 +109,16 @@ class TemplateState:
         """Remap the parameters and qubits of a gate and append it to the circuit."""
         new_params = []
         param_mapping = []
-        for param in dag_op_node.op.params:
-            param_mapping.append([self.param_iter.idx, param])
-            new_params.append(next(self.param_iter))
-
         new_qubits = self.qubits(self.qubit_map.get(qubit, qubit) for qubit in dag_op_node.qargs)
-        new_operation = type(dag_op_node.op)(*new_params) if new_params else dag_op_node.op
+
+        if dag_op_node.is_parameterized():
+            for param in dag_op_node.op.params:
+                param_mapping.append([self.param_iter.idx, param])
+                new_params.append(next(self.param_iter))
+            new_operation = type(dag_op_node.op)(*new_params) if new_params else dag_op_node.op
+        else:
+            new_operation = dag_op_node.op
+
         self.template.apply_operation_back(new_operation, new_qubits, dag_op_node.cargs)
 
         return param_mapping
