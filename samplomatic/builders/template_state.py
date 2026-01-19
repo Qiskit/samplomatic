@@ -88,7 +88,7 @@ class TemplateState:
         max_params = 3 * sum(
             len(instr.qubits) for instr in circuit if instr.operation.name == "box"
         )
-        max_params += circuit.num_parameters
+        max_params += circuit.size()
         param_iter = ParamIter(5 * max_params)
 
         return cls(template_circuit, qubit_map, param_iter, [])
@@ -109,12 +109,16 @@ class TemplateState:
         """Remap the parameters and qubits of a gate and append it to the circuit."""
         new_params = []
         param_mapping = []
-        for param in dag_op_node.op.params:
-            param_mapping.append([self.param_iter.idx, param])
-            new_params.append(next(self.param_iter))
-
         new_qubits = self.qubits(self.qubit_map.get(qubit, qubit) for qubit in dag_op_node.qargs)
-        new_operation = type(dag_op_node.op)(*new_params) if new_params else dag_op_node.op
+
+        if dag_op_node.is_parameterized():
+            for param in dag_op_node.op.params:
+                param_mapping.append([self.param_iter.idx, param])
+                new_params.append(next(self.param_iter))
+            new_operation = type(dag_op_node.op)(*new_params) if new_params else dag_op_node.op
+        else:
+            new_operation = dag_op_node.op
+
         self.template.apply_operation_back(new_operation, new_qubits, dag_op_node.cargs)
 
         return param_mapping

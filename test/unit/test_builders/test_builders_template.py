@@ -223,3 +223,21 @@ class TestTemplateBuilder:
 
         # Verify that we get the expected number of parameters
         assert len(template.parameters) == 48  # One parameter per rz\rx gate
+
+    def test_parametric_gates_with_fixed_params(self):
+        """Test that parametric gates with fixed parameters do not cause building to fail."""
+        circuit = QuantumCircuit(2)
+        circuit.rzz(0.0, 0, 1)
+        _, samplex = pre_build(circuit)
+        samplex.finalize()
+
+        circuit = QuantumCircuit(2)
+        circuit.rz(0.0, 0)
+        _, samplex = pre_build(circuit)
+        samplex.finalize()
+
+        circuit = QuantumCircuit(2)
+        circuit.rz(Parameter("p"), 0)
+        circuit.rzz(0.0, 0, 1)
+        _, samplex = pre_build(circuit)
+        samplex.finalize()
