@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -88,7 +88,7 @@ class TemplateState:
         max_params = 3 * sum(
             len(instr.qubits) for instr in circuit if instr.operation.name == "box"
         )
-        max_params += circuit.size()
+        max_params += circuit.num_parameters
         param_iter = ParamIter(5 * max_params)
 
         return cls(template_circuit, qubit_map, param_iter, [])
