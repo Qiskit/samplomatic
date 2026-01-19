@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="VirtualType" href="samplomatic.annotations.VirtualType.html" /><link rel="prev" title="DressingMode" href="samplomatic.annotations.DressingMode.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="InjectionSite" href="samplomatic.annotations.InjectionSite.html" /><link rel="prev" title="DressingMode" href="samplomatic.annotations.DressingMode.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>InjectLocalClifford - samplomatic 0.15.0</title>
+        <title>InjectLocalClifford - samplomatic 0.16.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">samplomatic 0.15.0</div></a>
+      <a href="../../index.html"><div class="brand">samplomatic 0.16.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.15.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.16.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -217,6 +217,7 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DressingMode.html">DressingMode</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">InjectLocalClifford</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
@@ -367,6 +368,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.15.0.html">Release notes for 0.15.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
@@ -400,6 +402,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.15.0/index.html" rel="nofollow noindex">0.15.0</a></li>
         
             <li><a href="/samplomatic/stable/0.14.0/index.html" rel="nofollow noindex">0.14.0</a></li>
         
@@ -456,8 +460,8 @@
 <h1>InjectLocalClifford<a class="headerlink" href="#injectlocalclifford" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.annotations.InjectLocalClifford">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.annotations.</span></span><span class="sig-name descname"><span class="pre">InjectLocalClifford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">decomposition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html#samplomatic.annotations.DecompositionMode" title="samplomatic.annotations.decomposition_mode.DecompositionMode"><span class="pre">DecompositionMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'rzsx'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rzrx'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DecompositionMode.RZSX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dressing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.DressingMode.html#samplomatic.annotations.DressingMode" title="samplomatic.annotations.dressing_mode.DressingMode"><span class="pre">DressingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'left'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'right'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DressingMode.LEFT</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.15/samplomatic/annotations/inject_local_clifford.py#L22-L65"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.Annotation" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.annotations.</span></span><span class="sig-name descname"><span class="pre">InjectLocalClifford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">decomposition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html#samplomatic.annotations.DecompositionMode" title="samplomatic.annotations.decomposition_mode.DecompositionMode"><span class="pre">DecompositionMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'rzsx'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rzrx'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DecompositionMode.RZSX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dressing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.DressingMode.html#samplomatic.annotations.DressingMode" title="samplomatic.annotations.dressing_mode.DressingMode"><span class="pre">DressingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'left'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'right'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DressingMode.LEFT</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/annotations/inject_local_clifford.py#L22-L65"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.annotations.InjectLocalClifford" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.Annotation" title="(in Qiskit v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a></p>
 <p>Directive to inject local Cliffords.</p>
 <p>The resulting <a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.Samplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Samplex</span></code></a> built from a circuit with a box with this annotation has
 a tensor input with name <code class="docutils literal notranslate"><span class="pre">local_cliffords.ref</span></code> and shape <code class="docutils literal notranslate"><span class="pre">'(len(box_instruction.qubits),)'</span></code>.
@@ -521,12 +525,12 @@ outer-most circuit, restricted to those used by the box.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samplomatic.annotations.VirtualType.html">
+          <a class="next-page" href="samplomatic.annotations.InjectionSite.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">VirtualType</div>
+                <div class="title">InjectionSite</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -551,7 +555,7 @@ outer-most circuit, restricted to those used by the box.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/12/15</div>
+              Last updated on 2026/01/19</div>
           </div>
           <div class="right-details">
             
@@ -591,7 +595,7 @@ outer-most circuit, restricted to those used by the box.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ef97403f"></script>
+</div><script src="../../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

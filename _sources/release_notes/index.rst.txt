@@ -5,6 +5,7 @@ Release Notes
    :maxdepth: 1
    :titlesonly:
 
+   Release notes for 0.16.0 <release_notes_0.16.0>
    Release notes for 0.15.0 <release_notes_0.15.0>
    Release notes for 0.14.0 <release_notes_0.14.0>
    Release notes for 0.13.0 <release_notes_0.13.0>

@@ -13,6 +13,7 @@ Specification
       ~Specification.description
       ~Specification.free_dimensions
       ~Specification.name
+      ~Specification.num_bytes
       ~Specification.optional
 
    .. rubric:: Methods Summary
@@ -27,6 +28,7 @@ Specification
    .. autoattribute:: description
    .. autoattribute:: free_dimensions
    .. autoattribute:: name
+   .. autoattribute:: num_bytes
    .. autoattribute:: optional
 
    .. rubric:: Methods Documentation

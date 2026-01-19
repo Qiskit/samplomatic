@@ -24,6 +24,7 @@
    .. autosummary::
    
       ~ChangeBasis.decomposition
+      ~ChangeBasis.dressing
       ~ChangeBasis.mode
       ~ChangeBasis.ref
       ~ChangeBasis.namespace

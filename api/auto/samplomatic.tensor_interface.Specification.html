@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="TensorInterface" href="samplomatic.tensor_interface.TensorInterface.html" /><link rel="prev" title="PauliLindbladMapSpecification" href="samplomatic.tensor_interface.PauliLindbladMapSpecification.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Specification - samplomatic 0.15.0</title>
+        <title>Specification - samplomatic 0.16.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">samplomatic 0.15.0</div></a>
+      <a href="../../index.html"><div class="brand">samplomatic 0.16.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.15.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.16.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -217,6 +217,7 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DressingMode.html">DressingMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
@@ -367,6 +368,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.15.0.html">Release notes for 0.15.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
@@ -400,6 +402,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.15.0/index.html" rel="nofollow noindex">0.15.0</a></li>
         
             <li><a href="/samplomatic/stable/0.14.0/index.html" rel="nofollow noindex">0.14.0</a></li>
         
@@ -456,7 +460,7 @@
 <h1>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.tensor_interface.Specification">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.tensor_interface.</span></span><span class="sig-name descname"><span class="pre">Specification</span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.15/samplomatic/tensor_interface.py#L40-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.tensor_interface.Specification" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.tensor_interface.</span></span><span class="sig-name descname"><span class="pre">Specification</span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/tensor_interface.py#L40-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.tensor_interface.Specification" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>A specification of an expected value inside of an interface.</p>
 <p class="rubric">Attributes Summary</p>
@@ -472,7 +476,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.tensor_interface.Specification.name" title="samplomatic.tensor_interface.Specification.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>The name of this specification.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.tensor_interface.Specification.optional" title="samplomatic.tensor_interface.Specification.optional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.tensor_interface.Specification.num_bytes" title="samplomatic.tensor_interface.Specification.num_bytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_bytes</span></code></a></p></td>
+<td><p>The number of bytes required to represent data for this specification.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.tensor_interface.Specification.optional" title="samplomatic.tensor_interface.Specification.optional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></a></p></td>
 <td><p>Whether this is an optional specification.</p></td>
 </tr>
 </tbody>
@@ -514,6 +521,18 @@ and that are only resolved once bound to an interface.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="samplomatic.tensor_interface.Specification.num_bytes">
+<span class="sig-name descname"><span class="pre">num_bytes</span></span><a class="headerlink" href="#samplomatic.tensor_interface.Specification.num_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>The number of bytes required to represent data for this specification.</p>
+<p>Implementations of this attribute should not be overly concerned with accounting for
+memory required, say, for builtin Python container objects. They should be more interested
+in the large data limit where memory is dominated by sources like NumPy buffers.</p>
+<p>If the specification has <a class="reference internal" href="#samplomatic.tensor_interface.Specification.free_dimensions" title="samplomatic.tensor_interface.Specification.free_dimensions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">free_dimensions</span></code></a>, implementations should return the number
+of bytes per unit of each free dimension. For example, if the specification has a free
+dimension <code class="docutils literal notranslate"><span class="pre">&quot;n&quot;</span></code> and requires <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">*</span> <span class="pre">n</span></code> bytes, this property should return <code class="docutils literal notranslate"><span class="pre">8</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="samplomatic.tensor_interface.Specification.optional">
 <span class="sig-name descname"><span class="pre">optional</span></span><a class="headerlink" href="#samplomatic.tensor_interface.Specification.optional" title="Link to this definition">¶</a></dt>
 <dd><p>Whether this is an optional specification.</p>
@@ -522,13 +541,13 @@ and that are only resolved once bound to an interface.</p>
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.tensor_interface.Specification.describe">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.15/samplomatic/tensor_interface.py#L68-L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.tensor_interface.Specification.describe" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/tensor_interface.py#L82-L84"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.tensor_interface.Specification.describe" title="Link to this definition">¶</a></dt>
 <dd><p>Return a human-readable description of this specification.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.tensor_interface.Specification.validate_and_coerce">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_and_coerce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.15/samplomatic/tensor_interface.py#L72-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.tensor_interface.Specification.validate_and_coerce" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_and_coerce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/tensor_interface.py#L86-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.tensor_interface.Specification.validate_and_coerce" title="Link to this definition">¶</a></dt>
 <dd><p>Coerce a value into a correct type if valid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -583,7 +602,7 @@ a size implied by the <code class="docutils literal notranslate"><span class="pr
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/12/15</div>
+              Last updated on 2026/01/19</div>
           </div>
           <div class="right-details">
             
@@ -609,6 +628,7 @@ a size implied by the <code class="docutils literal notranslate"><span class="pr
 <li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.description"><code class="docutils literal notranslate"><span class="pre">Specification.description</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.free_dimensions"><code class="docutils literal notranslate"><span class="pre">Specification.free_dimensions</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.name"><code class="docutils literal notranslate"><span class="pre">Specification.name</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.num_bytes"><code class="docutils literal notranslate"><span class="pre">Specification.num_bytes</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.optional"><code class="docutils literal notranslate"><span class="pre">Specification.optional</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.describe"><code class="docutils literal notranslate"><span class="pre">Specification.describe()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.tensor_interface.Specification.validate_and_coerce"><code class="docutils literal notranslate"><span class="pre">Specification.validate_and_coerce()</span></code></a></li>
@@ -625,7 +645,7 @@ a size implied by the <code class="docutils literal notranslate"><span class="pr
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ef97403f"></script>
+</div><script src="../../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

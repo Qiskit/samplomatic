@@ -25,6 +25,7 @@
    
       ~InjectNoise.ref
       ~InjectNoise.modifier_ref
+      ~InjectNoise.site
       ~InjectNoise.namespace
    
    

@@ -26,6 +26,7 @@ TensorInterface
       ~TensorInterface.describe
       ~TensorInterface.get_specs
       ~TensorInterface.make_broadcastable
+      ~TensorInterface.num_bytes
 
    .. rubric:: Attributes Documentation
 
@@ -43,3 +44,4 @@ TensorInterface
    .. automethod:: describe
    .. automethod:: get_specs
    .. automethod:: make_broadcastable
+   .. automethod:: num_bytes

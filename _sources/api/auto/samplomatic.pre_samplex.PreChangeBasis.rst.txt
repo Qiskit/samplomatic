@@ -10,6 +10,7 @@ PreChangeBasis
 
    .. autosummary::
 
+      ~PreChangeBasis.basis_change
       ~PreChangeBasis.basis_ref
       ~PreChangeBasis.direction
       ~PreChangeBasis.register_type
@@ -23,6 +24,7 @@ PreChangeBasis
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: basis_change
    .. autoattribute:: basis_ref
    .. autoattribute:: direction
    .. autoattribute:: register_type

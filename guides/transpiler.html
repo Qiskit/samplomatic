@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Samplex Inputs and Outputs" href="samplex_io.html" /><link rel="prev" title="Dressed boxes" href="dressed_boxes.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Transpiler - samplomatic 0.15.0</title>
+        <title>Transpiler - samplomatic 0.16.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">samplomatic 0.15.0</div></a>
+      <a href="../index.html"><div class="brand">samplomatic 0.16.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.15.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.16.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
@@ -217,6 +217,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.DressingMode.html">DressingMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
@@ -367,6 +368,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.15.0.html">Release notes for 0.15.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
@@ -400,6 +402,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.15.0/index.html" rel="nofollow noindex">0.15.0</a></li>
         
             <li><a href="/samplomatic/stable/0.14.0/index.html" rel="nofollow noindex">0.14.0</a></li>
         
@@ -455,7 +459,7 @@
           <section id="transpiler">
 <h1>Transpiler<a class="headerlink" href="#transpiler" title="Link to this heading">¶</a></h1>
 <p>The <a class="reference internal" href="../api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code></a> function is a flexible and convenient tool to
-build a <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.PassManager" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.transpiler.PassManager</span></code></a> able to group the circuit instructions into annotated boxes.
+build a <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.PassManager" title="(in Qiskit v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.transpiler.PassManager</span></code></a> able to group the circuit instructions into annotated boxes.
 Whether you want to automate your workflow, you are interested in trying different boxing strategies for your
 circuits, or you simply want a quick and easy alternative to grouping and annotating by hand,
 <a class="reference internal" href="../api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code></a> can help you achieve your goals.</p>
@@ -870,7 +874,7 @@ uncollected due to the unboxed measurements.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025/12/15</div>
+              Last updated on 2026/01/19</div>
           </div>
           <div class="right-details">
             
@@ -910,7 +914,7 @@ uncollected due to the unboxed measurements.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=ef97403f"></script>
+</div><script src="../_static/documentation_options.js?v=7de89ed4"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
