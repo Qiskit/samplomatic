@@ -47,7 +47,7 @@ class TemplateState:
         self.scope_idx = scope_idx
 
     def remap(
-        self, scoped_qubit_map: dict[QubitIndex, Qubit], last_scope_idx: int | None = None
+        self, scoped_qubit_map: dict[Qubit, Qubit], last_scope_idx: int | None = None
     ) -> "TemplateState":
         """Return a new :class:`~.TemplateState` whose source qubits are different.
 
@@ -61,7 +61,7 @@ class TemplateState:
         """
         new_qubit_map = {
             qubit: self.qubit_map[parent_scope_qubit]
-            for qubit, parent_scope_qubit in scoped_qubit_map.items()
+            for parent_scope_qubit, qubit in scoped_qubit_map.items()
         }
         scope_idx = self.scope_idx if last_scope_idx is None else self.scope_idx + [last_scope_idx]
         return TemplateState(self.template, new_qubit_map, self.param_iter, scope_idx)

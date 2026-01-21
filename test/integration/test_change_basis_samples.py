@@ -169,23 +169,23 @@ def make_circuits():
     yield (circuit, expected, {"my_basis": pauli}), "z_to_x"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
-    expected = QuantumCircuit(3)
-    expected.h(0)
     for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
         with circuit.box([ChangeBasis(mode="prepare", dressing="right")]):
             circuit.noop(*perm)
+        expected = QuantumCircuit(3)
+        expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
-    for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
+    for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
         box_op = BoxOp(
             QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare", dressing="right")]
         )
         circuit.append(box_op, perm)
         expected = QuantumCircuit(3)
-        expected.h(idx)
+        expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_box_op_qubits_{idx}"
 
 

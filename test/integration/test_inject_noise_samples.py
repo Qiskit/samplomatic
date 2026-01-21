@@ -124,9 +124,9 @@ def make_circuits():
     yield (circuit, expected, pauli_lindblad_maps), "two_annotations"
 
     pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XI", 100.0)])}
-    expected = [Operator(np.identity(16)), Operator(Pauli("XIXI").to_matrix())]
 
-    for idx, perm in enumerate([(0, 1), (1, 0)]):
+    for idx, (perm, pauli) in enumerate(zip([(0, 1), (1, 0)], [Pauli("XIXI"), Pauli("XIXI")])):
+        expected = [Operator(np.identity(16)), Operator(pauli.to_matrix())]
         circuit = QuantumCircuit(2)
         with circuit.box([InjectNoise("my_noise"), Twirl()]):
             circuit.noop(*perm)
@@ -134,7 +134,7 @@ def make_circuits():
             circuit.noop(0, 1)
         yield (circuit, expected, pauli_lindblad_maps), f"permuted_context_qubits_{idx}"
 
-    for idx, (perm, pauli) in enumerate(zip([(0, 1), (1, 0)], [Pauli("XIXI"), Pauli("IXIX")])):
+    for idx, (perm, pauli) in enumerate(zip([(0, 1), (1, 0)], [Pauli("XIXI"), Pauli("XIXI")])):
         expected = [Operator(np.identity(16)), Operator(pauli.to_matrix())]
         circuit = QuantumCircuit(2)
         box_op = BoxOp(QuantumCircuit(2), annotations=[InjectNoise("my_noise"), Twirl()])
