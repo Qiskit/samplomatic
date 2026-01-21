@@ -131,7 +131,7 @@ def plot_graph(
 
     # store the total number of nodes to plot
     total_nodes = 0
-    for subgraph_idx, subgraph_node_idxs in enumerate(subgraphs_node_idxs):
+    for subgraph_node_idxs in subgraphs_node_idxs:
         subgraph = graph.subgraph(list(subgraph_node_idxs))
         total_nodes += len(subgraph.nodes())
     # draw the subgraphs
