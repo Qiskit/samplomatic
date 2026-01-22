@@ -1,3 +1,10 @@
+## [0.16.1](https://github.com/Qiskit/samplomatic/tree/0.16.1) - 2026-01-22
+
+### Fixed
+
+- Fixed handling of building of `BoxOp`s appended directly to a `qiskit.QuantumCircuit`. This fixes issues where the `BoxOp.body.qubits` are different than those on the containing circuit, and ensures arguments on a `Samplex` are in the correct order. ([#297](https://github.com/Qiskit/samplomatic/issues/297))
+
+
 ## [0.16.0](https://github.com/Qiskit/samplomatic/tree/0.16.0) - 2026-01-19
 
 ### Added
