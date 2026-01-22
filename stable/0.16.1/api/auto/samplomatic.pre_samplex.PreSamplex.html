@@ -1,0 +1,1314 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="PreZ2Collect" href="samplomatic.pre_samplex.PreZ2Collect.html" /><link rel="prev" title="PrePropagateKey" href="samplomatic.pre_samplex.PrePropagateKey.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>PreSamplex - samplomatic 0.16.1</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet"></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2H2C1.73478 2 1.48043 2.10536 1.29289 2.29289C1.10536 2.48043 1 2.73478 1 3V13C1 13.2652 1.10536 13.5196 1.29289 13.7071C1.48043 13.8946 1.73478 14 2 14H14C14.2652 14 14.5196 13.8946 14.7071 13.7071C14.8946 13.5196 15 13.2652 15 13V3C15 2.73478 14.8946 2.48043 14.7071 2.29289C14.5196 2.10536 14.2652 2 14 2V2ZM2 3H10V13H2V3ZM14 13H11V3H14V13Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 3H2V4H14V3Z" fill="currentColor"/>
+      <path d="M14 12H2V13H14V12Z" fill="currentColor"/>
+      <path d="M14 6H2V7H14V6Z" fill="currentColor"/>
+      <path d="M14 9H2V10H14V9Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 8L6.00005 13L5.30005 12.3L9.60005 8L5.30005 3.7L6.00005 3L11 8Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 13H1V14H15V13Z" fill="currentColor"/>
+      <path d="M12.7 4.5C13.1 4.1 13.1 3.5 12.7 3.1L10.9 1.3C10.5 0.9 9.9 0.9 9.5 1.3L2 8.8V12H5.2L12.7 4.5ZM10.2 2L12 3.8L10.5 5.3L8.7 3.5L10.2 2ZM3 11V9.2L8 4.2L9.8 6L4.8 11H3Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 13.0002C11.5523 13.0002 12 12.5525 12 12.0002C12 11.4479 11.5523 11.0002 11 11.0002C10.4477 11.0002 10 11.4479 10 12.0002C10 12.5525 10.4477 13.0002 11 13.0002Z" fill="currentColor"/>
+      <path d="M14.8884 11.7394C14.5795 10.9524 14.0464 10.2734 13.3552 9.78646C12.664 9.29954 11.8451 9.02615 11 9.00017C10.1549 9.02615 9.33604 9.29954 8.64484 9.78646C7.95365 10.2734 7.42052 10.9524 7.11155 11.7394L7 12.0002L7.11155 12.2609C7.42052 13.0479 7.95365 13.727 8.64484 14.2139C9.33604 14.7008 10.1549 14.9742 11 15.0002C11.8451 14.9742 12.664 14.7008 13.3552 14.2139C14.0464 13.727 14.5795 13.0479 14.8884 12.2609L15 12.0002L14.8884 11.7394ZM11 14.0002C10.6044 14.0002 10.2178 13.8829 9.88886 13.6631C9.55996 13.4433 9.30362 13.131 9.15224 12.7655C9.00087 12.4001 8.96126 11.998 9.03843 11.61C9.1156 11.222 9.30608 10.8657 9.58579 10.586C9.86549 10.3063 10.2219 10.1158 10.6098 10.0386C10.9978 9.96143 11.3999 10.001 11.7654 10.1524C12.1308 10.3038 12.4432 10.5601 12.6629 10.889C12.8827 11.2179 13 11.6046 13 12.0002C12.9994 12.5304 12.7885 13.0388 12.4136 13.4137C12.0386 13.7887 11.5303 13.9996 11 14.0002Z" fill="currentColor"/>
+      <path d="M6 14.0002H4V2.00017H8V5.00017C8.00077 5.26515 8.10637 5.51906 8.29374 5.70643C8.48111 5.8938 8.73502 5.99941 9 6.00017H12V8.00017H13V5.00017C13.0018 4.93446 12.9893 4.86913 12.9634 4.80871C12.9375 4.74828 12.8988 4.6942 12.85 4.65017L9.35 1.15017C9.30599 1.10134 9.2519 1.06263 9.19147 1.03674C9.13104 1.01084 9.06572 0.998364 9 1.00017H4C3.73502 1.00094 3.48111 1.10654 3.29374 1.29391C3.10637 1.48128 3.00077 1.73519 3 2.00017V14.0002C3.00077 14.2652 3.10637 14.5191 3.29374 14.7064C3.48111 14.8938 3.73502 14.9994 4 15.0002H6V14.0002ZM9 2.20017L11.8 5.00017H9V2.20017Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">samplomatic 0.16.1</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/img/qiskit-light-logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">samplomatic 0.16.1</span>
+  
+</a>
+<form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../guides/index.html">Guides</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../guides/dressed_boxes.html">Dressed boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guides/transpiler.html">Transpiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guides/samplex_io.html">Samplex Inputs and Outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="samplomatic.build.html">samplomatic.build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../samplomatic.aliases.html">samplomatic.aliases</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.annotations.html">samplomatic.annotations</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of samplomatic.annotations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.ChangeBasisMode.html">ChangeBasisMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DressingMode.html">DressingMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.VirtualType.html">VirtualType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.builders.html">samplomatic.builders</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of samplomatic.builders</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.builders.pre_build.html">pre_build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.build.html">samplomatic.build</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.constants.html">samplomatic.constants</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of samplomatic.constants</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.constants.Direction.html">Direction</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.Distribution.html">Distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformC1.html">UniformC1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.exceptions.html">samplomatic.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of samplomatic.exceptions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.BuildError.html">BuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.DeserializationError.html">DeserializationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.ParameterError.html">ParameterError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html">SamplexBuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SamplexConstructionError.html">SamplexConstructionError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SamplexError.html">SamplexError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SamplexInputError.html">SamplexInputError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SamplexRuntimeError.html">SamplexRuntimeError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SerializationError.html">SerializationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SynthError.html">SynthError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.TemplateBuildError.html">TemplateBuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.VirtualGateError.html">VirtualGateError</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.graph_utils.html">samplomatic.graph_utils</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of samplomatic.graph_utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.graph_utils.find_unreachable_nodes.html">find_unreachable_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.graph_utils.get_clusters.html">get_clusters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.graph_utils.replace_edges_with_one_edge.html">replace_edges_with_one_edge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.graph_utils.replace_nodes_with_one_node.html">replace_nodes_with_one_node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.graph_utils.NodeCandidate.html">NodeCandidate</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.partition.html">samplomatic.partition</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of samplomatic.partition</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.partition.Partition.html">Partition</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.pre_samplex.html">samplomatic.pre_samplex</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of samplomatic.pre_samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.DanglerMatch.html">DanglerMatch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreChangeBasis.html">PreChangeBasis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreCollect.html">PreCollect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEdge.html">PreEdge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEmit.html">PreEmit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreInjectNoise.html">PreInjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html">PreNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PrePropagate.html">PrePropagate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PrePropagateKey.html">PrePropagateKey</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">PreSamplex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreZ2Collect.html">PreZ2Collect</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.samplex.html">samplomatic.samplex</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of samplomatic.samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.samplex.ParameterExpressionTable.html">ParameterExpressionTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.samplex.Samplex.html">Samplex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.samplex.SamplexOutput.html">SamplexOutput</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.samplex.nodes.html">samplomatic.samplex.nodes</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of samplomatic.samplex.nodes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.ChangeBasisNode.html">ChangeBasisNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.CollectTemplateValues.html">CollectTemplateValues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.CollectZ2ToOutputNode.html">CollectZ2ToOutputNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.CollectionNode.html">CollectionNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.CombineRegistersNode.html">CombineRegistersNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.ConversionNode.html">ConversionNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.EvaluationNode.html">EvaluationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.InjectNoiseNode.html">InjectNoiseNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.LeftMultiplicationNode.html">LeftMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.LeftU2ParametricMultiplicationNode.html">LeftU2ParametricMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.Node.html">Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.PauliPastCliffordNode.html">PauliPastCliffordNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.RightMultiplicationNode.html">RightMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.RightU2ParametricMultiplicationNode.html">RightU2ParametricMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.SamplingNode.html">SamplingNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.SliceRegisterNode.html">SliceRegisterNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.TwirlSamplingNode.html">TwirlSamplingNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.U2ParametricMultiplicationNode.html">U2ParametricMultiplicationNode</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.synths.html">samplomatic.synths</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of samplomatic.synths</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.synths.get_synth.html">get_synth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.synths.RzRxSynth.html">RzRxSynth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.synths.RzSxSynth.html">RzSxSynth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.synths.Synth.html">Synth</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.tensor_interface.html">samplomatic.tensor_interface</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of samplomatic.tensor_interface</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.tensor_interface.PauliLindbladMapSpecification.html">PauliLindbladMapSpecification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.tensor_interface.Specification.html">Specification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.tensor_interface.TensorInterface.html">TensorInterface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.tensor_interface.TensorSpecification.html">TensorSpecification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.transpiler.html">samplomatic.transpiler</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupMeasIntoBoxes.html">GroupMeasIntoBoxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.InlineBoxes.html">InlineBoxes</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.insert_noops.html">samplomatic.transpiler.passes.insert_noops</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes.insert_noops</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="samplomatic.transpiler.passes.insert_noops.AddNoops.html">AddNoops</a></li>
+<li class="toctree-l5"><a class="reference internal" href="samplomatic.transpiler.passes.insert_noops.AddNoopsActiveAccum.html">AddNoopsActiveAccum</a></li>
+<li class="toctree-l5"><a class="reference internal" href="samplomatic.transpiler.passes.insert_noops.AddNoopsActiveCircuit.html">AddNoopsActiveCircuit</a></li>
+<li class="toctree-l5"><a class="reference internal" href="samplomatic.transpiler.passes.insert_noops.AddNoopsAll.html">AddNoopsAll</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.validate_literals.html">validate_literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.BoxKey.html">BoxKey</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.FrozenDict.html">FrozenDict</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.VirtualRegister.html">VirtualRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.Z2Register.html">Z2Register</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.visualization.html">samplomatic.visualization</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of samplomatic.visualization</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.visualization.plot_graph.html">plot_graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.16.1.html">Release notes for 0.16.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.15.0.html">Release notes for 0.15.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.10.1.html">Release notes for 0.10.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.10.0.html">Release notes for 0.10.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.9.0.html">Release notes for 0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.8.0.html">Release notes for 0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.7.0.html">Release notes for 0.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.6.0.html">Release notes for 0.6.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.5.0.html">Release notes for 0.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.3.0.html">Release notes for 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.2.0.html">Release notes for 0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.1.0.html">Release notes for 0.1.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Qiskit/samplomatic">GitHub</a></li>
+</ul>
+
+</div><div class="qiskit-previous-releases-container">
+    <input id="previous-releases-checkbox" name="previous-releases-checkbox" role="switch" type="checkbox">
+    <div class="qiskit-previous-releases-header-container"><label for="previous-releases-checkbox">
+            <p role="note">Previous Releases</p>
+            <div class="qiskit-previous-releases-toggle-container">
+                <div class="visually-hidden">Toggle navigation of Previous Releases</div>
+                <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+            </div>
+        </label>
+    </div>
+    <div class="qiskit-previous-releases-list-container">
+        <ul>
+        
+            <li><a href="/samplomatic/stable/0.16.0/index.html" rel="nofollow noindex">0.16.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.15.0/index.html" rel="nofollow noindex">0.15.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.14.0/index.html" rel="nofollow noindex">0.14.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.13.0/index.html" rel="nofollow noindex">0.13.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.12.0/index.html" rel="nofollow noindex">0.12.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.11.0/index.html" rel="nofollow noindex">0.11.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.10.1/index.html" rel="nofollow noindex">0.10.1</a></li>
+        
+            <li><a href="/samplomatic/stable/0.10.0/index.html" rel="nofollow noindex">0.10.0</a></li>
+        
+        </ul>
+    </div>
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.pre_samplex.PreSamplex.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="presamplex">
+<h1>PreSamplex<a class="headerlink" href="#presamplex" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.pre_samplex.</span></span><span class="sig-name descname"><span class="pre">PreSamplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.rustworkx.org/apiref/rustworkx.PyDiGraph.html#rustworkx.PyDiGraph" title="(in rustworkx v0.17)"><span class="pre">PyDiGraph</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.graph_data.PreNode"><span class="pre">PreNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.pre_samplex.PreEdge.html#samplomatic.pre_samplex.PreEdge" title="samplomatic.pre_samplex.graph_data.PreEdge"><span class="pre">PreEdge</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dangling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_dangling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cregs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.ClassicalRegister" title="(in Qiskit v2.3)"><span class="pre">ClassicalRegister</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pauli_lindblad_map_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">count</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pauli_lindblad_maps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_modifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twirled_clbits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passthrough_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.ParameterExpression" title="(in Qiskit v2.3)"><span class="pre">ParameterExpression</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forced_copy_node_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L153-L1635"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The sampling IR between a boxed-up circuit and a <a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.Samplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Samplex</span></code></a>.</p>
+<p>In this IR, as in the lower <a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.Samplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Samplex</span></code></a>, sampling operations are described as a graph.
+Operations describe actions like sampling from distributions and propagating virtual gates
+past other gates. However, unlike the lower IR, this IR still maintains the notion of qubit
+indices, and operations are still declarative rather than procudural.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – The graph being built.</p></li>
+<li><p><strong>qubit_map</strong> – A map from qubits in the source circuit to physical qubit indices.</p></li>
+<li><p><strong>dangling</strong> – A map from qubit indices to sets of node indices that are still eligible to,
+and must, receive edges at a further point in parsing the circuit being built.</p></li>
+<li><p><strong>optional_dangling</strong> – A map from qubit indices to sets of node indices that are still
+eligible to, but don’t have to, receive edges at a further point in parsing the
+circuit being built.</p></li>
+<li><p><strong>cregs</strong> – A list of classical registers in the order that they were added to the circuit.</p></li>
+<li><p><strong>pauli_lindblad_map_count</strong> – A count of the total number of Pauli Lindblad maps.</p></li>
+<li><p><strong>pauli_lindblad_maps</strong> – A map from unique identifiers of Pauli Lindblad maps to the number of
+systems the map acts on.</p></li>
+<li><p><strong>basis_changes</strong> – A map from unique identifiers of basis changes to the number of
+subsystems in that basis change.</p></li>
+<li><p><strong>twirled_clbits</strong> – A set of all classical bit indices which were previously twirled in the
+circuit.</p></li>
+<li><p><strong>passthrough_params</strong> – List of <code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSpec</span></code> for parameters which exist in the template
+but are not generated in the collectors.</p></li>
+<li><p><strong>forced_copy_node_idxs</strong> – List of node indices for which copying of registers will be forced.
+The nodes behave differently for edges with left/right direction. For left direction,
+the incoming node is checked against <cite>forced_copy_node_idxs</cite>, while for right direction,
+the outgoing node is.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Attributes Summary</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.max_param_idx" title="samplomatic.pre_samplex.PreSamplex.max_param_idx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_param_idx</span></code></a></p></td>
+<td><p>The maximum template parameter index over all nodes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Methods Summary</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_change_basis_node" title="samplomatic.pre_samplex.PreSamplex.add_change_basis_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_change_basis_node</span></code></a>(samplex, ...)</p></td>
+<td><p>Add basis tranform node to a samplex, mutating it in place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect" title="samplomatic.pre_samplex.PreSamplex.add_collect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_collect</span></code></a>(qubits, synth, param_idxs[, ...])</p></td>
+<td><p>Add or extend a node to collect virtual gates of types allowed by the <code class="docutils literal notranslate"><span class="pre">synth</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect_node" title="samplomatic.pre_samplex.PreSamplex.add_collect_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_collect_node</span></code></a>(samplex, pre_node_idx, ...)</p></td>
+<td><p>Add evaluation nodes to a samplex, mutating it in place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect_z2_to_output_node" title="samplomatic.pre_samplex.PreSamplex.add_collect_z2_to_output_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_collect_z2_to_output_node</span></code></a>(samplex, ...)</p></td>
+<td><p>Add <code class="xref py py-class docutils literal notranslate"><span class="pre">CollectZ2ToOutput</span></code> to the Samplex graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_combine_node" title="samplomatic.pre_samplex.PreSamplex.add_combine_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_combine_node</span></code></a>(samplex, pre_node_idx, ...)</p></td>
+<td><p>Add a node that combines all the predecessor nodes of a given pre-node.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_dangler" title="samplomatic.pre_samplex.PreSamplex.add_dangler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_dangler</span></code></a>(qubit_idxs, node_idx[, dangler_type])</p></td>
+<td><p>Mark a node as dangling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_left_basis_change" title="samplomatic.pre_samplex.PreSamplex.add_emit_left_basis_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_emit_left_basis_change</span></code></a>(qubits, ...)</p></td>
+<td><p>Add a node that emits virtual gates left to change frames.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_noise_left" title="samplomatic.pre_samplex.PreSamplex.add_emit_noise_left"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_emit_noise_left</span></code></a>(qubits, noise_ref[, ...])</p></td>
+<td><p>Add a node that emits virtual gates for noise injection to the left.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_noise_right" title="samplomatic.pre_samplex.PreSamplex.add_emit_noise_right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_emit_noise_right</span></code></a>(qubits, noise_ref[, ...])</p></td>
+<td><p>Add a node that emits virtual gates for noise injection to the right.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_right_basis_change" title="samplomatic.pre_samplex.PreSamplex.add_emit_right_basis_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_emit_right_basis_change</span></code></a>(qubits, ...)</p></td>
+<td><p>Add a node that emits virtual gates right to change frames.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_twirl" title="samplomatic.pre_samplex.PreSamplex.add_emit_twirl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_emit_twirl</span></code></a>(qubits, register_type)</p></td>
+<td><p>Add a node that emits virtual gates left and right of the same type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_force_copy_nodes" title="samplomatic.pre_samplex.PreSamplex.add_force_copy_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_force_copy_nodes</span></code></a>(node_idxs)</p></td>
+<td><p>Add node indices for which a register will be forced to copy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_inject_noise_node" title="samplomatic.pre_samplex.PreSamplex.add_inject_noise_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_inject_noise_node</span></code></a>(samplex, ...)</p></td>
+<td><p>Add an inject noise node to a samplex, mutating it in place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_propagate" title="samplomatic.pre_samplex.PreSamplex.add_propagate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_propagate</span></code></a>(instr, mode, params)</p></td>
+<td><p>Add a node that propagates virtual gates through an operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_propagate_node" title="samplomatic.pre_samplex.PreSamplex.add_propagate_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_propagate_node</span></code></a>(samplex, ...)</p></td>
+<td><p>Add evaluation nodes to a samplex, mutating it in place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_twirl_sampling_node" title="samplomatic.pre_samplex.PreSamplex.add_twirl_sampling_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_twirl_sampling_node</span></code></a>(samplex, ...)</p></td>
+<td><p>Add sampling nodes to a samplex, mutating it in place.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_z2_collect" title="samplomatic.pre_samplex.PreSamplex.add_z2_collect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_z2_collect</span></code></a>(qubits, clbit_idxs)</p></td>
+<td><p>Add a node to collect virtual gates to Z2 output.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.draw" title="samplomatic.pre_samplex.PreSamplex.draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw</span></code></a>([cols, subgraph_idxs, layout_method])</p></td>
+<td><p>Draw the graph in this pre-samplex using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_graph()</span></code> method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.enforce_no_propagation" title="samplomatic.pre_samplex.PreSamplex.enforce_no_propagation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enforce_no_propagation</span></code></a>(instr)</p></td>
+<td><p>Make sure the instruction doesn't participate in virtual gate propagation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.finalize" title="samplomatic.pre_samplex.PreSamplex.finalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize</span></code></a>()</p></td>
+<td><p>Finalize the pre-samplex.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.find_danglers" title="samplomatic.pre_samplex.PreSamplex.find_danglers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_danglers</span></code></a>(match, subsystems)</p></td>
+<td><p>Look through the dangling nodes and yield matches overlapping on <code class="docutils literal notranslate"><span class="pre">subsystems</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.find_then_remove_danglers" title="samplomatic.pre_samplex.PreSamplex.find_then_remove_danglers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_then_remove_danglers</span></code></a>(match, subsystems)</p></td>
+<td><p>Extend <a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.find_danglers" title="samplomatic.pre_samplex.PreSamplex.find_danglers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_danglers()</span></code></a> to also remove dangling nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.get_all_danglers" title="samplomatic.pre_samplex.PreSamplex.get_all_danglers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_danglers</span></code></a>()</p></td>
+<td><p>Return the danglers information</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.merge_parallel_pre_propagate_nodes" title="samplomatic.pre_samplex.PreSamplex.merge_parallel_pre_propagate_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_parallel_pre_propagate_nodes</span></code></a>()</p></td>
+<td><p>Merge parallel pre-propagate nodes acting on disjoint subsystems with the same operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.prune_prenodes_unreachable_from_emission" title="samplomatic.pre_samplex.PreSamplex.prune_prenodes_unreachable_from_emission"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prune_prenodes_unreachable_from_emission</span></code></a>()</p></td>
+<td><p>Prune all pre-nodes that are unreachable from pre-emit nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.qubits_to_indices" title="samplomatic.pre_samplex.PreSamplex.qubits_to_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qubits_to_indices</span></code></a>(qubits)</p></td>
+<td><p>Convert uniform subsystems on qubits to uniform subsystems on qubit indices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.remap" title="samplomatic.pre_samplex.PreSamplex.remap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remap</span></code></a>(qubit_map)</p></td>
+<td><p>Remap the object to a new <a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex" title="samplomatic.pre_samplex.PreSamplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreSamplex</span></code></a> object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.remove_force_copy_nodes" title="samplomatic.pre_samplex.PreSamplex.remove_force_copy_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_force_copy_nodes</span></code></a>(node_idxs)</p></td>
+<td><p>Remove node indices for which a register will be forced to copy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.set_all_danglers" title="samplomatic.pre_samplex.PreSamplex.set_all_danglers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_all_danglers</span></code></a>(dangling, optional_dangling)</p></td>
+<td><p>Set the danglers information in place</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.sorted_predecessor_idxs" title="samplomatic.pre_samplex.PreSamplex.sorted_predecessor_idxs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorted_predecessor_idxs</span></code></a>(pre_node_idx, order)</p></td>
+<td><p>Return the predecessors of a node in edge-sorted order.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.subgraphs" title="samplomatic.pre_samplex.PreSamplex.subgraphs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subgraphs</span></code></a>()</p></td>
+<td><p>Return a list of disconnected components.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers" title="samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_no_rightward_danglers</span></code></a>()</p></td>
+<td><p>Validate that there are no nodes that require termination but are still dangling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits" title="samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_no_twirled_clbits</span></code></a>(clbits)</p></td>
+<td><p>Verify the given classical bits are not twirled, for classical conditions validation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes Documentation</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.max_param_idx">
+<span class="sig-name descname"><span class="pre">max_param_idx</span></span><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.max_param_idx" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum template parameter index over all nodes.</p>
+</dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_change_basis_node">
+<span class="sig-name descname"><span class="pre">add_change_basis_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_basis_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1218-L1250"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_change_basis_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add basis tranform node to a samplex, mutating it in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_basis_idx</strong> – The index of the pre-basis node to turn into a basis change node.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the samplex state graph.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the samplex state graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_collect">
+<span class="sig-name descname"><span class="pre">add_collect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.synths.Synth.html#samplomatic.synths.Synth" title="samplomatic.synths.synth.Synth"><span class="pre">Synth</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L415-L473"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_collect" title="Link to this definition">¶</a></dt>
+<dd><p>Add or extend a node to collect virtual gates of types allowed by the <code class="docutils literal notranslate"><span class="pre">synth</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">node_idx</span></code> is None, a new node is added. If <code class="docutils literal notranslate"><span class="pre">node_idx</span></code> is provided, the
+<a class="reference internal" href="samplomatic.pre_samplex.PreCollect.html#samplomatic.pre_samplex.PreCollect" title="samplomatic.pre_samplex.PreCollect"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreCollect</span></code></a> node at that index will be extended to include the given
+qubits. Note that the function does not verify the compatibility of the node at
+<code class="docutils literal notranslate"><span class="pre">node_idx</span></code> - it is assumed that it’s type is appropriate, and that the <code class="docutils literal notranslate"><span class="pre">synth</span></code>
+is the same.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to collect virtual gates on.</p></li>
+<li><p><strong>synth</strong> – The synthesizer to generate gate parameters.</p></li>
+<li><p><strong>param_idxs</strong> – The indices of the parameters in the corresponding template.</p></li>
+<li><p><strong>node_idx</strong> – The index of the node to be extended to include the provided qubits.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_collect_node">
+<span class="sig-name descname"><span class="pre">add_collect_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_node_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1511-L1553"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_collect_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add evaluation nodes to a samplex, mutating it in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_node_idx</strong> – The index of the pre-collect node to turn into a collection node in the
+samplex.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the pre-samplex graph.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the pre-samplex graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_collect_z2_to_output_node">
+<span class="sig-name descname"><span class="pre">add_collect_z2_to_output_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_node_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1555-L1595"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_collect_z2_to_output_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add <code class="xref py py-class docutils literal notranslate"><span class="pre">CollectZ2ToOutput</span></code> to the Samplex graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_node_idx</strong> – The index of the <a class="reference internal" href="samplomatic.pre_samplex.PreZ2Collect.html#samplomatic.pre_samplex.PreZ2Collect" title="samplomatic.pre_samplex.PreZ2Collect"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreZ2Collect</span></code></a> node to turn into a collection
+node in the samplex.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the pre-samplex graph.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the pre-samplex graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_combine_node">
+<span class="sig-name descname"><span class="pre">add_combine_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_node_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combined_register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">combined_register_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType" title="samplomatic.annotations.virtual_type.VirtualType"><span class="pre">VirtualType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1330-L1403"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_combine_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that combines all the predecessor nodes of a given pre-node.</p>
+<p>This function adds a <a class="reference internal" href="samplomatic.samplex.nodes.SliceRegisterNode.html#samplomatic.samplex.nodes.SliceRegisterNode" title="samplomatic.samplex.nodes.SliceRegisterNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SliceRegisterNode</span></code></a> if the given pre-node has a single
+predecessor, or a <a class="reference internal" href="samplomatic.samplex.nodes.CombineRegistersNode.html#samplomatic.samplex.nodes.CombineRegistersNode" title="samplomatic.samplex.nodes.CombineRegistersNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CombineRegistersNode</span></code></a> if it has multiple predecessors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_node_idx</strong> – The index of the pre-node whose predecessors are to be combined.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices. The indices of
+the pre-node’s predecessors must be included.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the pre-samplex graph. The indices of the pre-node and
+its predecessors must be included.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the pre-samplex graph.</p></li>
+<li><p><strong>combined_register_name</strong> – The prefix of the name of the combined node.</p></li>
+<li><p><strong>combined_register_type</strong> – The type of register to combine the predecessor registers into.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the combine node’s index and the new register name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_dangler">
+<span class="sig-name descname"><span class="pre">add_dangler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dangler_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DanglerType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">DanglerType.REQUIRED</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L289-L314"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_dangler" title="Link to this definition">¶</a></dt>
+<dd><p>Mark a node as dangling.</p>
+<p>A dangling node is one that is eligible to be connected to subsequently added nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubit_idxs</strong> – The qubits on which the node is dangling.</p></li>
+<li><p><strong>node_idx</strong> – The index of the node within the pre-samplex graph.</p></li>
+<li><p><strong>dangler_type</strong> – Specifies the behavior of the dangler.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If the dangler type is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_emit_left_basis_change">
+<span class="sig-name descname"><span class="pre">add_emit_left_basis_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'local_clifford'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pauli_prepare'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pauli_measure'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L694-L725"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_emit_left_basis_change" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that emits virtual gates left to change frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to emit virtual gates on.</p></li>
+<li><p><strong>basis_ref</strong> – Unique identifier of this basis change.</p></li>
+<li><p><strong>basis_change</strong> – What basis change to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If a basis change with the same <cite>basis_ref</cite> but of different
+    length has already been added.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_emit_noise_left">
+<span class="sig-name descname"><span class="pre">add_emit_noise_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifier_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L616-L653"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_emit_noise_left" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that emits virtual gates for noise injection to the left.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to emit virtual gates on.</p></li>
+<li><p><strong>noise_ref</strong> – Unique identifier of the noise to inject.</p></li>
+<li><p><strong>modifier_ref</strong> – Unique identifier for modifiers to apply to this Pauli Lindblad map.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If a Pauli Lindblad map with the same <cite>noise_ref</cite> but of different
+    length has already been added.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_emit_noise_right">
+<span class="sig-name descname"><span class="pre">add_emit_noise_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifier_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L655-L692"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_emit_noise_right" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that emits virtual gates for noise injection to the right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to emit virtual gates on.</p></li>
+<li><p><strong>noise_ref</strong> – Unique identifier of the noise to inject.</p></li>
+<li><p><strong>modifier_ref</strong> – Unique identifier for modifiers to apply to this Pauli Lindblad map.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If a Pauli Lindblad map with the same <cite>noise_ref</cite> but of different
+    length has already been added.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_emit_right_basis_change">
+<span class="sig-name descname"><span class="pre">add_emit_right_basis_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_change</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'local_clifford'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pauli_prepare'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'pauli_measure'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L727-L758"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_emit_right_basis_change" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that emits virtual gates right to change frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to emit virtual gates on.</p></li>
+<li><p><strong>basis_ref</strong> – Unique identifier of this basis change.</p></li>
+<li><p><strong>basis_change</strong> – What basis change to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If a basis change with the same <cite>basis_ref</cite> but of different
+    length has already been added.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_emit_twirl">
+<span class="sig-name descname"><span class="pre">add_emit_twirl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.annotations.VirtualType.html#samplomatic.annotations.VirtualType" title="samplomatic.annotations.virtual_type.VirtualType"><span class="pre">VirtualType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L550-L592"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_emit_twirl" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that emits virtual gates left and right of the same type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to emit virtual gates on.</p></li>
+<li><p><strong>register_type</strong> – The type of virtual gate to emit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – When <cite>qubits</cite> has overlap with a hanging emit node with a different
+    virtual gate type.</p></li>
+<li><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – When any of the elements of <cite>qubits</cite> is not dangling.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_force_copy_nodes">
+<span class="sig-name descname"><span class="pre">add_force_copy_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L407-L409"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_force_copy_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Add node indices for which a register will be forced to copy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_inject_noise_node">
+<span class="sig-name descname"><span class="pre">add_inject_noise_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_inject_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1252-L1293"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_inject_noise_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add an inject noise node to a samplex, mutating it in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_inject_idx</strong> – The index of the pre-inject noise node to turn into an inject noise
+node.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the samplex state graph.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the samplex state graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_propagate">
+<span class="sig-name descname"><span class="pre">add_propagate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.dagcircuit.DAGOpNode" title="(in Qiskit v2.3)"><span class="pre">DAGOpNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InstructionMode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.ParameterExpression" title="(in Qiskit v2.3)"><span class="pre">ParameterExpression</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L760-L846"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_propagate" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node that propagates virtual gates through an operation.</p>
+<p>This method deduces which direction to propagate virtual gates by inspecting the previous
+nodes on the dangling qubits that overlap with the instruction’s qubits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instr</strong> – The circuit instruction to propagate through.</p></li>
+<li><p><strong>mode</strong> – What mode to use for propagation.</p></li>
+<li><p><strong>params</strong> – The parameters of the instruction.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If the qubits of <code class="docutils literal notranslate"><span class="pre">instr</span></code> have partial overlap with dangling qubits
+    of the pre-samplex.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_propagate_node">
+<span class="sig-name descname"><span class="pre">add_propagate_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_propagate_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1405-L1509"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_propagate_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add evaluation nodes to a samplex, mutating it in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_propagate_idx</strong> – The index of the pre-propagate node to turn into nodes in the
+samplex.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the pre-samplex graph.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the pre-samplex graph.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If a pre-propagate contains an unsupported operation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_twirl_sampling_node">
+<span class="sig-name descname"><span class="pre">add_twirl_sampling_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_emit_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1295-L1328"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_twirl_sampling_node" title="Link to this definition">¶</a></dt>
+<dd><p>Add sampling nodes to a samplex, mutating it in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samplex</strong> – The samplex to add nodes to.</p></li>
+<li><p><strong>pre_emit_idx</strong> – The index of the pre-emit node to turn into a twirl sampling node.</p></li>
+<li><p><strong>pre_nodes_to_nodes</strong> – A map from pre-node indices to node indices.</p></li>
+<li><p><strong>order</strong> – A map from pre-node indices to integers representing their position in a
+topological sort of the pre-samplex graph.</p></li>
+<li><p><strong>register_names</strong> – A map such that <code class="docutils literal notranslate"><span class="pre">register_names[a][b]</span></code> is the name of the register
+implied by the edge (a, b) in the pre-samplex graph.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_z2_collect">
+<span class="sig-name descname"><span class="pre">add_z2_collect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clbit_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L475-L548"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_z2_collect" title="Link to this definition">¶</a></dt>
+<dd><p>Add a node to collect virtual gates to Z2 output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> – The qubits to collect virtual gates on.</p></li>
+<li><p><strong>clbit_idxs</strong> – The indices of the clbits measured to (in the same order as qubits).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>SamplexBuildError if number</strong><strong> of </strong><strong>qubits doesn't match number</strong><strong> of </strong><strong>clbits</strong> – </p></li>
+<li><p><strong>SamplexBuildError if not all measured qubits receive emissions</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The index of the new node in the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgraph_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'auto'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'spring'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'graphviz'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'graphviz_curved'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'graphviz_line'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../samplomatic.aliases.html#samplomatic.aliases.LayoutMethod" title="samplomatic.aliases.LayoutMethod"><span class="pre">LayoutMethod</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1604-L1635"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.draw" title="Link to this definition">¶</a></dt>
+<dd><p>Draw the graph in this pre-samplex using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_graph()</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cols</strong> – The number of columns in the returned figure.</p></li>
+<li><p><strong>subgraph_idxs</strong> – The indices of the subgraphs to include in the plot, or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+to include all of the subgraphs.</p></li>
+<li><p><strong>layout_method</strong> – A predefined layout method by name, or a callable implementing a layout.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Plotly figure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.enforce_no_propagation">
+<span class="sig-name descname"><span class="pre">enforce_no_propagation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.dagcircuit.DAGOpNode" title="(in Qiskit v2.3)"><span class="pre">DAGOpNode</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L354-L374"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.enforce_no_propagation" title="Link to this definition">¶</a></dt>
+<dd><p>Make sure the instruction doesn’t participate in virtual gate propagation.</p>
+<p>We check to see if there are left-to-right danglers, and error if they exist.
+We remove right-to-left danglers, which will cause an error later when an emission
+can’t reach a collection on its left.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instr</strong> – The circuit instruction that can’t be propagated through.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If <cite>instr</cite> involves active left-to-right danglers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.finalize">
+<span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1055-L1216"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.finalize" title="Link to this definition">¶</a></dt>
+<dd><p>Finalize the pre-samplex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If there are any emission nodes that are not collected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.find_danglers">
+<span class="sig-name descname"><span class="pre">find_danglers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch" title="samplomatic.pre_samplex.pre_samplex.DanglerMatch"><span class="pre">DanglerMatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.14)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L247-L287"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.find_danglers" title="Link to this definition">¶</a></dt>
+<dd><p>Look through the dangling nodes and yield matches overlapping on <code class="docutils literal notranslate"><span class="pre">subsystems</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">match</span></code> function is only called on those nodes that overlap the given subsystems.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>match</strong> – A <a class="reference internal" href="samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch" title="samplomatic.pre_samplex.DanglerMatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">DanglerMatch</span></code></a> object specifying the conditions on the danglers.</p></li>
+<li><p><strong>subsystems</strong> – Subsystems of the virtual registers we are interested in.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pairs <code class="docutils literal notranslate"><span class="pre">node_idx,</span> <span class="pre">intersecting_subsystems</span></code> representing a matching node along with
+the subsystems on which it overlaps with the provided subsystems.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.find_then_remove_danglers">
+<span class="sig-name descname"><span class="pre">find_then_remove_danglers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch" title="samplomatic.pre_samplex.pre_samplex.DanglerMatch"><span class="pre">DanglerMatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.14)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L316-L352"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.find_then_remove_danglers" title="Link to this definition">¶</a></dt>
+<dd><p>Extend <a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.find_danglers" title="samplomatic.pre_samplex.PreSamplex.find_danglers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_danglers()</span></code></a> to also remove dangling nodes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Nodes are removed only after all of them have been yielded.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>match</strong> – A <a class="reference internal" href="samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch" title="samplomatic.pre_samplex.DanglerMatch"><code class="xref py py-class docutils literal notranslate"><span class="pre">DanglerMatch</span></code></a> object specifying the conditions on the danglers.</p></li>
+<li><p><strong>subsystems</strong> – Subsystems of the virtual registers we are interested in.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pairs <code class="docutils literal notranslate"><span class="pre">node_idx,</span> <span class="pre">intersecting_subsystems</span></code> representing a matching node along with
+the subsystems on which it overlaps with the provided subsystems.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.get_all_danglers">
+<span class="sig-name descname"><span class="pre">get_all_danglers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L376-L380"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.get_all_danglers" title="Link to this definition">¶</a></dt>
+<dd><p>Return the danglers information</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.merge_parallel_pre_propagate_nodes">
+<span class="sig-name descname"><span class="pre">merge_parallel_pre_propagate_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L848-L921"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.merge_parallel_pre_propagate_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Merge parallel pre-propagate nodes acting on disjoint subsystems with the same operation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Given a list of topological generations of the nodes in a graph, a gate acting in
+parallel on <span class="math notranslate nohighlight">\(N\)</span> disjoint subsystems appears as <span class="math notranslate nohighlight">\(N\)</span> pre-propagate nodes that
+are part of the same generation, and have identical directions and operation names, and
+have predecessors in common.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.prune_prenodes_unreachable_from_emission">
+<span class="sig-name descname"><span class="pre">prune_prenodes_unreachable_from_emission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L998-L1003"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.prune_prenodes_unreachable_from_emission" title="Link to this definition">¶</a></dt>
+<dd><p>Prune all pre-nodes that are unreachable from pre-emit nodes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.qubits_to_indices">
+<span class="sig-name descname"><span class="pre">qubits_to_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L401-L405"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.qubits_to_indices" title="Link to this definition">¶</a></dt>
+<dd><p>Convert uniform subsystems on qubits to uniform subsystems on qubit indices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.remap">
+<span class="sig-name descname"><span class="pre">remap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit#qiskit.circuit.Qubit" title="(in Qiskit v2.3)"><span class="pre">Qubit</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex" title="samplomatic.pre_samplex.pre_samplex.PreSamplex"><span class="pre">PreSamplex</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L223-L245"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.remap" title="Link to this definition">¶</a></dt>
+<dd><p>Remap the object to a new <a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex" title="samplomatic.pre_samplex.PreSamplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreSamplex</span></code></a> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qubit_map</strong> – A new map from qubits in the source circuit to physical qubit indices.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex" title="samplomatic.pre_samplex.PreSamplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreSamplex</span></code></a> object which is identical, except for <cite>qubit_map</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.remove_force_copy_nodes">
+<span class="sig-name descname"><span class="pre">remove_force_copy_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L411-L413"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.remove_force_copy_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Remove node indices for which a register will be forced to copy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.set_all_danglers">
+<span class="sig-name descname"><span class="pre">set_all_danglers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dangling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_dangling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L382-L391"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.set_all_danglers" title="Link to this definition">¶</a></dt>
+<dd><p>Set the danglers information in place</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.sorted_predecessor_idxs">
+<span class="sig-name descname"><span class="pre">sorted_predecessor_idxs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pre_node_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L960-L996"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.sorted_predecessor_idxs" title="Link to this definition">¶</a></dt>
+<dd><p>Return the predecessors of a node in edge-sorted order.</p>
+<dl class="simple">
+<dt>Edge-sorted order</dt><dd><ul class="simple">
+<li><p>places all nodes connected by <code class="xref py py-class docutils literal notranslate"><span class="pre">LEFT</span></code> edges before
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RIGHT</span></code> edges, and</p></li>
+<li><dl class="simple">
+<dt>the <code class="xref py py-class docutils literal notranslate"><span class="pre">LEFT</span></code> edges connected to twirl emissions before other emissions,</dt><dd><ul>
+<li><p>the twirl emissions sorted according to reverse <code class="docutils literal notranslate"><span class="pre">order</span></code>,</p></li>
+<li><p>the others according to <code class="docutils literal notranslate"><span class="pre">order</span></code>,</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>while the <code class="xref py py-class docutils literal notranslate"><span class="pre">RIGHT</span></code> place twirl emissions after other emissions, both
+individually sorted according to <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This order scheme is designed so that it corresponds to circuit-temporal precedence of
+predecessors. For example, a pre-collector will have inbound edges marked both left and
+right. We need to know in which order to multiply them together. This method is that order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pre_node_idx</strong> – The pre-node to get the predecessors of.</p></li>
+<li><p><strong>order</strong> – A dictionary specifying an integer for at least the predecessors of
+<code class="docutils literal notranslate"><span class="pre">pre_node_idx</span></code>. These integers are referenced in the second two bullets above.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The predecessors of <code class="docutils literal notranslate"><span class="pre">pre_node_idx</span></code> in edge-sorted order.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.subgraphs">
+<span class="sig-name descname"><span class="pre">subgraphs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://www.rustworkx.org/apiref/rustworkx.PyDiGraph.html#rustworkx.PyDiGraph" title="(in rustworkx v0.17)"><span class="pre">PyDiGraph</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.graph_data.PreNode"><span class="pre">PreNode</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.pre_samplex.PreEdge.html#samplomatic.pre_samplex.PreEdge" title="samplomatic.pre_samplex.graph_data.PreEdge"><span class="pre">PreEdge</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1597-L1602"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.subgraphs" title="Link to this definition">¶</a></dt>
+<dd><p>Return a list of disconnected components.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers">
+<span class="sig-name descname"><span class="pre">validate_no_rightward_danglers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1005-L1027"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers" title="Link to this definition">¶</a></dt>
+<dd><p>Validate that there are no nodes that require termination but are still dangling.</p>
+<p>Optional danglers are ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – If any nodes are expecting collections.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits">
+<span class="sig-name descname"><span class="pre">verify_no_twirled_clbits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clbits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.16/samplomatic/pre_samplex/pre_samplex.py#L1029-L1042"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits" title="Link to this definition">¶</a></dt>
+<dd><p>Verify the given classical bits are not twirled, for classical conditions validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>clbits</strong> – list of classical bits indices.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="samplomatic.exceptions.SamplexBuildError.html#samplomatic.exceptions.SamplexBuildError" title="samplomatic.exceptions.SamplexBuildError"><strong>SamplexBuildError</strong></a> – if any classical bit is twirled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="samplomatic.pre_samplex.PreZ2Collect.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">PreZ2Collect</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="samplomatic.pre_samplex.PrePropagateKey.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">PrePropagateKey</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, IBM
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 2026/01/22</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">PreSamplex</a><ul>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex"><code class="docutils literal notranslate"><span class="pre">PreSamplex</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.max_param_idx"><code class="docutils literal notranslate"><span class="pre">PreSamplex.max_param_idx</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_change_basis_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_change_basis_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_collect()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_collect_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect_z2_to_output_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_collect_z2_to_output_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_combine_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_combine_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_dangler"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_dangler()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_left_basis_change"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_emit_left_basis_change()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_noise_left"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_emit_noise_left()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_noise_right"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_emit_noise_right()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_right_basis_change"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_emit_right_basis_change()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_emit_twirl"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_emit_twirl()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_force_copy_nodes"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_force_copy_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_inject_noise_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_inject_noise_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_propagate"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_propagate()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_propagate_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_propagate_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_twirl_sampling_node"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_twirl_sampling_node()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_z2_collect"><code class="docutils literal notranslate"><span class="pre">PreSamplex.add_z2_collect()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.draw"><code class="docutils literal notranslate"><span class="pre">PreSamplex.draw()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.enforce_no_propagation"><code class="docutils literal notranslate"><span class="pre">PreSamplex.enforce_no_propagation()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.finalize"><code class="docutils literal notranslate"><span class="pre">PreSamplex.finalize()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.find_danglers"><code class="docutils literal notranslate"><span class="pre">PreSamplex.find_danglers()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.find_then_remove_danglers"><code class="docutils literal notranslate"><span class="pre">PreSamplex.find_then_remove_danglers()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.get_all_danglers"><code class="docutils literal notranslate"><span class="pre">PreSamplex.get_all_danglers()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.merge_parallel_pre_propagate_nodes"><code class="docutils literal notranslate"><span class="pre">PreSamplex.merge_parallel_pre_propagate_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.prune_prenodes_unreachable_from_emission"><code class="docutils literal notranslate"><span class="pre">PreSamplex.prune_prenodes_unreachable_from_emission()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.qubits_to_indices"><code class="docutils literal notranslate"><span class="pre">PreSamplex.qubits_to_indices()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.remap"><code class="docutils literal notranslate"><span class="pre">PreSamplex.remap()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.remove_force_copy_nodes"><code class="docutils literal notranslate"><span class="pre">PreSamplex.remove_force_copy_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.set_all_danglers"><code class="docutils literal notranslate"><span class="pre">PreSamplex.set_all_danglers()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.sorted_predecessor_idxs"><code class="docutils literal notranslate"><span class="pre">PreSamplex.sorted_predecessor_idxs()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.subgraphs"><code class="docutils literal notranslate"><span class="pre">PreSamplex.subgraphs()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.validate_no_rightward_danglers"><code class="docutils literal notranslate"><span class="pre">PreSamplex.validate_no_rightward_danglers()</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.verify_no_twirled_clbits"><code class="docutils literal notranslate"><span class="pre">PreSamplex.verify_no_twirled_clbits()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=d9901acd"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

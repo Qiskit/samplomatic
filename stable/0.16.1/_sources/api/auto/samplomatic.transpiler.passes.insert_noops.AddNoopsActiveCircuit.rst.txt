@@ -1,0 +1,17 @@
+AddNoopsActiveCircuit
+=====================
+
+.. currentmodule:: samplomatic.transpiler.passes.insert_noops
+
+.. autoclass:: AddNoopsActiveCircuit
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AddNoopsActiveCircuit.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

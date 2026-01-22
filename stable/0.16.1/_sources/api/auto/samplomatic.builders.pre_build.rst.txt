@@ -1,0 +1,6 @@
+pre_build
+=========
+
+.. currentmodule:: samplomatic.builders
+
+.. autofunction:: pre_build

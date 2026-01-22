@@ -1,0 +1,27 @@
+UniformC1
+=========
+
+.. currentmodule:: samplomatic.distributions
+
+.. autoclass:: UniformC1
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~UniformC1.register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~UniformC1.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: sample
