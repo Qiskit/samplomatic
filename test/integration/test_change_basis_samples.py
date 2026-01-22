@@ -188,6 +188,31 @@ def make_circuits():
         expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_box_op_qubits_{idx}"
 
+    prepare_pauli = np.array([0, 2, 0], dtype=np.uint8)
+    measure_pauli = np.array([2, 0, 2], dtype=np.uint8)
+    circuit = QuantumCircuit(5)
+
+    body0 = QuantumCircuit(3)
+    body0.cx(1, 0)
+    body0.cx(0, 2)
+    box0 = BoxOp(body0, annotations=[Twirl(), ChangeBasis(mode="prepare", dressing="left")])
+    circuit.append(box0, [4, 1, 3])
+
+    body1 = QuantumCircuit(3)
+    annotations = [Twirl(dressing="right"), ChangeBasis(mode="measure", dressing="right")]
+    box1 = BoxOp(body1, annotations=annotations)
+    circuit.append(box1, [1, 3, 4])
+
+    expected = QuantumCircuit(5)
+    expected.h(3)
+    expected.cx(1, 4)
+    expected.cx(4, 3)
+    expected.h(1)
+    expected.h(4)
+
+    samplex_arguments = {"prepare": prepare_pauli, "measure": measure_pauli}
+    yield (circuit, expected, samplex_arguments), "cxs_on_subset_boxop"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
