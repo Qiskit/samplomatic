@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -169,24 +169,49 @@ def make_circuits():
     yield (circuit, expected, {"my_basis": pauli}), "z_to_x"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
-    expected = QuantumCircuit(3)
-    expected.h(0)
     for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
         with circuit.box([ChangeBasis(mode="prepare", dressing="right")]):
             circuit.noop(*perm)
+        expected = QuantumCircuit(3)
+        expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
-    for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
+    for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
         box_op = BoxOp(
             QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare", dressing="right")]
         )
         circuit.append(box_op, perm)
         expected = QuantumCircuit(3)
-        expected.h(idx)
+        expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_box_op_qubits_{idx}"
+
+    prepare_pauli = np.array([0, 2, 0], dtype=np.uint8)
+    measure_pauli = np.array([2, 0, 2], dtype=np.uint8)
+    circuit = QuantumCircuit(5)
+
+    body0 = QuantumCircuit(3)
+    body0.cx(1, 0)
+    body0.cx(0, 2)
+    box0 = BoxOp(body0, annotations=[Twirl(), ChangeBasis(mode="prepare", dressing="left")])
+    circuit.append(box0, [4, 1, 3])
+
+    body1 = QuantumCircuit(3)
+    annotations = [Twirl(dressing="right"), ChangeBasis(mode="measure", dressing="right")]
+    box1 = BoxOp(body1, annotations=annotations)
+    circuit.append(box1, [1, 3, 4])
+
+    expected = QuantumCircuit(5)
+    expected.h(3)
+    expected.cx(1, 4)
+    expected.cx(4, 3)
+    expected.h(1)
+    expected.h(4)
+
+    samplex_arguments = {"prepare": prepare_pauli, "measure": measure_pauli}
+    yield (circuit, expected, samplex_arguments), "cxs_on_subset_boxop"
 
 
 def pytest_generate_tests(metafunc):

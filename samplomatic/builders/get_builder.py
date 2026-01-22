@@ -52,7 +52,10 @@ def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
     if instr is None or not (annotations := instr.op.annotations):
         return PassthroughBuilder()
 
-    qubits = QubitPartition.from_elements(q for q in qubits if q in instr.qargs)
+    qubit_permutation = dict(zip(instr.qargs, instr.op.body.qubits))
+    qubits = QubitPartition.from_elements(
+        qubit_permutation[q] for q in qubits if q in qubit_permutation
+    )
     collection = CollectionSpec(qubits)
     emission = EmissionSpec(qubits)
 

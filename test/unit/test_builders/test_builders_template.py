@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -29,7 +29,7 @@ class TestTemplateState:
         assert state.qubits([]) == []
         assert state.qubits([0, 3]) == [state.template.qubits[i] for i in [0, 3]]
 
-        new_state = state.remap({1: state.template.qubits[2]})
+        new_state = state.remap({state.template.qubits[2]: 1})
         assert len(new_state.qubits()) == 1
         assert new_state.qubits() == [state.template.qubits[2]]
 
