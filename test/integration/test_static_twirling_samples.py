@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -273,6 +273,20 @@ def make_circuits():
     circuit.append(box1, [0, 2])
 
     yield circuit, "cx_on_subset_boxop"
+
+    circuit = QuantumCircuit(5)
+
+    body0 = QuantumCircuit(3)
+    body0.cx(1, 0)
+    body0.cz(0, 2)
+    box0 = BoxOp(body0, annotations=[Twirl()])
+    circuit.append(box0, [4, 1, 3])
+
+    body1 = QuantumCircuit(3)
+    box1 = BoxOp(body1, annotations=[Twirl(dressing="right")])
+    circuit.append(box1, [1, 3, 4])
+
+    yield circuit, "cx_and_cz_on_subset_boxop"
 
 
 def pytest_generate_tests(metafunc):
