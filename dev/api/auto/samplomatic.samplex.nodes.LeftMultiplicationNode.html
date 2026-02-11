@@ -218,7 +218,6 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DressingMode.html">DressingMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
@@ -358,6 +357,7 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.VirtualRegister.html">VirtualRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.VirtualType.html">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.Z2Register.html">Z2Register</a></li>
 </ul>
 </li>
@@ -403,6 +403,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.16.1/index.html" rel="nofollow noindex">0.16.1</a></li>
         
             <li><a href="/samplomatic/stable/0.16.0/index.html" rel="nofollow noindex">0.16.0</a></li>
         
@@ -463,7 +465,7 @@
 <h1>LeftMultiplicationNode<a class="headerlink" href="#leftmultiplicationnode" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.LeftMultiplicationNode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">LeftMultiplicationNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" title="samplomatic.virtual_registers.group_register.GroupRegister"><span class="pre">GroupRegister</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/multiplication_node.py#L66-L78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.LeftMultiplicationNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.samplex.nodes.</span></span><span class="sig-name descname"><span class="pre">LeftMultiplicationNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" title="samplomatic.virtual_registers.group_register.GroupRegister"><span class="pre">GroupRegister</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/multiplication_node.py#L65-L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.LeftMultiplicationNode" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiplicationNode</span></code></p>
 <p>Perform left multiplication of a fixed register against a given register.</p>
 <dl class="field-list simple">
@@ -490,7 +492,7 @@
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.samplex.nodes.LeftMultiplicationNode.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.virtual_register.VirtualRegister"><span class="pre">VirtualRegister</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/multiplication_node.py#L77-L78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.LeftMultiplicationNode.evaluate" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.virtual_register.VirtualRegister"><span class="pre">VirtualRegister</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/samplex/nodes/multiplication_node.py#L76-L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.samplex.nodes.LeftMultiplicationNode.evaluate" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate this node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -545,7 +547,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/01/22</div>
+              Last updated on 2026/02/11</div>
           </div>
           <div class="right-details">
             

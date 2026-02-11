@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.builders" href="../samplomatic.builders.html" /><link rel="prev" title="InjectionSite" href="samplomatic.annotations.InjectionSite.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Z2Register" href="samplomatic.virtual_registers.Z2Register.html" /><link rel="prev" title="VirtualRegister" href="samplomatic.virtual_registers.VirtualRegister.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>VirtualType - samplomatic 0.1.dev1</title>
@@ -212,13 +212,12 @@
 <li class="toctree-l2"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
 <li class="toctree-l2"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../samplomatic.aliases.html">samplomatic.aliases</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.annotations.html">samplomatic.annotations</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of samplomatic.annotations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.annotations.html">samplomatic.annotations</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of samplomatic.annotations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.ChangeBasisMode.html">ChangeBasisMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.DressingMode.html">DressingMode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
@@ -352,12 +351,13 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.FrozenDict.html">FrozenDict</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.VirtualRegister.html">VirtualRegister</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">VirtualType</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.virtual_registers.Z2Register.html">Z2Register</a></li>
 </ul>
 </li>
@@ -404,6 +404,8 @@
     <div class="qiskit-previous-releases-list-container">
         <ul>
         
+            <li><a href="/samplomatic/stable/0.16.1/index.html" rel="nofollow noindex">0.16.1</a></li>
+        
             <li><a href="/samplomatic/stable/0.16.0/index.html" rel="nofollow noindex">0.16.0</a></li>
         
             <li><a href="/samplomatic/stable/0.15.0/index.html" rel="nofollow noindex">0.15.0</a></li>
@@ -439,7 +441,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.annotations.VirtualType.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.virtual_registers.VirtualType.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -462,24 +464,24 @@
           <section id="virtualtype">
 <h1>VirtualType<a class="headerlink" href="#virtualtype" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.annotations.</span></span><span class="sig-name descname"><span class="pre">VirtualType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/annotations/virtual_type.py#L21-L34"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.annotations.VirtualType" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="samplomatic.virtual_registers.VirtualType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.virtual_registers.</span></span><span class="sig-name descname"><span class="pre">VirtualType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/virtual_type.py#L18-L31"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.VirtualType" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
 <p>Name identifiers for virtual gate types.</p>
 <p class="rubric">Attributes Summary</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.C1" title="samplomatic.annotations.VirtualType.C1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">C1</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.C1" title="samplomatic.virtual_registers.VirtualType.C1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">C1</span></code></a></p></td>
 <td><p>The single-qubit Clifford group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.PAULI" title="samplomatic.annotations.VirtualType.PAULI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PAULI</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.PAULI" title="samplomatic.virtual_registers.VirtualType.PAULI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PAULI</span></code></a></p></td>
 <td><p>The projective Pauli group.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.U2" title="samplomatic.annotations.VirtualType.U2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U2</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.U2" title="samplomatic.virtual_registers.VirtualType.U2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U2</span></code></a></p></td>
 <td><p>The <span class="math notranslate nohighlight">\(2 \times 2\)</span> unitary group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.annotations.VirtualType.Z2" title="samplomatic.annotations.VirtualType.Z2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Z2</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.Z2" title="samplomatic.virtual_registers.VirtualType.Z2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Z2</span></code></a></p></td>
 <td><p>The two-element cyclic group.</p></td>
 </tr>
 </tbody>
@@ -487,26 +489,26 @@
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.C1">
-<span class="sig-name descname"><span class="pre">C1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c1'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.C1" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="samplomatic.virtual_registers.VirtualType.C1">
+<span class="sig-name descname"><span class="pre">C1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c1'</span></em><a class="headerlink" href="#samplomatic.virtual_registers.VirtualType.C1" title="Link to this definition">¶</a></dt>
 <dd><p>The single-qubit Clifford group.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.PAULI">
-<span class="sig-name descname"><span class="pre">PAULI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pauli'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.PAULI" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="samplomatic.virtual_registers.VirtualType.PAULI">
+<span class="sig-name descname"><span class="pre">PAULI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pauli'</span></em><a class="headerlink" href="#samplomatic.virtual_registers.VirtualType.PAULI" title="Link to this definition">¶</a></dt>
 <dd><p>The projective Pauli group.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.U2">
-<span class="sig-name descname"><span class="pre">U2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'u2'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.U2" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="samplomatic.virtual_registers.VirtualType.U2">
+<span class="sig-name descname"><span class="pre">U2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'u2'</span></em><a class="headerlink" href="#samplomatic.virtual_registers.VirtualType.U2" title="Link to this definition">¶</a></dt>
 <dd><p>The <span class="math notranslate nohighlight">\(2 \times 2\)</span> unitary group.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.annotations.VirtualType.Z2">
-<span class="sig-name descname"><span class="pre">Z2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'z2'</span></em><a class="headerlink" href="#samplomatic.annotations.VirtualType.Z2" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="samplomatic.virtual_registers.VirtualType.Z2">
+<span class="sig-name descname"><span class="pre">Z2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'z2'</span></em><a class="headerlink" href="#samplomatic.virtual_registers.VirtualType.Z2" title="Link to this definition">¶</a></dt>
 <dd><p>The two-element cyclic group.</p>
 </dd></dl>
 
@@ -519,23 +521,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samplomatic.builders.html">
+          <a class="next-page" href="samplomatic.virtual_registers.Z2Register.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">samplomatic.builders</div>
+                <div class="title">Z2Register</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.annotations.InjectionSite.html">
+          <a class="prev-page" href="samplomatic.virtual_registers.VirtualRegister.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">InjectionSite</div>
+                <div class="title">VirtualRegister</div>
                 
               </div>
             </a>
@@ -549,7 +551,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/01/22</div>
+              Last updated on 2026/02/11</div>
           </div>
           <div class="right-details">
             
@@ -571,11 +573,11 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">VirtualType</a><ul>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType"><code class="docutils literal notranslate"><span class="pre">VirtualType</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.C1"><code class="docutils literal notranslate"><span class="pre">VirtualType.C1</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.PAULI"><code class="docutils literal notranslate"><span class="pre">VirtualType.PAULI</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.U2"><code class="docutils literal notranslate"><span class="pre">VirtualType.U2</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.annotations.VirtualType.Z2"><code class="docutils literal notranslate"><span class="pre">VirtualType.Z2</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType"><code class="docutils literal notranslate"><span class="pre">VirtualType</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.C1"><code class="docutils literal notranslate"><span class="pre">VirtualType.C1</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.PAULI"><code class="docutils literal notranslate"><span class="pre">VirtualType.PAULI</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.U2"><code class="docutils literal notranslate"><span class="pre">VirtualType.U2</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.virtual_registers.VirtualType.Z2"><code class="docutils literal notranslate"><span class="pre">VirtualType.Z2</span></code></a></li>
 </ul>
 </li>
 </ul>
