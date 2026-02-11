@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -96,29 +96,6 @@ class TestBoxBuilder:
         assert builder.samplex_state.graph.nodes()[1] == PreEmit(
             idxs, Direction.BOTH, VirtualType.PAULI
         )
-
-    def test_wrong_twirl_type_for_measurement(self):
-        """Test that error is raised if a measurement exists, but the twirl type is wrong"""
-        qreg = QuantumRegister(2)
-        creg = ClassicalRegister(2)
-        qubit_map = {q: idx for idx, q in enumerate(qreg)}
-        pre_samplex = PreSamplex(qubit_map=qubit_map)
-        qubits = QubitPartition.from_elements(qreg)
-        builder = LeftBoxBuilder(
-            CollectionSpec(qubits, "Left", RzSxSynth()),
-            EmissionSpec(qubits, "Right", VirtualType.U2),
-        )
-        builder.set_samplex_state(pre_samplex)
-
-        circuit = DAGCircuit()
-        circuit.add_qreg(qreg)
-        circuit.add_creg(creg)
-        builder.set_template_state(TemplateState(circuit, qubit_map, ParamIter(), [0]))
-        builder.lhs()
-        builder.parse(DAGOpNode(Measure(), qreg, creg))
-
-        with pytest.raises(BuildError, match="Cannot use u2 twirl in a box with measurements"):
-            builder.rhs()
 
     def test_two_measurements_on_the_same_qubit_error(self):
         """Test that error is raised if the same qubit is measured twice in the box"""

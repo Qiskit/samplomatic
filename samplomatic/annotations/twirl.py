@@ -14,9 +14,10 @@
 
 from qiskit.circuit import Annotation
 
+from ..utils.deprecation import deprecate_arg
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 from .dressing_mode import DressingLiteral, DressingMode
-from .virtual_type import TWIRLING_GROUPS, GroupLiteral, VirtualType
+from .group_mode import GroupLiteral, GroupMode
 
 
 class Twirl(Annotation):
@@ -32,19 +33,23 @@ class Twirl(Annotation):
 
     __slots__ = ("group", "dressing", "decomposition")
 
+    @deprecate_arg(
+        "group",
+        since="0.17.0",
+        # we avoid isinstance in the predicate in order to avoid a dependency on ..virtual_registers
+        predicate=lambda group: type(group).__name__.startswith("VirtualType"),
+        deprecation_description="Providing a VirtualType enum as the 'group' argument of Twirl.",
+        additional_msg="Instead, use a string literal or the GroupMode enum.",
+    )
     def __init__(
         self,
-        group: GroupLiteral = VirtualType.PAULI,
+        group: GroupLiteral = GroupMode.PAULI,
         dressing: DressingLiteral = DressingMode.LEFT,
         decomposition: DecompositionLiteral = DecompositionMode.RZSX,
     ):
-        self.group = VirtualType(group)
+        self.group = GroupMode(group)
         self.dressing = DressingMode(dressing)
         self.decomposition = DecompositionMode(decomposition)
-
-        if self.group not in TWIRLING_GROUPS:
-            allowed = (f"'{group}'" for group in TWIRLING_GROUPS)
-            raise ValueError(f"The group must be one of [{', '.join(allowed)}].")
 
     def __eq__(self, other):
         return (

@@ -23,7 +23,7 @@ from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
-from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
+from .specs import CollectionSpec, EmissionSpec, InstructionMode
 from .template_state import TemplateState
 
 ParsableType: TypeAlias = DAGOpNode | None
@@ -165,14 +165,9 @@ class LeftBoxBuilder(BoxBuilder):
             self.samplex_state.add_emit_noise_left(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
             )
-        twirl_type = self.emission.twirl_register_type
         if twirl_type := self.emission.twirl_register_type:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
             if len(self.measured_qubits) != 0:
-                if twirl_type != VirtualType.PAULI:
-                    raise BuildError(
-                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
-                    )
                 self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
 
     @staticmethod
