@@ -15,8 +15,8 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import BalancedUniformPauli, HaarU2
+from samplomatic.virtual_registers import VirtualType
 
 
 def test_attributes():
@@ -41,15 +41,19 @@ def test_sample(rng):
     assert BalancedUniformPauli(1).sample(1, rng).shape == (1, 1)
     assert BalancedUniformPauli(8).sample(1, rng).shape == (8, 1)
     assert BalancedUniformPauli(8).sample(100, rng).shape == (8, 100)
+    assert BalancedUniformPauli(8).sample(101, rng).shape == (8, 101)
+    assert BalancedUniformPauli(8).sample(102, rng).shape == (8, 102)
+    assert BalancedUniformPauli(8).sample(103, rng).shape == (8, 103)
+    assert BalancedUniformPauli(8).sample(104, rng).shape == (8, 104)
 
 
-@pytest.mark.parametrize("num_samples", [0, 3, 4, 7, 11, 16])
-def test_balanced(rng, num_samples):
+@pytest.mark.parametrize("num_samples", [0, 3, 4, 7, 11, 10, 16])
+def test_balanced_by_four(rng, num_samples):
     """Test that Paulis are balanced on each qubit."""
     paulis = BalancedUniformPauli(5).sample(num_samples, rng)
 
     min_expected = num_samples // 4
-    max_expected = min_expected + (num_samples % 4) > 0
+    max_expected = min_expected + bool(num_samples % 4)
 
     for pauli in [0, 2, 3, 1]:
         pauli_count = np.sum(paulis.virtual_gates == pauli, axis=1)
@@ -57,6 +61,17 @@ def test_balanced(rng, num_samples):
         assert np.all((pauli_count == min_expected) | (pauli_count == max_expected))
         assert np.all((pauli_count == min_expected) | (pauli_count == max_expected))
         assert np.all((pauli_count == min_expected) | (pauli_count == max_expected))
+
+
+@pytest.mark.parametrize("num_samples", [0, 6, 8])
+def test_balanced_by_two(rng, num_samples):
+    """Test that Paulis are balanced on each qubit with respect to pi pulses."""
+    paulis = BalancedUniformPauli(5).sample(num_samples, rng)
+
+    # I,X,Y,Z = 0,2,3,1, therefore 'pauli // 2 == 1' means we have an X or Y
+    is_pi_pulse = paulis.virtual_gates // 2 == 1
+
+    assert np.all(np.sum(is_pi_pulse, axis=1) == num_samples // 2)
 
 
 def test_consecutive(rng):
