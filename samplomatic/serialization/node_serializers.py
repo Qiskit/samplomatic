@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 
 import orjson
 
-from ..distributions import HaarU2, UniformPauli
+from ..distributions import BalancedUniformPauli, Distribution, HaarU2, UniformPauli
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
     ChangeBasisNode,
@@ -408,6 +408,7 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
 
     class SSV1(DataSerializer[TwirlSamplingNode]):
         MIN_SSV = 1
+        MAX_SSV = 2
 
         @classmethod
         def serialize(cls, obj, ssv):
@@ -432,6 +433,52 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
                 distribution = HaarU2(distribution_dict["num_subsystems"])
             else:
                 distribution = UniformPauli(distribution_dict["num_subsystems"])
+            return TwirlSamplingNode(
+                data["lhs_register_name"], data["rhs_register_name"], distribution
+            )
+
+    class SSV3(DataSerializer[TwirlSamplingNode]):
+        MIN_SSV = 3
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            distribution: Distribution = obj._distribution  # noqa: SLF001
+            if isinstance(distribution, UniformPauli):
+                distribution_type = "pauli"
+            elif isinstance(distribution, BalancedUniformPauli):
+                distribution_type = "balanced_pauli"
+            elif isinstance(distribution, HaarU2):
+                distribution_type = "haar_u2"
+            else:
+                raise SerializationError(
+                    f"Cannot serialize a twirl node with the distribution {distribution}"
+                )
+            distribution_spec = {
+                "type": distribution_type,
+                "num_subsystems": distribution.num_subsystems,
+            }
+            return {
+                "lhs_register_name": obj._lhs_register_name,  # noqa: SLF001
+                "rhs_register_name": obj._rhs_register_name,  # noqa: SLF001
+                "distribution": orjson.dumps(distribution_spec).decode("utf-8"),
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            distribution_spec = orjson.loads(data["distribution"])
+            num_subsystems = distribution_spec["num_subsystems"]
+            distribution: Distribution
+            match distribution_spec["type"]:
+                case "pauli":
+                    distribution = UniformPauli(num_subsystems)
+                case "balanced_pauli":
+                    distribution = BalancedUniformPauli(num_subsystems)
+                case "haar_u2":
+                    distribution = HaarU2(num_subsystems)
+                case _:
+                    raise DeserializationError(
+                        f"Unknown distribution type: {distribution_spec['type']}"
+                    )
             return TwirlSamplingNode(
                 data["lhs_register_name"], data["rhs_register_name"], distribution
             )

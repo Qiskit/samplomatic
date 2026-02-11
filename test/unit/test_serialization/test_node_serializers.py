@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,7 @@
 import orjson
 import pytest
 
-from samplomatic.distributions import UniformPauli
+from samplomatic.distributions import BalancedUniformPauli, UniformPauli
 from samplomatic.samplex.nodes import (
     ChangeBasisNode,
     CollectTemplateValues,
@@ -136,6 +136,13 @@ def test_slice_register_serializer_round_trip(ssv):
 def test_twirl_sampling_serializer_round_trip(ssv):
     node = TwirlSamplingNode("lhs", "rhs", UniformPauli(10))
     data = TwirlSamplingNodeSerializer.serialize(node, ssv)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+def test_twirl_sampling_balanced_serializer_round_trip():
+    node = TwirlSamplingNode("lhs", "rhs", BalancedUniformPauli(10))
+    data = TwirlSamplingNodeSerializer.serialize(node, 3)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
 
