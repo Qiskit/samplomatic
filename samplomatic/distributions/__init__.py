@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,6 +12,7 @@
 
 """Distributions"""
 
+from .balanced_uniform_pauli import BalancedUniformPauli
 from .distribution import Distribution
 from .haar_u2 import HaarU2
 from .uniform_c1 import UniformC1
