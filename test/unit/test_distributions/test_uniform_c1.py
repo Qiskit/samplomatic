@@ -12,8 +12,8 @@
 
 """Test the UniformC1 distribution"""
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformC1
+from samplomatic.virtual_registers import VirtualType
 
 
 def test_attributes():

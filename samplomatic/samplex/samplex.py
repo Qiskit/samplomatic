@@ -35,10 +35,9 @@ from ..aliases import (
     RegisterName,
     Self,
 )
-from ..annotations import VirtualType
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..tensor_interface import Specification, TensorInterface, TensorSpecification
-from ..virtual_registers import VirtualRegister
+from ..virtual_registers import VirtualRegister, VirtualType
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
 from .nodes import CollectionNode, EvaluationNode, Node, SamplingNode

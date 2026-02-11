@@ -15,10 +15,9 @@ import numpy as np
 import pytest
 from qiskit.circuit.library import HGate, SXGate, XGate
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import CombineRegistersNode
-from samplomatic.virtual_registers import PauliRegister, U2Register
+from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualType
 
 
 def test_equality(dummy_evaluation_node):

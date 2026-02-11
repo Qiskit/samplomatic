@@ -17,8 +17,8 @@ from collections.abc import Sequence
 import numpy as np
 
 from ...aliases import OperationName, RegisterName, SubsystemIndex
-from ...annotations import VirtualType
 from ...exceptions import SamplexBuildError
+from ...virtual_registers import VirtualType
 from .evaluation_node import EvaluationNode
 
 PAULI_PAST_CLIFFORD_LOOKUP_TABLES = {

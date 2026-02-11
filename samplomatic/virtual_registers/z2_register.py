@@ -15,9 +15,9 @@
 import numpy as np
 
 from ..aliases import SubsystemIndex
-from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
 from .group_register import GroupRegister
+from .virtual_type import VirtualType
 
 
 class Z2Register(GroupRegister):

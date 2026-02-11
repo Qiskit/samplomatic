@@ -15,8 +15,7 @@
 import numpy as np
 from qiskit.quantum_info import Clifford
 
-from samplomatic.annotations import VirtualType
-from samplomatic.virtual_registers import C1Register, U2Register, VirtualRegister
+from samplomatic.virtual_registers import C1Register, U2Register, VirtualRegister, VirtualType
 from samplomatic.virtual_registers.c1_register import C1_TO_TABLEAU, c1_to_u2
 
 

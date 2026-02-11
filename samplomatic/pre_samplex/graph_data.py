@@ -20,12 +20,12 @@ import numpy as np
 from qiskit.circuit.gate import Gate
 
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
-from ..annotations import VirtualType
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
+from ..virtual_registers import VirtualType
 from ..visualization.hover_style import EdgeStyle, NodeStyle
 
 

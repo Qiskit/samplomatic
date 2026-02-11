@@ -16,8 +16,7 @@ import abc
 
 from numpy.random import Generator
 
-from ..annotations import VirtualType
-from ..virtual_registers import VirtualRegister
+from ..virtual_registers import VirtualRegister, VirtualType
 
 
 class Distribution(abc.ABC):

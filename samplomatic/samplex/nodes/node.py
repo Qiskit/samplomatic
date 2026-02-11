@@ -17,9 +17,9 @@ from numbers import Number
 from typing import Literal
 
 from ...aliases import InterfaceName, NumSubsystems, ParamIndex, RegisterName, SubsystemIndex
-from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...serializable import Serializable
+from ...virtual_registers import VirtualType
 from ...visualization.hover_style import NodeStyle
 
 

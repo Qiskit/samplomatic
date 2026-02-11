@@ -15,14 +15,13 @@
 import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
-from samplomatic.annotations import VirtualType
 from samplomatic.samplex.nodes import InjectNoiseNode
 from samplomatic.tensor_interface import (
     PauliLindbladMapSpecification,
     TensorInterface,
     TensorSpecification,
 )
-from samplomatic.virtual_registers import PauliRegister, Z2Register
+from samplomatic.virtual_registers import PauliRegister, VirtualType, Z2Register
 
 
 def test_instantiates():

@@ -15,8 +15,7 @@
 import numpy as np
 from qiskit.quantum_info import random_unitary
 
-from samplomatic.annotations import VirtualType
-from samplomatic.virtual_registers import U2Register, VirtualRegister
+from samplomatic.virtual_registers import U2Register, VirtualRegister, VirtualType
 
 
 def test_select():

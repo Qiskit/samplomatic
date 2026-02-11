@@ -17,7 +17,6 @@ from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import Measure
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 
-from samplomatic.annotations import VirtualType
 from samplomatic.builders.box_builder import LeftBoxBuilder
 from samplomatic.builders.param_iter import ParamIter
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec
@@ -28,6 +27,7 @@ from samplomatic.partition import QubitIndicesPartition, QubitPartition
 from samplomatic.pre_samplex import PreSamplex
 from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PreZ2Collect
 from samplomatic.synths.rzsx_synth import RzSxSynth
+from samplomatic.virtual_registers import VirtualType
 
 
 class TestBoxBuilder:

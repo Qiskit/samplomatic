@@ -12,8 +12,7 @@
 
 """UniformPauli"""
 
-from ..annotations import VirtualType
-from ..virtual_registers import PauliRegister
+from ..virtual_registers import PauliRegister, VirtualType
 from .distribution import Distribution
 
 

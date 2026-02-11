@@ -14,7 +14,6 @@
 
 import orjson
 
-from ..annotations import VirtualType
 from ..distributions import HaarU2, UniformPauli
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
@@ -34,6 +33,7 @@ from ..samplex.nodes import (
 )
 from ..samplex.nodes.combine_registers_node import CombineType
 from ..synths import RzRxSynth, RzSxSynth
+from ..virtual_registers import VirtualType
 from .basis_change_serializers import BasisChangeSerializer
 from .type_serializer import DataSerializer, TypeSerializer
 from .utils import array_from_json, array_to_json, slice_from_json, slice_to_json

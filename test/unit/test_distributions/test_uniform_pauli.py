@@ -12,8 +12,8 @@
 
 """Test the PauliRegister distribution"""
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformPauli
+from samplomatic.virtual_registers import VirtualType
 
 
 def test_attributes():
