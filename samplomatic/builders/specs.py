@@ -14,16 +14,20 @@
 
 import enum
 from dataclasses import dataclass
+from typing import Literal, TypeAlias
 
 import numpy as np
 
 from ..aliases import CircuitInstruction, Parameter, Qubit, StrRef
-from ..annotations import DressingMode, VirtualType
+from ..annotations import DressingMode, InjectionSite
 from ..partition import QubitPartition
 from ..synths import Synth
+from ..virtual_registers import VirtualType
 
 EMPTY_IDXS = np.empty((0, 0), dtype=np.intp)
 EMPTY_IDXS.setflags(write=False)
+
+FrameChangeMode: TypeAlias = Literal["local_clifford", "pauli_prepare", "pauli_measure"]
 
 
 class InstructionMode(enum.Enum):
@@ -61,17 +65,20 @@ class EmissionSpec:
     twirl_register_type: VirtualType | None = None
     """What type of virtual gates to emit for twirling."""
 
-    basis_register_type: VirtualType | None = None
-    """What type of virtual gates to emit for basis changes."""
+    basis_change: FrameChangeMode | None = None
+    """What type of basis change to use."""
 
     basis_ref: StrRef = ""
     """A unique identifier of the basis change."""
 
-    noise_ref: StrRef = ""
+    noise_ref: StrRef | None = None
     """A unique identifier of the Pauli Lindblad map to use for noise injection."""
 
     noise_modifier_ref: StrRef = ""
     """A unique identifier for modifiers to apply to the Pauli Lindblad map."""
+
+    noise_site: InjectionSite | None = None
+    """Whether to inject noise before or after the hard content."""
 
 
 @dataclass

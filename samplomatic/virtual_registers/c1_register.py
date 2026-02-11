@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,11 +12,16 @@
 
 """C1Register"""
 
-import numpy as np
+from functools import cache
 
-from ..annotations import VirtualType
+import numpy as np
+from numpy.typing import ArrayLike
+from qiskit.quantum_info import Clifford
+
 from .finite_group_register import FiniteGroupRegister
 from .tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
+from .u2_register import U2Register
+from .virtual_type import VirtualType
 
 C1_TO_TABLEAU = np.array(
     [
@@ -52,6 +57,17 @@ C1_TO_TABLEAU = np.array(
 This is the order used by :class:`~.C1Register`."""
 
 
+@cache
+def c1_to_u2() -> np.ndarray:
+    """Return a cached array containing the U2 representation of the single-qubit Cliffords.
+
+    The order matches :const:`~C1_TO_TABLEAU`.
+    """
+    return np.array(
+        [Clifford(tableau, False).to_matrix() for tableau in C1_TO_TABLEAU], dtype=U2Register.DTYPE
+    )
+
+
 class C1Register(FiniteGroupRegister):
     """Virtual register of C1 gates.
 
@@ -76,7 +92,7 @@ class C1Register(FiniteGroupRegister):
 
     def convert_to(self, register_type):
         if register_type is VirtualType.U2:
-            NotImplementedError("Not yet implemented.")
+            return U2Register(c1_to_u2()[self._array, :, :])
         return super().convert_to(register_type)
 
     @classmethod
@@ -84,7 +100,7 @@ class C1Register(FiniteGroupRegister):
         return cls(np.zeros((num_subsystems, num_samples), dtype=np.uint8))
 
     @classmethod
-    def from_tableau(cls, tableaus: np.typing.ArrayLike) -> "C1Register":
+    def from_tableau(cls, tableaus: ArrayLike) -> "C1Register":
         """Return a new register from an array of tableaus.
 
         Args:

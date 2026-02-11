@@ -15,9 +15,15 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import VirtualGateError
-from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Register
+from samplomatic.virtual_registers import (
+    C1Register,
+    PauliRegister,
+    U2Register,
+    VirtualRegister,
+    VirtualType,
+    Z2Register,
+)
 
 
 def test_select():
@@ -54,6 +60,19 @@ def test_convert_to_u2():
     assert np.allclose(u2.virtual_gates[1, 0], np.diag([-1j, 1j])[::-1])
     assert np.allclose(u2.virtual_gates[1, 1], np.diag([1, 1])[::-1])
     assert np.allclose(u2.virtual_gates[1, 2], np.diag([1, -1]))
+
+
+def test_convert_to_c1():
+    """Test the convert_to() method for C1Register."""
+    paulis = PauliRegister([[0, 1, 2], [3, 2, 1]])
+    c1 = paulis.convert_to(VirtualType.C1)
+
+    assert isinstance(c1, C1Register)
+    assert c1.num_subsystems == 2
+    assert c1.num_samples == 3
+
+    assert np.allclose(c1.virtual_gates, paulis.virtual_gates)
+    assert c1.convert_to(VirtualType.U2) == paulis.convert_to(VirtualType.U2)
 
 
 def test_convert_to_z2():

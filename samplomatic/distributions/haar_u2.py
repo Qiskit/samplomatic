@@ -14,8 +14,7 @@
 
 import numpy as np
 
-from ..annotations import VirtualType
-from ..virtual_registers import U2Register
+from ..virtual_registers import U2Register, VirtualType
 from .distribution import Distribution
 
 

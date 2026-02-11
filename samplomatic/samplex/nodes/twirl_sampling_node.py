@@ -13,8 +13,8 @@
 """TwirlSamplingNode"""
 
 from ...aliases import NumSubsystems, RegisterName
-from ...annotations import VirtualType
 from ...distributions import Distribution
+from ...virtual_registers import VirtualType
 from .sampling_node import SamplingNode
 
 

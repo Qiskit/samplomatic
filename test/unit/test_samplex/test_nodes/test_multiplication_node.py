@@ -15,11 +15,10 @@ import re
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformPauli
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import LeftMultiplicationNode, RightMultiplicationNode
-from samplomatic.virtual_registers import U2Register
+from samplomatic.virtual_registers import U2Register, VirtualType
 
 
 class TestLeftMultiplicationNode:

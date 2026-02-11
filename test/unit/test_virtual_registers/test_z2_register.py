@@ -14,8 +14,7 @@
 
 import numpy as np
 
-from samplomatic.annotations import VirtualType
-from samplomatic.virtual_registers import VirtualRegister, Z2Register
+from samplomatic.virtual_registers import VirtualRegister, VirtualType, Z2Register
 
 
 def test_select():

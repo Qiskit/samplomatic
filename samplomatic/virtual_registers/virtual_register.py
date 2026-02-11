@@ -17,9 +17,9 @@ from typing import TypeVar
 
 import numpy as np
 
-from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
 from ..serializable import Serializable
+from .virtual_type import VirtualType
 
 T = TypeVar("T")
 

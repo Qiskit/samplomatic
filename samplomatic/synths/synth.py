@@ -18,8 +18,7 @@ from typing import Any, Generic, TypeVar
 
 import numpy as np
 
-from ..annotations import VirtualType
-from ..virtual_registers import VirtualRegister
+from ..virtual_registers import VirtualRegister, VirtualType
 
 InstructionT = TypeVar("InstructionT")
 ParameterT = TypeVar("ParameterT")

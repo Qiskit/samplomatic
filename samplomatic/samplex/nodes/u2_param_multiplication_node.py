@@ -17,10 +17,9 @@ from typing import Literal
 import numpy as np
 
 from ...aliases import ParamIndex, RegisterName, SubsystemIndex
-from ...annotations import VirtualType
 from ...constants import SUPPORTED_1Q_FRACTIONAL_GATES
 from ...exceptions import SamplexConstructionError, SamplexRuntimeError
-from ...virtual_registers import U2Register, VirtualRegister
+from ...virtual_registers import U2Register, VirtualRegister, VirtualType
 from .evaluation_node import EvaluationNode
 from .utils import get_fractional_gate_register
 

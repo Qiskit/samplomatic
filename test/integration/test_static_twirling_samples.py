@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +15,7 @@
 from itertools import permutations, product
 
 import numpy as np
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
 from qiskit.transpiler import PassManager
 
@@ -249,6 +249,45 @@ def make_circuits():
 
         yield circuit, f"l_cz_gates_with_odd_qubit_arrangements_{pairs}"
 
+    circuit = QuantumCircuit(2)
+
+    body0 = QuantumCircuit(1)
+    box0 = BoxOp(body0, annotations=[Twirl()])
+    circuit.append(box0, [0])
+
+    body1 = QuantumCircuit(1)
+    box1 = BoxOp(body1, annotations=[Twirl(dressing="right")])
+    circuit.append(box1, [0])
+
+    yield circuit, "boxes_with_different_qubits"
+
+    circuit = QuantumCircuit(3)
+
+    body0 = QuantumCircuit(2)
+    body0.cx(1, 0)
+    box0 = BoxOp(body0, annotations=[Twirl()])
+    circuit.append(box0, [2, 0])
+
+    body1 = QuantumCircuit(2)
+    box1 = BoxOp(body1, annotations=[Twirl(dressing="right")])
+    circuit.append(box1, [0, 2])
+
+    yield circuit, "cx_on_subset_boxop"
+
+    circuit = QuantumCircuit(5)
+
+    body0 = QuantumCircuit(3)
+    body0.cx(1, 0)
+    body0.cz(0, 2)
+    box0 = BoxOp(body0, annotations=[Twirl()])
+    circuit.append(box0, [4, 1, 3])
+
+    body1 = QuantumCircuit(3)
+    box1 = BoxOp(body1, annotations=[Twirl(dressing="right")])
+    circuit.append(box1, [1, 3, 4])
+
+    yield circuit, "cx_and_cz_on_subset_boxop"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
@@ -264,8 +303,9 @@ def test_sampling(circuit, save_plot):
     """
     save_plot(lambda: circuit.draw("mpl"), "Base Circuit", delayed=True)
 
-    template, pre_samplex = pre_build(circuit)
-    save_plot(lambda: template.template.draw("mpl"), "Template Circuit", delayed=True)
+    template_state, pre_samplex = pre_build(circuit)
+    template = template_state.finalize()
+    save_plot(lambda: template.draw("mpl"), "Template Circuit", delayed=True)
     save_plot(lambda: pre_samplex.draw(), "Unfinalized Pre-Samplex", delayed=True)
 
     samplex = pre_samplex.finalize()
@@ -281,5 +321,5 @@ def test_sampling(circuit, save_plot):
 
     expected_op = Operator(PassManager([InlineBoxes()]).run(circuit))
     for row in parameter_values:
-        op = Operator(template.template.assign_parameters(row))
+        op = Operator(template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f

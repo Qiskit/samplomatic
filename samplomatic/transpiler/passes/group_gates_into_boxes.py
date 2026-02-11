@@ -13,13 +13,15 @@
 """GroupGatesIntoBoxes"""
 
 from collections import defaultdict
+from collections.abc import Iterable
 
-from qiskit.circuit import Bit
+from qiskit.circuit import Annotation, Bit
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 from qiskit.transpiler.exceptions import TranspilerError
 
 from ...aliases import DAGOpNode
+from ...annotations import Twirl
 from .utils import make_and_insert_box, validate_op_is_supported
 
 
@@ -44,6 +46,10 @@ class GroupGatesIntoBoxes(TransformationPass):
         The circuits returned by this pass may not be buildable. To make them buildable, one can
         either use :class`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
     """
+
+    def __init__(self, annotations: Iterable[Annotation] = (Twirl(),)):
+        super().__init__()
+        self.annotations = list(annotations)
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.
@@ -94,6 +100,6 @@ class GroupGatesIntoBoxes(TransformationPass):
                 raise TranspilerError(f"'{name}' operation is not supported.")
 
         for nodes in groups.values():
-            make_and_insert_box(dag, nodes)
+            make_and_insert_box(dag, nodes, annotations=self.annotations)
 
         return dag

@@ -16,8 +16,7 @@ import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
 from ...aliases import NumSubsystems, RegisterName, StrRef
-from ...annotations import VirtualType
-from ...virtual_registers import PauliRegister, Z2Register
+from ...virtual_registers import PauliRegister, VirtualType, Z2Register
 from .sampling_node import SamplingNode
 
 

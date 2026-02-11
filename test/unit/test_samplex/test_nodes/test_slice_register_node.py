@@ -14,11 +14,10 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import SliceRegisterNode
 from samplomatic.samplex.nodes.slice_register_node import get_slice_from_idxs
-from samplomatic.virtual_registers import PauliRegister
+from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 def test_equality(dummy_evaluation_node):

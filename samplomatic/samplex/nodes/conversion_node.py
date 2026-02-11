@@ -13,9 +13,8 @@
 """ConversionNode"""
 
 from ...aliases import NumSubsystems, RegisterName
-from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...virtual_registers import VirtualRegister
+from ...virtual_registers import VirtualRegister, VirtualType
 from .evaluation_node import EvaluationNode
 
 

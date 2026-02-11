@@ -12,27 +12,10 @@
 
 """VirtualType"""
 
-from enum import Enum
 from typing import Literal
 
 from ..aliases import TypeAlias
-
-
-class VirtualType(str, Enum):
-    """Name identifiers for virtual gate types."""
-
-    PAULI = "pauli"
-    """The projective Pauli group."""
-
-    C1 = "c1"
-    """The single-qubit Clifford group."""
-
-    U2 = "u2"
-    r"""The :math:`2 \times 2` unitary group."""
-
-    Z2 = "z2"
-    """The two-element cyclic group."""
-
+from ..virtual_registers import VirtualType
 
 TWIRLING_GROUPS = frozenset([VirtualType.PAULI])
 """Those :class:`VirtualType`\\s that represent unitary groups and have twirling support."""

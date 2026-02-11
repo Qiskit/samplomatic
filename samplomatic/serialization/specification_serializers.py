@@ -76,16 +76,16 @@ class TensorSpecificationSerializer(TypeSerializer[TensorSpecification]):
             )
 
 
-def serialize_specifications(data: dict[InterfaceName, Specification]) -> str:
+def serialize_specifications(data: dict[InterfaceName, Specification], ssv: int) -> str:
     out_dict = {}
     for name, spec in data.items():
         if isinstance(spec, TensorSpecification):
-            out_dict[name] = orjson.dumps(TensorSpecificationSerializer.serialize(spec)).decode(
-                "utf-8"
-            )  # noqa: SLF001
+            out_dict[name] = orjson.dumps(
+                TensorSpecificationSerializer.serialize(spec, ssv=ssv)
+            ).decode("utf-8")  # noqa: SLF001
         else:
             out_dict[name] = orjson.dumps(
-                PauliLindbladMapSpecificationSerializer.serialize(spec)
+                PauliLindbladMapSpecificationSerializer.serialize(spec, ssv=ssv)
             ).decode("utf-8")  # noqa: SLF001
     return orjson.dumps(out_dict).decode("utf-8")
 

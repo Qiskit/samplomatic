@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,10 +12,14 @@
 
 """TemplateCircuitBuilder"""
 
+from collections.abc import Iterable, Sequence
+
 from qiskit.circuit import ClassicalRegister, Clbit, QuantumCircuit, QuantumRegister, Qubit
 from qiskit.circuit.classical import expr
+from qiskit.converters import dag_to_circuit
+from qiskit.dagcircuit import DAGCircuit
 
-from ..aliases import CircuitInstruction, ClbitIndex, ParamSpec, QubitIndex, Self
+from ..aliases import CircuitInstruction, ClbitIndex, DAGOpNode, ParamSpec, QubitIndex, Self
 from ..exceptions import TemplateBuildError
 from .param_iter import ParamIter
 
@@ -24,7 +28,7 @@ class TemplateState:
     """The state of a template construction owned by a template builder.
 
     Args:
-        template: The template quantum circuit being built.
+        template: The template DAG circuit being built.
         qubit_map: A map from qubits in the source circuit to corresponding qubits in the template.
         param_iter: An iterator over parameters to use in the circuit being built.
         scope_idx: The nested index of the scope currently being built.
@@ -32,18 +36,18 @@ class TemplateState:
 
     def __init__(
         self,
-        template: QuantumCircuit,
+        template: DAGCircuit,
         qubit_map: dict[Qubit, QubitIndex],
         param_iter: ParamIter,
         scope_idx: list[int],
     ):
-        self.template: QuantumCircuit = template
+        self.template: DAGCircuit = template
         self.qubit_map = qubit_map
         self.param_iter = param_iter
         self.scope_idx = scope_idx
 
     def remap(
-        self, scoped_qubit_map: dict[QubitIndex, Qubit], last_scope_idx: int | None = None
+        self, scoped_qubit_map: dict[Qubit, Qubit], last_scope_idx: int | None = None
     ) -> "TemplateState":
         """Return a new :class:`~.TemplateState` whose source qubits are different.
 
@@ -57,7 +61,7 @@ class TemplateState:
         """
         new_qubit_map = {
             qubit: self.qubit_map[parent_scope_qubit]
-            for qubit, parent_scope_qubit in scoped_qubit_map.items()
+            for parent_scope_qubit, qubit in scoped_qubit_map.items()
         }
         scope_idx = self.scope_idx if last_scope_idx is None else self.scope_idx + [last_scope_idx]
         return TemplateState(self.template, new_qubit_map, self.param_iter, scope_idx)
@@ -71,7 +75,11 @@ class TemplateState:
         Args:
             circuit: The circuit you intend to parse.
         """
-        template_circuit = QuantumCircuit(QuantumRegister(circuit.num_qubits, "q"), *circuit.cregs)
+        template_circuit = DAGCircuit()
+        template_circuit.add_qreg(QuantumRegister(circuit.num_qubits, "q"))
+        for creg in circuit.cregs:
+            template_circuit.add_creg(creg)
+
         qubit_map = {q: idx for idx, q in enumerate(circuit.qubits)}
 
         # quick and dirty heuristic to get the max params roughly correct with a safety factor
@@ -85,22 +93,33 @@ class TemplateState:
 
         return cls(template_circuit, qubit_map, param_iter, [])
 
-    def append_remapped_gate(
-        self, instr: CircuitInstruction, target_circuit: QuantumCircuit | None = None
-    ) -> ParamSpec:
-        """Remap the parameters and qubits of an instruction gate and append it to the circuit."""
-        if target_circuit is None:
-            target_circuit = self.template
+    def qubits(self, idxs: Iterable[int] | None = None) -> Sequence[Qubit]:
+        """Return the qubits in the template at the given indices.
 
+        Args:
+            idxs: The indices of qubits to collect, or ``None`` to get all of them.
+
+        Returns:
+            A sequence of qubits, in order.
+        """
+        idxs = self.qubit_map.values() if idxs is None else idxs
+        return [self.template.qubits[i] for i in idxs]
+
+    def append_remapped_gate(self, dag_op_node: DAGOpNode) -> ParamSpec:
+        """Remap the parameters and qubits of a gate and append it to the circuit."""
         new_params = []
         param_mapping = []
-        for param in instr.operation.params:
-            param_mapping.append([self.param_iter.idx, param])
-            new_params.append(next(self.param_iter))
+        new_qubits = self.qubits(self.qubit_map.get(qubit, qubit) for qubit in dag_op_node.qargs)
 
-        new_qubits = [self.qubit_map.get(qubit, qubit) for qubit in instr.qubits]
-        new_operation = type(instr.operation)(*new_params) if new_params else instr.operation
-        target_circuit.append(CircuitInstruction(new_operation, new_qubits, instr.clbits))
+        if dag_op_node.is_parameterized():
+            for param in dag_op_node.op.params:
+                param_mapping.append([self.param_iter.idx, param])
+                new_params.append(next(self.param_iter))
+            new_operation = type(dag_op_node.op)(*new_params) if new_params else dag_op_node.op
+        else:
+            new_operation = dag_op_node.op
+
+        self.template.apply_operation_back(new_operation, new_qubits, dag_op_node.cargs)
 
         return param_mapping
 
@@ -158,3 +177,7 @@ class TemplateState:
                 "A classical condition should be a 2-tuple of `(ClassicalRegister | Clbit, int)`,"
                 f" or a classical `Expr` but received '{condition}'."
             )
+
+    def finalize(self) -> QuantumCircuit:
+        """Return the quantum circuit template."""
+        return dag_to_circuit(self.template)

@@ -14,6 +14,7 @@ from .change_basis import ChangeBasis
 from .change_basis_mode import ChangeBasisMode
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 from .dressing_mode import DressingLiteral, DressingMode
-from .inject_noise import InjectNoise
+from .inject_local_clifford import InjectLocalClifford
+from .inject_noise import InjectionSite, InjectNoise
 from .twirl import Twirl
-from .virtual_type import TWIRLING_GROUPS, GroupLiteral, VirtualType
+from .virtual_type import TWIRLING_GROUPS, GroupLiteral

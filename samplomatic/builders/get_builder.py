@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,25 +16,19 @@ from collections.abc import Callable, Sequence
 
 from qiskit.circuit import Annotation, Qubit
 
-from ..aliases import CircuitInstruction
-from ..annotations import (
-    ChangeBasis,
-    ChangeBasisMode,
-    DressingMode,
-    InjectNoise,
-    Twirl,
-    VirtualType,
-)
+from ..aliases import DAGOpNode
+from ..annotations import ChangeBasis, DressingMode, InjectLocalClifford, InjectNoise, Twirl
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
+from ..virtual_registers import VirtualType
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
 from .specs import CollectionSpec, EmissionSpec
 
 
-def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Builder:
+def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
     """Get the builders of a box.
 
     Args:
@@ -49,10 +43,13 @@ def get_builder(instr: CircuitInstruction | None, qubits: Sequence[Qubit]) -> Bu
     Returns:
         A tuple containing a template and samplex builder.
     """
-    if instr is None or not (annotations := instr.operation.annotations):
+    if instr is None or not (annotations := instr.op.annotations):
         return PassthroughBuilder()
 
-    qubits = QubitPartition.from_elements(q for q in qubits if q in instr.qubits)
+    qubit_permutation = dict(zip(instr.qargs, instr.op.body.qubits))
+    qubits = QubitPartition.from_elements(
+        qubit_permutation[q] for q in qubits if q in qubit_permutation
+    )
     collection = CollectionSpec(qubits)
     emission = EmissionSpec(qubits)
 
@@ -88,13 +85,17 @@ def change_basis_parser(
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `dressing` is already specified on one of the specs and is incompatible
-            with the basis change mode.
-        BuildError: If `synth` is already specified on the `collection` and not equal to the
-            synth corresponding to `change_basis.decomposition`.
+        BuildError: If ``emission.basis_ref`` is already specified.
+        BuildError: If ``dressing`` is already specified on one of the specs and is not equal to
+            ``change_basis.dressing``.
+        BuildError: If ``synth`` is already specified on the ``collection`` and not equal to the
+            synth corresponding to ``change_basis.decomposition``.
     """
-    emission.basis_register_type = VirtualType.U2
-    emission.basis_ref = change_basis.ref
+    if emission.basis_ref:
+        raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
+
+    emission.basis_change = f"pauli_{change_basis.mode.name.lower()}"
+    emission.basis_ref = f"basis_changes.{change_basis.ref}"
 
     synth = get_synth(change_basis.decomposition)
     if (current_synth := collection.synth) is not None:
@@ -105,16 +106,58 @@ def change_basis_parser(
     else:
         collection.synth = synth
 
-    dressing = (
-        DressingMode.LEFT
-        if (mode := change_basis.mode) is ChangeBasisMode.MEASURE
-        else DressingMode.RIGHT
-    )
+    dressing = change_basis.dressing
     if (current_dressing := collection.dressing) is not None:
         if dressing != current_dressing:
             raise BuildError(
-                f"Cannot use {mode} basis change with another annotation that uses "
+                f"Cannot use a `{dressing}` basis change with another annotation that uses "
                 f"{current_dressing}."
+            )
+    else:
+        collection.dressing = dressing
+        emission.dressing = dressing
+
+
+def inject_local_clifford_parser(
+    local_clifford: InjectLocalClifford,
+    collection: CollectionSpec,
+    emission: EmissionSpec,
+):
+    """Parse an inject local Clifford annotation by mutating emission and collection specs.
+
+    Args:
+        local_clifford: The annotation to parse.
+        collection: The collection spec to modify.
+        emission: The emission spec to modify.
+
+    Raises:
+        BuildError: If ``emission.basis_ref`` is already specified.
+        BuildError: If ``dressing`` is already specified on one of the specs and is incompatible
+            with the annotation's dressing.
+        BuildError: If ``synth`` is already specified on the ``collection`` and not equal to the
+            synth corresponding to ``local_clifford.decomposition``.
+    """
+    if emission.basis_ref:
+        raise BuildError("Cannot specify multiple frame changing annotations on the same box.")
+
+    emission.basis_change = "local_clifford"
+    emission.basis_ref = f"local_cliffords.{local_clifford.ref}"
+
+    synth = get_synth(local_clifford.decomposition)
+    if (current_synth := collection.synth) is not None:
+        if synth != current_synth:
+            raise BuildError(
+                "Cannot use different synthesizers on different annotations on the same box."
+            )
+    else:
+        collection.synth = synth
+
+    dressing = local_clifford.dressing
+    if (current_dressing := collection.dressing) is not None:
+        if dressing != current_dressing:
+            raise BuildError(
+                f"Cannot use {dressing} on when injecting local Clifford with another annotation "
+                f"that uses {current_dressing}."
             )
     else:
         collection.dressing = dressing
@@ -130,9 +173,18 @@ def inject_noise_parser(
         inject_noise: The inject noise annotation to parse.
         collection: The collection spec to modify.
         emission: The emission spec to modify.
+
+    Raises:
+        BuildError: If `emission.noise_ref` is not ``None``.
     """
+    if emission.noise_ref is not None:
+        raise BuildError(
+            f"Cannot inject noise with reference '{inject_noise.ref}' on a dressed box "
+            f"with noise reference '{emission.noise_ref}' already present."
+        )
     emission.noise_ref = inject_noise.ref
     emission.noise_modifier_ref = inject_noise.modifier_ref
+    emission.noise_site = inject_noise.site
 
 
 def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpec):
@@ -176,4 +228,9 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
 
 SUPPORTED_ANNOTATIONS: dict[
     Annotation, Callable[[type[Annotation], CollectionSpec, EmissionSpec], None]
-] = {ChangeBasis: change_basis_parser, Twirl: twirl_parser, InjectNoise: inject_noise_parser}
+] = {
+    ChangeBasis: change_basis_parser,
+    Twirl: twirl_parser,
+    InjectLocalClifford: inject_local_clifford_parser,
+    InjectNoise: inject_noise_parser,
+}

@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,6 +16,22 @@ from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
+from samplomatic.builders.template_state import TemplateState
+
+
+class TestTemplateState:
+    """Test the template state class."""
+
+    def test_qubits(self):
+        """Test the qubits method."""
+        state = TemplateState.construct_for_circuit(QuantumCircuit(4))
+        assert state.qubits() == state.template.qubits
+        assert state.qubits([]) == []
+        assert state.qubits([0, 3]) == [state.template.qubits[i] for i in [0, 3]]
+
+        new_state = state.remap({state.template.qubits[2]: 1})
+        assert len(new_state.qubits()) == 1
+        assert new_state.qubits() == [state.template.qubits[2]]
 
 
 class TestTemplateBuilder:
@@ -24,7 +40,7 @@ class TestTemplateBuilder:
     def test_empty(self):
         """Test building an empty circuit."""
         template_state, _ = pre_build(QuantumCircuit())
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 0
         assert template.num_clbits == 0
@@ -41,7 +57,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -71,7 +87,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -106,7 +122,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -139,7 +155,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
@@ -189,7 +205,7 @@ class TestTemplateBuilder:
         circuit.measure_all()
 
         template_state, _ = pre_build(circuit)
-        template = template_state.template
+        template = template_state.finalize()
 
         assert template.num_qubits == 5
         assert template.num_clbits == 5
@@ -207,3 +223,21 @@ class TestTemplateBuilder:
 
         # Verify that we get the expected number of parameters
         assert len(template.parameters) == 48  # One parameter per rz\rx gate
+
+    def test_parametric_gates_with_fixed_params(self):
+        """Test that parametric gates with fixed parameters do not cause building to fail."""
+        circuit = QuantumCircuit(2)
+        circuit.rzz(0.0, 0, 1)
+        _, samplex = pre_build(circuit)
+        samplex.finalize()
+
+        circuit = QuantumCircuit(2)
+        circuit.rz(0.0, 0)
+        _, samplex = pre_build(circuit)
+        samplex.finalize()
+
+        circuit = QuantumCircuit(2)
+        circuit.rz(Parameter("p"), 0)
+        circuit.rzz(0.0, 0, 1)
+        _, samplex = pre_build(circuit)
+        samplex.finalize()

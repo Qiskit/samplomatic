@@ -29,8 +29,8 @@ from rustworkx.rustworkx import (
 )
 
 from ..aliases import (
-    CircuitInstruction,
     ClbitIndex,
+    DAGOpNode,
     LayoutMethod,
     LayoutPresets,
     NodeIndex,
@@ -42,8 +42,8 @@ from ..aliases import (
     RegisterName,
     StrRef,
 )
-from ..annotations import VirtualType
-from ..builders.specs import InstructionMode
+from ..annotations import ChangeBasisMode
+from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
 from ..exceptions import SamplexBuildError
@@ -69,7 +69,12 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from ..samplex.nodes.change_basis_node import (
+    LOCAL_CLIFFORD,
+    MEAS_PAULI_BASIS,
+    PREP_PAULI_BASIS,
+    BasisChange,
+)
 from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
@@ -77,7 +82,8 @@ from ..samplex.nodes.pauli_past_clifford_node import (
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
-from ..virtual_registers import U2Register
+from ..utils import FrozenDict
+from ..virtual_registers import U2Register, VirtualType
 from ..visualization import plot_graph
 from .graph_data import (
     PreChangeBasis,
@@ -97,10 +103,17 @@ if TYPE_CHECKING:
 
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
 
-REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = {
-    VirtualType.U2: HaarU2,
-    VirtualType.PAULI: UniformPauli,
-}
+REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
+    {VirtualType.U2: HaarU2, VirtualType.PAULI: UniformPauli}
+)
+
+FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
+    {
+        "pauli_measure": MEAS_PAULI_BASIS,
+        "pauli_prepare": PREP_PAULI_BASIS,
+        "local_clifford": LOCAL_CLIFFORD,
+    }
+)
 
 
 class DanglerType(Enum):
@@ -338,7 +351,7 @@ class PreSamplex:
                 for qubit_idx in found_subsystems.all_elements:
                     self._optional_dangling[qubit_idx].discard(found_idx)
 
-    def enforce_no_propagation(self, instr: CircuitInstruction):
+    def enforce_no_propagation(self, instr: DAGOpNode):
         """Make sure the instruction doesn't participate in virtual gate propagation.
 
         We check to see if there are left-to-right danglers, and error if they exist.
@@ -352,11 +365,11 @@ class PreSamplex:
             SamplexBuildError: If `instr` involves active left-to-right danglers.
         """
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
-        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
+        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
 
         match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         if any(True for _ in self.find_danglers(match, subsystems)):
-            raise SamplexBuildError(f"Cannot propagate through {instr.operation.name} instruction.")
+            raise SamplexBuildError(f"Cannot propagate through {instr.op.name} instruction.")
         match = DanglerMatch(direction=Direction.LEFT)
         all(self.find_then_remove_danglers(match, subsystems))
 
@@ -678,12 +691,18 @@ class PreSamplex:
         )
         return self._add_emit_right(node)
 
-    def add_emit_meas_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
-        """Add a node that emits virtual gates left to measure in a basis.
+    def add_emit_left_basis_change(
+        self,
+        qubits: QubitPartition,
+        basis_ref: StrRef,
+        basis_change: FrameChangeMode,
+    ) -> NodeIndex:
+        """Add a node that emits virtual gates left to change frames.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             basis_ref: Unique identifier of this basis change.
+            basis_change: What basis change to use.
 
         Raises:
             SamplexBuildError: If a basis change with the same `basis_ref` but of different
@@ -701,15 +720,22 @@ class PreSamplex:
             self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreChangeBasis(subsystems, Direction.LEFT, VirtualType.U2, basis_ref)
+        virtual_type = VirtualType.U2 if type(basis_change) is ChangeBasisMode else VirtualType.C1
+        node = PreChangeBasis(subsystems, Direction.LEFT, virtual_type, basis_ref, basis_change)
         return self._add_emit_left(node)
 
-    def add_emit_prep_basis_change(self, qubits: QubitPartition, basis_ref: StrRef) -> NodeIndex:
-        """Add a node that emits virtual gates right to prepare a basis.
+    def add_emit_right_basis_change(
+        self,
+        qubits: QubitPartition,
+        basis_ref: StrRef,
+        basis_change: FrameChangeMode,
+    ) -> NodeIndex:
+        """Add a node that emits virtual gates right to change frames.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             basis_ref: Unique identifier of this basis change.
+            basis_change: What basis change to use.
 
         Raises:
             SamplexBuildError: If a basis change with the same `basis_ref` but of different
@@ -727,10 +753,11 @@ class PreSamplex:
             self._basis_changes[basis_ref] = len(qubits)
 
         subsystems = self.qubits_to_indices(qubits)
-        node = PreChangeBasis(subsystems, Direction.RIGHT, VirtualType.U2, basis_ref)
+        virtual_type = VirtualType.U2 if type(basis_change) is ChangeBasisMode else VirtualType.C1
+        node = PreChangeBasis(subsystems, Direction.RIGHT, virtual_type, basis_ref, basis_change)
         return self._add_emit_right(node)
 
-    def add_propagate(self, instr: CircuitInstruction, mode: InstructionMode, params: ParamSpec):
+    def add_propagate(self, instr: DAGOpNode, mode: InstructionMode, params: ParamSpec):
         """Add a node that propagates virtual gates through an operation.
 
         This method deduces which direction to propagate virtual gates by inspecting the previous
@@ -748,12 +775,12 @@ class PreSamplex:
         Returns:
             The index of the new node in the graph.
         """
-        op = instr.operation
+        op = instr.op
         if op.name in NO_PROPAGATE:
             return
 
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
-        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qubits])
+        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
 
         if op.name.startswith("meas"):
             self.enforce_no_propagation(instr)
@@ -767,7 +794,7 @@ class PreSamplex:
             self.passthrough_params.extend(params)
 
         # recall that this is indexing out of `subsystems`, not qubits
-        num_qubits = instr.operation.num_qubits
+        num_qubits = instr.num_qubits
         partition = SubsystemIndicesPartition(num_qubits, [tuple(range(num_qubits))])
 
         # time ordering: (emit> | propagate>) --> new propagate>
@@ -1106,13 +1133,16 @@ class PreSamplex:
             )
 
         for basis_ref, length in self._basis_changes.items():
+            description = (
+                "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3."
+                if basis_ref.startswith("basis_changes")
+                else "Local Clifford gates, where each non-negative value c less than 24 "
+                "corresponds to the unitary (HS)^i H^j P(k) with k = c % 4, j = c // 4 % 2, and "
+                "i = c // 8 % 3, and P(k) is the k^th Pauli in symplectic order."
+            )
+
             samplex.add_input(
-                TensorSpecification(
-                    f"basis_changes.{basis_ref}",
-                    (length,),
-                    np.dtype(np.uint8),
-                    "Basis changing gates, in the symplectic ordering I=0, Z=1, X=2, and Y=3. ",
-                )
+                TensorSpecification(basis_ref, (length,), np.dtype(np.uint8), description)
             )
 
         for noise_ref, num_qubits in self._pauli_lindblad_maps.items():
@@ -1208,8 +1238,8 @@ class PreSamplex:
         reg_idx = order[pre_basis_idx]
         node = ChangeBasisNode(
             reg_name := f"basis_change_{reg_idx}",
-            MEAS_PAULI_BASIS if pre_basis.direction is Direction.LEFT else PREP_PAULI_BASIS,
-            "basis_changes." + pre_basis.basis_ref,
+            FRAME_CHANGE_TO_BASIS_CHANGE[pre_basis.basis_change],
+            pre_basis.basis_ref,
             len(pre_basis.subsystems),
         )
         node_idx = samplex.add_node(node)

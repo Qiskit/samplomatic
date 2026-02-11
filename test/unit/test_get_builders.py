@@ -11,10 +11,23 @@
 # that they have been altered from the originals.
 
 import pytest
-from qiskit.circuit import Annotation, BoxOp, CircuitInstruction, QuantumCircuit, Qubit
+from qiskit.circuit import Annotation, BoxOp, QuantumCircuit, Qubit
+from qiskit.dagcircuit import DAGOpNode
 
-from samplomatic.annotations import DressingMode, Twirl
-from samplomatic.builders.get_builder import get_builder, twirl_parser
+from samplomatic.annotations import (
+    ChangeBasis,
+    DressingMode,
+    InjectLocalClifford,
+    InjectNoise,
+    Twirl,
+)
+from samplomatic.builders.get_builder import (
+    change_basis_parser,
+    get_builder,
+    inject_local_clifford_parser,
+    inject_noise_parser,
+    twirl_parser,
+)
 from samplomatic.builders.specs import CollectionSpec, EmissionSpec
 from samplomatic.exceptions import BuildError
 from samplomatic.partition import QubitPartition
@@ -24,11 +37,11 @@ from samplomatic.synths import RzSxSynth
 def test_get_builder_errors():
     """Test the errors when getting builders."""
     circuit = QuantumCircuit(1)
-    op = CircuitInstruction(BoxOp(circuit, annotations=[Annotation()]))
+    op = DAGOpNode(BoxOp(circuit, annotations=[Annotation()]))
     with pytest.raises(BuildError, match="Cannot get a builder"):
         get_builder(op, circuit.qubits)
 
-    op = CircuitInstruction(BoxOp(circuit, annotations=[Twirl(), Twirl()]))
+    op = DAGOpNode(BoxOp(circuit, annotations=[Twirl(), Twirl()]))
     with pytest.raises(BuildError, match="Cannot specify more than one"):
         get_builder(op, circuit.qubits)
 
@@ -44,3 +57,26 @@ def test_twirl_parser_errors():
 
     with pytest.raises(BuildError, match="Cannot use different synthesizers"):
         twirl_parser(Twirl(decomposition="rzrx"), collection, emission)
+
+
+def test_change_frame_parser_errors():
+    """Test the errors when parsing frame changing annotations."""
+    qubits = QubitPartition(1, [(Qubit(),)])
+    collection = CollectionSpec(qubits, dressing=DressingMode.LEFT, synth=RzSxSynth())
+    emission = EmissionSpec(qubits, dressing=DressingMode.LEFT, basis_ref="my_basis")
+
+    with pytest.raises(BuildError, match="Cannot specify multiple frame changing annotations"):
+        change_basis_parser(ChangeBasis(), collection, emission)
+
+    with pytest.raises(BuildError, match="Cannot specify multiple frame changing annotations"):
+        inject_local_clifford_parser(InjectLocalClifford("my_basis"), collection, emission)
+
+
+def test_inject_noise_parser_errors():
+    """Test the errors when parsing inject noise annotations."""
+    qubits = QubitPartition(1, [(Qubit(),)])
+    collection = CollectionSpec(qubits, dressing=DressingMode.LEFT, synth=RzSxSynth())
+    emission = EmissionSpec(qubits, dressing=DressingMode.LEFT, noise_ref="my_noise")
+
+    with pytest.raises(BuildError, match="with noise reference 'my_noise'"):
+        inject_noise_parser(InjectNoise(ref="other_ref"), collection, emission)

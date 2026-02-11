@@ -16,13 +16,13 @@ import numpy as np
 import pytest
 from scipy.linalg import expm
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.samplex.nodes import (
     LeftU2ParametricMultiplicationNode,
     RightU2ParametricMultiplicationNode,
 )
+from samplomatic.virtual_registers import VirtualType
 
 X_MATRIX = np.array([[0, 1], [1, 0]])
 Z_MATRIX = np.array([[1, 0], [0, -1]])

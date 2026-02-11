@@ -13,5 +13,3 @@
 """Transpiler"""
 
 from .generate_boxing_pass_manager import generate_boxing_pass_manager
-from .noise_injection_strategies import NoiseInjectionStrategy, NoiseInjectionStrategyLiteral
-from .twirling_strategies import TwirlingStrategy, TwirlingStrategyLiteral

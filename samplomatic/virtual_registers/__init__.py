@@ -16,4 +16,5 @@ from .group_register import GroupRegister
 from .pauli_register import PauliRegister
 from .u2_register import U2Register
 from .virtual_register import VirtualRegister
+from .virtual_type import VirtualType
 from .z2_register import Z2Register

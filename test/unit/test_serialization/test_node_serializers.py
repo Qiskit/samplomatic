@@ -13,7 +13,6 @@
 import orjson
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import UniformPauli
 from samplomatic.samplex.nodes import (
     ChangeBasisNode,
@@ -48,6 +47,7 @@ from samplomatic.serialization.node_serializers import (
 )
 from samplomatic.serialization.type_serializer import TypeSerializer
 from samplomatic.synths import RzSxSynth
+from samplomatic.virtual_registers import VirtualType
 
 
 @pytest.mark.parametrize("basis_change", [MEAS_PAULI_BASIS, PREP_PAULI_BASIS])

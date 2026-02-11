@@ -12,11 +12,11 @@
 
 """Test the C1Register"""
 
+import numpy as np
 from qiskit.quantum_info import Clifford
 
-from samplomatic.annotations import VirtualType
-from samplomatic.virtual_registers import C1Register, VirtualRegister
-from samplomatic.virtual_registers.c1_register import C1_TO_TABLEAU
+from samplomatic.virtual_registers import C1Register, U2Register, VirtualRegister, VirtualType
+from samplomatic.virtual_registers.c1_register import C1_TO_TABLEAU, c1_to_u2
 
 
 def test_select():
@@ -28,6 +28,12 @@ def test_convert_to_c1():
     """Test the convert_to() method returns the register when types match."""
     cliffords = C1Register.identity(3, 3)
     assert cliffords is cliffords.convert_to(VirtualType.C1)
+
+
+def test_convert_to_u2():
+    """Test the convert_to() for U2Register."""
+    cliffords = C1Register(np.arange(24).reshape(4, 6))
+    assert U2Register(c1_to_u2().reshape(4, 6, 2, 2)) == cliffords.convert_to(VirtualType.U2)
 
 
 def test_tableaus():

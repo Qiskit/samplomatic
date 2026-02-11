@@ -15,16 +15,16 @@
 import numpy as np
 import pytest
 from qiskit.circuit import (
-    CircuitInstruction,
     ClassicalRegister,
     Parameter,
     QuantumCircuit,
     QuantumRegister,
 )
 from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate, XGate
+from qiskit.converters import circuit_to_dag
+from qiskit.dagcircuit import DAGOpNode
 from rustworkx import topological_sort
 
-from samplomatic.annotations import VirtualType
 from samplomatic.builders.specs import InstructionMode
 from samplomatic.constants import Direction
 from samplomatic.exceptions import SamplexBuildError
@@ -34,7 +34,7 @@ from samplomatic.pre_samplex import PreSamplex
 from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate, PreZ2Collect
 from samplomatic.pre_samplex.pre_samplex import DanglerMatch, DanglerType
 from samplomatic.synths.rzsx_synth import RzSxSynth
-from samplomatic.virtual_registers import PauliRegister
+from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 class TestDanglers:
@@ -134,13 +134,19 @@ class TestBuildPreSamplex:
         """Test that adding emit basis with same name but different length errors."""
         qreg = QuantumRegister(2)
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
-        pre_samplex.add_emit_meas_basis_change(QubitPartition.from_elements(qreg[:1]), "meas")
+        pre_samplex.add_emit_left_basis_change(
+            QubitPartition.from_elements(qreg[:1]), "meas", VirtualType.PAULI
+        )
 
         with pytest.raises(SamplexBuildError, match=r"Cannot add basis change"):
-            pre_samplex.add_emit_meas_basis_change(QubitPartition.from_elements(qreg), "meas")
+            pre_samplex.add_emit_left_basis_change(
+                QubitPartition.from_elements(qreg), "meas", VirtualType.PAULI
+            )
 
         with pytest.raises(SamplexBuildError, match=r"Cannot add basis change"):
-            pre_samplex.add_emit_prep_basis_change(QubitPartition.from_elements(qreg), "meas")
+            pre_samplex.add_emit_right_basis_change(
+                QubitPartition.from_elements(qreg), "meas", VirtualType.PAULI
+            )
 
     def test_propagate_preceded_by_collect(self):
         """Test that add_propagate adds leftwards pre-propagate node."""
@@ -149,7 +155,7 @@ class TestBuildPreSamplex:
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionMode.NONE, [])
+        pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
 
         subsys_idxs = QubitIndicesPartition.from_elements([0, 1])
         assert pre_samplex.graph.nodes()[0] == PreCollect(
@@ -169,7 +175,7 @@ class TestBuildPreSamplex:
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
-        pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionMode.NONE, [])
+        pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
 
         subsys_idxs = QubitIndicesPartition.from_elements([0, 1])
         assert pre_samplex.graph.nodes()[0] == PreCollect(
@@ -193,12 +199,12 @@ class TestBuildPreSamplex:
         pre_samplex.add_collect(QubitPartition.from_elements(qreg[:1]), RzSxSynth(), [])
         pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg[:1]), PauliRegister)
         with pytest.raises(SamplexBuildError, match="overlaps partially with .* left-to-right"):
-            pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionMode.NONE, [])
+            pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1})
         pre_samplex.add_collect(QubitPartition.from_elements(qreg[:1]), RzSxSynth(), [])
         with pytest.raises(SamplexBuildError, match="overlaps partially with .* collectors.* left"):
-            pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionMode.NONE, [])
+            pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
 
     def test_error_right_propagate_through_measurement(self):
         """Test that propagation through measurement to the right raises an error"""
@@ -208,7 +214,7 @@ class TestBuildPreSamplex:
         pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
         with pytest.raises(SamplexBuildError, match="Cannot propagate through measure instruction"):
-            pre_samplex.add_propagate(CircuitInstruction(Measure(), qreg), InstructionMode.NONE, [])
+            pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
 
     def test_error_left_propagate_through_measurement(self):
         """Test that propagation through measurement to the left raises an error"""
@@ -216,7 +222,7 @@ class TestBuildPreSamplex:
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
         pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        pre_samplex.add_propagate(CircuitInstruction(Measure(), qreg), InstructionMode.NONE, [])
+        pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
         with pytest.raises(SamplexBuildError, match="Found an emission without a collector"):
             pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
 
@@ -226,7 +232,7 @@ class TestBuildPreSamplex:
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
         pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        pre_samplex.add_propagate(CircuitInstruction(Measure(), qreg), InstructionMode.NONE, [])
+        pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
         pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
 
@@ -241,7 +247,7 @@ class TestBuildPreSamplex:
         state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1}, cregs=[creg])
         state.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         state.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
-        state.add_propagate(CircuitInstruction(XGate(), [qreg[0]]), InstructionMode.NONE, [])
+        state.add_propagate(DAGOpNode(XGate(), [qreg[0]]), InstructionMode.NONE, [])
         state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1])
 
         subsys_idxs = QubitIndicesPartition.from_elements([0, 1])
@@ -328,10 +334,12 @@ class TestHelpersAttributes:
 
         pre_samplex = PreSamplex(qubit_map={q0: 0, q1: 1, q2: 2, q3: 3})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        prep_idx0 = pre_samplex.add_emit_prep_basis_change(subsystems, "prepare")
+        prep_idx0 = pre_samplex.add_emit_right_basis_change(
+            subsystems, "prepare", VirtualType.PAULI
+        )
         emit_idx0 = pre_samplex.add_emit_twirl(subsystems, PauliRegister)
         collect_idx1 = pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        meas_idx0 = pre_samplex.add_emit_meas_basis_change(subsystems, "measure")
+        meas_idx0 = pre_samplex.add_emit_left_basis_change(subsystems, "measure", VirtualType.PAULI)
         emit_idx10 = pre_samplex.add_emit_twirl(subsystems0, PauliRegister)
         emit_idx11 = pre_samplex.add_emit_twirl(subsystems1, PauliRegister)
         collect_idx2 = pre_samplex.add_collect(subsystems, RzSxSynth(), [])
@@ -391,7 +399,7 @@ class TestFinalize:
 
         pre_samplex = PreSamplex(qubit_map={qubit: idx for idx, qubit in enumerate(qreg)})
         pre_samplex.add_collect(subsystems, RzSxSynth(), np.array([[0, 1, 2], [3, 4, 5]]))
-        pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionMode.NONE, [])
+        pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
         pre_samplex.finalize()
         assert not pre_samplex.graph.nodes()
 
@@ -399,7 +407,7 @@ class TestFinalize:
         pre_samplex.add_collect(subsystems, RzSxSynth(), np.array([[0, 1, 2], [3, 4, 5]]))
         pre_samplex.add_emit_twirl(subsystems, VirtualType.PAULI)
         pre_samplex.add_collect(subsystems, RzSxSynth(), np.array([[0, 1, 2], [3, 4, 5]]))
-        pre_samplex.add_propagate(CircuitInstruction(CXGate(), qreg), InstructionMode.NONE, [])
+        pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
         assert len(pre_samplex.graph) == 4
         assert len(pre_samplex.graph.edges()) == 3
 
@@ -422,7 +430,7 @@ class TestPrePropagateClustering:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in circ:
+        for instr in circuit_to_dag(circ).topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
@@ -434,12 +442,13 @@ class TestPrePropagateClustering:
         circ = QuantumCircuit(4)
         circ.cx(0, 1)
         circ.cx(2, 3)
+        dag = circuit_to_dag(circ)
         subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
 
-        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(dag.qubits)})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        pre_samplex.add_propagate(circ[0], InstructionMode.MULTIPLY, [])
-        pre_samplex.add_propagate(circ[1], InstructionMode.PROPAGATE, [])
+        for n, m in zip(dag.op_nodes(), [InstructionMode.MULTIPLY, InstructionMode.PROPAGATE]):
+            pre_samplex.add_propagate(n, m, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
         clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
@@ -450,14 +459,15 @@ class TestPrePropagateClustering:
         circ = QuantumCircuit(4)
         circ.cx(0, 1)
         circ.cx(2, 3)
+        dag = circuit_to_dag(circ)
         subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
 
-        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(dag.qubits)})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
         pre_samplex.add_collect(
             QubitPartition(1, ((circ.qubits[2],), (circ.qubits[3],))), RzSxSynth(), []
         )
-        for instr in circ:
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(
             QubitPartition(1, ((circ.qubits[0],), (circ.qubits[1],))), PauliRegister
@@ -474,11 +484,12 @@ class TestPrePropagateClustering:
         circ = QuantumCircuit(4)
         circ.cx(0, 1)
         circ.cz(2, 3)
+        dag = circuit_to_dag(circ)
         subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
 
-        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(dag.qubits)})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in circ:
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
@@ -490,11 +501,12 @@ class TestPrePropagateClustering:
         circ = QuantumCircuit(3)
         circ.cx(0, 1)
         circ.cx(1, 2)
+        dag = circuit_to_dag(circ)
         subsystems = QubitPartition(1, ((q,) for q in circ.qregs[0]))
 
-        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circ.qregs[0])})
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(dag.qubits)})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in circ:
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
@@ -514,10 +526,11 @@ class TestMergeParallelPrePropagateNodes:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in box:
+        dag = circuit_to_dag(box)
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
-        for instr in box:
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
         pre_samplex.prune_prenodes_unreachable_from_emission()
@@ -551,7 +564,7 @@ class TestMergeParallelPrePropagateNodes:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in box:
+        for instr in circuit_to_dag(box).topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.PROPAGATE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
@@ -571,10 +584,11 @@ class TestMergeParallelPrePropagateNodes:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in box:
+        dag = circuit_to_dag(box)
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
-        for instr in box:
+        for instr in dag.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
         pre_samplex.prune_prenodes_unreachable_from_emission()
@@ -618,7 +632,7 @@ class TestMergeParallelPrePropagateNodes:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box1.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in box1:
+        for instr in circuit_to_dag(box1).topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
         pre_samplex.prune_prenodes_unreachable_from_emission()
@@ -655,7 +669,7 @@ class TestMergeParallelPrePropagateNodes:
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in box:
+        for instr in circuit_to_dag(box).topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
@@ -675,11 +689,12 @@ class TestMergeParallelPrePropagateNodes:
         """Test that add_propagate_node errors when trying to add an unsupported operation."""
         circuit = QuantumCircuit(2)
         circuit.cx(0, 1)
+        dag_op = next(iter(circuit_to_dag(circuit).op_nodes()))
         subsystems = QubitPartition(1, ((q,) for q in circuit.qregs[0]))
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(circuit.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), np.arange(6).reshape(2, 3))
-        pre_samplex.add_propagate(next(iter(circuit)), InstructionMode.MULTIPLY, [])
+        pre_samplex.add_propagate(dag_op, InstructionMode.MULTIPLY, [])
         pre_samplex.add_emit_twirl(subsystems, VirtualType.PAULI)
         pre_samplex.add_collect(subsystems, RzSxSynth(), np.arange(6).reshape(2, 3))
 
@@ -727,13 +742,14 @@ class TestDraw:
         box.cx(0, 1)
         box.cx(1, 2)
         subsystems = QubitPartition.from_elements(box.qubits)
+        dag_box = circuit_to_dag(box)
 
         pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
-        for instr in box:
+        for instr in dag_box.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, VirtualType.PAULI)
-        for instr in box:
+        for instr in dag_box.topological_op_nodes():
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
 

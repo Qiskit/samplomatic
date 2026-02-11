@@ -15,9 +15,9 @@
 import numpy as np
 
 from ...aliases import InterfaceName, ParamIndices, RegisterName, SubsystemIndices
-from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
 from ...synths import Synth
+from ...virtual_registers import VirtualType
 from .collection_node import CollectionNode
 
 

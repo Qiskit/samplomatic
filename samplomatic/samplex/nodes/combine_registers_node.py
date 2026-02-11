@@ -18,9 +18,8 @@ from enum import Enum, auto
 import numpy as np
 
 from ...aliases import RegisterName, SubsystemIndex
-from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
-from ...virtual_registers import VirtualRegister
+from ...virtual_registers import VirtualRegister, VirtualType
 from .evaluation_node import EvaluationNode
 
 

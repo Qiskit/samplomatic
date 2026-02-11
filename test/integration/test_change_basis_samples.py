@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -76,7 +76,7 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "x_basis_sq_gate_measure"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([ChangeBasis(mode="prepare")]):
+    with circuit.box([ChangeBasis(mode="prepare", dressing="right")]):
         circuit.rx(np.pi / 4, 0)
 
     expected = QuantumCircuit(1)
@@ -101,10 +101,10 @@ def make_circuits():
     yield (circuit, expected, {"measure": pauli}), "x_basis_twirl_measure"
 
     circuit = QuantumCircuit(1)
-    with circuit.box([Twirl()]):
+    with circuit.box([Twirl(), ChangeBasis(mode="prepare")]):
         circuit.noop(0)
 
-    with circuit.box([ChangeBasis(mode="prepare"), Twirl(dressing="right")]):
+    with circuit.box([Twirl(dressing="right")]):
         circuit.rx(np.pi / 4, 0)
 
     expected = QuantumCircuit(1)
@@ -112,7 +112,16 @@ def make_circuits():
     expected.rx(np.pi / 4, 0)
 
     pauli = np.array([2], dtype=np.uint8)
-    yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare"
+    yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare_left"
+
+    circuit = QuantumCircuit(1)
+    with circuit.box([Twirl()]):
+        circuit.noop(0)
+
+    with circuit.box([ChangeBasis(mode="prepare", dressing="right"), Twirl(dressing="right")]):
+        circuit.rx(np.pi / 4, 0)
+
+    yield (circuit, expected, {"prepare": pauli}), "x_basis_twirl_prepare_right"
 
     circuit = QuantumCircuit(2)
     with circuit.box([ChangeBasis()]):
@@ -160,22 +169,49 @@ def make_circuits():
     yield (circuit, expected, {"my_basis": pauli}), "z_to_x"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
-    expected = QuantumCircuit(3)
-    expected.h(0)
     for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
-        with circuit.box([ChangeBasis(mode="prepare")]):
+        with circuit.box([ChangeBasis(mode="prepare", dressing="right")]):
             circuit.noop(*perm)
+        expected = QuantumCircuit(3)
+        expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_context_qubits_{idx}"
 
     pauli = np.array([2, 0, 0], dtype=np.uint8)
-    for idx, perm in enumerate([(0, 1, 2), (2, 0, 1), (1, 2, 0)]):
+    for idx, perm in enumerate([(0, 1, 2), (1, 2, 0), (2, 0, 1)]):
         circuit = QuantumCircuit(3)
-        box_op = BoxOp(QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare")])
+        box_op = BoxOp(
+            QuantumCircuit(3), annotations=[ChangeBasis(mode="prepare", dressing="right")]
+        )
         circuit.append(box_op, perm)
         expected = QuantumCircuit(3)
-        expected.h(idx)
+        expected.h(0)
         yield (circuit, expected, {"prepare": pauli}), f"permuted_box_op_qubits_{idx}"
+
+    prepare_pauli = np.array([0, 2, 0], dtype=np.uint8)
+    measure_pauli = np.array([2, 0, 2], dtype=np.uint8)
+    circuit = QuantumCircuit(5)
+
+    body0 = QuantumCircuit(3)
+    body0.cx(1, 0)
+    body0.cx(0, 2)
+    box0 = BoxOp(body0, annotations=[Twirl(), ChangeBasis(mode="prepare", dressing="left")])
+    circuit.append(box0, [4, 1, 3])
+
+    body1 = QuantumCircuit(3)
+    annotations = [Twirl(dressing="right"), ChangeBasis(mode="measure", dressing="right")]
+    box1 = BoxOp(body1, annotations=annotations)
+    circuit.append(box1, [1, 3, 4])
+
+    expected = QuantumCircuit(5)
+    expected.h(3)
+    expected.cx(1, 4)
+    expected.cx(4, 3)
+    expected.h(1)
+    expected.h(4)
+
+    samplex_arguments = {"prepare": prepare_pauli, "measure": measure_pauli}
+    yield (circuit, expected, samplex_arguments), "cxs_on_subset_boxop"
 
 
 def pytest_generate_tests(metafunc):
@@ -192,8 +228,9 @@ def test_sampling(circuit, expected, basis_changes, save_plot):
     """
     save_plot(lambda: circuit.draw("mpl"), "Base Circuit", delayed=True)
 
-    template, samplex_state = pre_build(circuit)
-    save_plot(lambda: template.template.draw("mpl"), "Template Circuit", delayed=True)
+    template_state, samplex_state = pre_build(circuit)
+    template = template_state.finalize()
+    save_plot(lambda: template.draw("mpl"), "Template Circuit", delayed=True)
     save_plot(lambda: samplex_state.draw(), "Unfinalized Pre-Samplex", delayed=True)
 
     samplex = samplex_state.finalize()
@@ -206,7 +243,7 @@ def test_sampling(circuit, expected, basis_changes, save_plot):
     parameter_values = samplex_output["parameter_values"]
 
     expected_op = Operator(expected)
-    template.template.remove_final_measurements()
+    template.remove_final_measurements()
     for row in parameter_values:
-        op = Operator(template.template.assign_parameters(row))
+        op = Operator(template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f
