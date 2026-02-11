@@ -13,10 +13,9 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import ConversionNode
-from samplomatic.virtual_registers import PauliRegister, U2Register
+from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualType
 
 
 def test_construction():

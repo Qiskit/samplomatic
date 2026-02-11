@@ -15,11 +15,11 @@
 import numpy as np
 
 from ..aliases import SubsystemIndex
-from ..annotations import VirtualType
 from ..exceptions import VirtualGateError
 from .c1_register import C1Register
 from .group_register import GroupRegister
 from .u2_register import U2Register
+from .virtual_type import VirtualType
 from .z2_register import Z2Register
 
 PAULI_GATE_NAMES = {"id": 0, "x": 2, "z": 1, "y": 3}

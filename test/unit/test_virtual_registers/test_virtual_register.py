@@ -15,10 +15,9 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import VirtualGateError
 from samplomatic.serializable import TYPE_REGISTRY
-from samplomatic.virtual_registers import VirtualRegister
+from samplomatic.virtual_registers import VirtualRegister, VirtualType
 
 
 @pytest.fixture

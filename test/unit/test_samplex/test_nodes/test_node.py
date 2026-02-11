@@ -12,10 +12,10 @@
 
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from samplomatic.serializable import TYPE_REGISTRY
+from samplomatic.virtual_registers import VirtualType
 
 
 def test_parameter_idxs(dummy_node):

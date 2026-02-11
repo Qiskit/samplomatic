@@ -13,12 +13,11 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex import SamplexOutput
 from samplomatic.samplex.nodes import CollectZ2ToOutputNode
 from samplomatic.tensor_interface import TensorSpecification
-from samplomatic.virtual_registers import Z2Register
+from samplomatic.virtual_registers import VirtualType, Z2Register
 
 
 def test_construction():

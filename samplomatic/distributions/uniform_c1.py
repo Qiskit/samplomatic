@@ -12,8 +12,7 @@
 
 """UniformC1"""
 
-from ..annotations import VirtualType
-from ..virtual_registers import C1Register
+from ..virtual_registers import C1Register, VirtualType
 from .distribution import Distribution
 
 

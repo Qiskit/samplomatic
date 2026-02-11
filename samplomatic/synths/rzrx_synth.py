@@ -16,9 +16,8 @@ import numpy as np
 from qiskit.circuit import CircuitInstruction, Parameter, Qubit
 from qiskit.circuit.library import RXGate, RZGate
 
-from ..annotations import VirtualType
 from ..exceptions import SynthError
-from ..virtual_registers import U2Register
+from ..virtual_registers import U2Register, VirtualType
 from .synth import Synth
 
 

@@ -16,7 +16,6 @@ import numpy as np
 import pytest
 from qiskit.circuit.library import HGate, IGate
 
-from samplomatic.annotations import VirtualType
 from samplomatic.samplex.nodes import ChangeBasisNode
 from samplomatic.samplex.nodes.change_basis_node import (
     MEAS_PAULI_BASIS,
@@ -24,7 +23,7 @@ from samplomatic.samplex.nodes.change_basis_node import (
     BasisChange,
 )
 from samplomatic.tensor_interface import TensorInterface, TensorSpecification
-from samplomatic.virtual_registers import PauliRegister, U2Register
+from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualType
 
 
 class TestBasisChange:

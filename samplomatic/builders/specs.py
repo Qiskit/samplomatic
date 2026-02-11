@@ -19,9 +19,10 @@ from typing import Literal, TypeAlias
 import numpy as np
 
 from ..aliases import CircuitInstruction, Parameter, Qubit, StrRef
-from ..annotations import DressingMode, InjectionSite, VirtualType
+from ..annotations import DressingMode, InjectionSite
 from ..partition import QubitPartition
 from ..synths import Synth
+from ..virtual_registers import VirtualType
 
 EMPTY_IDXS = np.empty((0, 0), dtype=np.intp)
 EMPTY_IDXS.setflags(write=False)

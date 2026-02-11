@@ -12,11 +12,10 @@
 
 """Test the TwirlSamplingNode class"""
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import UniformPauli
 from samplomatic.samplex.nodes import TwirlSamplingNode
 from samplomatic.tensor_interface import TensorInterface
-from samplomatic.virtual_registers import PauliRegister
+from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 def test_instantiates():

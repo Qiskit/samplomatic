@@ -21,12 +21,11 @@ from samplomatic.aliases import (
     RegisterName,
     SubsystemIndex,
 )
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2, UniformPauli
 from samplomatic.exceptions import SamplexRuntimeError
 from samplomatic.samplex.nodes import CollectionNode, EvaluationNode, Node, SamplingNode
 from samplomatic.serializable import TYPE_REGISTRY
-from samplomatic.virtual_registers import PauliRegister, U2Register
+from samplomatic.virtual_registers import PauliRegister, U2Register, VirtualType
 
 
 @pytest.fixture

@@ -15,13 +15,13 @@
 import numpy as np
 import pytest
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import VirtualGateError
 from samplomatic.virtual_registers import (
     C1Register,
     PauliRegister,
     U2Register,
     VirtualRegister,
+    VirtualType,
     Z2Register,
 )
 

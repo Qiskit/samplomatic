@@ -25,7 +25,6 @@ from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGOpNode
 from rustworkx import topological_sort
 
-from samplomatic.annotations import VirtualType
 from samplomatic.builders.specs import InstructionMode
 from samplomatic.constants import Direction
 from samplomatic.exceptions import SamplexBuildError
@@ -35,7 +34,7 @@ from samplomatic.pre_samplex import PreSamplex
 from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate, PreZ2Collect
 from samplomatic.pre_samplex.pre_samplex import DanglerMatch, DanglerType
 from samplomatic.synths.rzsx_synth import RzSxSynth
-from samplomatic.virtual_registers import PauliRegister
+from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 class TestDanglers:

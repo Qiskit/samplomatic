@@ -14,11 +14,10 @@
 
 import orjson
 
-from ..annotations import VirtualType
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes.change_basis_node import BasisChange
 from ..utils.serialization import array_from_json, array_to_json
-from ..virtual_registers import PauliRegister, U2Register, VirtualRegister, Z2Register
+from ..virtual_registers import PauliRegister, U2Register, VirtualRegister, VirtualType, Z2Register
 from .type_serializer import DataSerializer, TypeSerializer
 
 

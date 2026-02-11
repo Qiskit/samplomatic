@@ -19,9 +19,8 @@ import numpy as np
 from qiskit.circuit.library import HGate, IGate, RXGate
 
 from ...aliases import RegisterName, StrRef
-from ...annotations import VirtualType
 from ...serializable import Serializable
-from ...virtual_registers import C1Register, U2Register, VirtualRegister
+from ...virtual_registers import C1Register, U2Register, VirtualRegister, VirtualType
 from .sampling_node import SamplingNode
 
 T = TypeVar("T")

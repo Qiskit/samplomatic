@@ -12,7 +12,8 @@
 
 import pytest
 
-from samplomatic.annotations import DecompositionMode, DressingMode, Twirl, VirtualType
+from samplomatic.annotations import DecompositionMode, DressingMode, Twirl
+from samplomatic.virtual_registers import VirtualType
 
 
 def test_construction():

@@ -18,11 +18,10 @@ import pytest
 from qiskit.circuit.library import CXGate, CZGate, ECRGate, HGate
 from qiskit.quantum_info import Clifford, Pauli
 
-from samplomatic.annotations import VirtualType
 from samplomatic.exceptions import SamplexBuildError
 from samplomatic.samplex.nodes import PauliPastCliffordNode
 from samplomatic.samplex.nodes.pauli_past_clifford_node import PAULI_PAST_CLIFFORD_LOOKUP_TABLES
-from samplomatic.virtual_registers import PauliRegister
+from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 class TestLookupTables:

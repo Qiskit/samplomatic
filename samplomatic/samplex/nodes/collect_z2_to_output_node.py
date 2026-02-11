@@ -17,8 +17,8 @@ from collections.abc import Sequence
 import numpy as np
 
 from ...aliases import InterfaceName, OutputIndex, RegisterName, SubsystemIndex
-from ...annotations import VirtualType
 from ...exceptions import SamplexConstructionError
+from ...virtual_registers import VirtualType
 from .collection_node import CollectionNode
 
 

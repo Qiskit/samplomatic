@@ -42,7 +42,7 @@ from ..aliases import (
     RegisterName,
     StrRef,
 )
-from ..annotations import ChangeBasisMode, VirtualType
+from ..annotations import ChangeBasisMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..distributions import Distribution, HaarU2, UniformPauli
@@ -83,7 +83,7 @@ from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from ..utils import FrozenDict
-from ..virtual_registers import U2Register
+from ..virtual_registers import U2Register, VirtualType
 from ..visualization import plot_graph
 from .graph_data import (
     PreChangeBasis,

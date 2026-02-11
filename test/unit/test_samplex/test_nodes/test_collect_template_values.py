@@ -15,13 +15,13 @@ import pytest
 from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
 
-from samplomatic.annotations import VirtualType
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SamplexConstructionError
 from samplomatic.samplex.interfaces import SamplexOutput
 from samplomatic.samplex.nodes import CollectTemplateValues
 from samplomatic.synths import RzRxSynth, RzSxSynth
 from samplomatic.tensor_interface import TensorSpecification
+from samplomatic.virtual_registers import VirtualType
 
 
 def test_construction():

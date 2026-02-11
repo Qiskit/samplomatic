@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,17 +17,11 @@ from collections.abc import Callable, Sequence
 from qiskit.circuit import Annotation, Qubit
 
 from ..aliases import DAGOpNode
-from ..annotations import (
-    ChangeBasis,
-    DressingMode,
-    InjectLocalClifford,
-    InjectNoise,
-    Twirl,
-    VirtualType,
-)
+from ..annotations import ChangeBasis, DressingMode, InjectLocalClifford, InjectNoise, Twirl
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
+from ..virtual_registers import VirtualType
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
