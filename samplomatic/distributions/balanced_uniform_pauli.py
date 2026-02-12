@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2026.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""BalancedUniformPauli"""
+"""UniformPauli"""
 
 import numpy as np
 
@@ -21,7 +21,7 @@ _MULTIPLIERS = np.array([0, 2, 1, 3], dtype=PauliRegister.DTYPE).reshape(1, 1, 4
 
 
 class BalancedUniformPauli(Distribution):
-    """The balanced uniform distribution over virtual Pauli gates.
+    r"""The balanced uniform distribution over virtual Pauli gates.
 
     Here, *balanced* means that on every qubit, each of the four Paulis appears the same number of
     times, provided that the requested number of samples is a multiple of four. Moreover, when the

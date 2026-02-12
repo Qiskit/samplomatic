@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@ from .change_basis import ChangeBasis
 from .change_basis_mode import ChangeBasisMode
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 from .dressing_mode import DressingLiteral, DressingMode
+from .group_mode import GroupLiteral, GroupMode
 from .inject_local_clifford import InjectLocalClifford
 from .inject_noise import InjectionSite, InjectNoise
 from .twirl import Twirl
-from .virtual_type import TWIRLING_GROUPS, GroupLiteral
