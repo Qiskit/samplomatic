@@ -17,13 +17,7 @@ from collections.abc import Callable, Sequence
 from qiskit.circuit import Annotation, Qubit
 
 from ..aliases import DAGOpNode
-from ..annotations import (
-    ChangeBasis,
-    DressingMode,
-    InjectLocalClifford,
-    InjectNoise,
-    Twirl,
-)
+from ..annotations import ChangeBasis, DressingMode, InjectLocalClifford, InjectNoise, Twirl
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
@@ -69,7 +63,7 @@ def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
         parser(annotation, collection, emission)
         seen_annotations.add(annotation_type)
 
-    if emission.noise_ref and not emission.twirl_register_type:
+    if emission.noise_ref and not emission.twirl_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
     if collection.dressing is DressingMode.LEFT:
@@ -206,7 +200,7 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `twirl.decomposition`.
     """
-    emission.twirl_register_type = twirl.group
+    emission.twirl_type = twirl.group
 
     synth = get_synth(twirl.decomposition)
     if (current_synth := collection.synth) is not None:

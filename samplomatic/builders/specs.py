@@ -61,7 +61,7 @@ class EmissionSpec:
     dressing: DressingMode | None = None
     """Which side of the box to emit on."""
 
-    twirl_register_type: GroupMode | None = None
+    twirl_type: GroupMode | None = None
     """What type and distribution of virtual gates to emit for twirling."""
 
     basis_change: FrameChangeMode | None = None
