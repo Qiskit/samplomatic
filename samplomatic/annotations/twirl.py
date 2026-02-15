@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,6 @@
 
 from qiskit.circuit import Annotation
 
-from ..utils.deprecation import deprecate_arg
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 from .dressing_mode import DressingLiteral, DressingMode
 from .group_mode import GroupLiteral, GroupMode
@@ -33,14 +32,6 @@ class Twirl(Annotation):
 
     __slots__ = ("group", "dressing", "decomposition")
 
-    @deprecate_arg(
-        "group",
-        since="0.17.0",
-        # we avoid isinstance in the predicate in order to avoid a dependency on ..virtual_registers
-        predicate=lambda group: type(group).__name__.startswith("VirtualType"),
-        deprecation_description="Providing a VirtualType enum as the 'group' argument of Twirl.",
-        additional_msg="Instead, use a string literal or the GroupMode enum.",
-    )
     def __init__(
         self,
         group: GroupLiteral = GroupMode.PAULI,
