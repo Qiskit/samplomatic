@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -98,7 +98,7 @@ class VirtualRegister(metaclass=VirtualRegisterMeta):
     def select(register_type: VirtualType) -> type["VirtualRegister"]:
         r"""Select a :class:`~.VirtualRegister` subclass based on a :class:`~.VirtualType` enum.
 
-        ..note::
+        .. note::
             Not all :class:`~.VirtualRegister`\s need to define a :attr:`TYPE`, though they will
             need to if they want to participate in many types of :class:`~.Node` actions.
             Conversely, not every :class:`~.VirtualType` must correspond to a

@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -156,7 +156,7 @@ class PreSamplex:
     In this IR, as in the lower :class:`~.Samplex`, sampling operations are described as a graph.
     Operations describe actions like sampling from distributions and propagating virtual gates
     past other gates. However, unlike the lower IR, this IR still maintains the notion of qubit
-    indices, and operations are still declarative rather than procudural.
+    indices, and operations are still declarative rather than procedural.
 
     Args:
         graph: The graph being built.
@@ -566,7 +566,7 @@ class PreSamplex:
         node_idx = self.graph.add_node(PreEmit(subsystems, Direction.BOTH, register_type))
 
         # find collectors (or propagators leading to collectors) for right-to-left emission and
-        # connect this emmision there. we do NOT want to remove them as dangling because they
+        # connect this emission there. we do NOT want to remove them as dangling because they
         # might need to be used again for future emissions, for example, a Pauli twirl followed by
         # a noise injection.
         match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
@@ -905,7 +905,7 @@ class PreSamplex:
                             combined_subsystems,
                             nodes[0].direction,  # all nodes have same direction
                             nodes[0].operation,  # all nodes have same operation, up to the
-                            # paramaters which are handled separately
+                            # parameters which are handled separately
                             combined_partition,
                             mode=nodes[0].mode,
                             params=params,
@@ -1038,7 +1038,7 @@ class PreSamplex:
         if self._twirled_clbits.intersection(clbits):
             raise SamplexBuildError(
                 "Cannot use twirled classical bits in classical conditions. "
-                f"The condition depends on bits {clbits}, at leaset one of which is twirled."
+                f"The condition depends on bits {clbits}, at least one of which is twirled."
             )
 
     @property
@@ -1223,7 +1223,7 @@ class PreSamplex:
         order: dict[NodeIndex, int],
         register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
     ) -> None:
-        """Add basis tranform node to a samplex, mutating it in place.
+        """Add basis transform node to a samplex, mutating it in place.
 
         Args:
             samplex: The samplex to add nodes to.
@@ -1432,8 +1432,8 @@ class PreSamplex:
         op_name = pre_propagate.operation.name
         mode = pre_propagate.mode
         incoming = set()
-        for predecssor_idx in self.graph.predecessor_indices(pre_propagate_idx):
-            incoming.add(samplex.graph[pre_nodes_to_nodes[predecssor_idx]].outgoing_register_type)
+        for predecessor_idx in self.graph.predecessor_indices(pre_propagate_idx):
+            incoming.add(samplex.graph[pre_nodes_to_nodes[predecessor_idx]].outgoing_register_type)
         if mode is InstructionMode.MULTIPLY and pre_propagate.operation.num_qubits == 1:
             combined_register_type = VirtualType.U2
             if pre_propagate.operation.is_parameterized():

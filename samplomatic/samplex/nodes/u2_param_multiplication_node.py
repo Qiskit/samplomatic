@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -101,7 +101,7 @@ class LeftU2ParametricMultiplicationNode(U2ParametricMultiplicationNode):
     ``U2Register``.
 
     :math:`g` is limited to the gates ``rz`` or ``rx``, and all gates within the node are of the
-    same type:math:.
+    same type.
 
     Args:
         operand: The gate type, given as a string.
