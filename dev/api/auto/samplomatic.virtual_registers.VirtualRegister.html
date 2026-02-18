@@ -646,15 +646,15 @@ of this constructor overwrites them all.</p>
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.VirtualRegister.select">
 <em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.virtual_registers.VirtualType.html#samplomatic.virtual_registers.VirtualType" title="samplomatic.virtual_registers.virtual_type.VirtualType"><span class="pre">VirtualType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.virtual_register.VirtualRegister"><span class="pre">VirtualRegister</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/virtual_register.py#L97-L118"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.VirtualRegister.select" title="Link to this definition">¶</a></dt>
 <dd><p>Select a <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a> subclass based on a <a class="reference internal" href="samplomatic.virtual_registers.VirtualType.html#samplomatic.virtual_registers.VirtualType" title="samplomatic.virtual_registers.VirtualType"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualType</span></code></a> enum.</p>
-<dl class="simple">
-<dt>..note::</dt><dd><p>Not all <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a>s need to define a <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister.TYPE" title="samplomatic.virtual_registers.VirtualRegister.TYPE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TYPE</span></code></a>, though they will
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not all <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a>s need to define a <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister.TYPE" title="samplomatic.virtual_registers.VirtualRegister.TYPE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TYPE</span></code></a>, though they will
 need to if they want to participate in many types of <a class="reference internal" href="samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node" title="samplomatic.samplex.nodes.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> actions.
 Conversely, not every <a class="reference internal" href="samplomatic.virtual_registers.VirtualType.html#samplomatic.virtual_registers.VirtualType" title="samplomatic.virtual_registers.VirtualType"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualType</span></code></a> must correspond to a
 <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a>, most notably intermediate abstractions like
 <code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualType</span></code>
 can correspond to at most one <a class="reference internal" href="#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a> type.</p>
-</dd>
-</dl>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>register_type</strong> – The identifier of the type to select.</p>
@@ -704,7 +704,7 @@ can correspond to at most one <a class="reference internal" href="#samplomatic.v
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/02/11</div>
+              Last updated on 2026/02/18</div>
           </div>
           <div class="right-details">
             

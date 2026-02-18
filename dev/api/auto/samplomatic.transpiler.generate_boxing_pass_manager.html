@@ -532,10 +532,10 @@ are:</p>
 </ul>
 </p></li>
 <li><p><strong>twirling_strategy</strong> – <p>The strategy for whether and how twirling boxes are extended to
-include elligible idle qubits; the boxing pass manager begins by constructing twirling
+include eligible idle qubits; the boxing pass manager begins by constructing twirling
 boxes that contain one layer of multi-qubit gates or measurements, preceded by all of
 the adjacent single-qubit gates, then, according to the value of this option, these
-boxes are extended idling qubits. The allowed values are:</p>
+boxes are extended to include idling qubits. The allowed values are:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">'active'</span></code>: No idling qubits are added to the boxes, meaning that every box only
 twirls the qubits that are active within the box.</p></li>
@@ -570,7 +570,7 @@ and/or own classical registers.</p></li>
 </p></li>
 <li><p><strong>inject_noise_strategy</strong> – <p>The noise injection strategies supported by the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">AddInjectNoise</span></code> pass. The following options are supported. In all these
-options, by “equivalent boxes” we mean boxes that are equal up to single-qubit qubit
+options, by “equivalent boxes” we mean boxes that are equal up to single-qubit
 gates on the dressing side.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">'no_modification'</span></code>: All the equivalent boxes are assigned an inject noise
@@ -655,7 +655,7 @@ into boxes.</p></li>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/02/11</div>
+              Last updated on 2026/02/18</div>
           </div>
           <div class="right-details">
             

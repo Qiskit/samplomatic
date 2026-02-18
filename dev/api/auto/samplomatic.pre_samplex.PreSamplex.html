@@ -472,7 +472,7 @@
 <p>In this IR, as in the lower <a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.Samplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Samplex</span></code></a>, sampling operations are described as a graph.
 Operations describe actions like sampling from distributions and propagating virtual gates
 past other gates. However, unlike the lower IR, this IR still maintains the notion of qubit
-indices, and operations are still declarative rather than procudural.</p>
+indices, and operations are still declarative rather than procedural.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -515,7 +515,7 @@ the outgoing node is.</p></li>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_change_basis_node" title="samplomatic.pre_samplex.PreSamplex.add_change_basis_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_change_basis_node</span></code></a>(samplex, ...)</p></td>
-<td><p>Add basis tranform node to a samplex, mutating it in place.</p></td>
+<td><p>Add basis transform node to a samplex, mutating it in place.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.PreSamplex.add_collect" title="samplomatic.pre_samplex.PreSamplex.add_collect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_collect</span></code></a>(qubits, synth, param_idxs[, ...])</p></td>
 <td><p>Add or extend a node to collect virtual gates of types allowed by the <code class="docutils literal notranslate"><span class="pre">synth</span></code>.</p></td>
@@ -627,7 +627,7 @@ the outgoing node is.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.pre_samplex.PreSamplex.add_change_basis_node">
 <span class="sig-name descname"><span class="pre">add_change_basis_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samplex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.samplex.Samplex"><span class="pre">Samplex</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_basis_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_nodes_to_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">register_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/pre_samplex.py#L1218-L1250"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreSamplex.add_change_basis_node" title="Link to this definition">¶</a></dt>
-<dd><p>Add basis tranform node to a samplex, mutating it in place.</p>
+<dd><p>Add basis transform node to a samplex, mutating it in place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1238,7 +1238,7 @@ right. We need to know in which order to multiply them together. This method is 
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/02/11</div>
+              Last updated on 2026/02/18</div>
           </div>
           <div class="right-details">
             
