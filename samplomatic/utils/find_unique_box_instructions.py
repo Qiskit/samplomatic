@@ -23,7 +23,7 @@ from .undress_box import undress_box
 
 
 def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Annotation]:
-    """Keep only ``Twirl`` and ``InjectNoise`` annotations and returned normalized forms.
+    """Keep only ``Twirl`` and ``InjectNoise`` annotations and return normalized forms.
 
     For :class:`Twirl` annotations, it creates a new instance with the same group, dressing, and
     decomposition. For :class:`InjectNoise` annotations, it creates a new instance with the same

@@ -20,7 +20,7 @@ encoded in the graph attributes section of the format. Details about the nodes, 
 of :class:`~.Node` they represent, are stored in the corresponding node attributes. Samplexes
 have no edge attributes.
 
-Serialization and deserializaiton is performed by :func:`rustworkx.node_link_json` and
+Serialization and deserialization is performed by :func:`rustworkx.node_link_json` and
 :func:`rustworkx.parse_node_link_json`, with attribute dictionaries supplied and defined
 by samplomatic.
 
@@ -35,15 +35,16 @@ serialization types and samplex content interplay.
 For any particular package version :const:`~SSV` is the latest SSV known about and future versions
 can not be loaded.
 
-Seralizable types need to inherit from the :class:`~.Serializable` metaclass. They can be added,
+Serializable types need to inherit from the :class:`~.Serializable` metaclass. They can be added,
 removed, or have modified behavior between package versions. To account for this,
 
  - If a package version introduces a serializable type, it must increment the SSV and provide
    serialization support for it. Prior SSVs will not be able to serialize samplexes containing this
-   type, and an incompatability error will be raised. Future SSVs will be able to save and load the
+   type, and an incompatibility error will be raised. Future SSVs will be able to save and load the
    new type, unless support is dropped.
  - If a package version removes a serializable type, it must increment the SSV, and trying to
-   serialize objects of the given type will raise backwars compatibility errors for subsequent SSVs.
+   serialize objects of the given type will raise backwards compatibility errors for subsequent
+   SSVs.
  - If a package modifies the behavior of a serializable type:
    - If there is a fundamental change to behavior, then this will be treated as a simultaneous
      removal of a node type, according to the bullets above, but where the name happens to be the

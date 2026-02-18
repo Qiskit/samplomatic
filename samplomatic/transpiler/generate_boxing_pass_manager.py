@@ -125,10 +125,10 @@ def generate_boxing_pass_manager(
             * ``'all'`` for both :class:`~.Twirl` and :class:`~.ChangeBasis` annotations.
 
         twirling_strategy: The strategy for whether and how twirling boxes are extended to
-            include elligible idle qubits; the boxing pass manager begins by constructing twirling
+            include eligible idle qubits; the boxing pass manager begins by constructing twirling
             boxes that contain one layer of multi-qubit gates or measurements, preceded by all of
             the adjacent single-qubit gates, then, according to the value of this option, these
-            boxes are extended idling qubits. The allowed values are:
+            boxes are extended to include idling qubits. The allowed values are:
 
             * ``'active'``: No idling qubits are added to the boxes, meaning that every box only
               twirls the qubits that are active within the box.
@@ -160,7 +160,7 @@ def generate_boxing_pass_manager(
 
         inject_noise_strategy: The noise injection strategies supported by the
             :class:`~AddInjectNoise` pass. The following options are supported. In all these
-            options, by "equivalent boxes" we mean boxes that are equal up to single-qubit qubit
+            options, by "equivalent boxes" we mean boxes that are equal up to single-qubit
             gates on the dressing side.
 
             * ``'no_modification'``: All the equivalent boxes are assigned an inject noise

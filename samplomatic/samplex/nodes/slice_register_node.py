@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -66,7 +66,7 @@ class SliceRegisterNode(EvaluationNode):
             if slice_idxs.ndim != 1:
                 raise SamplexConstructionError(
                     f"'slice_idxs' for '{input_register_name}' has a shape {slice_idxs.shape}, "
-                    "but a shape with a single axes is required."
+                    "but a shape with a single axis is required."
                 )
             # Check if indices could be converted to a slice
             elif not force_copy:

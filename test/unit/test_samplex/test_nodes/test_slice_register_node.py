@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -119,7 +119,7 @@ def test_slicing_and_permuting(slice_idxs, view, force_copy):
 
 def test_raises():
     """Test that the ``SliceRegisterNode`` raises."""
-    with pytest.raises(SamplexConstructionError, match="single axes"):
+    with pytest.raises(SamplexConstructionError, match="single axis"):
         node = SliceRegisterNode(
             VirtualType.PAULI,
             VirtualType.PAULI,

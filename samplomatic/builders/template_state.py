@@ -70,7 +70,7 @@ class TemplateState:
     def construct_for_circuit(cls, circuit: QuantumCircuit) -> Self:
         """Construct a new instance from a quantum circuit.
 
-        Use this method when you need a to parse the entirety of a particular circuit.
+        Use this method when you need to parse the entirety of a particular circuit.
 
         Args:
             circuit: The circuit you intend to parse.
