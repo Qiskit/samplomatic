@@ -16,4 +16,5 @@ from .balanced_uniform_pauli import BalancedUniformPauli
 from .distribution import Distribution
 from .haar_u2 import HaarU2
 from .uniform_c1 import UniformC1
+from .uniform_local_c1 import UniformLocalC1
 from .uniform_pauli import UniformPauli
