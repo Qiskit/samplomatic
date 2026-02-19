@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+from .c1_past_clifford_node import C1PastCliffordNode
 from .change_basis_node import ChangeBasisNode
 from .collect_template_values import CollectTemplateValues
 from .collect_z2_to_output_node import CollectZ2ToOutputNode
