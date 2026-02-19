@@ -68,15 +68,14 @@ class InjectNoiseNode(SamplingNode):
 
     def sample(self, registers, rng, inputs, num_randomizations):
         pauli_lindblad_map = inputs[f"pauli_lindblad_maps.{self._noise_ref}"]
+        scale = None
+        local_scale = None
         if self._modifier_ref:
-            scale = inputs.get(f"noise_scales.{self._modifier_ref}", 1.0)
-            local_scale = inputs.get(f"local_scales.{self._modifier_ref}", 1.0)
-            pauli_lindblad_map = PauliLindbladMap.from_components(
-                pauli_lindblad_map.rates * scale * local_scale,
-                pauli_lindblad_map.get_qubit_sparse_pauli_list_copy(),
-            )
+            scale = inputs.get(f"noise_scales.{self._modifier_ref}", None)
+            local_scale = inputs.get(f"local_scales.{self._modifier_ref}", None)
+
         signs, samples = pauli_lindblad_map.parity_sample(
-            num_randomizations, rng.bit_generator.random_raw()
+            num_randomizations, rng.bit_generator.random_raw(), scale=scale, local_scale=local_scale
         )
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
