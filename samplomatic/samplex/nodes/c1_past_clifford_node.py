@@ -21,22 +21,12 @@ from ...aliases import OperationName, RegisterName, SubsystemIndex
 from ...exceptions import SamplexBuildError, SamplexRuntimeError
 from ...virtual_registers import VirtualType
 from ...virtual_registers.c1_register import C1_TO_TABLEAU
-from ...virtual_registers.tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
 from .evaluation_node import EvaluationNode
 
 
 def _build_c1_tableau_map():
     """Return a dict mapping tableau bytes to C1 index."""
     return {C1_TO_TABLEAU[i].tobytes(): i for i in range(24)}
-
-
-def _compute_1q_table(gate_c1_idx):
-    """Compute the 1q conjugation table for a C1 gate.
-
-    Uses the group multiplication tables directly: ``result[c] = gate_inv * c * gate``.
-    """
-    inv = C1_INVERSE_TABLE[gate_c1_idx]
-    return C1_LOOKUP_TABLE[C1_LOOKUP_TABLE[inv], gate_c1_idx].astype(np.intp).reshape(24, 1)
 
 
 def _compute_2q_table(gate_name):
@@ -94,7 +84,6 @@ def _compute_2q_table(gate_name):
 
 
 C1_PAST_CLIFFORD_LOOKUP_TABLES = {
-    "h": _compute_1q_table(4),
     "cx": _compute_2q_table("cx"),
     "cz": _compute_2q_table("cz"),
     "ecr": _compute_2q_table("ecr"),
@@ -103,10 +92,8 @@ C1_PAST_CLIFFORD_LOOKUP_TABLES = {
 
 Single-qubit C1 operators are indexed as in :class:`~.C1Register`\\s. Computing the
 conjugation of a C1 element by a Clifford can be done via slicing. For example,
-``C1_PAST_CLIFFORD_LOOKUP_TABLES["h"][i]`` gives the conjugation of C1 element ``i`` by
-an H gate, while ``C1_PAST_CLIFFORD_LOOKUP_TABLES["cx"][i, j]`` gives that of C1 elements
-``i`` and ``j`` by CX. Two-qubit entries that do not remain local contain sentinel value
-``-1``.
+``C1_PAST_CLIFFORD_LOOKUP_TABLES["cx"][i, j]`` gives that of C1 elements ``i`` and ``j`` by CX.
+Two-qubit entries that do not remain local contain sentinel value ``-1``.
 """
 
 C1_PAST_CLIFFORD_INVARIANTS = {"id"}
