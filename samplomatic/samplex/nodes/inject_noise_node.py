@@ -73,7 +73,6 @@ class InjectNoiseNode(SamplingNode):
         if self._modifier_ref:
             scale = inputs.get(f"noise_scales.{self._modifier_ref}", None)
             local_scale = inputs.get(f"local_scales.{self._modifier_ref}", None)
-
         signs, samples = pauli_lindblad_map.parity_sample(
             num_randomizations, rng.bit_generator.random_raw(), scale=scale, local_scale=local_scale
         )
