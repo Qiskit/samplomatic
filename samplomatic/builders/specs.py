@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -64,6 +64,15 @@ class EmissionSpec:
 
     twirl_register_type: VirtualType | None = None
     """What type of virtual gates to emit for twirling."""
+
+    gate_dependent_twirl_qubits: QubitPartition | None = None
+    """The qubits with entanglers when using gate-dependent twirling."""
+
+    fallback_twirl_qubits: QubitPartition | None = None
+    """The qubits without entanglers when using gate-dependent twirling."""
+
+    twirl_gate: str | None = None
+    """The entangler to twirl for gate-dependent twirling."""
 
     basis_change: FrameChangeMode | None = None
     """What type of basis change to use."""

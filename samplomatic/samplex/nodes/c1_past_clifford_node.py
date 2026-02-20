@@ -95,6 +95,9 @@ def _compute_2q_table(gate_name):
 
 C1_PAST_CLIFFORD_LOOKUP_TABLES = {
     "h": _compute_1q_table(4),
+    "x": _compute_1q_table(2),
+    "y": _compute_1q_table(3),
+    "z": _compute_1q_table(1),
     "cx": _compute_2q_table("cx"),
     "cz": _compute_2q_table("cz"),
     "ecr": _compute_2q_table("ecr"),
