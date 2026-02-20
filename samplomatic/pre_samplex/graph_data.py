@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -150,6 +150,9 @@ class PreEmit(PreNode):
     register_type: VirtualType
     """The type of virtual gates to emit."""
 
+    twirl_gate: str | None = field(default=None, kw_only=True)
+    """The 2Q gate name used for ``UniformLocalC1`` sampling, or ``None``."""
+
     def get_style(self):
         style = (
             super()
@@ -167,6 +170,7 @@ class PreEmit(PreNode):
             isinstance(other, PreEmit)
             and self.subsystems == other.subsystems
             and self.register_type is other.register_type
+            and self.twirl_gate == other.twirl_gate
         )
 
 

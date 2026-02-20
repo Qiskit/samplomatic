@@ -24,6 +24,9 @@ class VirtualType(str, Enum):
     C1 = "c1"
     """The single-qubit Clifford group."""
 
+    LOCAL_C1 = "local_c1"
+    """C1 on qubits involved in 2Q gates, Pauli on the rest."""
+
     U2 = "u2"
     r"""The :math:`2 \times 2` unitary group."""
 
