@@ -15,6 +15,7 @@ import pytest
 
 from samplomatic.distributions import BalancedUniformPauli, UniformPauli
 from samplomatic.samplex.nodes import (
+    C1PastCliffordNode,
     ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
@@ -31,6 +32,7 @@ from samplomatic.samplex.nodes import (
 )
 from samplomatic.samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
 from samplomatic.serialization.node_serializers import (
+    C1PastCliffordNodeSerializer,
     ChangeBasisNodeSerializer,
     CollectTemplateValuesSerializer,
     CollectZ2ToOutputNodeSerializer,
@@ -159,5 +161,13 @@ def test_left_u2_multiplication_serializer_round_trip(ssv):
 def test_right_u2_multiplication_serializer_round_trip(ssv):
     node = RightU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
     data = RightU2ParametricMultiplicationNodeSerializer.serialize(node, ssv)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+@pytest.mark.parametrize("ssv", C1PastCliffordNodeSerializer.SSVS)
+def test_c1_past_clifford_serializer_round_trip(ssv):
+    node = C1PastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])
+    data = C1PastCliffordNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
