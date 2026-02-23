@@ -15,7 +15,7 @@ from itertools import product
 
 import numpy as np
 import pytest
-from qiskit.circuit.library import CXGate, CZGate, ECRGate, HGate
+from qiskit.circuit.library import CXGate, CZGate, ECRGate
 from qiskit.quantum_info import Clifford
 
 from samplomatic.exceptions import SamplexBuildError, SamplexRuntimeError
@@ -26,24 +26,6 @@ from samplomatic.virtual_registers.c1_register import C1_TO_TABLEAU
 
 
 class TestLookupTables:
-    @pytest.mark.parametrize("op_class", [HGate])
-    def test_1q_gate_tables(self, op_class):
-        """Test the lookup tables for one-qubit gates."""
-        op = op_class()
-        gate_cliff = Clifford(op)
-        gate_inv = gate_cliff.adjoint()
-        table = C1_PAST_CLIFFORD_LOOKUP_TABLES[op.name]
-
-        for c1_idx in range(24):
-            c1_cliff = Clifford(C1_TO_TABLEAU[c1_idx], False)
-            result = gate_inv.dot(c1_cliff).dot(gate_cliff)
-            expected = Clifford(C1_TO_TABLEAU[table[c1_idx, 0]], False)
-
-            assert result == expected, (
-                f"C1[{c1_idx}] through {op.name}: Table says C1[{table[c1_idx, 0]}], "
-                f"but Qiskit gives a different result."
-            )
-
     @pytest.mark.parametrize("op_class", [CXGate, CZGate, ECRGate])
     def test_2q_gate_tables(self, op_class):
         """Test the lookup tables for two-qubit gates."""
@@ -87,20 +69,6 @@ class TestLookupTables:
 
 
 class TestC1PastClifford:
-    def test_one_qubit_gate(self):
-        """Test propagating C1 register past a one-qubit Clifford gate."""
-        node = C1PastCliffordNode("h", "my_reg", [(3,), (1,), (0,)])
-
-        reg = C1Register(np.array([[0, 1], [4, 2], [2, 0], [3, 5]], dtype=np.uint8))
-        node.evaluate({"my_reg": reg}, np.empty(()))
-
-        # H conjugation: 0→0, 1→2, 2→1, 3→3, 4→4, 5→6
-        # Subsystem 3: [3, 5] → [3, 6]
-        # Subsystem 1: [4, 2] → [4, 1]
-        # Subsystem 0: [0, 1] → [0, 2]
-        assert reg.virtual_gates.tolist() == [[0, 2], [4, 1], [2, 0], [3, 6]]
-        assert node.outgoing_register_type is VirtualType.C1
-
     def test_cx_gate(self):
         """Test propagating C1 register past a controlled-X gate."""
         node = C1PastCliffordNode("cx", "my_reg", [(0, 1)])

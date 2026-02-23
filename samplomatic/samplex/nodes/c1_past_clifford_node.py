@@ -15,99 +15,12 @@
 from collections.abc import Sequence
 
 import numpy as np
-from qiskit.quantum_info import Clifford
 
 from ...aliases import OperationName, RegisterName, SubsystemIndex
 from ...exceptions import SamplexBuildError, SamplexRuntimeError
+from ...tables.local_c1_tables import C1_PAST_CLIFFORD_LOOKUP_TABLES
 from ...virtual_registers import VirtualType
-from ...virtual_registers.c1_register import C1_TO_TABLEAU
-from ...virtual_registers.tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
 from .evaluation_node import EvaluationNode
-
-
-def _build_c1_tableau_map():
-    """Return a dict mapping tableau bytes to C1 index."""
-    return {C1_TO_TABLEAU[i].tobytes(): i for i in range(24)}
-
-
-def _compute_1q_table(gate_c1_idx):
-    """Compute the 1q conjugation table for a C1 gate.
-
-    Uses the group multiplication tables directly: ``result[c] = gate_inv * c * gate``.
-    """
-    inv = C1_INVERSE_TABLE[gate_c1_idx]
-    return C1_LOOKUP_TABLE[C1_LOOKUP_TABLE[inv], gate_c1_idx].astype(np.intp).reshape(24, 1)
-
-
-def _compute_2q_table(gate_name):
-    """Compute the 2q conjugation table for a named Clifford gate.
-
-    For each pair ``(c0, c1)`` of C1 indices, conjugate ``C1[c1] ⊗ C1[c0]`` by the gate.
-    If the result factorizes as ``C1[c0'] ⊗ C1[c1']``, store the indices; otherwise store
-    the sentinel value ``-1``.
-    """
-    from qiskit.circuit.library import CXGate, CZGate, ECRGate
-
-    gates = {"cx": CXGate, "cz": CZGate, "ecr": ECRGate}
-    gate_cliff = Clifford(gates[gate_name]())
-    gate_inv = gate_cliff.adjoint()
-    tableau_map = _build_c1_tableau_map()
-    table = np.full((24, 24, 2), -1, dtype=np.intp)
-
-    for c0 in range(24):
-        cliff0 = Clifford(C1_TO_TABLEAU[c0], False)
-        for c1 in range(24):
-            cliff1 = Clifford(C1_TO_TABLEAU[c1], False)
-            cliff_2q = cliff1.tensor(cliff0)
-            result = gate_inv.dot(cliff_2q).dot(gate_cliff)
-            tab = result.tableau
-
-            # Check cross-qubit terms are zero (tensor product structure)
-            if (
-                tab[0, 1]
-                or tab[0, 3]
-                or tab[1, 0]
-                or tab[1, 2]
-                or tab[2, 1]
-                or tab[2, 3]
-                or tab[3, 0]
-                or tab[3, 2]
-            ):
-                continue
-
-            # Extract single-qubit tableaus
-            tab0 = np.array(
-                [[tab[0, 0], tab[0, 2], tab[0, 4]], [tab[2, 0], tab[2, 2], tab[2, 4]]],
-                dtype=np.bool_,
-            )
-            tab1 = np.array(
-                [[tab[1, 1], tab[1, 3], tab[1, 4]], [tab[3, 1], tab[3, 3], tab[3, 4]]],
-                dtype=np.bool_,
-            )
-
-            idx0 = tableau_map.get(tab0.tobytes())
-            idx1 = tableau_map.get(tab1.tobytes())
-            if idx0 is not None and idx1 is not None:
-                table[c0, c1] = [idx0, idx1]
-
-    return table
-
-
-C1_PAST_CLIFFORD_LOOKUP_TABLES = {
-    "h": _compute_1q_table(4),
-    "cx": _compute_2q_table("cx"),
-    "cz": _compute_2q_table("cz"),
-    "ecr": _compute_2q_table("ecr"),
-}
-"""Lookup tables for computing the conjugation of C1 operators by Clifford gates.
-
-Single-qubit C1 operators are indexed as in :class:`~.C1Register`\\s. Computing the
-conjugation of a C1 element by a Clifford can be done via slicing. For example,
-``C1_PAST_CLIFFORD_LOOKUP_TABLES["h"][i]`` gives the conjugation of C1 element ``i`` by
-an H gate, while ``C1_PAST_CLIFFORD_LOOKUP_TABLES["cx"][i, j]`` gives that of C1 elements
-``i`` and ``j`` by CX. Two-qubit entries that do not remain local contain sentinel value
-``-1``.
-"""
 
 C1_PAST_CLIFFORD_INVARIANTS = {"id"}
 """Set of gates which a C1 element is invariant under conjugation with."""
