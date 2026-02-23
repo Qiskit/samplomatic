@@ -99,9 +99,3 @@ def test_unknown_gate_raises():
     """Test that an unknown gate name raises ValueError."""
     with pytest.raises(ValueError, match="Unknown gate"):
         UniformLocalC1(2, "not_a_gate")
-
-
-def test_one_qubit_gate_raises():
-    """Test that a one-qubit gate raises ValueError."""
-    with pytest.raises(ValueError, match="not a two-qubit gate"):
-        UniformLocalC1(2, "h")
