@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -76,3 +76,33 @@ def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
     _, samplex = build(circuit)
     samplex_json = samplex_to_json(samplex, None)
     benchmark(samplex_from_json, samplex_json)
+
+
+@pytest.mark.parametrize(
+    ("num_qubits", "num_gates"),
+    [
+        pytest.param(
+            100,
+            5_000,
+            marks=pytest.mark.skipif(
+                "config.getoption('--performance-light')", reason="smoke test only"
+            ),
+        ),
+        pytest.param(
+            10,
+            100,
+            marks=pytest.mark.skipif(
+                "not config.getoption('--performance-light')", reason="performance test only"
+            ),
+        ),
+    ],
+)
+def test_serialized_size(rng, benchmark, num_qubits, num_gates):
+    """Measure the serialized JSON size of a samplex."""
+    num_boxes = num_gates // (num_qubits // 2)
+    circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
+
+    _, samplex = build(circuit)
+    samplex_json = benchmark(samplex_to_json, samplex)
+    benchmark.extra_info["serialized_bytes"] = len(samplex_json.encode())
+    benchmark.extra_info["serialized_kb"] = len(samplex_json.encode()) / 1024
