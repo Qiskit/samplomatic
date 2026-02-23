@@ -50,7 +50,7 @@ def graphviz_layout(
     """
     # this is a weird implementation where we call out to graphviz as a subprocess on a temporary
     # file describing the graph. however, it's nicer than depending on one of the
-    # janky graphviz python libaries.
+    # janky graphviz python libraries.
 
     ranks = defaultdict(set)
     if ranker is not None:

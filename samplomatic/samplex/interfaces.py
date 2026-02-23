@@ -23,7 +23,7 @@ class SamplexOutput(TensorInterface):
     """The output of a single call to :meth:`~Samplex.sample`.
 
     Args:
-        specs: An iterable of specificaitons for the allowed data in this interface.
+        specs: An iterable of specifications for the allowed data in this interface.
         metadata: Information relating to the process of sampling.
     """
 

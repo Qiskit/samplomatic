@@ -44,7 +44,7 @@ class GroupGatesIntoBoxes(TransformationPass):
 
     .. note::
         The circuits returned by this pass may not be buildable. To make them buildable, one can
-        either use :class`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
+        either use :class:`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
     """
 
     def __init__(self, annotations: Iterable[Annotation] = (Twirl(),)):

@@ -72,7 +72,7 @@ class Z2RegisterSerializer(TypeSerializer[Z2Register]):
 
 
 class C1RegisterSerializer(TypeSerializer[C1Register]):
-    """Serializer for :class:`~.Z2Register`."""
+    """Serializer for :class:`~.C1Register`."""
 
     TYPE_ID = "V3"
     TYPE = C1Register
