@@ -33,7 +33,7 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
 
         @classmethod
         def serialize(cls, obj, ssv):
-            # qiskit doesn't have a direct way to serialize a list of parameter expressions. in
+            # qiskit doesn't have a direct way to serialize a list of parameter expressions. to
             # stick to the public qpy interface, the simplest solution is to put them inside of an
             # object that qpy can serialize.
             circuit = QuantumCircuit(1)

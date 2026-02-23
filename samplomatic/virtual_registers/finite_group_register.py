@@ -24,7 +24,7 @@ from .group_register import GroupRegister
 class FiniteGroupRegister(GroupRegister):
     """A virtual register whose elements form a finite group.
 
-    The elements of the group are enumerated and act as indices of the the :attr:`~lookup_table` and
+    The elements of the group are enumerated and act as indices of the :attr:`~lookup_table` and
     :attr:`~inverse_table`. By taking the appropriate slices, this implements the group operation
     and the inverse.
     """

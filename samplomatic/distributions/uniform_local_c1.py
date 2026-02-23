@@ -14,7 +14,7 @@
 
 import numpy as np
 
-from ..samplex.nodes.c1_past_clifford_node import C1_PAST_CLIFFORD_LOOKUP_TABLES
+from ..tables.local_c1_tables import C1_PAST_CLIFFORD_LOOKUP_TABLES
 from ..virtual_registers import C1Register, VirtualType
 from .distribution import Distribution
 
@@ -39,8 +39,7 @@ class UniformLocalC1(Distribution):
 
         if gate not in C1_PAST_CLIFFORD_LOOKUP_TABLES:
             raise ValueError(
-                f"Unknown gate {gate!r}. Expected one of "
-                f"{list(C1_PAST_CLIFFORD_LOOKUP_TABLES)}."
+                f"Unknown gate {gate!r}. Expected one of {list(C1_PAST_CLIFFORD_LOOKUP_TABLES)}."
             )
         table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate]
         if table.ndim != 3:

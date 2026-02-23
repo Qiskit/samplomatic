@@ -120,7 +120,7 @@ class HoverStyle:
     """The title of the node."""
 
     description: str | None = None
-    """The desription of the node."""
+    """The description of the node."""
 
     html_override: str | None = None
     """Raw html to display.
@@ -174,7 +174,7 @@ class HoverStyle:
             key: The name of the datum.
             values: The values of the datum.
             multiline: The list length at which to start displaying one entry per line.
-            max_display: The maximum number of values to display before added ellipses.
+            max_display: The maximum number of values to display before adding ellipses.
             bullet: The bullet to prepend the datum with.
 
         Returns:
@@ -193,13 +193,13 @@ class HoverStyle:
         max_display: int = 10,
         bullet: str | None = None,
     ):
-        """Append list-valued data to this node.
+        """Append dict-valued data to this node.
 
         Args:
             key: The name of the datum.
             values: The key-value pairs of the datum.
             multiline: The dictionary length at which to start displaying one entry per line.
-            max_display: The maximum number of values to display before added ellipses.
+            max_display: The maximum number of values to display before adding ellipses.
             bullet: The bullet to prepend the datum with.
 
         Returns:

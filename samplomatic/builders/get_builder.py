@@ -95,7 +95,7 @@ def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
     """Get the builders of a box.
 
     Args:
-        instr: The box instrucion.
+        instr: The box instruction.
         qubits: The qubits of the circuit containing the instruction.
 
     Raises:
