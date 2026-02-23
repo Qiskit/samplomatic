@@ -547,7 +547,7 @@ class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
     TYPE_ID = "N13"
     TYPE = C1PastCliffordNode
 
-    class SSV1(DataSerializer[C1PastCliffordNode]):
+    class SSV3(DataSerializer[C1PastCliffordNode]):
         MIN_SSV = 3
 
         @classmethod
