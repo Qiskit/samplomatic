@@ -1,0 +1,6 @@
+samplex_to_json
+===============
+
+.. currentmodule:: samplomatic.serialization
+
+.. autofunction:: samplex_to_json
