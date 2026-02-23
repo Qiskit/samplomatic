@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,9 +11,6 @@
 # that they have been altered from the originals.
 
 """InjectNoiseNode"""
-
-import numpy as np
-from qiskit.quantum_info import PauliLindbladMap
 
 from ...aliases import NumSubsystems, RegisterName, StrRef
 from ...virtual_registers import PauliRegister, VirtualType, Z2Register
