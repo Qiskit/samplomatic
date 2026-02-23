@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.distributions" href="../samplomatic.distributions.html" /><link rel="prev" title="samplomatic.constants" href="../samplomatic.constants.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="UniformPauli" href="samplomatic.distributions.UniformPauli.html" /><link rel="prev" title="UniformC1" href="samplomatic.distributions.UniformC1.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Direction - samplomatic 0.1.dev1</title>
+        <title>UniformLocalC1 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -228,16 +228,16 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.build.html">samplomatic.build</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.constants.html">samplomatic.constants</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of samplomatic.constants</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Direction</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.constants.html">samplomatic.constants</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of samplomatic.constants</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.constants.Direction.html">Direction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.distributions.html">samplomatic.distributions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.BalancedUniformPauli.html">BalancedUniformPauli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.Distribution.html">Distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.HaarU2.html">HaarU2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformC1.html">UniformC1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformLocalC1.html">UniformLocalC1</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">UniformLocalC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
 </ul>
 </li>
@@ -449,7 +449,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.constants.Direction.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.distributions.UniformLocalC1.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -469,44 +469,68 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="direction">
-<h1>Direction<a class="headerlink" href="#direction" title="Link to this heading">¶</a></h1>
+          <section id="uniformlocalc1">
+<h1>UniformLocalC1<a class="headerlink" href="#uniformlocalc1" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="samplomatic.constants.Direction">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.constants.</span></span><span class="sig-name descname"><span class="pre">Direction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/constants.py#L20-L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.constants.Direction" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
-<p>The direction that a virtual gate is traveling.</p>
+<dt class="sig sig-object py" id="samplomatic.distributions.UniformLocalC1">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.distributions.</span></span><span class="sig-name descname"><span class="pre">UniformLocalC1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_local_c1.py#L22-L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformLocalC1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="samplomatic.distributions.Distribution.html#samplomatic.distributions.Distribution" title="samplomatic.distributions.distribution.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distribution</span></code></a></p>
+<p>The uniform distribution over C1⊗C1 elements that stay local under conjugation.</p>
+<p>For each pair of consecutive subsystems, independently draws a pair <code class="docutils literal notranslate"><span class="pre">(c0,</span> <span class="pre">c1)</span></code>
+uniformly from the set of C1⊗C1 elements that remain factorized as C1⊗C1 after
+conjugation by the specified two-qubit gate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_subsystems</strong> – The number of subsystems this distribution samples. Must be even.</p></li>
+<li><p><strong>gate</strong> – A two-qubit gate name whose conjugation table appears in
+<code class="xref py py-data docutils literal notranslate"><span class="pre">C1_PAST_CLIFFORD_LOOKUP_TABLES</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Attributes Summary</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.constants.Direction.BOTH" title="samplomatic.constants.Direction.BOTH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BOTH</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.distributions.UniformLocalC1.register_type" title="samplomatic.distributions.UniformLocalC1.register_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_type</span></code></a></p></td>
+<td><p>The virtual gate type being sampled.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.constants.Direction.LEFT" title="samplomatic.constants.Direction.LEFT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LEFT</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.constants.Direction.RIGHT" title="samplomatic.constants.Direction.RIGHT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RIGHT</span></code></a></p></td>
-<td><p></p></td>
+</tbody>
+</table>
+</div>
+<p class="rubric">Methods Summary</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.distributions.UniformLocalC1.sample" title="samplomatic.distributions.UniformLocalC1.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(size, rng)</p></td>
+<td><p>Sample the distribution.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.constants.Direction.BOTH">
-<span class="sig-name descname"><span class="pre">BOTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#samplomatic.constants.Direction.BOTH" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="samplomatic.distributions.UniformLocalC1.register_type">
+<span class="sig-name descname"><span class="pre">register_type</span></span><a class="headerlink" href="#samplomatic.distributions.UniformLocalC1.register_type" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.constants.Direction.LEFT">
-<span class="sig-name descname"><span class="pre">LEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#samplomatic.constants.Direction.LEFT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.constants.Direction.RIGHT">
-<span class="sig-name descname"><span class="pre">RIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#samplomatic.constants.Direction.RIGHT" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.distributions.UniformLocalC1.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_local_c1.py#L55-L64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformLocalC1.sample" title="Link to this definition">¶</a></dt>
+<dd><p>Sample the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> – The number elements to sample.</p></li>
+<li><p><strong>rng</strong> – A randomness generator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The samples.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -517,23 +541,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samplomatic.distributions.html">
+          <a class="next-page" href="samplomatic.distributions.UniformPauli.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">samplomatic.distributions</div>
+                <div class="title">UniformPauli</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../samplomatic.constants.html">
+          <a class="prev-page" href="samplomatic.distributions.UniformC1.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">samplomatic.constants</div>
+                <div class="title">UniformC1</div>
                 
               </div>
             </a>
@@ -568,11 +592,10 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Direction</a><ul>
-<li><a class="reference internal" href="#samplomatic.constants.Direction"><code class="docutils literal notranslate"><span class="pre">Direction</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.constants.Direction.BOTH"><code class="docutils literal notranslate"><span class="pre">Direction.BOTH</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.constants.Direction.LEFT"><code class="docutils literal notranslate"><span class="pre">Direction.LEFT</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.constants.Direction.RIGHT"><code class="docutils literal notranslate"><span class="pre">Direction.RIGHT</span></code></a></li>
+<li><a class="reference internal" href="#">UniformLocalC1</a><ul>
+<li><a class="reference internal" href="#samplomatic.distributions.UniformLocalC1"><code class="docutils literal notranslate"><span class="pre">UniformLocalC1</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.distributions.UniformLocalC1.register_type"><code class="docutils literal notranslate"><span class="pre">UniformLocalC1.register_type</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.distributions.UniformLocalC1.sample"><code class="docutils literal notranslate"><span class="pre">UniformLocalC1.sample()</span></code></a></li>
 </ul>
 </li>
 </ul>
