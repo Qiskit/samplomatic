@@ -18,8 +18,8 @@ import numpy as np
 from numpy.typing import ArrayLike
 from qiskit.quantum_info import Clifford
 
+from ..tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
 from .finite_group_register import FiniteGroupRegister
-from .tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
 from .u2_register import U2Register
 from .virtual_type import VirtualType
 

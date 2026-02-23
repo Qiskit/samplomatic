@@ -548,7 +548,7 @@ class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
     TYPE = C1PastCliffordNode
 
     class SSV1(DataSerializer[C1PastCliffordNode]):
-        MIN_SSV = 4
+        MIN_SSV = 3
 
         @classmethod
         def serialize(cls, obj, ssv):
