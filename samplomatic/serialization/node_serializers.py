@@ -17,6 +17,7 @@ import orjson
 from ..distributions import BalancedUniformPauli, Distribution, HaarU2, UniformPauli
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
+    C1PastCliffordNode,
     ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
@@ -537,4 +538,30 @@ class RightU2ParametricMultiplicationNodeSerializer(
                 data["operand"],
                 data["register_name"],
                 orjson.loads(data["param_indices"]),
+            )
+
+
+class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
+    """Serializer for :class:`~.C1PastCliffordNode`."""
+
+    TYPE_ID = "N13"
+    TYPE = C1PastCliffordNode
+
+    class SSV3(DataSerializer[C1PastCliffordNode]):
+        MIN_SSV = 3
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            return {
+                "op_name": obj._op_name,  # noqa: SLF001
+                "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
+                "register_name": obj._register_name,  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return C1PastCliffordNode(
+                data["op_name"],
+                data["register_name"],
+                array_from_json(data["subsystem_idxs"]),
             )
