@@ -36,7 +36,7 @@ class AbsorbSingleQubitGates(TransformationPass):
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Perform rightwards absorption of chains of single-qubit gates."""
         # we collect runs of single qubit gates, organized by the qubit they act on. these
-        # have the correct circuit order because we'll be looping te circuit topologically
+        # have the correct circuit order because we'll be looping the circuit topologically
         single_qubit_runs: dict[Qubit, list[DAGOpNode]] = defaultdict(list)
 
         for node in dag.topological_op_nodes():

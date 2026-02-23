@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -37,7 +37,7 @@ class PreNode:
     """The subsystems that virtual gates act on."""
 
     direction: Direction
-    """The direction of virtual gates that cat interact with this node."""
+    """The direction of virtual gates that can interact with this node."""
 
     def get_style(self) -> NodeStyle:
         """Summarizes the style of this node when plotted via :func:`~.plot_graph`."""

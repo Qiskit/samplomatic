@@ -37,7 +37,7 @@ class DataSerializer(Generic[T]):
     MAX_SSV: ClassVar[int | None] = None
     """The maximum SSV for which this serializer is valid.
 
-    A ``None`` value indicates validitity up to and including the most recent :var:`SSV`.
+    A ``None`` value indicates validity up to and including the most recent :var:`SSV`.
     """
 
     @classmethod
@@ -148,7 +148,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
     """The type id of this serializer."""
 
     TYPE: ClassVar[Serializable] = None
-    """The type this serializer serializers."""
+    """The type this serializer serializes."""
 
     SERIALIZERS: ClassVar[dict[int, Callable[[T], dict[str, str]]]] = None
     """A map from SSVs to corresponding serialization methods."""
@@ -192,7 +192,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
                     f"Expected an SSV less than or equal to {cls.MAX_SSV}, got {ssv}."
                 ) from exc
             raise SerializationError(
-                f"Received invalid SSV {ssv} while serializng, it should be in the range "
+                f"Received invalid SSV {ssv} while serializing, it should be in the range "
                 f"{cls.MIN_SSV} to {cls.MAX_SSV} inclusive."
             ) from exc
         return {
@@ -233,7 +233,7 @@ class TypeSerializer(Generic[T], metaclass=TypeSerializerMeta):
                     f"serializer is {cls.MAX_SSV}."
                 ) from exc
             raise SerializationError(
-                f"Received invalid SSV {ssv} while deserializng, it should be in the range "
+                f"Received invalid SSV {ssv} while deserializing, it should be in the range "
                 f"{cls.MIN_SSV} to {cls.MAX_SSV} inclusive."
             ) from exc
         return deserializer(data)

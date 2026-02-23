@@ -22,7 +22,7 @@ from ...tables.local_c1_tables import C1_PAST_CLIFFORD_LOOKUP_TABLES
 from ...virtual_registers import VirtualType
 from .evaluation_node import EvaluationNode
 
-C1_PAST_CLIFFORD_INVARIANTS = {"id"}
+C1_PAST_CLIFFORD_INVARIANTS = frozenset({"id"})
 """Set of gates which a C1 element is invariant under conjugation with."""
 
 
