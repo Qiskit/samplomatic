@@ -22,7 +22,7 @@ from samplomatic.exceptions import SerializationError
 from samplomatic.serialization import samplex_from_json, samplex_to_json
 from samplomatic.ssv import SSV
 
-SUPPORTED_SSVS = set(range(1, SSV))
+SUPPORTED_SSVS = set(range(1, SSV + 1))
 
 
 class TestSamplexSerialization:
@@ -61,6 +61,42 @@ class TestSamplexSerialization:
             circuit.noop(1)
 
         with circuit.box([Twirl()]):
+            circuit.cx(0, 1)
+
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(range(5))
+
+        circuit.measure_all()
+
+        _, samplex = build(circuit)
+        json_data = samplex_to_json(samplex, ssv=ssv)
+        assert isinstance(json_data, str)
+
+        samplex_new = samplex_from_json(json_data)
+        samplex_new.finalize()
+
+        assert samplex == samplex_new
+
+    @pytest.mark.parametrize("ssv", [3])
+    def test_general_5q_static_circui_local_c1(self, ssv):
+        """Test with a general static circuit of 5 qubits."""
+        circuit = QuantumCircuit(5)
+        with circuit.box([Twirl(group="local_c1")]):
+            circuit.rz(0.5, 0)
+            circuit.sx(0)
+            circuit.rz(0.5, 0)
+            circuit.cx(0, 3)
+            circuit.noop(range(5))
+
+        circuit.cx(0, 1)
+
+        with circuit.box([Twirl(group="local_c1", decomposition="rzrx")]):
+            circuit.rz(0.123, 2)
+            circuit.cx(3, 4)
+            circuit.cx(2, 1)
+            circuit.noop(1)
+
+        with circuit.box([Twirl(group="local_c1")]):
             circuit.cx(0, 1)
 
         with circuit.box([Twirl(dressing="right")]):

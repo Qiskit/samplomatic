@@ -288,6 +288,111 @@ def make_circuits():
 
     yield circuit, "cx_and_cz_on_subset_boxop"
 
+    # --- local_c1 twirling tests ---
+
+    # local_c1 box with CX on qubits 0,1 + noop on qubits 2,3 (split C1/Pauli)
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_cx_split"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(1, 0)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_cx_split_opposite"
+
+    # local_c1 box with CX on qubits 0,1 only (pure C1, 2 qubits)
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "local_c1_cx_pure_c1"
+
+    # local_c1 box with single CX, left dressed
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_left_right"
+
+    # local_c1 box with CZ
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cz(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_cz_split"
+
+    # local_c1 box with ECR
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.ecr(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_ecr_split"
+
+    # local_c1 box with only noop (falls back to Pauli)
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "local_c1_noop_fallback"
+
+    # Multiple local_c1 boxes in sequence
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(2, 3)
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_multiple_boxes"
+
+    # Mixed Pauli and local_c1 boxes in same circuit
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="pauli", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(2, 3)
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "mixed_pauli_local_c1"
+
+    # local_c1 right-dressed box with CX
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.noop(0, 1, 2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="right")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+
+    yield circuit, "local_c1_right_dressed_cx"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:

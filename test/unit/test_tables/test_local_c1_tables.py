@@ -14,7 +14,7 @@
 from itertools import product
 
 import pytest
-from qiskit.circuit.library import CXGate, CZGate, ECRGate
+from qiskit.circuit.library import CXGate, CZGate, ECRGate, HGate
 from qiskit.quantum_info import Clifford
 
 from samplomatic.samplex.nodes.c1_past_clifford_node import C1_PAST_CLIFFORD_LOOKUP_TABLES
@@ -22,6 +22,24 @@ from samplomatic.virtual_registers.c1_register import C1_TO_TABLEAU
 
 
 class TestLookupTables:
+    @pytest.mark.parametrize("op_class", [HGate])
+    def test_1q_gate_tables(self, op_class):
+        """Test the lookup tables for one-qubit gates."""
+        op = op_class()
+        gate_cliff = Clifford(op)
+        gate_inv = gate_cliff.adjoint()
+        table = C1_PAST_CLIFFORD_LOOKUP_TABLES[op.name]
+
+        for c1_idx in range(24):
+            c1_cliff = Clifford(C1_TO_TABLEAU[c1_idx], False)
+            result = gate_inv.dot(c1_cliff).dot(gate_cliff)
+            expected = Clifford(C1_TO_TABLEAU[table[c1_idx, 0]], False)
+
+            assert result == expected, (
+                f"C1[{c1_idx}] through {op.name}: Table says C1[{table[c1_idx, 0]}], "
+                f"but Qiskit gives a different result."
+            )
+
     @pytest.mark.parametrize("op_class", [CXGate, CZGate, ECRGate])
     def test_2q_gate_tables(self, op_class):
         """Test the lookup tables for two-qubit gates."""

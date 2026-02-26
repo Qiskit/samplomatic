@@ -20,6 +20,20 @@ from samplomatic.virtual_registers import C1Register, VirtualType
 
 
 class TestC1PastClifford:
+    def test_one_qubit_gate(self):
+        """Test propagating C1 register past a one-qubit Clifford gate."""
+        node = C1PastCliffordNode("h", "my_reg", [(3,), (1,), (0,)])
+
+        reg = C1Register(np.array([[0, 1], [4, 2], [2, 0], [3, 5]], dtype=np.uint8))
+        node.evaluate({"my_reg": reg}, np.empty(()))
+
+        # H conjugation: 0→0, 1→2, 2→1, 3→3, 4→4, 5→6
+        # Subsystem 3: [3, 5] → [3, 6]
+        # Subsystem 1: [4, 2] → [4, 1]
+        # Subsystem 0: [0, 1] → [0, 2]
+        assert reg.virtual_gates.tolist() == [[0, 2], [4, 1], [2, 0], [3, 6]]
+        assert node.outgoing_register_type is VirtualType.C1
+
     def test_cx_gate(self):
         """Test propagating C1 register past a controlled-X gate."""
         node = C1PastCliffordNode("cx", "my_reg", [(0, 1)])
