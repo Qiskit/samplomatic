@@ -49,6 +49,11 @@ class UniformLocalC1(Distribution):
         self._gate = gate
 
     @property
+    def gate(self):
+        """The two-qubit gate."""
+        return self._gate
+
+    @property
     def register_type(self):
         return VirtualType.C1
 

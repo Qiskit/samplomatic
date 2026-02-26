@@ -14,7 +14,7 @@
 
 import orjson
 
-from ..distributions import BalancedUniformPauli, Distribution, HaarU2, UniformPauli
+from ..distributions import BalancedUniformPauli, Distribution, HaarU2, UniformLocalC1, UniformPauli
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
     C1PastCliffordNode,
@@ -444,20 +444,20 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
         @classmethod
         def serialize(cls, obj, ssv):
             distribution: Distribution = obj._distribution  # noqa: SLF001
+            distribution_spec = {"num_subsystems": distribution.num_subsystems}
             if isinstance(distribution, UniformPauli):
-                distribution_type = "pauli"
+                distribution_spec["type"] = "pauli"
             elif isinstance(distribution, BalancedUniformPauli):
-                distribution_type = "balanced_pauli"
+                distribution_spec["type"] = "balanced_pauli"
             elif isinstance(distribution, HaarU2):
-                distribution_type = "haar_u2"
+                distribution_spec["type"] = "haar_u2"
+            elif isinstance(distribution, UniformLocalC1):
+                distribution_spec["type"] = "local_c1"
+                distribution_spec["gate"] = distribution.gate
             else:
                 raise SerializationError(
                     f"Cannot serialize a twirl node with the distribution {distribution}"
                 )
-            distribution_spec = {
-                "type": distribution_type,
-                "num_subsystems": distribution.num_subsystems,
-            }
             return {
                 "lhs_register_name": obj._lhs_register_name,  # noqa: SLF001
                 "rhs_register_name": obj._rhs_register_name,  # noqa: SLF001
@@ -476,6 +476,9 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
                     distribution = BalancedUniformPauli(num_subsystems)
                 case "haar_u2":
                     distribution = HaarU2(num_subsystems)
+                case "local_c1":
+                    gate = distribution_spec["gate"]
+                    distribution = UniformLocalC1(num_subsystems, gate)
                 case _:
                     raise DeserializationError(
                         f"Unknown distribution type: {distribution_spec['type']}"
