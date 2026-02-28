@@ -42,10 +42,10 @@ from ..aliases import (
     RegisterName,
     StrRef,
 )
-from ..annotations import ChangeBasisMode
+from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
-from ..distributions import Distribution, HaarU2, UniformPauli
+from ..distributions import BalancedUniformPauli, Distribution, UniformPauli
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
@@ -103,8 +103,11 @@ if TYPE_CHECKING:
 
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
 
-REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
-    {VirtualType.U2: HaarU2, VirtualType.PAULI: UniformPauli}
+GROUP_TO_DISTRIBUTION: dict[GroupMode, type[Distribution]] = FrozenDict(
+    {
+        GroupMode.PAULI: UniformPauli,
+        GroupMode.BALANCED: BalancedUniformPauli,
+    }
 )
 
 FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
@@ -547,7 +550,7 @@ class PreSamplex:
 
         return node_idx
 
-    def add_emit_twirl(self, qubits: QubitPartition, register_type: VirtualType) -> NodeIndex:
+    def add_emit_twirl(self, qubits: QubitPartition, register_type: GroupMode) -> NodeIndex:
         """Add a node that emits virtual gates left and right of the same type.
 
         Args:
@@ -1316,7 +1319,7 @@ class PreSamplex:
         node = TwirlSamplingNode(
             lhs_reg_name := f"lhs_{reg_idx}",
             rhs_reg_name := f"rhs_{reg_idx}",
-            REG_TO_DISTRIBUTION[pre_emit.register_type](len(pre_emit.subsystems)),
+            GROUP_TO_DISTRIBUTION[pre_emit.register_type](len(pre_emit.subsystems)),
         )
         node_idx = samplex.add_node(node)
 

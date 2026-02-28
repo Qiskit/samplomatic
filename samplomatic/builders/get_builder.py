@@ -21,7 +21,6 @@ from ..annotations import ChangeBasis, DressingMode, InjectLocalClifford, Inject
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
-from ..virtual_registers import VirtualType
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
@@ -64,7 +63,7 @@ def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
         parser(annotation, collection, emission)
         seen_annotations.add(annotation_type)
 
-    if emission.noise_ref and not emission.twirl_register_type:
+    if emission.noise_ref and not emission.twirl_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
     if collection.dressing is DressingMode.LEFT:
@@ -196,15 +195,12 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `twirl.group` is unsupported.
         BuildError: If `dressing` is already specified on one of the specs and not equal
             to `twirl.dressing`.
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `twirl.decomposition`.
     """
-    if twirl.group is not VirtualType.PAULI:
-        raise BuildError(f"Group '{twirl.group}' is not supported.")
-    emission.twirl_register_type = VirtualType.PAULI
+    emission.twirl_type = twirl.group
 
     synth = get_synth(twirl.decomposition)
     if (current_synth := collection.synth) is not None:

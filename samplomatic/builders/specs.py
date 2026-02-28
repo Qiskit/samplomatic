@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -19,10 +19,9 @@ from typing import Literal, TypeAlias
 import numpy as np
 
 from ..aliases import CircuitInstruction, Parameter, Qubit, StrRef
-from ..annotations import DressingMode, InjectionSite
+from ..annotations import DressingMode, GroupMode, InjectionSite
 from ..partition import QubitPartition
 from ..synths import Synth
-from ..virtual_registers import VirtualType
 
 EMPTY_IDXS = np.empty((0, 0), dtype=np.intp)
 EMPTY_IDXS.setflags(write=False)
@@ -62,8 +61,8 @@ class EmissionSpec:
     dressing: DressingMode | None = None
     """Which side of the box to emit on."""
 
-    twirl_register_type: VirtualType | None = None
-    """What type of virtual gates to emit for twirling."""
+    twirl_type: GroupMode | None = None
+    """What type and distribution of virtual gates to emit for twirling."""
 
     basis_change: FrameChangeMode | None = None
     """What type of basis change to use."""

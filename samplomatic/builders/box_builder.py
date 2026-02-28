@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -23,7 +23,7 @@ from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from .builder import Builder
-from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
+from .specs import CollectionSpec, EmissionSpec, InstructionMode
 from .template_state import TemplateState
 
 ParsableType: TypeAlias = DAGOpNode | None
@@ -165,14 +165,9 @@ class LeftBoxBuilder(BoxBuilder):
             self.samplex_state.add_emit_noise_left(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
             )
-        twirl_type = self.emission.twirl_register_type
-        if twirl_type := self.emission.twirl_register_type:
+        if twirl_type := self.emission.twirl_type:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
             if len(self.measured_qubits) != 0:
-                if twirl_type != VirtualType.PAULI:
-                    raise BuildError(
-                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
-                    )
                 self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
 
     @staticmethod
@@ -244,10 +239,8 @@ class RightBoxBuilder(BoxBuilder):
 
     def lhs(self):
         self._append_barrier("L")
-        if self.emission.twirl_register_type:
-            self.samplex_state.add_emit_twirl(
-                self.emission.qubits, self.emission.twirl_register_type
-            )
+        if self.emission.twirl_type:
+            self.samplex_state.add_emit_twirl(self.emission.qubits, self.emission.twirl_type)
         if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
             self.samplex_state.add_emit_noise_right(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref

@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,23 +12,22 @@
 
 import pytest
 
-from samplomatic.annotations import DecompositionMode, DressingMode, Twirl
-from samplomatic.virtual_registers import VirtualType
+from samplomatic.annotations import DecompositionMode, DressingMode, GroupMode, Twirl
 
 
 def test_construction():
     """Test that we can construct a Twirl."""
     twirl = Twirl()
 
-    assert twirl.group is VirtualType.PAULI
+    assert twirl.group is GroupMode.PAULI
     assert twirl.decomposition is DecompositionMode.RZSX
     assert twirl.dressing is DressingMode.LEFT
 
 
 def test_construction_raises():
     """Test that construction raises when expected."""
-    with pytest.raises(ValueError, match="The group must be one of"):
-        Twirl(group=VirtualType.Z2)
+    with pytest.raises(ValueError):
+        Twirl(group="invalid_group")
 
 
 def test_eq():
