@@ -17,7 +17,7 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from numpy.random import Generator, SeedSequence, default_rng
+from numpy.random import PCG64, Generator, SeedSequence, default_rng
 from rustworkx import is_isomorphic
 from rustworkx.rustworkx import PyDiGraph, topological_generations
 
@@ -37,6 +37,7 @@ from ..aliases import (
 )
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..tensor_interface import Specification, TensorInterface, TensorSpecification
+from ..utils.deprecation import deprecate_arg
 from ..virtual_registers import VirtualRegister, VirtualType
 from ..visualization import plot_graph
 from .interfaces import SamplexOutput
@@ -310,6 +311,11 @@ class Samplex:
         """
         return SamplexOutput(self._output_specifications.values())
 
+    @deprecate_arg(
+        "rng",
+        since="0.16.0",
+        additional_msg="Instead, pass 'seed' as an input to the 'samplex_input'.",
+    )
     def sample(
         self,
         samplex_input: Mapping[str, Any] | None = None,
@@ -348,8 +354,9 @@ class Samplex:
             >>> # are required to pass a length-2 vector of floats for 'a' and 'b' (alphabetical)
             >>> print(inputs := samplex.inputs())
             TensorInterface(<
-                - 'parameter_values' <float64[2]>: Input parameter values to use during sampling.
-            >)
+              - 'parameter_values' <float64[2]>: Input parameter values to use during sampling.
+            <BLANKLINE>
+              - 'seed' <uint64[]>: (Optional) Seed for the random number generator.>)
 
             >>> # after binding required values, we can sample 123 randomizations
             >>> samplex.sample(
@@ -366,6 +373,17 @@ class Samplex:
             SamplexOutput({'measurement_flips.meas': ..., 'parameter_values': ...})
 
 
+        .. note::
+
+            When a ``"seed"`` is provided, the PRNG is pinned to NumPy's PCG64 bit generator, whose
+            stream is guaranteed by NumPy to be stable across all versions and platforms for a given
+            seed. The same seed and NumPy major version will therefore produce identical output
+            regardless of OS or architecture. In practise, it is likely also stable across NumPy
+            major versions because historically they have never, for example, changed how
+            ``rng.integers()`` consumes the underlying raw bit stream to generate integers, though
+            in principle they could. Samplomatic will issue changelog notices if it ever changes a
+            distribution implementation, though will avoid doing so in general.
+
         Args:
             samplex_input: A mapping from input names to input values, as described by
                 :meth:`~.inputs` (see also the :ref:`samplex-io` guide), or ``None`` if
@@ -375,8 +393,8 @@ class Samplex:
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
-            rng: An integer for seeding a randomness generator, a generator itself, or ``None``
-                to use the default generator owned by the module.
+            rng: .. deprecated:: 0.16.0
+                Use the ``"seed"`` input in ``samplex_input`` instead.
             max_workers: The maximum number of threads that can be used to execute the
                 parallel execution of sampling, evaluation, and collection nodes.
         """
@@ -415,7 +433,12 @@ class Samplex:
             if key.startswith("measurement_flips"):
                 outputs[key][:] = 0
 
-        rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else (rng or RNG)
+        if (seed := samplex_input.get("seed", None)) is not None:
+            rng = Generator(PCG64(SeedSequence(int(seed))))
+        elif rng is not None:
+            rng = default_rng(rng) if isinstance(rng, int | SeedSequence) else rng
+        else:
+            rng = RNG
 
         registers: dict[RegisterName, VirtualRegister] = outputs.metadata.get("registers", {})
 
