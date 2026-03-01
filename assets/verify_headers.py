@@ -44,13 +44,28 @@ def is_shallow_clone() -> bool:
     return Path(".git/shallow").exists()
 
 
+def _has_uncommitted_changes(file_path: str) -> bool:
+    """Check if a file has staged or unstaged changes."""
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain", "--", file_path],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return bool(result.stdout.strip())
+    except subprocess.CalledProcessError:
+        return False
+
+
 def get_last_modified_year(file_path: str) -> int:
     """Get the year of the last git commit that modified this file.
 
-    Falls back to the current year if the file is not tracked by git, git fails,
-    or this is a shallow clone (where git history is unreliable).
+    Returns the current year if the file has uncommitted changes, since it is being
+    modified now. Falls back to the current year if the file is not tracked by git,
+    git fails, or this is a shallow clone (where git history is unreliable).
     """
-    if is_shallow_clone():
+    if is_shallow_clone() or _has_uncommitted_changes(file_path):
         return datetime.now().year
     try:
         result = subprocess.run(
