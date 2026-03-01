@@ -384,6 +384,7 @@ class Samplex:
             in principle they could. Samplomatic will issue changelog notices if it ever changes a
             distribution implementation, though will avoid doing so in general.
 
+
         Args:
             samplex_input: A mapping from input names to input values, as described by
                 :meth:`~.inputs` (see also the :ref:`samplex-io` guide), or ``None`` if
