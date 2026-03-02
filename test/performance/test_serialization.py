@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,6 +21,7 @@ from samplomatic.serialization import samplex_from_json, samplex_to_json
 from .utils import make_layered_circuit
 
 
+@pytest.mark.parametrize("ssv", [2, 3])
 @pytest.mark.parametrize(
     ("num_qubits", "num_gates"),
     [
@@ -40,15 +41,17 @@ from .utils import make_layered_circuit
         ),
     ],
 )
-def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
+def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates, ssv):
     """Test the speed of serializing a samplex."""
     num_boxes = num_gates // (num_qubits // 2)
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
-    benchmark(samplex_to_json, samplex)
+    result = benchmark(samplex_to_json, samplex, ssv=ssv)
+    benchmark.extra_info["payload_bytes"] = len(result)
 
 
+@pytest.mark.parametrize("ssv", [2, 3])
 @pytest.mark.parametrize(
     ("num_qubits", "num_gates"),
     [
@@ -68,11 +71,12 @@ def test_serialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
         ),
     ],
 )
-def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
+def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates, ssv):
     """Test the speed of deserializing a samplex."""
     num_boxes = num_gates // (num_qubits // 2)
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
-    samplex_json = samplex_to_json(samplex, None)
+    samplex_json = samplex_to_json(samplex, None, ssv=ssv)
+    benchmark.extra_info["payload_bytes"] = len(samplex_json)
     benchmark(samplex_from_json, samplex_json)

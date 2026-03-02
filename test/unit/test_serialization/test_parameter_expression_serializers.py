@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -29,3 +29,14 @@ def test_change_basis_serializer_round_trip(ssv):
     data = ParameterExpressionTableSerializer.serialize(table, ssv)
     orjson.dumps(data)
     assert table == TypeSerializer.deserialize(data)
+
+
+def test_ssv3_format():
+    """Test that SSV3 uses values_base64 (not circuit_base64) and includes qpy version."""
+    table = ParameterExpressionTable()
+    table.append(Parameter("x") + Parameter("y"))
+    data = ParameterExpressionTableSerializer.serialize(table, ssv=3)
+    assert "values_base64" in data
+    assert "circuit_base64" not in data
+    assert "qpy" in data
+    assert int(data["qpy"]) > 0
