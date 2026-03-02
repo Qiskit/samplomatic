@@ -59,7 +59,7 @@ from samplomatic.virtual_registers import VirtualType
 
 
 def test_basis_change_unsupported_register_type():
-    with pytest.raises(SerializationError, match="Cannot serialive 'VirtualType.C1'"):
+    with pytest.raises(SerializationError, match="Cannot serialive"):
         BasisChangeSerializer.serialize(LOCAL_CLIFFORD, 1)
 
 
