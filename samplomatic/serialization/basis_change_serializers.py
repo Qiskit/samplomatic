@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -31,7 +31,7 @@ def _virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
     elif register_type == VirtualType.PAULI:
         return PauliRegister(array)
     else:
-        raise DeserializationError(f"Invalid register type: {register_type}")
+        raise DeserializationError(f"Cannot deserialive '{register_type}' in SSV 1.")
 
 
 class BasisChangeSerializer(TypeSerializer[BasisChange]):
@@ -46,10 +46,16 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if (register_type := obj.action.TYPE) not in (
+                VirtualType.U2,
+                VirtualType.Z2,
+                VirtualType.PAULI,
+            ):
+                raise SerializationError(f"Cannot serialive '{register_type}' in SSV 1.")
             return {
                 "alphabet": obj.alphabet,
                 "action": orjson.dumps(
-                    {"type": obj.action.TYPE, "array": array_to_json(obj.action.virtual_gates)}
+                    {"type": register_type, "array": array_to_json(obj.action.virtual_gates)}
                 ).decode("utf-8"),
             }
 
