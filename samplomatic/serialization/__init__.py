@@ -54,7 +54,9 @@ The SSV history is summarized in the following table:
      - Added :class:`~.C1Register` serialization; updated :class:`~.BasisChange` format.
    * - 3
      - 0.16.0
-     - Added :class:`~.BalancedUniformPauli` distribution support in twirl nodes.
+     - Added :class:`~.BalancedUniformPauli` distribution support in twirl nodes; switched
+       parameter expression table serialization from circuit-wrapped QPY to direct
+       ``write_values``/``read_values``.
 
 Backwards compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^

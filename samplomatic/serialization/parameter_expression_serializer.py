@@ -30,6 +30,7 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
 
     class SSV1(DataSerializer[ParameterExpressionTable]):
         MIN_SSV = 1
+        MAX_SSV = 2
 
         @classmethod
         def serialize(cls, obj, ssv):
@@ -54,4 +55,30 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
             param_table = ParameterExpressionTable()
             for instr in circuit:
                 param_table.append(instr.operation.params[0])
+            return param_table
+
+    class SSV3(DataSerializer[ParameterExpressionTable]):
+        MIN_SSV = 3
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            from qiskit._accelerate import qpy as qpy_rust
+            from qiskit.qpy.common import QPY_VERSION
+
+            with io.BytesIO() as buf:
+                qpy_rust.write_values(buf, list(obj._expressions))  # noqa: SLF001
+                values_base64 = pybase64.b64encode_as_string(buf.getvalue())
+
+            return {"qpy": str(QPY_VERSION), "values_base64": values_base64}
+
+        @classmethod
+        def deserialize(cls, data):
+            from qiskit._accelerate import qpy as qpy_rust
+
+            with io.BytesIO(pybase64.b64decode(data["values_base64"])) as buf:
+                expressions = qpy_rust.read_values(buf)
+
+            param_table = ParameterExpressionTable()
+            for expr in expressions:
+                param_table.append(expr)
             return param_table
