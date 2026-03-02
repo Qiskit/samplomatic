@@ -384,7 +384,6 @@ class Samplex:
             in principle they could. Samplomatic will issue changelog notices if it ever changes a
             distribution implementation, though will avoid doing so in general.
 
-
         Args:
             samplex_input: A mapping from input names to input values, as described by
                 :meth:`~.inputs` (see also the :ref:`samplex-io` guide), or ``None`` if
@@ -394,7 +393,7 @@ class Samplex:
             num_randomizations: The number of randomizations to sample.
             keep_registers: Whether to keep the virtual registers used during sampling and include
                 them in the output under the metadata key ``"registers"``.
-            rng: .. deprecated:: 0.16.0
+            rng: *Deprecated since 0.16.0.*
                 Use the ``"seed"`` input in ``samplex_input`` instead.
             max_workers: The maximum number of threads that can be used to execute the
                 parallel execution of sampling, evaluation, and collection nodes.
