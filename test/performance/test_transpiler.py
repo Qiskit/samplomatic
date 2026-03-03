@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,6 +18,7 @@ from qiskit.transpiler.passes import RemoveBarriers
 
 from samplomatic.transpiler import generate_boxing_pass_manager
 from samplomatic.transpiler.passes import InlineBoxes
+from samplomatic.utils import unbox
 
 from .utils import make_layered_circuit
 
@@ -46,7 +47,7 @@ def test_transpiling_5k_circuit(benchmark, num_qubits, num_gates, inject_noise_s
     """Test the boxing pass manager performance."""
     num_boxes = num_gates // (num_qubits // 2)
     boxed_circuit = make_layered_circuit(num_qubits, num_boxes)
-    unboxed_circuit = PassManager([InlineBoxes()]).run(boxed_circuit)
+    unboxed_circuit = unbox(boxed_circuit)
     pm = generate_boxing_pass_manager(inject_noise_strategy=inject_noise_strategy)
 
     transpiled_circuit = benchmark(pm.run, unboxed_circuit)
