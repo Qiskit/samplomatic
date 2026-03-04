@@ -83,3 +83,14 @@ class TestLocalC1BuildErrors:
 
         with pytest.raises(BuildError, match="twirl in a box with measurements"):
             pre_build(circuit)
+
+        circuit = QuantumCircuit(3, 1)
+        with circuit.box([Twirl(group="local_c1", dressing="left")]):
+            circuit.cx(0, 1)
+            circuit.measure(2, 0)
+
+        with circuit.box([Twirl(group="pauli", dressing="right")]):
+            circuit.cx(0, 1)
+
+        with pytest.raises(BuildError, match="twirl in a box with measurements"):
+            pre_build(circuit)
