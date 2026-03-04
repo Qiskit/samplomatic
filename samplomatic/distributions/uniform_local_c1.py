@@ -28,30 +28,31 @@ class UniformLocalC1(Distribution):
 
     Args:
         num_subsystems: The number of subsystems this distribution samples. Must be even.
-        gate: A two-qubit gate name whose conjugation table appears in
+        gate_name: A two-qubit gate name whose conjugation table appears in
             :data:`~.C1_PAST_CLIFFORD_LOOKUP_TABLES`.
     """
 
-    def __init__(self, num_subsystems: int, gate: str):
+    def __init__(self, num_subsystems: int, gate_name: str):
         super().__init__(num_subsystems)
         if num_subsystems % 2:
             raise ValueError(f"num_subsystems must be even, got {num_subsystems}.")
 
-        if gate not in C1_PAST_CLIFFORD_LOOKUP_TABLES:
+        if gate_name not in C1_PAST_CLIFFORD_LOOKUP_TABLES:
             raise ValueError(
-                f"Unknown gate {gate!r}. Expected one of {list(C1_PAST_CLIFFORD_LOOKUP_TABLES)}."
+                f"Unknown gate {gate_name!r}. Expected one of "
+                f"{list(C1_PAST_CLIFFORD_LOOKUP_TABLES)}."
             )
-        table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate]
+        table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate_name]
         if table.ndim != 3:
-            raise ValueError(f"Gate {gate!r} is not a two-qubit gate.")
+            raise ValueError(f"Gate {gate_name!r} is not a two-qubit gate.")
 
         self._valid_pairs = np.argwhere(np.all(table >= 0, axis=-1)).astype(C1Register.DTYPE)
-        self._gate = gate
+        self._gate_name = gate_name
 
     @property
-    def gate(self):
-        """The two-qubit gate."""
-        return self._gate
+    def gate_name(self) -> str:
+        """The name of the two-qubit gate."""
+        return self._gate_name
 
     @property
     def register_type(self):
@@ -72,5 +73,11 @@ class UniformLocalC1(Distribution):
         return (
             type(self) is type(other)
             and self.num_subsystems == other.num_subsystems
-            and self._gate == other._gate
+            and self._gate_name == other._gate_name
+        )
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(<num_subsystems={self.num_subsystems}, "
+            f"gate_name={self.gate_name}, register_type={self.register_type}>)"
         )

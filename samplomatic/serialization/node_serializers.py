@@ -453,7 +453,7 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
                 distribution_spec["type"] = "haar_u2"
             elif isinstance(distribution, UniformLocalC1):
                 distribution_spec["type"] = "local_c1"
-                distribution_spec["gate"] = distribution.gate
+                distribution_spec["gate_name"] = distribution.gate_name
             else:
                 raise SerializationError(
                     f"Cannot serialize a twirl node with the distribution {distribution}"
@@ -477,8 +477,8 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
                 case "haar_u2":
                     distribution = HaarU2(num_subsystems)
                 case "local_c1":
-                    gate = distribution_spec["gate"]
-                    distribution = UniformLocalC1(num_subsystems, gate)
+                    gate_name = distribution_spec["gate_name"]
+                    distribution = UniformLocalC1(num_subsystems, gate_name)
                 case _:
                     raise DeserializationError(
                         f"Unknown distribution type: {distribution_spec['type']}"

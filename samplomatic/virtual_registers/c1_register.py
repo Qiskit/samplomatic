@@ -18,43 +18,10 @@ import numpy as np
 from numpy.typing import ArrayLike
 from qiskit.quantum_info import Clifford
 
-from ..tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE
+from ..tables.c1_tables import C1_INVERSE_TABLE, C1_LOOKUP_TABLE, C1_TO_TABLEAU
 from .finite_group_register import FiniteGroupRegister
 from .u2_register import U2Register
 from .virtual_type import VirtualType
-
-C1_TO_TABLEAU = np.array(
-    [
-        [[True, False, False], [False, True, False]],
-        [[True, False, True], [False, True, False]],
-        [[True, False, False], [False, True, True]],
-        [[True, False, True], [False, True, True]],
-        [[False, True, False], [True, False, False]],
-        [[False, True, True], [True, False, False]],
-        [[False, True, False], [True, False, True]],
-        [[False, True, True], [True, False, True]],
-        [[True, True, True], [True, False, False]],
-        [[True, True, False], [True, False, False]],
-        [[True, True, True], [True, False, True]],
-        [[True, True, False], [True, False, True]],
-        [[True, False, False], [True, True, True]],
-        [[True, False, True], [True, True, True]],
-        [[True, False, False], [True, True, False]],
-        [[True, False, True], [True, True, False]],
-        [[False, True, False], [True, True, True]],
-        [[False, True, True], [True, True, True]],
-        [[False, True, False], [True, True, False]],
-        [[False, True, True], [True, True, False]],
-        [[True, True, True], [False, True, False]],
-        [[True, True, False], [False, True, False]],
-        [[True, True, True], [False, True, True]],
-        [[True, True, False], [False, True, True]],
-    ],
-    np.bool_,
-)
-"""An array containing the tableaus of each single-qubit Clifford.
-
-This is the order used by :class:`~.C1Register`."""
 
 
 @cache
