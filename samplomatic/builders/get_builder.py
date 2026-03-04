@@ -41,7 +41,7 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     """Classify qubits in a gate-dependent twirl box into entangling and fallback qubits.
 
     Inspects the box body DAG for 2Q gates and splits qubits accordingly.
-    Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_qubits``,
+    Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_twirl_qubits``,
     and ``twirl_gate``. If no 2Q gates are found, downgrades
     ``twirl_register_type`` to PAULI.
 
