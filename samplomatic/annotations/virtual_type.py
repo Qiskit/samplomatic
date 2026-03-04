@@ -29,5 +29,5 @@ GroupLiteral: TypeAlias = VirtualType | Literal["pauli", "local_c1"]
 
  * ``pauli``: The projective Pauli group.
  * ``local_c1``: The subset of C1 gates that remain local under the action of an entangler, or the
-        project Pauli group if no entangler is present.
+        projective Pauli group if no entangler is present.
 """
