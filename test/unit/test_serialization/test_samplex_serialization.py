@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -78,7 +78,7 @@ class TestSamplexSerialization:
         assert samplex == samplex_new
 
     @pytest.mark.parametrize("ssv", [3])
-    def test_general_5q_static_circui_local_c1(self, ssv):
+    def test_general_5q_static_circuit_local_c1(self, ssv):
         """Test with a general static circuit of 5 qubits."""
         circuit = QuantumCircuit(5)
         with circuit.box([Twirl(group="local_c1")]):

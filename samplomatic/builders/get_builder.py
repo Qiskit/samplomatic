@@ -79,9 +79,11 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
 
     # C1 qubits: flatten pairs preserving operand order
     gate_dependent_qubit_list = []
+    seen_qubits = set()
     for pair in seen_pairs:
         for q in pair:
-            if q not in {qq for tup in gate_dependent_qubit_list for qq in tup}:
+            if q not in seen_qubits:
+                seen_qubits.add(q)
                 gate_dependent_qubit_list.append((q,))
     emission.gate_dependent_twirl_qubits = QubitPartition(1, gate_dependent_qubit_list)
 
