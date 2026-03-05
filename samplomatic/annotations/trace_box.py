@@ -24,7 +24,7 @@ class TraceBox(Annotation):
     The following information is included:
 
     * If there's an :class:`~.InjectNoise` annotation present, includes its
-      :param:`~InjectNoise.ref`.
+      :attr:`~InjectNoise.ref`.
     """
 
     namespace = "samplomatic.trace_box"
