@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import pytest
+from numpy.random import PCG64, Generator, SeedSequence
 from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
@@ -411,3 +412,115 @@ class TestSample:
                 wait_with_raise([f_fail, f_slow])
             # At least one future should be cancelled
             assert f_slow.cancelled()
+
+
+class TestSeedInput:
+    """Tests for the seed input to sample()."""
+
+    def test_seed_in_inputs(self):
+        """Test that seed appears in samplex.inputs() as an optional input."""
+        samplex = Samplex()
+        samplex.add_input(TensorSpecification("seed", (), np.dtype(np.uint64), optional=True))
+        inputs = samplex.inputs()
+        seed_specs = [s for s in inputs.specs if s.name == "seed"]
+        assert len(seed_specs) == 1
+        assert seed_specs[0].optional
+
+    def test_seed_deterministic(
+        self, dummy_collection_node, dummy_evaluation_node, dummy_sampling_node
+    ):
+        """Test that passing the same seed produces deterministic results."""
+        samplex = Samplex()
+        samplex.add_input(TensorSpecification("seed", (), np.dtype(np.uint64), optional=True))
+        samplex.add_output(TensorSpecification("out", (9,), float, "desc"))
+
+        a = samplex.add_node(dummy_sampling_node(instantiates={"x": (10, PauliRegister)}))
+        b = samplex.add_node(dummy_evaluation_node(reads_from={"x": ({6}, PauliRegister)}))
+        c = samplex.add_node(
+            dummy_collection_node(
+                reads_from={"x": ({8}, PauliRegister)}, removes=set(), outputs_to={"out"}
+            )
+        )
+        samplex.add_edge(a, b)
+        samplex.add_edge(b, c)
+        samplex.finalize()
+
+        out1 = samplex.sample({"seed": np.uint64(42)}, num_randomizations=13)
+        out2 = samplex.sample({"seed": np.uint64(42)}, num_randomizations=13)
+        np.testing.assert_array_equal(out1["out"], out2["out"])
+
+    def test_seed_different_values(
+        self, dummy_collection_node, dummy_evaluation_node, dummy_sampling_node
+    ):
+        """Test that different seeds produce different results."""
+        samplex = Samplex()
+        samplex.add_input(TensorSpecification("seed", (), np.dtype(np.uint64), optional=True))
+        samplex.add_output(TensorSpecification("out", (9,), float, "desc"))
+
+        a = samplex.add_node(dummy_sampling_node(instantiates={"x": (10, PauliRegister)}))
+        b = samplex.add_node(dummy_evaluation_node(reads_from={"x": ({6}, PauliRegister)}))
+        c = samplex.add_node(
+            dummy_collection_node(
+                reads_from={"x": ({8}, PauliRegister)}, removes=set(), outputs_to={"out"}
+            )
+        )
+        samplex.add_edge(a, b)
+        samplex.add_edge(b, c)
+        samplex.finalize()
+
+        out1 = samplex.sample({"seed": np.uint64(42)}, num_randomizations=13)
+        out2 = samplex.sample({"seed": np.uint64(99)}, num_randomizations=13)
+        assert not np.array_equal(out1["out"], out2["out"])
+
+    def test_no_seed_backward_compatible(self):
+        """Test that omitting seed still works as before."""
+        samplex = Samplex()
+        samplex.add_input(TensorSpecification("seed", (), np.dtype(np.uint64), optional=True))
+        samplex.finalize()
+        samplex.sample(samplex.inputs())
+        samplex.sample({})
+        samplex.sample(None)
+
+
+class TestPRNGStreamCanary:
+    """Canary tests that detect if NumPy changes the PRNG stream for a pinned PCG64 seed.
+
+    These tests hardcode expected outputs from specific ``Generator`` methods called with a
+    known seed. If a NumPy upgrade changes any of these streams, these tests will fail,
+    serving as an early warning that seed-based reproducibility in ``Samplex.sample()`` may
+    be affected.
+    """
+
+    SEED = 42
+
+    def _make_rng(self):
+        return Generator(PCG64(SeedSequence(self.SEED)))
+
+    def test_integers_stream(self):
+        """Test that Generator.integers produces the expected stream from a pinned seed."""
+        rng = self._make_rng()
+        result = rng.integers(4, size=(3, 5), dtype=np.uint8)
+        expected = np.array([[2, 0, 3, 0, 3], [3, 0, 3, 3, 3], [2, 2, 1, 1, 1]], dtype=np.uint8)
+        np.testing.assert_array_equal(result, expected)
+
+    def test_standard_normal_stream(self):
+        """Test that Generator.standard_normal produces the expected stream from a pinned seed."""
+        rng = self._make_rng()
+        result = rng.standard_normal(size=(2, 3))
+        expected = np.array(
+            [[0.30471708, -1.03998411, 0.7504512], [0.94056472, -1.95103519, -1.30217951]]
+        )
+        np.testing.assert_allclose(result, expected, rtol=1e-7)
+
+    def test_spawn_and_child_integers_stream(self):
+        """Test that Generator.spawn + child integers produces the expected stream."""
+        rng = self._make_rng()
+        children = rng.spawn(3)
+        expected = [
+            np.array([1, 3, 1, 1, 2], dtype=np.uint8),
+            np.array([2, 1, 0, 0, 3], dtype=np.uint8),
+            np.array([3, 1, 0, 2, 1], dtype=np.uint8),
+        ]
+        for child, exp in zip(children, expected):
+            result = child.integers(4, size=5, dtype=np.uint8)
+            np.testing.assert_array_equal(result, exp)

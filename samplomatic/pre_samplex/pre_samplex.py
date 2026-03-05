@@ -1174,6 +1174,16 @@ class PreSamplex:
                     )
                 )
 
+        samplex.add_input(
+            TensorSpecification(
+                "seed",
+                (),
+                np.dtype(np.uint64),
+                "Seed for the random number generator.",
+                optional=True,
+            )
+        )
+
         parameter_values_shape = (
             "num_randomizations",
             0 if max_param_idx is None else max_param_idx + 1,
