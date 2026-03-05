@@ -18,9 +18,13 @@ from qiskit.circuit import Annotation
 class TraceBox(Annotation):
     """Marker annotation to include trace information in barrier labels.
 
-    When present on a ``box`` instruction alongside :class:`~.InjectNoise`, the barriers
-    emitted during :func:`~samplomatic.build` will include the noise reference in their labels
-    (e.g. ``"L0"`` becomes ``"L0@my_noise_ref"``).
+    When present on a ``box`` instruction, the barriers emitted during :func:`~samplomatic.build`
+    include trace information.
+
+    The following information is included:
+
+    * If there's an :class:`~.InjectNoise` annotation present, includes its
+      :param:`~InjectNoise.ref`.
     """
 
     namespace = "samplomatic.trace_box"
