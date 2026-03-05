@@ -17,7 +17,14 @@ from collections.abc import Callable, Sequence
 from qiskit.circuit import Annotation, Qubit
 
 from ..aliases import DAGOpNode
-from ..annotations import ChangeBasis, DressingMode, InjectLocalClifford, InjectNoise, Twirl
+from ..annotations import (
+    ChangeBasis,
+    DressingMode,
+    InjectLocalClifford,
+    InjectNoise,
+    TraceBox,
+    Twirl,
+)
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
@@ -226,6 +233,17 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
         emission.dressing = dressing
 
 
+def trace_box_parser(trace_box: TraceBox, collection: CollectionSpec, emission: EmissionSpec):
+    """Parse a trace box annotation by mutating emission spec.
+
+    Args:
+        trace_box: The trace box annotation to parse.
+        collection: The collection spec to modify.
+        emission: The emission spec to modify.
+    """
+    emission.trace_box = True
+
+
 SUPPORTED_ANNOTATIONS: dict[
     Annotation, Callable[[type[Annotation], CollectionSpec, EmissionSpec], None]
 ] = {
@@ -233,4 +251,5 @@ SUPPORTED_ANNOTATIONS: dict[
     Twirl: twirl_parser,
     InjectLocalClifford: inject_local_clifford_parser,
     InjectNoise: inject_noise_parser,
+    TraceBox: trace_box_parser,
 }

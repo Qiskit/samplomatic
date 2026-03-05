@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@
 
 from ._beta_warning import warn_once_per_version as _warn_once_per_version
 from ._version import __version__
-from .annotations import ChangeBasis, InjectNoise, Twirl
+from .annotations import ChangeBasis, InjectNoise, TraceBox, Twirl
 from .builders import build
 
 _warn_once_per_version(

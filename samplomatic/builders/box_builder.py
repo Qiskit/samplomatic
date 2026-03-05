@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -79,6 +79,8 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
 
     def _append_barrier(self, label: str):
         label = f"{label}{'_'.join(map(str, self.template_state.scope_idx))}"
+        if self.emission.trace_box and self.emission.noise_ref:
+            label = f"{label}@{self.emission.noise_ref}"
         all_qubits = self.template_state.qubits()
         self.template_state.template.apply_operation_back(
             Barrier(len(all_qubits), label), all_qubits

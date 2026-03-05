@@ -80,6 +80,9 @@ class EmissionSpec:
     noise_site: InjectionSite | None = None
     """Whether to inject noise before or after the hard content."""
 
+    trace_box: bool = False
+    """Whether to include trace information in barrier labels."""
+
 
 @dataclass
 class CollectionSpec:
