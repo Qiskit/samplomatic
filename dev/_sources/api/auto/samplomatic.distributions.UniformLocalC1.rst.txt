@@ -10,6 +10,7 @@ UniformLocalC1
 
    .. autosummary::
 
+      ~UniformLocalC1.gate_name
       ~UniformLocalC1.register_type
 
    .. rubric:: Methods Summary
@@ -20,6 +21,7 @@ UniformLocalC1
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: gate_name
    .. autoattribute:: register_type
 
    .. rubric:: Methods Documentation
