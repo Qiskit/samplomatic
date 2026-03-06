@@ -19,9 +19,11 @@ from qiskit.circuit import Barrier
 
 from ..aliases import DAGOpNode, ParamIndices
 from ..annotations import InjectionSite
+from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
+from ..virtual_registers import VirtualType
 from .builder import Builder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode
 from .template_state import TemplateState
@@ -168,6 +170,11 @@ class LeftBoxBuilder(BoxBuilder):
         if twirl_type := self.emission.twirl_type:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
             if len(self.measured_qubits) != 0:
+                vtype = GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+                if vtype != VirtualType.PAULI:
+                    raise BuildError(
+                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
+                    )
                 self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
 
     @staticmethod

@@ -45,7 +45,7 @@ from ..aliases import (
 from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
-from ..distributions import BalancedUniformPauli, Distribution, UniformPauli
+from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
@@ -102,13 +102,6 @@ if TYPE_CHECKING:
     from plotly.graph_objects import Figure
 
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
-
-GROUP_TO_DISTRIBUTION: dict[GroupMode, type[Distribution]] = FrozenDict(
-    {
-        GroupMode.PAULI: UniformPauli,
-        GroupMode.BALANCED: BalancedUniformPauli,
-    }
-)
 
 FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
     {

@@ -274,6 +274,7 @@ class PreChangeBasis(PreEmit):
     """The basis emit node type used during samplex building."""
 
     register_type: VirtualType
+    """The virtual register type of the basis change."""
 
     basis_ref: StrRef
     """Unique identifier of this basis change."""
@@ -290,6 +291,7 @@ class PreInjectNoise(PreEmit):
     """The inject noise emit node type used during samplex building."""
 
     register_type: VirtualType
+    """The virtual register type of the noise injection."""
 
     ref: StrRef
     """Unique identifier of the Pauli Lindblad map to use for noise injection."""
