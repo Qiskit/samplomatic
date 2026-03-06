@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -110,7 +110,7 @@ class Samplex:
     Although the DAG is the main component of the data model this object, other information is also
     stored:
 
-    * Samplexes themselves can be parametric (see :attr:`~.add:attr:`~parameters`) and evaluate
+    * Samplexes themselves can be parametric (see :attr:`~parameters`) and evaluate
       parameter expressions, all of which is stored by the samplex. For example, when constructed
       via :func:`~.build`, a samplex will accept values for all of the parameters accepted by the
       base circuit.
@@ -206,7 +206,7 @@ class Samplex:
         """Add a sampling output to this samplex.
 
         Args:
-            specification: A specification of the ouput name and type.
+            specification: A specification of the output name and type.
         """
         if specification.name in self._RESERVED_OUTPUTS:
             raise SamplexConstructionError(

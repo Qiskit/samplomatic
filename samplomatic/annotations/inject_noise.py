@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -40,7 +40,7 @@ class InjectNoise(Annotation):
 
     Args:
         ref: A unique identifier of the Pauli Lindblad map from which to inject noise.
-        modifier_ref: A unique identifer for modifiers to apply to the Pauli Lindblad map before
+        modifier_ref: A unique identifier for modifiers to apply to the Pauli Lindblad map before
             injection.
         site: Whether to inject the noise before or after the hard content of the box.
     """

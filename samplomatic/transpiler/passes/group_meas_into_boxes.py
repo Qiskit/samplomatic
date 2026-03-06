@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -88,9 +88,9 @@ class GroupMeasIntoBoxes(TransformationPass):
 
         The collection strategy undertakes the following steps:
             *   Loop through the DAG's op nodes in topological order.
-            *   Group together measurement nodes to be  placed in the same  box.
+            *   Group together measurement nodes to be placed in the same box.
             *   Whenever a node can be placed in more than one group, place it in the earliest
-                possible group--where "earliest" is with reference to opological ordering.
+                possible group--where "earliest" is with reference to topological ordering.
             *   When looping is complete, replace each group with a box.
         """
         # A list of groups that need to be placed in the same box, expressed as a dict for fast

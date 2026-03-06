@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,8 +13,10 @@
 import orjson
 import pytest
 
-from samplomatic.distributions import UniformPauli
+from samplomatic.distributions import BalancedUniformPauli, UniformPauli
+from samplomatic.exceptions import SerializationError
 from samplomatic.samplex.nodes import (
+    C1PastCliffordNode,
     ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
@@ -29,8 +31,14 @@ from samplomatic.samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from samplomatic.samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from samplomatic.samplex.nodes.change_basis_node import (
+    LOCAL_CLIFFORD,
+    MEAS_PAULI_BASIS,
+    PREP_PAULI_BASIS,
+)
+from samplomatic.serialization.basis_change_serializers import BasisChangeSerializer
 from samplomatic.serialization.node_serializers import (
+    C1PastCliffordNodeSerializer,
     ChangeBasisNodeSerializer,
     CollectTemplateValuesSerializer,
     CollectZ2ToOutputNodeSerializer,
@@ -48,6 +56,11 @@ from samplomatic.serialization.node_serializers import (
 from samplomatic.serialization.type_serializer import TypeSerializer
 from samplomatic.synths import RzSxSynth
 from samplomatic.virtual_registers import VirtualType
+
+
+def test_basis_change_unsupported_register_type():
+    with pytest.raises(SerializationError, match="Cannot serialive"):
+        BasisChangeSerializer.serialize(LOCAL_CLIFFORD, 1)
 
 
 @pytest.mark.parametrize("basis_change", [MEAS_PAULI_BASIS, PREP_PAULI_BASIS])
@@ -140,6 +153,13 @@ def test_twirl_sampling_serializer_round_trip(ssv):
     assert node == TypeSerializer.deserialize(data)
 
 
+def test_twirl_sampling_balanced_serializer_round_trip():
+    node = TwirlSamplingNode("lhs", "rhs", BalancedUniformPauli(10))
+    data = TwirlSamplingNodeSerializer.serialize(node, 3)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
 @pytest.mark.parametrize("ssv", LeftU2ParametricMultiplicationNodeSerializer.SSVS)
 def test_left_u2_multiplication_serializer_round_trip(ssv):
     node = LeftU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
@@ -152,5 +172,13 @@ def test_left_u2_multiplication_serializer_round_trip(ssv):
 def test_right_u2_multiplication_serializer_round_trip(ssv):
     node = RightU2ParametricMultiplicationNode("rz", "a", [0, 1, 2])
     data = RightU2ParametricMultiplicationNodeSerializer.serialize(node, ssv)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+@pytest.mark.parametrize("ssv", C1PastCliffordNodeSerializer.SSVS)
+def test_c1_past_clifford_serializer_round_trip(ssv):
+    node = C1PastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])
+    data = C1PastCliffordNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)

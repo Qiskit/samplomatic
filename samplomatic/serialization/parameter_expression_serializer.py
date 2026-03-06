@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -33,7 +33,7 @@ class ParameterExpressionTableSerializer(TypeSerializer[ParameterExpressionTable
 
         @classmethod
         def serialize(cls, obj, ssv):
-            # qiskit doesn't have a direct way to serialize a list of parameter expressions. in
+            # qiskit doesn't have a direct way to serialize a list of parameter expressions. to
             # stick to the public qpy interface, the simplest solution is to put them inside of an
             # object that qpy can serialize.
             circuit = QuantumCircuit(1)

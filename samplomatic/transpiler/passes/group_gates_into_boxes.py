@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -44,7 +44,7 @@ class GroupGatesIntoBoxes(TransformationPass):
 
     .. note::
         The circuits returned by this pass may not be buildable. To make them buildable, one can
-        either use :class`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
+        either use :class:`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
     """
 
     def __init__(self, annotations: Iterable[Annotation] = (Twirl(),)):

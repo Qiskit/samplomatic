@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -72,7 +72,7 @@ class Z2RegisterSerializer(TypeSerializer[Z2Register]):
 
 
 class C1RegisterSerializer(TypeSerializer[C1Register]):
-    """Serializer for :class:`~.Z2Register`."""
+    """Serializer for :class:`~.C1Register`."""
 
     TYPE_ID = "V3"
     TYPE = C1Register

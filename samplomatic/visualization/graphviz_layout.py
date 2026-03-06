@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -50,7 +50,7 @@ def graphviz_layout(
     """
     # this is a weird implementation where we call out to graphviz as a subprocess on a temporary
     # file describing the graph. however, it's nicer than depending on one of the
-    # janky graphviz python libaries.
+    # janky graphviz python libraries.
 
     ranks = defaultdict(set)
     if ranker is not None:

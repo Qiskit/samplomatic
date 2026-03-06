@@ -22,6 +22,7 @@ Submodules
    samplomatic.partition
    samplomatic.pre_samplex
    samplomatic.samplex
+   samplomatic.serialization
    samplomatic.synths
    samplomatic.tensor_interface
    samplomatic.transpiler

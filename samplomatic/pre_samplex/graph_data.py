@@ -38,7 +38,7 @@ class PreNode:
     """The subsystems that virtual gates act on."""
 
     direction: Direction
-    """The direction of virtual gates that cat interact with this node."""
+    """The direction of virtual gates that can interact with this node."""
 
     def get_style(self) -> NodeStyle:
         """Summarizes the style of this node when plotted via :func:`~.plot_graph`."""

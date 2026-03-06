@@ -31,7 +31,7 @@ pytest
 
 The performance tests in `test/performance` are implemented using the `pytest-benchmark` plugin and its `benchmark` fixture ([User Guide](https://pytest-benchmark.readthedocs.io/en/latest/index.html)). To run the performance test, use the command:
 ``` bash
-pytest test/benchmarks
+pytest test/performance
 ```
 Upon successful completion, they provide exaustive statistics about the runtime of the benchmarked lines of code.
 

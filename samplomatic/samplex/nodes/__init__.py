@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+from .c1_past_clifford_node import C1PastCliffordNode
 from .change_basis_node import ChangeBasisNode
 from .collect_template_values import CollectTemplateValues
 from .collect_z2_to_output_node import CollectZ2ToOutputNode

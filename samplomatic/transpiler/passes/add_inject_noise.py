@@ -55,8 +55,9 @@ class AddInjectNoise(TransformationPass):
     .. note::
         When using the ``'uniform_modification'`` strategy, the :meth:`~.InjectNoise.modifier_ref`s
         will be set to the generated :meth:`~.InjectNoise.ref`s allowing similar boxes to be
-        modified uniformly. On the other hand, the ``'individual_modification'` strategy appends the
-        value of a counter to ``modifier_ref`` that is incremented following DAG traversal order.
+        modified uniformly. On the other hand, the ``'individual_modification'`` strategy appends
+        the value of a counter to ``modifier_ref`` that is incremented following DAG traversal
+        order.
     """
 
     _BOX_KEYS: dict[tuple[BoxKey, str], str] = {}

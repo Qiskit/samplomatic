@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -134,7 +134,7 @@ class Node(metaclass=Serializable):
                     "that name already exists."
                 )
 
-        # we have finished validating, proceed to  update the descriptions
+        # we have finished validating, proceed to update the descriptions
         for register_name, (size, register_type) in instantiates.items():
             register_descriptions[register_name] = (size, register_type)
 
