@@ -19,7 +19,7 @@ from ..aliases import TypeAlias
 
 
 class GroupMode(str, Enum):
-    """Which gate set and distribution to sample with."""
+    """Which set of gates and distribution to sample with."""
 
     PAULI = "pauli"
     """Sample the Pauli group uniformly and iid."""
@@ -29,7 +29,7 @@ class GroupMode(str, Enum):
 
 
 GroupLiteral: TypeAlias = GroupMode | Literal["pauli", "balanced_pauli"]
-"""Which gate set and distribution to sample with.
+"""Which set of gates and distribution to sample with.
 
  * ``pauli``: Sample the Pauli group uniformly and iid.
  * ``balanced_pauli``: Sample the Pauli group, balancing the proportions of I, X, Y, and Z.
