@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,7 +16,7 @@ from qiskit.circuit import Annotation
 
 from .decomposition_mode import DecompositionLiteral, DecompositionMode
 from .dressing_mode import DressingLiteral, DressingMode
-from .virtual_type import TWIRLING_GROUPS, GroupLiteral, VirtualType
+from .group_mode import GroupLiteral, GroupMode
 
 
 class Twirl(Annotation):
@@ -34,17 +34,13 @@ class Twirl(Annotation):
 
     def __init__(
         self,
-        group: GroupLiteral = VirtualType.PAULI,
+        group: GroupLiteral = GroupMode.PAULI,
         dressing: DressingLiteral = DressingMode.LEFT,
         decomposition: DecompositionLiteral = DecompositionMode.RZSX,
     ):
-        self.group = VirtualType(group)
+        self.group = GroupMode(group)
         self.dressing = DressingMode(dressing)
         self.decomposition = DecompositionMode(decomposition)
-
-        if self.group not in TWIRLING_GROUPS:
-            allowed = (f"'{group}'" for group in TWIRLING_GROUPS)
-            raise ValueError(f"The group must be one of [{', '.join(allowed)}].")
 
     def __eq__(self, other):
         return (

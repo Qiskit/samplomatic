@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025-2026.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,11 +15,14 @@
 from collections.abc import Callable, Sequence
 
 from qiskit.circuit import Annotation, Qubit
+from qiskit.converters import circuit_to_dag
 
 from ..aliases import DAGOpNode
 from ..annotations import (
+    GATE_DEPENDENT_TWIRLING_GROUPS,
     ChangeBasis,
     DressingMode,
+    GroupMode,
     InjectLocalClifford,
     InjectNoise,
     TraceBox,
@@ -28,11 +31,66 @@ from ..annotations import (
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
-from ..virtual_registers import VirtualType
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
 from .specs import CollectionSpec, EmissionSpec
+
+
+def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
+    """Classify qubits in a gate-dependent twirl box into entangling and fallback qubits.
+
+    Inspects the box body DAG for 2Q gates and splits qubits accordingly.
+    Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_twirl_qubits``,
+    and ``twirl_gate``. If no 2Q gates are found, downgrades
+    ``twirl_type`` to PAULI.
+
+    Raises:
+        BuildError: If the same qubit pair has duplicate 2Q gates.
+        BuildError: If 2Q gates on partially overlapping qubits are found.
+        BuildError: If multiple distinct 2Q gate types are used.
+    """
+    dag = circuit_to_dag(body)
+    seen_pairs = QubitPartition(2, [])
+    gate_names: set[str] = set()
+
+    for node in dag.topological_op_nodes():
+        if node.is_standard_gate() and node.op.num_qubits == 2:
+            pair = tuple(node.qargs)
+            if pair in seen_pairs:
+                raise BuildError(
+                    f"Cannot use gate-dependent twirling with duplicate 2Q gates on qubits {pair}."
+                )
+            # QubitPartition.add rejects partial overlaps automatically
+            seen_pairs.add(pair)
+            gate_names.add(node.op.name)
+
+    if not gate_names:
+        emission.twirl_type = GroupMode.PAULI
+        return
+
+    if len(gate_names) > 1:
+        raise BuildError(
+            f"Cannot use gate-dependent twirling with multiple 2Q gate types: {gate_names}."
+        )
+
+    (gate,) = gate_names
+    emission.twirl_gate = gate
+
+    # C1 qubits: flatten pairs preserving operand order
+    gate_dependent_qubit_list = []
+    seen_qubits = set()
+    for pair in seen_pairs:
+        for q in pair:
+            if q not in seen_qubits:
+                seen_qubits.add(q)
+                gate_dependent_qubit_list.append((q,))
+    emission.gate_dependent_twirl_qubits = QubitPartition(1, gate_dependent_qubit_list)
+
+    # Pauli qubits: remainder
+    all_qubits = {q for subsys in emission.qubits for q in subsys}
+    fallback_only = all_qubits - emission.gate_dependent_twirl_qubits.all_elements
+    emission.fallback_twirl_qubits = QubitPartition(1, [(q,) for q in fallback_only])
 
 
 def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
@@ -71,8 +129,11 @@ def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
         parser(annotation, collection, emission)
         seen_annotations.add(annotation_type)
 
-    if emission.noise_ref and not emission.twirl_register_type:
+    if emission.noise_ref and not emission.twirl_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
+
+    if emission.twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
+        _classify_gate_dependent_twirl(instr.op.body, emission)
 
     if collection.dressing is DressingMode.LEFT:
         return LeftBoxBuilder(collection, emission)
@@ -203,15 +264,12 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `twirl.group` is unsupported.
         BuildError: If `dressing` is already specified on one of the specs and not equal
             to `twirl.dressing`.
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `twirl.decomposition`.
     """
-    if twirl.group is not VirtualType.PAULI:
-        raise BuildError(f"Group '{twirl.group}' is not supported.")
-    emission.twirl_register_type = VirtualType.PAULI
+    emission.twirl_type = twirl.group
 
     synth = get_synth(twirl.decomposition)
     if (current_synth := collection.synth) is not None:

@@ -13,7 +13,7 @@
 import orjson
 import pytest
 
-from samplomatic.distributions import BalancedUniformPauli, UniformPauli
+from samplomatic.distributions import BalancedUniformPauli, UniformLocalC1, UniformPauli
 from samplomatic.exceptions import SerializationError
 from samplomatic.samplex.nodes import (
     C1PastCliffordNode,
@@ -155,6 +155,13 @@ def test_twirl_sampling_serializer_round_trip(ssv):
 
 def test_twirl_sampling_balanced_serializer_round_trip():
     node = TwirlSamplingNode("lhs", "rhs", BalancedUniformPauli(10))
+    data = TwirlSamplingNodeSerializer.serialize(node, 3)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+def test_twirl_sampling_local_c1_serializer_round_trip():
+    node = TwirlSamplingNode("lhs", "rhs", UniformLocalC1(10, "cx"))
     data = TwirlSamplingNodeSerializer.serialize(node, 3)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
