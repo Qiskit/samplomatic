@@ -79,8 +79,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
 
     def _append_barrier(self, label: str):
         label = f"{label}{'_'.join(map(str, self.template_state.scope_idx))}"
-        if self.emission.trace_box and self.emission.noise_ref:
-            label = f"{label}@{self.emission.noise_ref}"
+        label = self.emission.trace_label(label)
         all_qubits = self.template_state.qubits()
         self.template_state.template.apply_operation_back(
             Barrier(len(all_qubits), label), all_qubits

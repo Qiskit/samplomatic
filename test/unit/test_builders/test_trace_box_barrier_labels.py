@@ -24,7 +24,7 @@ def _barrier_labels(template):
 
 
 def test_trace_box_appends_noise_ref_to_barriers():
-    """Test that TraceBox + InjectNoise causes barrier labels to include @ref."""
+    """Test that TraceBox + InjectNoise causes barrier labels to include @noise=ref."""
     circuit = QuantumCircuit(2)
     with circuit.box([Twirl(), InjectNoise(ref="my_ref"), TraceBox()]):
         circuit.cx(0, 1)
@@ -38,7 +38,7 @@ def test_trace_box_appends_noise_ref_to_barriers():
     ]
     assert len(box_labels) > 0, "Expected at least one box barrier"
     for label in box_labels:
-        assert "@my_ref" in label, f"Expected '@my_ref' in barrier label '{label}'"
+        assert "@noise=my_ref" in label, f"Expected '@noise=my_ref' in barrier label '{label}'"
 
 
 def test_no_trace_box_no_noise_ref_in_barriers():
@@ -69,3 +69,40 @@ def test_trace_box_without_noise_ref_no_suffix():
     for label in labels:
         if label is not None:
             assert "@" not in label, f"Unexpected '@' in barrier label '{label}'"
+
+
+def test_trace_box_ref_in_barriers():
+    """Test that TraceBox.ref is included in barrier labels."""
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), TraceBox(ref="my_box")]):
+        circuit.cx(0, 1)
+
+    template_state, _ = pre_build(circuit)
+    template = template_state.finalize()
+
+    labels = _barrier_labels(template)
+    box_labels = [
+        label for label in labels if label is not None and label.startswith(("L", "M", "R"))
+    ]
+    assert len(box_labels) > 0, "Expected at least one box barrier"
+    for label in box_labels:
+        assert "@trace=my_box" in label, f"Expected '@trace=my_box' in barrier label '{label}'"
+
+
+def test_trace_box_ref_and_noise_ref_in_barriers():
+    """Test that both TraceBox.ref and InjectNoise.ref appear in barrier labels."""
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise(ref="my_ref"), TraceBox(ref="my_box")]):
+        circuit.cx(0, 1)
+
+    template_state, _ = pre_build(circuit)
+    template = template_state.finalize()
+
+    labels = _barrier_labels(template)
+    box_labels = [
+        label for label in labels if label is not None and label.startswith(("L", "M", "R"))
+    ]
+    assert len(box_labels) > 0, "Expected at least one box barrier"
+    for label in box_labels:
+        assert "@trace=my_box" in label, f"Expected '@trace=my_box' in barrier label '{label}'"
+        assert "&noise=my_ref" in label, f"Expected '&noise=my_ref' in barrier label '{label}'"

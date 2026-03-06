@@ -242,6 +242,7 @@ def trace_box_parser(trace_box: TraceBox, collection: CollectionSpec, emission: 
         emission: The emission spec to modify.
     """
     emission.trace_box = True
+    emission.trace_ref = trace_box.ref
 
 
 SUPPORTED_ANNOTATIONS: dict[

@@ -16,15 +16,21 @@ from samplomatic.annotations import TraceBox
 def test_eq():
     """Test equality."""
     assert TraceBox() == TraceBox()
+    assert TraceBox(ref="a") == TraceBox(ref="a")
+    assert TraceBox(ref="a") != TraceBox(ref="b")
+    assert TraceBox(ref="a") != TraceBox()
     assert TraceBox() != "hey"
 
 
 def test_hash():
     """Test hash."""
     assert hash(TraceBox()) == hash(TraceBox())
+    assert hash(TraceBox(ref="a")) == hash(TraceBox(ref="a"))
+    assert hash(TraceBox(ref="a")) != hash(TraceBox())
     assert hash(TraceBox()) != hash("hey")
 
 
 def test_repr():
     """Test repr."""
     assert repr(TraceBox()) == "TraceBox()"
+    assert repr(TraceBox(ref="a")) == "TraceBox(ref='a')"

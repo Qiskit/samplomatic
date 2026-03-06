@@ -83,6 +83,31 @@ class EmissionSpec:
     trace_box: bool = False
     """Whether to include trace information in barrier labels."""
 
+    trace_ref: str = ""
+    """An optional reference string from :class:`~.TraceBox` to include in barrier labels."""
+
+    def trace_label(self, label: str) -> str:
+        """Append trace information to a barrier label.
+
+        Args:
+            label: The base barrier label.
+
+        Returns:
+            The label with trace refs appended, if :attr:`trace_box` is set.
+        """
+        if not self.trace_box:
+            return label
+        parts = []
+        if self.trace_ref:
+            parts.append(f"trace={self.trace_ref}")
+        if self.noise_ref:
+            parts.append(f"noise={self.noise_ref}")
+        if parts:
+            label = f"{label}@{parts[0]}"
+            for part in parts[1:]:
+                label = f"{label}&{part}"
+        return label
+
 
 @dataclass
 class CollectionSpec:
