@@ -40,6 +40,7 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
 @validate_literals(
     "measure_annotations",
     "twirling_strategy",
+    "twirling_group",
     "decomposition",
     "inject_noise_targets",
     "inject_noise_strategy",
@@ -54,6 +55,7 @@ def generate_boxing_pass_manager(
     twirling_strategy: Literal[
         "active", "active_accum", "active_circuit", "all"
     ] = "active_circuit",
+    twirling_group: Literal["pauli", "balanced_pauli", "local_c1"] = "pauli",
     decomposition: Literal["rzsx", "rzrx"] = "rzsx",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
     inject_noise_strategy: Literal[
@@ -140,6 +142,13 @@ def generate_boxing_pass_manager(
             * ``'all'``: Idling qubits are added so that each individual box twirls all of the
               qubits in the circuit.
 
+        twirling_group: The group to use for the twirling boxes.
+
+            * ``'pauli'`` uses the Pauli group.
+            * ``'local_c1'`` uses the subgroup of single-qubit Cliffords that are conjugated to
+              single-qubit Cliffords on any entangling gates in the box, and the Pauli group
+              everywhere else.
+
         decomposition: The gate sequence into which single-qubit dressing gates are synthesized.
 
             * ``'rzsx'`` synthesizes single-qubit gates with rz-sx-rz-sx-rz.
@@ -212,7 +221,9 @@ def generate_boxing_pass_manager(
         passes.append(RemoveBarriers())
 
     if enable_gates:
-        passes.append(GroupGatesIntoBoxes([Twirl(decomposition=decomposition)]))
+        passes.append(
+            GroupGatesIntoBoxes([Twirl(group=twirling_group, decomposition=decomposition)])
+        )
 
     if enable_measures:
         passes.append(

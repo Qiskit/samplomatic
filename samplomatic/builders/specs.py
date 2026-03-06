@@ -64,6 +64,15 @@ class EmissionSpec:
     twirl_type: GroupMode | None = None
     """What type and distribution of virtual gates to emit for twirling."""
 
+    gate_dependent_twirl_qubits: QubitPartition | None = None
+    """The qubits with entanglers when using gate-dependent twirling."""
+
+    fallback_twirl_qubits: QubitPartition | None = None
+    """The qubits without entanglers when using gate-dependent twirling."""
+
+    twirl_gate: str | None = None
+    """The entangler to twirl for gate-dependent twirling."""
+
     basis_change: FrameChangeMode | None = None
     """What type of basis change to use."""
 

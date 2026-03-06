@@ -69,6 +69,11 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
+from ..samplex.nodes.c1_past_clifford_node import (
+    C1_PAST_CLIFFORD_INVARIANTS,
+    C1_PAST_CLIFFORD_LOOKUP_TABLES,
+    C1PastCliffordNode,
+)
 from ..samplex.nodes.change_basis_node import (
     LOCAL_CLIFFORD,
     MEAS_PAULI_BASIS,
@@ -543,12 +548,18 @@ class PreSamplex:
 
         return node_idx
 
-    def add_emit_twirl(self, qubits: QubitPartition, register_type: GroupMode) -> NodeIndex:
+    def add_emit_twirl(
+        self,
+        qubits: QubitPartition,
+        register_type: GroupMode,
+        twirl_gate: str | None = None,
+    ) -> NodeIndex:
         """Add a node that emits virtual gates left and right of the same type.
 
         Args:
             qubits: The qubits to emit virtual gates on.
             register_type: The type of virtual gate to emit.
+            twirl_gate: The 2Q gate name for ``UniformLocalC1`` sampling, or ``None``.
 
         Raises:
             SamplexBuildError: When `qubits` has overlap with a hanging emit node with a different
@@ -559,7 +570,9 @@ class PreSamplex:
             The index of the new node in the graph.
         """
         subsystems = self.qubits_to_indices(qubits)
-        node_idx = self.graph.add_node(PreEmit(subsystems, Direction.BOTH, register_type))
+        node_idx = self.graph.add_node(
+            PreEmit(subsystems, Direction.BOTH, register_type, twirl_gate=twirl_gate)
+        )
 
         # find collectors (or propagators leading to collectors) for right-to-left emission and
         # connect this emission there. we do NOT want to remove them as dangling because they
@@ -1309,10 +1322,18 @@ class PreSamplex:
         """
         pre_emit = cast(PreEmit, self.graph[pre_emit_idx])
         reg_idx = order[pre_emit_idx]
+
+        if pre_emit.twirl_gate is not None:
+            distribution = GROUP_TO_DISTRIBUTION[pre_emit.register_type](
+                len(pre_emit.subsystems), pre_emit.twirl_gate
+            )
+        else:
+            distribution = GROUP_TO_DISTRIBUTION[pre_emit.register_type](len(pre_emit.subsystems))
+
         node = TwirlSamplingNode(
             lhs_reg_name := f"lhs_{reg_idx}",
             rhs_reg_name := f"rhs_{reg_idx}",
-            GROUP_TO_DISTRIBUTION[pre_emit.register_type](len(pre_emit.subsystems)),
+            distribution,
         )
         node_idx = samplex.add_node(node)
 
@@ -1471,6 +1492,26 @@ class PreSamplex:
         ):
             combined_register_type = VirtualType.PAULI
             propagate_node = PauliPastCliffordNode(
+                op_name,
+                combined_register_name,
+                np.array(list(pre_propagate.partition), dtype=np.intp),
+            )
+        elif (
+            mode is InstructionMode.PROPAGATE
+            and incoming <= {VirtualType.C1, VirtualType.PAULI}
+            and VirtualType.C1 in incoming
+            and op_name in C1_PAST_CLIFFORD_INVARIANTS
+        ):
+            combined_register_type = VirtualType.C1
+            propagate_node = None
+        elif (
+            mode is InstructionMode.PROPAGATE
+            and incoming <= {VirtualType.C1, VirtualType.PAULI}
+            and VirtualType.C1 in incoming
+            and op_name in C1_PAST_CLIFFORD_LOOKUP_TABLES
+        ):
+            combined_register_type = VirtualType.C1
+            propagate_node = C1PastCliffordNode(
                 op_name,
                 combined_register_name,
                 np.array(list(pre_propagate.partition), dtype=np.intp),

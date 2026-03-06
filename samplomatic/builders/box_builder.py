@@ -18,7 +18,7 @@ import numpy as np
 from qiskit.circuit import Barrier
 
 from ..aliases import DAGOpNode, ParamIndices
-from ..annotations import InjectionSite
+from ..annotations import GATE_DEPENDENT_TWIRLING_GROUPS, GroupMode, InjectionSite
 from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import BuildError
 from ..partition import QubitPartition
@@ -45,7 +45,6 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         self.collection = collection
         self.emission = emission
         self.measured_qubits = QubitPartition(1, [])
-        self.entangled_qubits = set()
 
     def _append_dressed_layer(self) -> ParamIndices:
         """Add a dressed layer."""
@@ -85,6 +84,20 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         self.template_state.template.apply_operation_back(
             Barrier(len(all_qubits), label), all_qubits
         )
+
+    def _emit_twirl(self, twirl_type: GroupMode):
+        if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
+            self.samplex_state.add_emit_twirl(
+                self.emission.gate_dependent_twirl_qubits,
+                twirl_type,
+                self.emission.twirl_gate,
+            )
+            if len(self.emission.fallback_twirl_qubits):
+                self.samplex_state.add_emit_twirl(
+                    self.emission.fallback_twirl_qubits, GroupMode.PAULI
+                )
+        else:
+            self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
 
 
 class LeftBoxBuilder(BoxBuilder):
@@ -147,7 +160,6 @@ class LeftBoxBuilder(BoxBuilder):
                     f"Cannot handle instruction {name} to the right of a measurement in a "
                     "left-dressed box."
                 )
-            self.entangled_qubits.update(instr.qargs)
             params = self.template_state.append_remapped_gate(instr)
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
@@ -168,10 +180,12 @@ class LeftBoxBuilder(BoxBuilder):
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
             )
         if twirl_type := self.emission.twirl_type:
-            self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
+            self._emit_twirl(twirl_type)
             if len(self.measured_qubits) != 0:
-                vtype = GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
-                if vtype != VirtualType.PAULI:
+                if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS or (
+                    GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+                    != VirtualType.PAULI
+                ):
                     raise BuildError(
                         f"Cannot use {twirl_type.value} twirl in a box with measurements."
                     )
@@ -228,7 +242,6 @@ class RightBoxBuilder(BoxBuilder):
             raise BuildError("Measurements are not currently supported in right-dressed boxes.")
 
         elif (num_qubits := instr.num_qubits) == 1:
-            self.entangled_qubits.update(instr.qargs)
             # the action of this single-qubit gate will be absorbed into the dressing
             if self._mode is InstructionMode.PROPAGATE:
                 params = self.template_state.append_remapped_gate(instr)
@@ -246,8 +259,8 @@ class RightBoxBuilder(BoxBuilder):
 
     def lhs(self):
         self._append_barrier("L")
-        if self.emission.twirl_type:
-            self.samplex_state.add_emit_twirl(self.emission.qubits, self.emission.twirl_type)
+        if twirl_type := self.emission.twirl_type:
+            self._emit_twirl(twirl_type)
         if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
             self.samplex_state.add_emit_noise_right(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref

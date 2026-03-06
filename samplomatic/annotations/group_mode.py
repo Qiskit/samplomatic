@@ -27,10 +27,21 @@ class GroupMode(str, Enum):
     BALANCED = "balanced_pauli"
     """Sample the Pauli group, balancing the proportions of I, X, Y, and Z."""
 
+    LOCAL_C1 = "local_c1"
+    """Sample C1 gates that stay C1 under conjugation by an entangler uniformly and iid.
 
-GroupLiteral: TypeAlias = GroupMode | Literal["pauli", "balanced_pauli"]
+    Sample the Pauli group if no entangler is present.
+    """
+
+
+GATE_DEPENDENT_TWIRLING_GROUPS = frozenset([GroupMode.LOCAL_C1])
+"""A subset of group modes that depend on an entangler."""
+
+
+GroupLiteral: TypeAlias = GroupMode | Literal["pauli", "balanced_pauli", "local_c1"]
 """Which set of gates and distribution to sample with.
 
  * ``pauli``: Sample the Pauli group uniformly and iid.
  * ``balanced_pauli``: Sample the Pauli group, balancing the proportions of I, X, Y, and Z.
+ * ``local_c1``: Sample C1 gates that stay C1 under conjugation by an entangler uniformly and iid.
 """

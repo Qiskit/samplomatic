@@ -25,5 +25,6 @@ GROUP_TO_DISTRIBUTION: dict[_GroupMode, type[Distribution]] = _FrozenDict(
     {
         _GroupMode.PAULI: UniformPauli,
         _GroupMode.BALANCED: BalancedUniformPauli,
+        _GroupMode.LOCAL_C1: UniformLocalC1,
     }
 )
