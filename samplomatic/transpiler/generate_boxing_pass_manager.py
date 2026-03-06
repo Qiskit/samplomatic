@@ -40,6 +40,7 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
 @validate_literals(
     "measure_annotations",
     "twirling_strategy",
+    "twirling_group",
     "decomposition",
     "inject_noise_targets",
     "inject_noise_strategy",
@@ -54,7 +55,7 @@ def generate_boxing_pass_manager(
     twirling_strategy: Literal[
         "active", "active_accum", "active_circuit", "all"
     ] = "active_circuit",
-    twirling_group: Literal["pauli", "local_c1"] = "pauli",
+    twirling_group: Literal["pauli", "balanced_pauli", "local_c1"] = "pauli",
     decomposition: Literal["rzsx", "rzrx"] = "rzsx",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
     inject_noise_strategy: Literal[

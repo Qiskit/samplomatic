@@ -42,10 +42,10 @@ from ..aliases import (
     RegisterName,
     StrRef,
 )
-from ..annotations import ChangeBasisMode
+from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
-from ..distributions import Distribution, HaarU2, UniformLocalC1, UniformPauli
+from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
@@ -107,10 +107,6 @@ if TYPE_CHECKING:
     from plotly.graph_objects import Figure
 
 NO_PROPAGATE: frozenset[OperationName] = frozenset(["barrier", "delay", "id"])
-
-REG_TO_DISTRIBUTION: dict[VirtualType, type[Distribution]] = FrozenDict(
-    {VirtualType.U2: HaarU2, VirtualType.PAULI: UniformPauli, VirtualType.LOCAL_C1: UniformLocalC1}
-)
 
 FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
     {
@@ -555,7 +551,7 @@ class PreSamplex:
     def add_emit_twirl(
         self,
         qubits: QubitPartition,
-        register_type: VirtualType,
+        register_type: GroupMode,
         twirl_gate: str | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates left and right of the same type.
@@ -1328,11 +1324,11 @@ class PreSamplex:
         reg_idx = order[pre_emit_idx]
 
         if pre_emit.twirl_gate is not None:
-            distribution = REG_TO_DISTRIBUTION[pre_emit.register_type](
+            distribution = GROUP_TO_DISTRIBUTION[pre_emit.register_type](
                 len(pre_emit.subsystems), pre_emit.twirl_gate
             )
         else:
-            distribution = REG_TO_DISTRIBUTION[pre_emit.register_type](len(pre_emit.subsystems))
+            distribution = GROUP_TO_DISTRIBUTION[pre_emit.register_type](len(pre_emit.subsystems))
 
         node = TwirlSamplingNode(
             lhs_reg_name := f"lhs_{reg_idx}",

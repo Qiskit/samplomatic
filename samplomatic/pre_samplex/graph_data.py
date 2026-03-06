@@ -20,6 +20,7 @@ import numpy as np
 from qiskit.circuit.gate import Gate
 
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
+from ..annotations import GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
@@ -147,11 +148,11 @@ class PreZ2Collect(PreNode):
 class PreEmit(PreNode):
     """The emission node type used during samplex building."""
 
-    register_type: VirtualType
-    """The type of virtual gates to emit."""
+    register_type: GroupMode
+    """The type and distribution of virtual gates to emit."""
 
     twirl_gate: str | None = field(default=None, kw_only=True)
-    """The 2Q gate name used for ``UniformLocalC1`` sampling, or ``None``."""
+    """The gate name used for ``UniformLocalC1`` sampling, or ``None``."""
 
     def get_style(self):
         style = (
@@ -276,6 +277,9 @@ class PrePropagateKey:
 class PreChangeBasis(PreEmit):
     """The basis emit node type used during samplex building."""
 
+    register_type: VirtualType
+    """The virtual register type of the basis change."""
+
     basis_ref: StrRef
     """Unique identifier of this basis change."""
 
@@ -289,6 +293,9 @@ class PreChangeBasis(PreEmit):
 @dataclass
 class PreInjectNoise(PreEmit):
     """The inject noise emit node type used during samplex building."""
+
+    register_type: VirtualType
+    """The virtual register type of the noise injection."""
 
     ref: StrRef
     """Unique identifier of the Pauli Lindblad map to use for noise injection."""

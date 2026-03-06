@@ -20,9 +20,9 @@ from qiskit.converters import circuit_to_dag
 from ..aliases import DAGOpNode
 from ..annotations import (
     GATE_DEPENDENT_TWIRLING_GROUPS,
-    TWIRLING_GROUPS,
     ChangeBasis,
     DressingMode,
+    GroupMode,
     InjectLocalClifford,
     InjectNoise,
     Twirl,
@@ -30,7 +30,6 @@ from ..annotations import (
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..synths import get_synth
-from ..virtual_registers import VirtualType
 from .box_builder import LeftBoxBuilder, RightBoxBuilder
 from .builder import Builder
 from .passthrough_builder import PassthroughBuilder
@@ -43,7 +42,7 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     Inspects the box body DAG for 2Q gates and splits qubits accordingly.
     Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_twirl_qubits``,
     and ``twirl_gate``. If no 2Q gates are found, downgrades
-    ``twirl_register_type`` to PAULI.
+    ``twirl_type`` to PAULI.
 
     Raises:
         BuildError: If the same qubit pair has duplicate 2Q gates.
@@ -66,7 +65,7 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
             gate_names.add(node.op.name)
 
     if not gate_names:
-        emission.twirl_register_type = VirtualType.PAULI
+        emission.twirl_type = GroupMode.PAULI
         return
 
     if len(gate_names) > 1:
@@ -129,10 +128,10 @@ def get_builder(instr: DAGOpNode | None, qubits: Sequence[Qubit]) -> Builder:
         parser(annotation, collection, emission)
         seen_annotations.add(annotation_type)
 
-    if emission.noise_ref and not emission.twirl_register_type:
+    if emission.noise_ref and not emission.twirl_type:
         raise BuildError(f"Cannot get a builder for {annotations}. Inject noise requires twirling.")
 
-    if emission.twirl_register_type in GATE_DEPENDENT_TWIRLING_GROUPS:
+    if emission.twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
         _classify_gate_dependent_twirl(instr.op.body, emission)
 
     if collection.dressing is DressingMode.LEFT:
@@ -264,15 +263,12 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
         emission: The emission spec to modify.
 
     Raises:
-        BuildError: If `twirl.group` is unsupported.
         BuildError: If `dressing` is already specified on one of the specs and not equal
             to `twirl.dressing`.
         BuildError: If `synth` is already specified on the `collection` and not equal to the
             synth corresponding to `twirl.decomposition`.
     """
-    if twirl.group not in TWIRLING_GROUPS:
-        raise BuildError(f"Group '{twirl.group}' is not supported.")
-    emission.twirl_register_type = twirl.group
+    emission.twirl_type = twirl.group
 
     synth = get_synth(twirl.decomposition)
     if (current_synth := collection.synth) is not None:

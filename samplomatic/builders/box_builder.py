@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025, 2026.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,12 +18,14 @@ import numpy as np
 from qiskit.circuit import Barrier
 
 from ..aliases import DAGOpNode, ParamIndices
-from ..annotations import GATE_DEPENDENT_TWIRLING_GROUPS, InjectionSite
+from ..annotations import GATE_DEPENDENT_TWIRLING_GROUPS, GroupMode, InjectionSite
+from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
+from ..virtual_registers import VirtualType
 from .builder import Builder
-from .specs import CollectionSpec, EmissionSpec, InstructionMode, VirtualType
+from .specs import CollectionSpec, EmissionSpec, InstructionMode
 from .template_state import TemplateState
 
 ParsableType: TypeAlias = DAGOpNode | None
@@ -83,7 +85,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             Barrier(len(all_qubits), label), all_qubits
         )
 
-    def _emit_twirl(self, twirl_type: VirtualType):
+    def _emit_twirl(self, twirl_type: GroupMode):
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
             self.samplex_state.add_emit_twirl(
                 self.emission.gate_dependent_twirl_qubits,
@@ -92,7 +94,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             )
             if len(self.emission.fallback_twirl_qubits):
                 self.samplex_state.add_emit_twirl(
-                    self.emission.fallback_twirl_qubits, VirtualType.PAULI
+                    self.emission.fallback_twirl_qubits, GroupMode.PAULI
                 )
         else:
             self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
@@ -177,10 +179,13 @@ class LeftBoxBuilder(BoxBuilder):
             self.samplex_state.add_emit_noise_left(
                 self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
             )
-        if twirl_type := self.emission.twirl_register_type:
+        if twirl_type := self.emission.twirl_type:
             self._emit_twirl(twirl_type)
             if len(self.measured_qubits) != 0:
-                if twirl_type is not VirtualType.PAULI:
+                if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS or (
+                    GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+                    != VirtualType.PAULI
+                ):
                     raise BuildError(
                         f"Cannot use {twirl_type.value} twirl in a box with measurements."
                     )
@@ -254,7 +259,7 @@ class RightBoxBuilder(BoxBuilder):
 
     def lhs(self):
         self._append_barrier("L")
-        if twirl_type := self.emission.twirl_register_type:
+        if twirl_type := self.emission.twirl_type:
             self._emit_twirl(twirl_type)
         if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
             self.samplex_state.add_emit_noise_right(
