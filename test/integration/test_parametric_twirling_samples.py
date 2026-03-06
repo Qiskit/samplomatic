@@ -108,6 +108,14 @@ def make_circuits():
 
     yield circuit, "merge_mix_static_and_parametric"
 
+    circuit = QuantumCircuit(1)
+    with circuit.box([Twirl(group="balanced_pauli")]):
+        circuit.rx(Parameter("a"), 0)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0)
+
+    yield circuit, "balanced_pauli_parametric"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
