@@ -287,6 +287,20 @@ def make_circuits():
 
     yield circuit, "cx_and_cz_on_subset_boxop"
 
+    circuit = QuantumCircuit(4, 2)
+    with circuit.box([Twirl(group="balanced_pauli", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.cx(2, 3)
+        circuit.cx(1, 2)
+    with circuit.box([Twirl(group="balanced_pauli", dressing="left")]):
+        circuit.cx(1, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(group="balanced_pauli", dressing="right")]):
+        circuit.cx(3, 2)
+
+    yield circuit, "balanced_pauli"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
