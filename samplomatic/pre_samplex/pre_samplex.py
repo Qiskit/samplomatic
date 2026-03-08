@@ -17,7 +17,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from enum import Enum, auto
 from itertools import count
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, Qubit
@@ -115,6 +115,52 @@ FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
         "local_clifford": LOCAL_CLIFFORD,
     }
 )
+
+
+class _PropagateGroup(NamedTuple):
+    """Configuration for propagating virtual gates past a Clifford gate at a given group level."""
+
+    allowed_incoming: frozenset[VirtualType]
+    group_type: VirtualType
+    invariants: frozenset[str]
+    lookup_tables: dict
+    node_class: type
+
+
+_PROPAGATE_GROUPS: tuple[_PropagateGroup, ...] = (
+    _PropagateGroup(
+        frozenset({VirtualType.C1, VirtualType.PAULI}),
+        VirtualType.C1,
+        C1_PAST_CLIFFORD_INVARIANTS,
+        C1_PAST_CLIFFORD_LOOKUP_TABLES,
+        C1PastCliffordNode,
+    ),
+    _PropagateGroup(
+        frozenset({VirtualType.PAULI}),
+        VirtualType.PAULI,
+        PAULI_PAST_CLIFFORD_INVARIANTS,
+        PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
+        PauliPastCliffordNode,
+    ),
+)
+
+
+def _match_propagate_group(
+    op_name: str, mode: InstructionMode, incoming: set[VirtualType]
+) -> _PropagateGroup:
+    """Find the propagate group matching the given operation, mode, and incoming register types."""
+    for group in _PROPAGATE_GROUPS:
+        if incoming <= group.allowed_incoming and group.group_type in incoming:
+            if op_name in group.invariants or op_name in group.lookup_tables:
+                return group
+            raise SamplexBuildError(
+                f"Encountered unsupported {op_name} propagation with mode {mode} "
+                f"and incoming virtual gates {incoming}."
+            )
+    raise SamplexBuildError(
+        f"Encountered unsupported {op_name} propagation with mode {mode} "
+        f"and incoming virtual gates {incoming}."
+    )
 
 
 class DanglerType(Enum):
@@ -1470,29 +1516,10 @@ class PreSamplex:
         # Determine the combined register type.
         if mode is InstructionMode.MULTIPLY and pre_propagate.operation.num_qubits == 1:
             combined_register_type = VirtualType.U2
-        elif mode is InstructionMode.PROPAGATE and incoming == {VirtualType.PAULI}:
-            if (
-                op_name in PAULI_PAST_CLIFFORD_INVARIANTS
-                or op_name in PAULI_PAST_CLIFFORD_LOOKUP_TABLES
-            ):
-                combined_register_type = VirtualType.PAULI
-            else:
-                raise SamplexBuildError(
-                    f"Encountered unsupported {op_name} propagation with mode {mode} and "
-                    f"incoming virtual gates {incoming}."
-                )
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming <= {VirtualType.C1, VirtualType.PAULI}
-            and VirtualType.C1 in incoming
-        ):
-            if op_name in C1_PAST_CLIFFORD_INVARIANTS or op_name in C1_PAST_CLIFFORD_LOOKUP_TABLES:
-                combined_register_type = VirtualType.C1
-            else:
-                raise SamplexBuildError(
-                    f"Encountered unsupported {op_name} propagation with mode {mode} and "
-                    f"incoming virtual gates {incoming}."
-                )
+            propagate_group = None
+        elif mode is InstructionMode.PROPAGATE:
+            propagate_group = _match_propagate_group(op_name, mode, incoming)
+            combined_register_type = propagate_group.group_type
         else:
             raise SamplexBuildError(
                 f"Encountered unsupported {op_name} propagation with mode {mode} and "
@@ -1535,40 +1562,15 @@ class PreSamplex:
                     propagate_node = RightMultiplicationNode(register, actual_register_name)
                 else:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming == {VirtualType.PAULI}
-            and op_name in PAULI_PAST_CLIFFORD_INVARIANTS
-        ):
-            propagate_node = None
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming == {VirtualType.PAULI}
-            and op_name in PAULI_PAST_CLIFFORD_LOOKUP_TABLES
-        ):
-            propagate_node = PauliPastCliffordNode(
-                op_name,
-                actual_register_name,
-                np.array(list(pre_propagate.partition), dtype=np.intp),
-            )
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming <= {VirtualType.C1, VirtualType.PAULI}
-            and VirtualType.C1 in incoming
-            and op_name in C1_PAST_CLIFFORD_INVARIANTS
-        ):
-            propagate_node = None
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming <= {VirtualType.C1, VirtualType.PAULI}
-            and VirtualType.C1 in incoming
-            and op_name in C1_PAST_CLIFFORD_LOOKUP_TABLES
-        ):
-            propagate_node = C1PastCliffordNode(
-                op_name,
-                actual_register_name,
-                np.array(list(pre_propagate.partition), dtype=np.intp),
-            )
+        else:
+            if op_name in propagate_group.invariants:
+                propagate_node = None
+            else:
+                propagate_node = propagate_group.node_class(
+                    op_name,
+                    actual_register_name,
+                    np.array(list(pre_propagate.partition), dtype=np.intp),
+                )
 
         if propagate_node is not None:
             node_idx = samplex.add_node(propagate_node)
