@@ -17,11 +17,10 @@ from itertools import permutations, product
 import numpy as np
 from qiskit.circuit import BoxOp, QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
-from qiskit.transpiler import PassManager
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
-from samplomatic.transpiler.passes import InlineBoxes
+from samplomatic.utils import unbox
 
 
 def make_circuits():
@@ -288,6 +287,114 @@ def make_circuits():
 
     yield circuit, "cx_and_cz_on_subset_boxop"
 
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_cx_split"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(1, 0)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_cx_split_opposite"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "local_c1_cx_pure_c1"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_left_right"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cz(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_cz_split"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.ecr(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_ecr_split"
+
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    yield circuit, "local_c1_noop_fallback"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(2, 3)
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "local_c1_multiple_boxes"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="pauli", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.cx(2, 3)
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1, 2, 3)
+
+    yield circuit, "mixed_pauli_local_c1"
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_c1", dressing="left")]):
+        circuit.noop(0, 1, 2, 3)
+    with circuit.box([Twirl(group="local_c1", dressing="right")]):
+        circuit.cx(0, 1)
+        circuit.noop(2, 3)
+
+    yield circuit, "local_c1_right_dressed_cx"
+
+    circuit = QuantumCircuit(4, 2)
+    with circuit.box([Twirl(group="balanced_pauli", dressing="left")]):
+        circuit.cx(0, 1)
+        circuit.cx(2, 3)
+        circuit.cx(1, 2)
+    with circuit.box([Twirl(group="balanced_pauli", dressing="left")]):
+        circuit.cx(1, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(group="balanced_pauli", dressing="right")]):
+        circuit.cx(3, 2)
+
+    yield circuit, "balanced_pauli"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
@@ -319,7 +426,7 @@ def test_sampling(circuit, save_plot):
 
     assert parameter_values.dtype == np.float32
 
-    expected_op = Operator(PassManager([InlineBoxes()]).run(circuit))
+    expected_op = Operator(unbox(circuit))
     for row in parameter_values:
         op = Operator(template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f

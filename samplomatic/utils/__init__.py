@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,5 +17,6 @@ from .deprecation import deprecate_arg
 from .find_unique_box_instructions import find_unique_box_instructions
 from .frozen_dict import FrozenDict
 from .get_annotation import get_annotation
+from .unbox import unbox
 from .undress_box import undress_box
 from .validate_literals import validate_literals

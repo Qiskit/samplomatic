@@ -53,3 +53,34 @@ C1_LOOKUP_TABLE = np.array(
 
 The element ``C1_LOOKUP_TABLE[i, j]`` corresponds to the product of ``C_i`` and ``C_j`` in
 operation multiplication order."""
+
+C1_TO_TABLEAU = np.array(
+    [
+        [[True, False, False], [False, True, False]],
+        [[True, False, True], [False, True, False]],
+        [[True, False, False], [False, True, True]],
+        [[True, False, True], [False, True, True]],
+        [[False, True, False], [True, False, False]],
+        [[False, True, True], [True, False, False]],
+        [[False, True, False], [True, False, True]],
+        [[False, True, True], [True, False, True]],
+        [[True, True, True], [True, False, False]],
+        [[True, True, False], [True, False, False]],
+        [[True, True, True], [True, False, True]],
+        [[True, True, False], [True, False, True]],
+        [[True, False, False], [True, True, True]],
+        [[True, False, True], [True, True, True]],
+        [[True, False, False], [True, True, False]],
+        [[True, False, True], [True, True, False]],
+        [[False, True, False], [True, True, True]],
+        [[False, True, True], [True, True, True]],
+        [[False, True, False], [True, True, False]],
+        [[False, True, True], [True, True, False]],
+        [[True, True, True], [False, True, False]],
+        [[True, True, False], [False, True, False]],
+        [[True, True, True], [False, True, True]],
+        [[True, True, False], [False, True, True]],
+    ],
+    np.bool_,
+)
+"""An array containing the tableaus of each single-qubit Clifford."""

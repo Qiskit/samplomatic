@@ -13,7 +13,8 @@
 import orjson
 import pytest
 
-from samplomatic.distributions import BalancedUniformPauli, UniformPauli
+from samplomatic.distributions import BalancedUniformPauli, UniformLocalC1, UniformPauli
+from samplomatic.exceptions import SerializationError
 from samplomatic.samplex.nodes import (
     C1PastCliffordNode,
     ChangeBasisNode,
@@ -30,7 +31,12 @@ from samplomatic.samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from samplomatic.samplex.nodes.change_basis_node import MEAS_PAULI_BASIS, PREP_PAULI_BASIS
+from samplomatic.samplex.nodes.change_basis_node import (
+    LOCAL_CLIFFORD,
+    MEAS_PAULI_BASIS,
+    PREP_PAULI_BASIS,
+)
+from samplomatic.serialization.basis_change_serializers import BasisChangeSerializer
 from samplomatic.serialization.node_serializers import (
     C1PastCliffordNodeSerializer,
     ChangeBasisNodeSerializer,
@@ -50,6 +56,11 @@ from samplomatic.serialization.node_serializers import (
 from samplomatic.serialization.type_serializer import TypeSerializer
 from samplomatic.synths import RzSxSynth
 from samplomatic.virtual_registers import VirtualType
+
+
+def test_basis_change_unsupported_register_type():
+    with pytest.raises(SerializationError, match="Cannot serialive"):
+        BasisChangeSerializer.serialize(LOCAL_CLIFFORD, 1)
 
 
 @pytest.mark.parametrize("basis_change", [MEAS_PAULI_BASIS, PREP_PAULI_BASIS])
@@ -144,6 +155,13 @@ def test_twirl_sampling_serializer_round_trip(ssv):
 
 def test_twirl_sampling_balanced_serializer_round_trip():
     node = TwirlSamplingNode("lhs", "rhs", BalancedUniformPauli(10))
+    data = TwirlSamplingNodeSerializer.serialize(node, 3)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+def test_twirl_sampling_local_c1_serializer_round_trip():
+    node = TwirlSamplingNode("lhs", "rhs", UniformLocalC1(10, "cx"))
     data = TwirlSamplingNodeSerializer.serialize(node, 3)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)

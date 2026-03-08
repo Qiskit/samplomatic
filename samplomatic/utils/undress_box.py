@@ -18,7 +18,6 @@ from copy import deepcopy
 from qiskit.circuit import BoxOp, Instruction, QuantumCircuit, Qubit
 from qiskit.converters import circuit_to_dag
 
-from ..annotations import Twirl
 from .get_annotation import get_annotation
 
 
@@ -34,6 +33,9 @@ def undress_box(box: BoxOp) -> BoxOp:
     Args:
         box: The box to remove the single-qubit gates from.
     """
+    # Lazy import to avoid circular import with annotations -> utils -> annotations
+    from ..annotations import Twirl
+
     if not (twirl_annotation := get_annotation(box, Twirl)):
         return box.copy()
 

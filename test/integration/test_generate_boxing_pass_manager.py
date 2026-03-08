@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -142,7 +142,8 @@ def test_generate_boxing_pass_manager_makes_buildable_circuits(
     assert unboxed_circuit == unboxed_transpiled_circuit
 
 
-def test_qiskit_pm_integration_with_trotterized_circuit(linear_target):
+@pytest.mark.parametrize("twirling_group", ["pauli", "local_c1", "balanced_pauli"])
+def test_qiskit_pm_integration_with_trotterized_circuit(linear_target, twirling_group):
     """Test that integrating boxing pass with qiskit PM interacts with trotter circuit nicely."""
     # Do the boxing passes after we perform all scheduling-like passes.
     pm = generate_preset_pass_manager(
@@ -156,6 +157,7 @@ def test_qiskit_pm_integration_with_trotterized_circuit(linear_target):
         twirling_strategy="active_circuit",
         inject_noise_targets="gates",
         remove_barriers="after_stratification",
+        twirling_group=twirling_group,
     )
 
     # make a simple trotterized circuit on 6 qubits that obey the linear target

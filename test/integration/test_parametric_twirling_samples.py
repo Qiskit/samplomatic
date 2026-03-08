@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,11 +17,10 @@ from itertools import product
 import numpy as np
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.quantum_info import Operator, average_gate_fidelity
-from qiskit.transpiler import PassManager
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
-from samplomatic.transpiler.passes import InlineBoxes
+from samplomatic.utils import unbox
 
 
 def make_circuits():
@@ -109,6 +108,14 @@ def make_circuits():
 
     yield circuit, "merge_mix_static_and_parametric"
 
+    circuit = QuantumCircuit(1)
+    with circuit.box([Twirl(group="balanced_pauli")]):
+        circuit.rx(Parameter("a"), 0)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0)
+
+    yield circuit, "balanced_pauli_parametric"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
@@ -141,9 +148,7 @@ def test_sampling(rng, circuit, save_plot):
     samplex_output = samplex.sample(samplex_input, num_randomizations=10)
     parameter_values = samplex_output["parameter_values"]
 
-    expected_op = Operator(
-        PassManager([InlineBoxes()]).run(circuit).assign_parameters(circuit_params)
-    )
+    expected_op = Operator(unbox(circuit).assign_parameters(circuit_params))
     for row in parameter_values:
         op = Operator(template.assign_parameters(row))
         assert np.allclose(f := average_gate_fidelity(expected_op, op), 1), f

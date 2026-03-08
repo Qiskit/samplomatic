@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -17,7 +17,6 @@ from collections.abc import Callable, Iterable
 from qiskit.circuit import Annotation
 
 from ..aliases import CircuitInstruction
-from ..annotations import InjectNoise, Twirl
 from .box_key import BoxKey
 from .undress_box import undress_box
 
@@ -35,6 +34,9 @@ def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Ann
     Returns:
         The normalized annotations.
     """
+    # Lazy import to avoid circular import with annotations -> utils -> annotations
+    from ..annotations import InjectNoise, Twirl
+
     normalized_annotations = []
     for annot in annotations:
         if isinstance(annot, Twirl):
