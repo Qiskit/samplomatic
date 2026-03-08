@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,17 +14,14 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import (
-    ClassicalRegister,
-    Parameter,
-    QuantumCircuit,
-    QuantumRegister,
-)
+from qiskit.circuit import ClassicalRegister, Parameter, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate, XGate
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGOpNode
 from rustworkx import topological_sort
 
+from samplomatic.annotations import Twirl
+from samplomatic.builders import pre_build
 from samplomatic.builders.specs import InstructionMode
 from samplomatic.constants import Direction
 from samplomatic.exceptions import SamplexBuildError
@@ -33,6 +30,8 @@ from samplomatic.partition import QubitIndicesPartition, QubitPartition, Subsyst
 from samplomatic.pre_samplex import PreSamplex
 from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate, PreZ2Collect
 from samplomatic.pre_samplex.pre_samplex import DanglerMatch, DanglerType
+from samplomatic.samplex.nodes.pauli_past_clifford_node import PauliPastCliffordNode
+from samplomatic.samplex.nodes.slice_register_node import SliceRegisterNode
 from samplomatic.synths.rzsx_synth import RzSxSynth
 from samplomatic.virtual_registers import PauliRegister, VirtualType
 
@@ -754,3 +753,100 @@ class TestDraw:
         pre_samplex.add_collect(subsystems, RzSxSynth(), [])
 
         save_plot(pre_samplex.draw())
+
+
+class TestTrivialSliceOptimization:
+    """Test that the trivial-slice optimization in add_combine_node fires correctly.
+
+    The optimization skips creating a SliceRegisterNode when a PrePropagate has a single
+    predecessor with matching type, identity index mapping, and matching subsystem counts.
+    This applies to passthrough gates between boxes, where the PrePropagate has exactly one
+    predecessor (a single emit).
+    """
+
+    @staticmethod
+    def _build_and_sample(circuit, num_randomizations=10):
+        _, pre_samplex = pre_build(circuit)
+        samplex = pre_samplex.finalize()
+        samplex.finalize()
+        samplex_input = samplex.inputs()
+        output = samplex.sample(samplex_input, num_randomizations=num_randomizations)
+        return samplex, output
+
+    def test_trivial_slice_skipped_for_single_qubit_passthrough(self):
+        """Test trivial slice is skipped for a 1Q passthrough gate with matching subsystems."""
+        circuit = QuantumCircuit(1)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.noop(0)
+        circuit.h(0)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0)
+
+        samplex, output = self._build_and_sample(circuit)
+
+        has_ppcliff = False
+        for node_idx in samplex.graph.node_indices():
+            if isinstance(samplex.graph[node_idx], PauliPastCliffordNode):
+                has_ppcliff = True
+                for pred_idx in samplex.graph.predecessor_indices(node_idx):
+                    assert not isinstance(samplex.graph[pred_idx], SliceRegisterNode)
+        assert has_ppcliff
+        assert output["parameter_values"].shape[0] == 10
+
+    def test_trivial_slice_and_invariant_passthrough(self):
+        """Test that invariant passthrough gates produce no propagation or slice nodes."""
+        circuit = QuantumCircuit(1)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.noop(0)
+        circuit.x(0)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0)
+
+        samplex, output = self._build_and_sample(circuit)
+
+        for node_idx in samplex.graph.node_indices():
+            assert not isinstance(samplex.graph[node_idx], PauliPastCliffordNode)
+        assert output["parameter_values"].shape[0] == 10
+
+    def test_trivial_slice_not_skipped_for_subsystem_mismatch(self):
+        """Test trivial slice does NOT fire when emit and propagation differ in qubit count."""
+        circuit = QuantumCircuit(2)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.noop(0, 1)
+        circuit.h(0)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1)
+
+        samplex, output = self._build_and_sample(circuit)
+
+        has_ppcliff = False
+        ppcliff_has_slice_pred = False
+        for node_idx in samplex.graph.node_indices():
+            if isinstance(samplex.graph[node_idx], PauliPastCliffordNode):
+                has_ppcliff = True
+                for pred_idx in samplex.graph.predecessor_indices(node_idx):
+                    if isinstance(samplex.graph[pred_idx], SliceRegisterNode):
+                        ppcliff_has_slice_pred = True
+        assert has_ppcliff
+        assert ppcliff_has_slice_pred
+        assert output["parameter_values"].shape[0] == 10
+
+    def test_trivial_slice_skipped_for_multi_qubit_passthrough(self):
+        """Test trivial slice fires for a 2Q passthrough gate covering all emit subsystems."""
+        circuit = QuantumCircuit(2)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.noop(0, 1)
+        circuit.cx(0, 1)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1)
+
+        samplex, output = self._build_and_sample(circuit)
+
+        has_ppcliff = False
+        for node_idx in samplex.graph.node_indices():
+            if isinstance(samplex.graph[node_idx], PauliPastCliffordNode):
+                has_ppcliff = True
+                for pred_idx in samplex.graph.predecessor_indices(node_idx):
+                    assert not isinstance(samplex.graph[pred_idx], SliceRegisterNode)
+        assert has_ppcliff
+        assert output["parameter_values"].shape[0] == 10

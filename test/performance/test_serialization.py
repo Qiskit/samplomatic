@@ -97,12 +97,13 @@ def test_deserialize_noisy_circuit(rng, benchmark, num_qubits, num_gates):
         ),
     ],
 )
-def test_serialized_size(rng, benchmark, num_qubits, num_gates):
+def test_serialized_size(benchmark, num_qubits, num_gates):
     """Measure the serialized JSON size of a samplex."""
     num_boxes = num_gates // (num_qubits // 2)
     circuit = make_layered_circuit(num_qubits, num_boxes, inject_noise=True)
 
     _, samplex = build(circuit)
     samplex_json = benchmark(samplex_to_json, samplex)
-    benchmark.extra_info["serialized_bytes"] = len(samplex_json.encode())
-    benchmark.extra_info["serialized_kb"] = len(samplex_json.encode()) / 1024
+    encoded_json = samplex_json.encode()
+    benchmark.extra_info["serialized_bytes"] = len(encoded_json)
+    benchmark.extra_info["serialized_kb"] = len(encoded_json) / 1024
