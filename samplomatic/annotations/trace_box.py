@@ -19,13 +19,7 @@ class TraceBox(Annotation):
     """Annotation to include trace information in barrier labels.
 
     When present on a ``box`` instruction, the barriers emitted during :func:`~samplomatic.build`
-    include trace information.
-
-    The following information is included:
-
-    * The :attr:`ref` of this annotation if it's set.
-    * The :attr:`~InjectNoise.ref` of an :class:`~.InjectNoise` if there is one on the box.
-
+    include the ``ref`` of this annotation as part of their label information.
     Args:
         ref: A reference string to include in barrier labels.
     """
