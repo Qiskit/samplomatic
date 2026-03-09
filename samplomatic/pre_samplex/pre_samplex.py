@@ -118,13 +118,18 @@ FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
 
 
 class _PropagateGroup(NamedTuple):
-    """Configuration for propagating virtual gates past a Clifford gate at a given group level."""
+    """Configuration for propagating virtual gates past other gates at a given group level."""
 
     allowed_incoming: frozenset[VirtualType]
+    """The set of virtual register types that this group can accept as input."""
     group_type: VirtualType
+    """The virtual register type that this group propagates as."""
     invariants: frozenset[str]
-    lookup_tables: dict
+    """Gate names for which propagation is trivial."""
+    lookup_tables: dict[str, np.ndarray]
+    """Maps gate names to conjugation lookup tables."""
     node_class: type
+    """The evaluation node class used to perform the propagation."""
 
 
 _PROPAGATE_GROUPS: tuple[_PropagateGroup, ...] = (
@@ -1445,6 +1450,7 @@ class PreSamplex:
             input_register_name, (source_idxs, destination_idxs, input_type) = next(
                 iter(operands.items())
             )
+            pre_edge = pre_edges[0]
 
             # Skip trivial slices: same type, identity index mapping, no forced copy,
             # and the predecessor's register has the same number of subsystems.
