@@ -14,7 +14,7 @@
 
 from ._beta_warning import warn_once_per_version as _warn_once_per_version
 from ._version import __version__
-from .annotations import ChangeBasis, InjectNoise, TraceBox, Twirl
+from .annotations import ChangeBasis, InjectNoise, Tag, Twirl
 from .builders import build
 
 _warn_once_per_version(

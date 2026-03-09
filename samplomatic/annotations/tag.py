@@ -10,12 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""TraceBox"""
+"""Tag"""
 
 from qiskit.circuit import Annotation
 
 
-class TraceBox(Annotation):
+class Tag(Annotation):
     """Annotation to include trace information in barrier labels.
 
     When present on a ``box`` instruction, the barriers emitted during :func:`~samplomatic.build`
@@ -24,7 +24,7 @@ class TraceBox(Annotation):
         ref: A reference string to include in barrier labels.
     """
 
-    namespace = "samplomatic.trace_box"
+    namespace = "samplomatic.tag"
 
     def __init__(self, ref: str = ""):
         self._ref = ref
@@ -35,10 +35,10 @@ class TraceBox(Annotation):
         return self._ref
 
     def __eq__(self, other):
-        return isinstance(other, TraceBox) and self._ref == other._ref
+        return isinstance(other, Tag) and self._ref == other._ref
 
     def __hash__(self):
-        return hash((TraceBox, self._ref))
+        return hash((Tag, self._ref))
 
     def __repr__(self):
         args = f"ref={self._ref!r}" if self._ref else ""

@@ -25,7 +25,7 @@ from ..annotations import (
     GroupMode,
     InjectLocalClifford,
     InjectNoise,
-    TraceBox,
+    Tag,
     Twirl,
 )
 from ..exceptions import BuildError
@@ -293,15 +293,15 @@ def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpe
         emission.dressing = dressing
 
 
-def trace_box_parser(trace_box: TraceBox, collection: CollectionSpec, emission: EmissionSpec):
+def tag_parser(tag: Tag, collection: CollectionSpec, emission: EmissionSpec):
     """Parse a trace box annotation by mutating emission spec.
 
     Args:
-        trace_box: The trace box annotation to parse.
+        tag: The trace box annotation to parse.
         collection: The collection spec to modify.
         emission: The emission spec to modify.
     """
-    emission.trace_refs["trace"] = trace_box.ref
+    emission.trace_refs["trace"] = tag.ref
 
 
 SUPPORTED_ANNOTATIONS: dict[
@@ -311,5 +311,5 @@ SUPPORTED_ANNOTATIONS: dict[
     Twirl: twirl_parser,
     InjectLocalClifford: inject_local_clifford_parser,
     InjectNoise: inject_noise_parser,
-    TraceBox: trace_box_parser,
+    Tag: tag_parser,
 }
