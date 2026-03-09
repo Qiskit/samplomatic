@@ -95,7 +95,7 @@ class EmissionSpec:
     def trace_label(self) -> str:
         """Description of trace reference information."""
         labels = [f"{name}={value}" for name, value in self.trace_refs.items() if value]
-        return f"@{'&'.join(labels)}" if labels and "trace" in self.trace_refs else ""
+        return f"@{'&'.join(labels)}" if labels else ""
 
 
 @dataclass
