@@ -254,7 +254,7 @@ def inject_noise_parser(
     emission.noise_modifier_ref = inject_noise.modifier_ref
     emission.noise_site = inject_noise.site
 
-    emission.trace_refs["noise"] = inject_noise.ref
+    emission.trace_refs["inject_noise"] = inject_noise.ref
 
 
 def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpec):
