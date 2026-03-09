@@ -254,6 +254,8 @@ def inject_noise_parser(
     emission.noise_modifier_ref = inject_noise.modifier_ref
     emission.noise_site = inject_noise.site
 
+    emission.trace_refs["noise"] = inject_noise.ref
+
 
 def twirl_parser(twirl: Twirl, collection: CollectionSpec, emission: EmissionSpec):
     """Parse a twirl annotation by mutating emission and collection specs.
@@ -299,8 +301,7 @@ def trace_box_parser(trace_box: TraceBox, collection: CollectionSpec, emission: 
         collection: The collection spec to modify.
         emission: The emission spec to modify.
     """
-    emission.trace_box = True
-    emission.trace_ref = trace_box.ref
+    emission.trace_refs["trace"] = trace_box.ref
 
 
 SUPPORTED_ANNOTATIONS: dict[

@@ -13,7 +13,7 @@
 """High-level node specifications"""
 
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, TypeAlias
 
 import numpy as np
@@ -94,8 +94,8 @@ class EmissionSpec:
     @property
     def trace_label(self) -> str:
         """Description of trace reference information."""
-        labels = [f"{name}={value}" for name, value in self.trace_refs.items()]
-        return f"@{'&'.join(labels)}" if labels else ""
+        labels = [f"{name}={value}" for name, value in self.trace_refs.items() if value]
+        return f"@{'&'.join(labels)}" if labels and "trace" in self.trace_refs else ""
 
 
 @dataclass
