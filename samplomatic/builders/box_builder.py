@@ -79,7 +79,9 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         return param_idxs.reshape(len(qubits), -1)
 
     def _append_barrier(self, label: str):
-        label = f"{label}{'_'.join(map(str, self.template_state.scope_idx))}"
+        label = (
+            f"{label}{'_'.join(map(str, self.template_state.scope_idx))}{self.emission.trace_label}"
+        )
         all_qubits = self.template_state.qubits()
         self.template_state.template.apply_operation_back(
             Barrier(len(all_qubits), label), all_qubits

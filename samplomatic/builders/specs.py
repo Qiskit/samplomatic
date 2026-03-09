@@ -13,7 +13,7 @@
 """High-level node specifications"""
 
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, TypeAlias
 
 import numpy as np
@@ -87,6 +87,15 @@ class EmissionSpec:
 
     noise_site: InjectionSite | None = None
     """Whether to inject noise before or after the hard content."""
+
+    trace_refs: dict[str, str] = field(default_factory=dict)
+    """Hints about which box this is an emission for, mapping origins types to origins."""
+
+    @property
+    def trace_label(self) -> str:
+        """Description of trace reference information."""
+        labels = [f"{name}={value}" for name, value in self.trace_refs.items() if value]
+        return f"@{'&'.join(labels)}" if labels else ""
 
 
 @dataclass
