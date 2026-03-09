@@ -34,7 +34,7 @@ class Tag(Annotation):
 
     @property
     def ref(self) -> str:
-        """The reference string to include in barrier labels."""
+        """The reference string of this tag."""
         return self._ref
 
     def __eq__(self, other):
