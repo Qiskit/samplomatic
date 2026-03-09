@@ -301,7 +301,7 @@ def tag_parser(tag: Tag, collection: CollectionSpec, emission: EmissionSpec):
         collection: The collection spec to modify.
         emission: The emission spec to modify.
     """
-    emission.trace_refs["trace"] = tag.ref
+    emission.trace_refs["tag"] = tag.ref
 
 
 SUPPORTED_ANNOTATIONS: dict[
