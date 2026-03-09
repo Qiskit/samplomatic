@@ -20,9 +20,10 @@ class Tag(Annotation):
 
     When present on a ``box`` instruction, the barriers emitted during :func:`~samplomatic.build`
     include the ``ref`` of this annotation as part of their label information. In this way, when
-    combined with the build function, a tag annotation can be used as a tracing mechanism to 
-    tie a "barrier sandwich" in a template circuit back to the box it came from in the original circuit.
-    
+    combined with the build function, a tag annotation can be used as a tracing mechanism to
+    tie a "barrier sandwich" in a template circuit back to the box it came from in the original
+    circuit.
+
     Args:
         ref: A reference string.
     """
