@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="PreChangeBasis" href="samplomatic.pre_samplex.PreChangeBasis.html" /><link rel="prev" title="samplomatic.pre_samplex" href="../samplomatic.pre_samplex.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="samplomatic.Twirl" href="samplomatic.Twirl.html" /><link rel="prev" title="samplomatic.InjectNoise" href="samplomatic.InjectNoise.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>DanglerMatch - samplomatic 0.1.dev1</title>
+        <title>Tag - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="samplomatic.build.html">samplomatic.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="samplomatic.Tag.html">Tag</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Tag</a></li>
 <li class="toctree-l2"><a class="reference internal" href="samplomatic.Twirl.html">samplomatic.Twirl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../samplomatic.aliases.html">samplomatic.aliases</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.annotations.html">samplomatic.annotations</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of samplomatic.annotations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -270,8 +270,8 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.partition.Partition.html">Partition</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.pre_samplex.html">samplomatic.pre_samplex</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of samplomatic.pre_samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">DanglerMatch</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.pre_samplex.html">samplomatic.pre_samplex</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of samplomatic.pre_samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.DanglerMatch.html">DanglerMatch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreChangeBasis.html">PreChangeBasis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreCollect.html">PreCollect</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEdge.html">PreEdge</a></li>
@@ -452,7 +452,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.pre_samplex.DanglerMatch.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.Tag.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -472,67 +472,46 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="danglermatch">
-<h1>DanglerMatch<a class="headerlink" href="#danglermatch" title="Link to this heading">¶</a></h1>
+          <section id="tag">
+<h1>Tag<a class="headerlink" href="#tag" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="samplomatic.pre_samplex.DanglerMatch">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.pre_samplex.</span></span><span class="sig-name descname"><span class="pre">DanglerMatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.constants.Direction.html#samplomatic.constants.Direction" title="samplomatic.constants.Direction"><span class="pre">Direction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.graph_data.PreNode"><span class="pre">PreNode</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dangler_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DanglerType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/pre_samplex.py#L127-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.DanglerMatch" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A helper class to specify conditions on danglers.</p>
+<dt class="sig sig-object py" id="samplomatic.Tag">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/annotations/tag.py#L18-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.Tag" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.Annotation" title="(in Qiskit v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a></p>
+<p>Annotation to tag and instruction with a string reference.</p>
+<p>When present on a <code class="docutils literal notranslate"><span class="pre">box</span></code> instruction, the barriers emitted during <a class="reference internal" href="samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a>
+include the <code class="docutils literal notranslate"><span class="pre">ref</span></code> of this annotation as part of their label information. In this way, when
+combined with the build function, a tag annotation can be used as a tracing mechanism to
+tie a “barrier sandwich” in a template circuit back to the box it came from in the original
+circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ref</strong> – A reference string.</p>
+</dd>
+</dl>
 <p class="rubric">Attributes Summary</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.dangler_type" title="samplomatic.pre_samplex.DanglerMatch.dangler_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dangler_type</span></code></a></p></td>
-<td><p>The desired type of dangler.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.Tag.namespace" title="samplomatic.Tag.namespace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">namespace</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.direction" title="samplomatic.pre_samplex.DanglerMatch.direction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direction</span></code></a></p></td>
-<td><p>The desired direction of the node.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.node_types" title="samplomatic.pre_samplex.DanglerMatch.node_types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">node_types</span></code></a></p></td>
-<td><p>The desired type of the node.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Methods Summary</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.match_node" title="samplomatic.pre_samplex.DanglerMatch.match_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match_node</span></code></a>(node)</p></td>
-<td><p>Check if a node matches the conditions specified in the object</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.Tag.ref" title="samplomatic.Tag.ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ref</span></code></a></p></td>
+<td><p>The reference string of this tag.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.pre_samplex.DanglerMatch.dangler_type">
-<span class="sig-name descname"><span class="pre">dangler_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DanglerType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#samplomatic.pre_samplex.DanglerMatch.dangler_type" title="Link to this definition">¶</a></dt>
-<dd><p>The desired type of dangler.</p>
-<p>Set to <cite>None</cite> to get both required and optional danglers.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="samplomatic.Tag.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'samplomatic.tag'</span></em><a class="headerlink" href="#samplomatic.Tag.namespace" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.pre_samplex.DanglerMatch.direction">
-<span class="sig-name descname"><span class="pre">direction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="samplomatic.constants.Direction.html#samplomatic.constants.Direction" title="samplomatic.constants.Direction"><span class="pre">Direction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#samplomatic.pre_samplex.DanglerMatch.direction" title="Link to this definition">¶</a></dt>
-<dd><p>The desired direction of the node.</p>
-<p>Set to <cite>None</cite> to get all node directions. Note that setting to <cite>BOTH</cite> will only match nodes
-with <cite>BOTH</cite> direction.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="samplomatic.pre_samplex.DanglerMatch.node_types">
-<span class="sig-name descname"><span class="pre">node_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.graph_data.PreNode"><span class="pre">PreNode</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#samplomatic.pre_samplex.DanglerMatch.node_types" title="Link to this definition">¶</a></dt>
-<dd><p>The desired type of the node.</p>
-<p>Set to <cite>None</cite> to get all node types.</p>
-</dd></dl>
-
-<p class="rubric">Methods Documentation</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="samplomatic.pre_samplex.DanglerMatch.match_node">
-<span class="sig-name descname"><span class="pre">match_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.graph_data.PreNode"><span class="pre">PreNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/pre_samplex.py#L147-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.DanglerMatch.match_node" title="Link to this definition">¶</a></dt>
-<dd><p>Check if a node matches the conditions specified in the object</p>
+<dt class="sig sig-object py" id="samplomatic.Tag.ref">
+<span class="sig-name descname"><span class="pre">ref</span></span><a class="headerlink" href="#samplomatic.Tag.ref" title="Link to this definition">¶</a></dt>
+<dd><p>The reference string of this tag.</p>
 </dd></dl>
 
 </dd></dl>
@@ -544,23 +523,23 @@ with <cite>BOTH</cite> direction.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samplomatic.pre_samplex.PreChangeBasis.html">
+          <a class="next-page" href="samplomatic.Twirl.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">PreChangeBasis</div>
+                <div class="title">samplomatic.Twirl</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../samplomatic.pre_samplex.html">
+          <a class="prev-page" href="samplomatic.InjectNoise.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">samplomatic.pre_samplex</div>
+                <div class="title">samplomatic.InjectNoise</div>
                 
               </div>
             </a>
@@ -595,12 +574,10 @@ with <cite>BOTH</cite> direction.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">DanglerMatch</a><ul>
-<li><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch"><code class="docutils literal notranslate"><span class="pre">DanglerMatch</span></code></a><ul>
-<li><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.dangler_type"><code class="docutils literal notranslate"><span class="pre">DanglerMatch.dangler_type</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.direction"><code class="docutils literal notranslate"><span class="pre">DanglerMatch.direction</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.node_types"><code class="docutils literal notranslate"><span class="pre">DanglerMatch.node_types</span></code></a></li>
-<li><a class="reference internal" href="#samplomatic.pre_samplex.DanglerMatch.match_node"><code class="docutils literal notranslate"><span class="pre">DanglerMatch.match_node()</span></code></a></li>
+<li><a class="reference internal" href="#">Tag</a><ul>
+<li><a class="reference internal" href="#samplomatic.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a><ul>
+<li><a class="reference internal" href="#samplomatic.Tag.namespace"><code class="docutils literal notranslate"><span class="pre">Tag.namespace</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.Tag.ref"><code class="docutils literal notranslate"><span class="pre">Tag.ref</span></code></a></li>
 </ul>
 </li>
 </ul>
