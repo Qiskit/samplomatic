@@ -145,6 +145,7 @@ def generate_boxing_pass_manager(
         twirling_group: The group to use for the twirling boxes.
 
             * ``'pauli'`` uses the Pauli group.
+            * ``'balanced_pauli'`` uses the Pauli group with a balanced distribution.
             * ``'local_c1'`` uses the subgroup of single-qubit Cliffords that are conjugated to
               single-qubit Cliffords on any entangling gates in the box, and the Pauli group
               everywhere else.
