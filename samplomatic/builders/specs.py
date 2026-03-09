@@ -88,33 +88,14 @@ class EmissionSpec:
     noise_site: InjectionSite | None = None
     """Whether to inject noise before or after the hard content."""
 
-    trace_box: bool = False
-    """Whether to include trace information in barrier labels."""
+    trace_refs: dict[str, str] = field(default_factory=dict)
+    """Hints about which box this is an emission for, mapping origins types to origins."""
 
-    trace_ref: str = ""
-    """An optional reference string from :class:`~.TraceBox` to include in barrier labels."""
-
-    def trace_label(self, label: str) -> str:
-        """Append trace information to a barrier label.
-
-        Args:
-            label: The base barrier label.
-
-        Returns:
-            The label with trace refs appended, if :attr:`trace_box` is set.
-        """
-        if not self.trace_box:
-            return label
-        parts = []
-        if self.trace_ref:
-            parts.append(f"trace={self.trace_ref}")
-        if self.noise_ref:
-            parts.append(f"noise={self.noise_ref}")
-        if parts:
-            label = f"{label}@{parts[0]}"
-            for part in parts[1:]:
-                label = f"{label}&{part}"
-        return label
+    @property
+    def trace_label(self) -> str:
+        """Description of trace reference information."""
+        labels = [f"{name}={value}" for name, value in self.trace_refs.items()]
+        return f"@{'&'.join(labels)}" if labels else ""
 
 
 @dataclass
