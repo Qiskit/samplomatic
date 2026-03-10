@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -42,6 +42,12 @@ def pytest_addoption(parser):
         action="store_true",
         default=False,
         help="Use lighter version of the performance tests for smoke test purposes.",
+    )
+    parser.addoption(
+        "--full-parametrize",
+        action="store_true",
+        default=False,
+        help="Use full Cartesian product for combinatorial tests instead of pairwise.",
     )
 
 

@@ -48,7 +48,7 @@ jobs:
       - name: Test with pytest
         run: |
           # test/performance configured to be ignored in pyproject.toml
-          python -m pytest
+          python -m pytest --full-parametrize
           # test/performance are then ran in a lighter version as a smoke test
           python -m pytest test/performance --benchmark-disable --performance-light
       - name: Discover released versions

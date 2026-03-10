@@ -12,7 +12,10 @@
 
 """Test that `generate_boxing_pass_manager` generates buildable circuits."""
 
+from itertools import product
+
 import pytest
+from allpairspy import AllPairs
 from qiskit.circuit import ClassicalRegister, Parameter, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import CZGate, RXGate, RZGate, RZZGate, SXGate, XGate
 from qiskit.transpiler import PassManager, Target, generate_preset_pass_manager
@@ -22,6 +25,16 @@ from samplomatic import build
 from samplomatic.transpiler import generate_boxing_pass_manager
 from samplomatic.transpiler.passes import InlineBoxes
 from samplomatic.utils import find_unique_box_instructions
+
+# Parameter space for test_generate_boxing_pass_manager_makes_buildable_circuits
+_BOXING_PM_PARAMS = {
+    "enable_gates": [True, False],
+    "enable_measures": [True, False],
+    "measure_annotations": ["twirl", "change_basis", "all"],
+    "twirling_strategy": ["active", "active_accum", "active_circuit", "all"],
+    "remove_barriers": ["immediately", "finally", "after_stratification", "never"],
+    "decomposition": ["rzsx", "rzrx"],
+}
 
 
 @pytest.fixture
@@ -97,21 +110,40 @@ def make_circuits():
 
 
 def pytest_generate_tests(metafunc):
-    if "circuit" in metafunc.fixturenames:
-        circuit_and_description = [*make_circuits()]
-        circuit = [test[0] for test in circuit_and_description]
-        description = [test[1] for test in circuit_and_description]
-        metafunc.parametrize("circuit", circuit, ids=description)
+    if "enable_gates" in metafunc.fixturenames:
+        # Parametrize the boxing pass manager test with pairwise or full Cartesian product
+        param_names = list(_BOXING_PM_PARAMS.keys())
+        param_values = list(_BOXING_PM_PARAMS.values())
+
+        if metafunc.config.getoption("--full-parametrize"):
+            combos = list(product(*param_values))
+        else:
+            combos = list(AllPairs(param_values))
+
+        circuits = list(make_circuits())
+        all_combos = [(circ, *combo) for combo in combos for circ, _ in circuits]
+        all_ids = [
+            "-".join(
+                f"{k}={v}" if not isinstance(v, str) else v for k, v in zip(param_names, combo)
+            )
+            + f"-{desc}"
+            for combo in combos
+            for _, desc in circuits
+        ]
+
+        metafunc.parametrize(
+            ["circuit", *param_names],
+            all_combos,
+            ids=all_ids,
+        )
+
+    elif "circuit" in metafunc.fixturenames:
+        circuit_and_description = list(make_circuits())
+        circuits = [test[0] for test in circuit_and_description]
+        descriptions = [test[1] for test in circuit_and_description]
+        metafunc.parametrize("circuit", circuits, ids=descriptions)
 
 
-@pytest.mark.parametrize("enable_gates", [True, False])
-@pytest.mark.parametrize("enable_measures", [True, False])
-@pytest.mark.parametrize("measure_annotations", ["twirl", "change_basis", "all"])
-@pytest.mark.parametrize("twirling_strategy", ["active", "active_accum", "active_circuit", "all"])
-@pytest.mark.parametrize(
-    "remove_barriers", ["immediately", "finally", "after_stratification", "never"]
-)
-@pytest.mark.parametrize("decomposition", ["rzsx", "rzrx"])
 def test_generate_boxing_pass_manager_makes_buildable_circuits(
     circuit,
     enable_gates,
