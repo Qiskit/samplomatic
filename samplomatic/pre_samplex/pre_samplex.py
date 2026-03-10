@@ -17,7 +17,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from enum import Enum, auto
 from itertools import count
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, Qubit
@@ -115,6 +115,57 @@ FRAME_CHANGE_TO_BASIS_CHANGE: dict[FrameChangeMode, BasisChange] = FrozenDict(
         "local_clifford": LOCAL_CLIFFORD,
     }
 )
+
+
+class _PropagateGroup(NamedTuple):
+    """Configuration for propagating virtual gates past other gates at a given group level."""
+
+    allowed_incoming: frozenset[VirtualType]
+    """The set of virtual register types that this group can accept as input."""
+    group_type: VirtualType
+    """The virtual register type that this group propagates as."""
+    invariants: frozenset[str]
+    """Gate names for which propagation is trivial."""
+    lookup_tables: dict[str, np.ndarray]
+    """Maps gate names to conjugation lookup tables."""
+    node_class: type
+    """The evaluation node class used to perform the propagation."""
+
+
+_PROPAGATE_GROUPS: tuple[_PropagateGroup, ...] = (
+    _PropagateGroup(
+        frozenset({VirtualType.C1, VirtualType.PAULI}),
+        VirtualType.C1,
+        C1_PAST_CLIFFORD_INVARIANTS,
+        C1_PAST_CLIFFORD_LOOKUP_TABLES,
+        C1PastCliffordNode,
+    ),
+    _PropagateGroup(
+        frozenset({VirtualType.PAULI}),
+        VirtualType.PAULI,
+        PAULI_PAST_CLIFFORD_INVARIANTS,
+        PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
+        PauliPastCliffordNode,
+    ),
+)
+
+
+def _match_propagate_group(
+    op_name: str, mode: InstructionMode, incoming: set[VirtualType]
+) -> _PropagateGroup:
+    """Find the propagate group matching the given operation, mode, and incoming register types."""
+    for group in _PROPAGATE_GROUPS:
+        if incoming <= group.allowed_incoming and group.group_type in incoming:
+            if op_name in group.invariants or op_name in group.lookup_tables:
+                return group
+            raise SamplexBuildError(
+                f"Encountered unsupported {op_name} propagation with mode {mode} "
+                f"and incoming virtual gates {incoming}."
+            )
+    raise SamplexBuildError(
+        f"Encountered unsupported {op_name} propagation with mode {mode} "
+        f"and incoming virtual gates {incoming}."
+    )
 
 
 class DanglerType(Enum):
@@ -1353,11 +1404,14 @@ class PreSamplex:
         register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
         combined_register_name: str,
         combined_register_type: VirtualType,
-    ) -> NodeIndex:
+    ) -> tuple[NodeIndex, RegisterName]:
         """Add a node that combines all the predecessor nodes of a given pre-node.
 
         This function adds a :class:`~.SliceRegisterNode` if the given pre-node has a single
         predecessor, or a :class:`~.CombineRegistersNode` if it has multiple predecessors.
+        If the pre-node has a single predecessor and the slice is trivial (same type, identity
+        index mapping, no forced copy), the slice node is skipped entirely and the predecessor's
+        node index and register name are returned directly.
 
         Args:
             samplex: The samplex to add nodes to.
@@ -1373,7 +1427,7 @@ class PreSamplex:
             combined_register_type: The type of register to combine the predecessor registers into.
 
         Returns:
-            A tuple containing the combine node's index and the new register name.
+            A tuple containing the node index and register name to use for downstream nodes.
         """
         pred_idxs = self.sorted_predecessor_idxs(pre_node_idx, order)
         pre_edges = [self.graph.get_edge_data(pred_idx, pre_node_idx) for pred_idx in pred_idxs]
@@ -1396,6 +1450,19 @@ class PreSamplex:
             input_register_name, (source_idxs, destination_idxs, input_type) = next(
                 iter(operands.items())
             )
+            pre_edge = pre_edges[0]
+
+            # Skip trivial slices: same type, identity index mapping, no forced copy,
+            # and the predecessor's register has the same number of subsystems.
+            if (
+                input_type == combined_register_type
+                and not pre_edge.force_register_copy
+                and np.array_equal(source_idxs, destination_idxs)
+                and len(destination_idxs) == len(subsystems)
+                and len(source_idxs) == len(self.graph[pred_idxs[0]].subsystems)
+            ):
+                return pre_nodes_to_nodes[pred_idxs[0]], input_register_name
+
             slice_idxs = np.empty(len(destination_idxs))
             slice_idxs[destination_idxs] = source_idxs
             combine_node = SliceRegisterNode(
@@ -1417,7 +1484,7 @@ class PreSamplex:
 
         for pred_idx in pred_idxs:
             samplex.add_edge(pre_nodes_to_nodes[pred_idx], combine_node_idx)
-        return combine_node_idx
+        return combine_node_idx, combined_register_name
 
     def add_propagate_node(
         self,
@@ -1451,78 +1518,22 @@ class PreSamplex:
         incoming = set()
         for predecessor_idx in self.graph.predecessor_indices(pre_propagate_idx):
             incoming.add(samplex.graph[pre_nodes_to_nodes[predecessor_idx]].outgoing_register_type)
+
+        # Determine the combined register type.
         if mode is InstructionMode.MULTIPLY and pre_propagate.operation.num_qubits == 1:
             combined_register_type = VirtualType.U2
-            if pre_propagate.operation.is_parameterized():
-                param_idxs = [
-                    samplex.append_parameter_expression(param) for _, param in pre_propagate.params
-                ]
-                if pre_propagate.direction is Direction.LEFT:
-                    propagate_node = RightU2ParametricMultiplicationNode(
-                        op_name, combined_register_name, param_idxs
-                    )
-                else:
-                    propagate_node = LeftU2ParametricMultiplicationNode(
-                        op_name, combined_register_name, param_idxs
-                    )
-            else:
-                if op_name in SUPPORTED_1Q_FRACTIONAL_GATES:
-                    register = get_fractional_gate_register(
-                        op_name, np.array(pre_propagate.bounded_params)
-                    )
-                else:
-                    register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
-                if pre_propagate.direction is Direction.LEFT:
-                    propagate_node = RightMultiplicationNode(register, combined_register_name)
-                else:
-                    propagate_node = LeftMultiplicationNode(register, combined_register_name)
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming == {VirtualType.PAULI}
-            and op_name in PAULI_PAST_CLIFFORD_INVARIANTS
-        ):
-            # No node is needed since this is an invariant, but we do need to track
-            # mappings of register names and nodes. This will be done later.
-            combined_register_type = VirtualType.PAULI
-            propagate_node = None
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming == {VirtualType.PAULI}
-            and op_name in PAULI_PAST_CLIFFORD_LOOKUP_TABLES
-        ):
-            combined_register_type = VirtualType.PAULI
-            propagate_node = PauliPastCliffordNode(
-                op_name,
-                combined_register_name,
-                np.array(list(pre_propagate.partition), dtype=np.intp),
-            )
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming <= {VirtualType.C1, VirtualType.PAULI}
-            and VirtualType.C1 in incoming
-            and op_name in C1_PAST_CLIFFORD_INVARIANTS
-        ):
-            combined_register_type = VirtualType.C1
-            propagate_node = None
-        elif (
-            mode is InstructionMode.PROPAGATE
-            and incoming <= {VirtualType.C1, VirtualType.PAULI}
-            and VirtualType.C1 in incoming
-            and op_name in C1_PAST_CLIFFORD_LOOKUP_TABLES
-        ):
-            combined_register_type = VirtualType.C1
-            propagate_node = C1PastCliffordNode(
-                op_name,
-                combined_register_name,
-                np.array(list(pre_propagate.partition), dtype=np.intp),
-            )
+            propagate_group = None
+        elif mode is InstructionMode.PROPAGATE:
+            propagate_group = _match_propagate_group(op_name, mode, incoming)
+            combined_register_type = propagate_group.group_type
         else:
             raise SamplexBuildError(
                 f"Encountered unsupported {op_name} propagation with mode {mode} and "
                 f"incoming virtual gates {incoming}."
             )
 
-        combine_node_idx = self.add_combine_node(
+        # Add combine/slice node (may be skipped for trivial slices).
+        combine_node_idx, actual_register_name = self.add_combine_node(
             samplex,
             pre_propagate_idx,
             pre_nodes_to_nodes,
@@ -1532,18 +1543,51 @@ class PreSamplex:
             combined_register_type,
         )
 
+        # Create the propagation node using the actual register name.
+        if mode is InstructionMode.MULTIPLY and pre_propagate.operation.num_qubits == 1:
+            if pre_propagate.operation.is_parameterized():
+                param_idxs = [
+                    samplex.append_parameter_expression(param) for _, param in pre_propagate.params
+                ]
+                if pre_propagate.direction is Direction.LEFT:
+                    propagate_node = RightU2ParametricMultiplicationNode(
+                        op_name, actual_register_name, param_idxs
+                    )
+                else:
+                    propagate_node = LeftU2ParametricMultiplicationNode(
+                        op_name, actual_register_name, param_idxs
+                    )
+            else:
+                if op_name in SUPPORTED_1Q_FRACTIONAL_GATES:
+                    register = get_fractional_gate_register(
+                        op_name, np.array(pre_propagate.bounded_params)
+                    )
+                else:
+                    register = U2Register(np.array(pre_propagate.operation).reshape(1, 1, 2, 2))
+                if pre_propagate.direction is Direction.LEFT:
+                    propagate_node = RightMultiplicationNode(register, actual_register_name)
+                else:
+                    propagate_node = LeftMultiplicationNode(register, actual_register_name)
+        else:
+            if op_name in propagate_group.invariants:
+                propagate_node = None
+            else:
+                propagate_node = propagate_group.node_class(
+                    op_name,
+                    actual_register_name,
+                    np.array(list(pre_propagate.partition), dtype=np.intp),
+                )
+
         if propagate_node is not None:
             node_idx = samplex.add_node(propagate_node)
             samplex.add_edge(combine_node_idx, node_idx)
         else:
-            # TODO: It should be possible to not add a slice node in this case, if there is
-            # a single predecessor.
             node_idx = combine_node_idx
 
         pre_nodes_to_nodes[pre_propagate_idx] = node_idx
 
         for pre_successor_idx in self.graph.successor_indices(pre_propagate_idx):
-            register_names[pre_successor_idx][pre_propagate_idx] = combined_register_name
+            register_names[pre_successor_idx][pre_propagate_idx] = actual_register_name
 
     def add_collect_node(
         self,
@@ -1568,7 +1612,7 @@ class PreSamplex:
         pre_node = cast(PreCollect, self.graph[pre_node_idx])
         all_subsystems = pre_node.subsystems
         combined_name = f"collect_{order[pre_node_idx]}"
-        combine_node_idx = self.add_combine_node(
+        combine_node_idx, actual_register_name = self.add_combine_node(
             samplex,
             pre_node_idx,
             pre_nodes_to_nodes,
@@ -1581,7 +1625,7 @@ class PreSamplex:
         collect = CollectTemplateValues(
             "parameter_values",
             pre_node.param_idxs,
-            combined_name,
+            actual_register_name,
             VirtualType.U2,
             np.arange(len(all_subsystems)),
             pre_node.synth,
@@ -1611,7 +1655,7 @@ class PreSamplex:
         """
         pre_node = cast(PreZ2Collect, self.graph[pre_node_idx])
         combined_name = f"z2_collect_{order[pre_node_idx]}"
-        combine_node_idx = self.add_combine_node(
+        combine_node_idx, actual_register_name = self.add_combine_node(
             samplex,
             pre_node_idx,
             pre_nodes_to_nodes,
@@ -1623,7 +1667,7 @@ class PreSamplex:
 
         for reg_name, clbit_idxs in pre_node.clbit_idxs.items():
             z2collect = CollectZ2ToOutputNode(
-                combined_name,
+                actual_register_name,
                 np.array(pre_node.subsystems_idxs[reg_name]),
                 f"measurement_flips.{reg_name}",
                 clbit_idxs,

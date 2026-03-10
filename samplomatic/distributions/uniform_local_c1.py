@@ -78,6 +78,6 @@ class UniformLocalC1(Distribution):
 
     def __repr__(self):
         return (
-            f"{type(self).__name__}(<num_subsystems={self.num_subsystems}, "
-            f"gate_name={self.gate_name}, register_type={self.register_type}>)"
+            f"{type(self).__name__}(num_subsystems={self.num_subsystems}, "
+            f"gate_name={self.gate_name})"
         )
