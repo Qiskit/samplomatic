@@ -16,6 +16,7 @@ from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from enum import Enum, auto
+from functools import lru_cache
 from itertools import count
 from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
@@ -150,8 +151,9 @@ _PROPAGATE_GROUPS: tuple[_PropagateGroup, ...] = (
 )
 
 
+@lru_cache
 def _match_propagate_group(
-    op_name: str, mode: InstructionMode, incoming: set[VirtualType]
+    op_name: str, mode: InstructionMode, incoming: frozenset[VirtualType]
 ) -> _PropagateGroup:
     """Find the propagate group matching the given operation, mode, and incoming register types."""
     for group in _PROPAGATE_GROUPS:
@@ -1524,7 +1526,7 @@ class PreSamplex:
             combined_register_type = VirtualType.U2
             propagate_group = None
         elif mode is InstructionMode.PROPAGATE:
-            propagate_group = _match_propagate_group(op_name, mode, incoming)
+            propagate_group = _match_propagate_group(op_name, mode, frozenset(incoming))
             combined_register_type = propagate_group.group_type
         else:
             raise SamplexBuildError(
