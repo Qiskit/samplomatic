@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1773182075854,
+  "lastUpdate": 1773186758242,
   "repoUrl": "https://github.com/Qiskit/samplomatic",
   "entries": {
     "Benchmark": [
@@ -87,6 +87,93 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.08978960204355697",
             "extra": "mean: 2.235658737799997 sec\nrounds: 5"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ian.hincks@gmail.com",
+            "name": "Ian Hincks",
+            "username": "ihincks"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a468126d394c8c00f839611990fc6ef2f7750def",
+          "message": "Update backfill to properly purge changes between installs (#326)\n\n## Summary\n\n<!--\nFixes/Closes/Part of: #...\n-->\n\n## Details and comments",
+          "timestamp": "2026-03-10T19:45:48-04:00",
+          "tree_id": "f0e6f1ac5a0d114684595d49b272b626265b7943",
+          "url": "https://github.com/Qiskit/samplomatic/commit/a468126d394c8c00f839611990fc6ef2f7750def"
+        },
+        "date": 1773186755803,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
+            "value": 0.20116807000653986,
+            "unit": "iter/sec",
+            "range": "stddev: 0.07914911698205604",
+            "extra": "mean: 4.970967808 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
+            "value": 0.13491669191671002,
+            "unit": "iter/sec",
+            "range": "stddev: 0.06821220367150499",
+            "extra": "mean: 7.411981318200003 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
+            "value": 0.08126449548490094,
+            "unit": "iter/sec",
+            "range": "stddev: 0.07281848766285302",
+            "extra": "mean: 12.305496933600006 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
+            "value": 0.08081243535301852,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0853505756092796",
+            "extra": "mean: 12.374333178200004 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
+            "value": 1.6361996496519635,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0030213624115173533",
+            "extra": "mean: 611.1723591999976 msec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
+            "value": 0.9134175850093538,
+            "unit": "iter/sec",
+            "range": "stddev: 0.06940116987987192",
+            "extra": "mean: 1.0947895205999998 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_serialization.py::test_serialized_size[100-5000]",
+            "value": 1.630780777921418,
+            "unit": "iter/sec",
+            "range": "stddev: 0.003731613575464637",
+            "extra": "mean: 613.2032052000227 msec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[no_modification-96-5000]",
+            "value": 0.5257298406555231,
+            "unit": "iter/sec",
+            "range": "stddev: 0.02045106279316199",
+            "extra": "mean: 1.9021176327999911 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[individual_modification-96-5000]",
+            "value": 0.488254593158779,
+            "unit": "iter/sec",
+            "range": "stddev: 0.017159239728874776",
+            "extra": "mean: 2.0481118129999913 sec\nrounds: 5"
           }
         ]
       }
