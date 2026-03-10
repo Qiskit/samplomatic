@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samplomatic Benchmarks</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+  <script src="data.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 2rem;
+    }
+    h1 { margin-bottom: 0.5rem; }
+    .subtitle { color: #666; margin-bottom: 2rem; }
+    .chart-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .chart-container h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #555;
+      font-family: monospace;
+    }
+    canvas { width: 100% !important; }
+  </style>
+</head>
+<body>
+  <h1>Samplomatic Benchmarks</h1>
+  <p class="subtitle">Performance tracking across commits. Dashed lines mark release tags.</p>
+  <div id="charts"></div>
+
+  <script>
+    (async function() {
+      const data = window.BENCHMARK_DATA;
+      if (!data || !data.entries || !data.entries["Benchmark"]) {
+        document.getElementById("charts").innerHTML = "<p>No benchmark data found.</p>";
+        return;
+      }
+
+      const entries = data.entries["Benchmark"];
+
+      // Collect all unique benchmark names
+      const benchNames = new Set();
+      for (const entry of entries) {
+        for (const bench of entry.benches) {
+          benchNames.add(bench.name);
+        }
+      }
+
+      // Fetch release tags from GitHub API (best-effort)
+      let tagsBySha = {};
+      try {
+        const repoUrl = data.repoUrl || "";
+        const match = repoUrl.match(/github\.com\/([^/]+\/[^/]+)/);
+        if (match) {
+          const repo = match[1];
+          let allTags = [];
+          let page = 1;
+          // Paginate to get all tags
+          while (true) {
+            const resp = await fetch(
+              `https://api.github.com/repos/${repo}/tags?per_page=100&page=${page}`
+            );
+            if (!resp.ok) break;
+            const tags = await resp.json();
+            if (tags.length === 0) break;
+            allTags = allTags.concat(tags);
+            page++;
+          }
+          for (const tag of allTags) {
+            tagsBySha[tag.commit.sha] = tag.name;
+          }
+        }
+      } catch (e) {
+        // Graceful degradation: charts render without version markers
+        console.warn("Could not fetch tags:", e);
+      }
+
+      const colors = [
+        "#2563eb", "#dc2626", "#059669", "#d97706",
+        "#7c3aed", "#db2777", "#0891b2", "#65a30d",
+      ];
+
+      const chartsDiv = document.getElementById("charts");
+
+      let colorIdx = 0;
+      for (const benchName of [...benchNames].sort()) {
+        const container = document.createElement("div");
+        container.className = "chart-container";
+        const title = document.createElement("h2");
+        title.textContent = benchName;
+        container.appendChild(title);
+        const canvas = document.createElement("canvas");
+        container.appendChild(canvas);
+        chartsDiv.appendChild(container);
+
+        const labels = [];
+        const values = [];
+        const commitIds = [];
+
+        for (const entry of entries) {
+          const bench = entry.benches.find(b => b.name === benchName);
+          if (bench) {
+            const shortSha = entry.commit.id.substring(0, 7);
+            const date = entry.date
+              ? new Date(entry.date).toLocaleDateString()
+              : shortSha;
+            labels.push(`${date} (${shortSha})`);
+            values.push(bench.value);
+            commitIds.push(entry.commit.id);
+          }
+        }
+
+        // Build annotation lines for release tags
+        const annotations = {};
+        for (let i = 0; i < commitIds.length; i++) {
+          const tagName = tagsBySha[commitIds[i]];
+          if (tagName) {
+            annotations[`tag-${i}`] = {
+              type: "line",
+              xMin: i,
+              xMax: i,
+              borderColor: "rgba(0, 0, 0, 0.3)",
+              borderWidth: 1,
+              borderDash: [4, 4],
+              label: {
+                display: true,
+                content: tagName,
+                position: "start",
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                color: "#fff",
+                font: { size: 10 },
+                padding: 3,
+              },
+            };
+          }
+        }
+
+        const color = colors[colorIdx % colors.length];
+        colorIdx++;
+
+        new Chart(canvas, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [{
+              label: "iter/sec",
+              data: values,
+              borderColor: color,
+              backgroundColor: color + "20",
+              fill: true,
+              tension: 0.1,
+              pointRadius: 3,
+            }],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                ticks: { maxRotation: 45, autoSkip: true, maxTicksLimit: 20 },
+              },
+              y: {
+                beginAtZero: false,
+                title: { display: true, text: "iter/sec" },
+              },
+            },
+            plugins: {
+              annotation: { annotations: annotations },
+              tooltip: {
+                callbacks: {
+                  afterBody: function(ctx) {
+                    const idx = ctx[0].dataIndex;
+                    const tagName = tagsBySha[commitIds[idx]];
+                    return tagName ? `Release: ${tagName}` : "";
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
