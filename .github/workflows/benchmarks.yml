@@ -32,6 +32,7 @@ jobs:
           output-file-path: benchmark-results.json
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: benchmarks
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           alert-threshold: "110%"
           comment-on-alert: true
