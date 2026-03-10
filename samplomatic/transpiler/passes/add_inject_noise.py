@@ -88,12 +88,13 @@ class AddInjectNoise(TransformationPass):
         if pair in self._BOX_KEYS:
             return self._BOX_KEYS[pair]
 
-        full_box_hash = hex(hash(pair)).split("x", maxsplit=1)[-1]
+        full_box_hash = str(hash(box_key))
+        site = "B" if self.site == "before" else "A"
         for key_length in range(3, 16):
-            if (box_hash := f"{self.prefix_ref}{full_box_hash[:key_length]}") not in self._REFS:
-                self._BOX_KEYS[pair] = box_hash
-                self._REFS.add(box_hash)
-                return box_hash
+            if (bhash := f"{self.prefix_ref}{full_box_hash[:key_length]}{site}") not in self._REFS:
+                self._BOX_KEYS[pair] = bhash
+                self._REFS.add(bhash)
+                return bhash
 
         raise RuntimeError(
             "Could not resolve box hash collision: specify a manual reference counter."
