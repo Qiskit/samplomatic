@@ -23,7 +23,8 @@ jobs:
           for TAG in $(git tag --sort=creatordate); do
             echo "=== Benchmarking $TAG ==="
             git checkout "$TAG" -- . 2>/dev/null || { echo "Skipping $TAG (checkout failed)"; continue; }
-            pip install -e ".[dev,vis]" 2>/dev/null || { echo "Skipping $TAG (install failed)"; git checkout main -- .; continue; }
+            git clean -fd --exclude=results 2>/dev/null
+            pip install --force-reinstall --no-deps -e . 2>/dev/null && pip install -e ".[dev,vis]" 2>/dev/null || { echo "Skipping $TAG (install failed)"; git checkout main -- .; continue; }
             if [ ! -d "test/performance" ]; then
               echo "Skipping $TAG (no test/performance/)"
               git checkout main -- .
