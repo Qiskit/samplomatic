@@ -12,36 +12,31 @@
 
 """Assemble backfilled pytest-benchmark results into ``data.js`` for github-action-benchmark."""
 
+import argparse
 import json
 import shutil
 import subprocess
 from pathlib import Path
 
+PREFIX = "window.BENCHMARK_DATA = "
 
-def _git_info(tag: str) -> dict:
-    """Return commit metadata for a git tag."""
+
+def _git_info(ref: str) -> dict:
+    """Return commit metadata for a git ref (tag or SHA)."""
     fmt = "%H%n%s%n%aI%n%an%n%ae"
     result = subprocess.run(
-        ["git", "log", "-1", f"--format={fmt}", tag],
+        ["git", "log", "-1", f"--format={fmt}", ref],
         capture_output=True,
         text=True,
         check=True,
     )
     lines = result.stdout.strip().split("\n")
     sha, message, timestamp, author_name, author_email = lines
-    repo_url = subprocess.run(
-        ["git", "remote", "get-url", "origin"], capture_output=True, text=True, check=True
-    ).stdout.strip()
-    # Normalize git@ URLs to https
-    if repo_url.startswith("git@"):
-        repo_url = repo_url.replace(":", "/").replace("git@", "https://")
-    if repo_url.endswith(".git"):
-        repo_url = repo_url[:-4]
     return {
         "id": sha,
         "message": message,
         "timestamp": timestamp,
-        "url": f"{repo_url}/commit/{sha}",
+        "url": f"{_get_repo_url()}/commit/{sha}",
         "author": {"name": author_name, "email": author_email, "username": ""},
         "committer": {"name": author_name, "email": author_email, "username": ""},
     }
@@ -75,39 +70,93 @@ def _convert_benchmarks(data: dict) -> list[dict]:
     return results
 
 
+def _get_repo_url() -> str:
+    """Return the normalized HTTPS repo URL."""
+    repo_url = subprocess.run(
+        ["git", "remote", "get-url", "origin"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    if repo_url.startswith("git@"):
+        repo_url = repo_url.replace(":", "/").replace("git@", "https://")
+    if repo_url.endswith(".git"):
+        repo_url = repo_url[:-4]
+    return repo_url
+
+
+def _load_existing_data() -> list[dict]:
+    """Fetch existing benchmark entries from gh-pages, if any."""
+    result = subprocess.run(
+        ["git", "show", "origin/gh-pages:benchmarks/data.js"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return []
+    text = result.stdout.strip()
+    if not text.startswith(PREFIX):
+        return []
+    json_str = text[len(PREFIX) :]
+    if json_str.endswith(";"):
+        json_str = json_str[:-1]
+    try:
+        data = json.loads(json_str)
+    except (json.JSONDecodeError, ValueError):
+        return []
+    return data.get("entries", {}).get("Benchmark", [])
+
+
+def _discover_refs(mode: str) -> list[str]:
+    """Return ordered list of refs to look for in results/."""
+    if mode == "commits":
+        results_dir = Path("results")
+        shas = [p.stem for p in results_dir.glob("*.json")]
+        if not shas:
+            return []
+        result = subprocess.run(
+            ["git", "log", "--format=%H", "--no-walk", "--sort=committerdate"] + shas,
+            capture_output=True,
+            text=True,
+        )
+        return [line for line in result.stdout.strip().split("\n") if line]
+    else:
+        return (
+            subprocess.run(
+                ["git", "tag", "--sort=creatordate", "--column=never"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            .stdout.strip()
+            .split("\n")
+        )
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["tags", "commits"], default="tags")
+    args = parser.parse_args()
+
     results_dir = Path("results")
     output_dir = Path("benchmarks-output")
     output_dir.mkdir(exist_ok=True)
 
-    # Discover tags sorted by creation date (same order used in backfill loop)
-    tag_order = (
-        subprocess.run(
-            ["git", "tag", "--sort=creatordate", "--column=never"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        .stdout.strip()
-        .split("\n")
-    )
+    refs = _discover_refs(args.mode)
 
-    # Build ordered list of entries from available result files
-    entries = []
-    for tag in tag_order:
-        result_file = results_dir / f"{tag}.json"
+    # Build new entries from result files
+    new_entries = []
+    for ref in refs:
+        result_file = results_dir / f"{ref}.json"
         if not result_file.exists():
             continue
         try:
             with open(result_file) as f:
                 data = json.load(f)
         except (json.JSONDecodeError, ValueError):
-            print(f"Skipping {tag} (invalid JSON)")
+            print(f"Skipping {ref} (invalid JSON)")
             continue
-        commit = _git_info(tag)
+        commit = _git_info(ref)
         benches = _convert_benchmarks(data)
         if benches:
-            entries.append(
+            new_entries.append(
                 {
                     "commit": commit,
                     "date": commit["timestamp"],
@@ -116,30 +165,37 @@ def main():
                 }
             )
 
-    # Get repo URL for data.js metadata
-    repo_url = subprocess.run(
-        ["git", "remote", "get-url", "origin"], capture_output=True, text=True, check=True
-    ).stdout.strip()
-    if repo_url.startswith("git@"):
-        repo_url = repo_url.replace(":", "/").replace("git@", "https://")
-    if repo_url.endswith(".git"):
-        repo_url = repo_url[:-4]
+    # Merge with existing data from gh-pages, deduplicating by commit SHA
+    existing_entries = _load_existing_data()
+    existing_shas = {e["commit"]["id"] for e in existing_entries}
+    new_shas = {e["commit"]["id"] for e in new_entries}
+
+    merged = [e for e in existing_entries if e["commit"]["id"] not in new_shas] + new_entries
+    # Sort by timestamp
+    merged.sort(key=lambda e: e.get("date", ""))
+
+    print(
+        f"Existing: {len(existing_entries)}, "
+        f"new: {len(new_entries)}, "
+        f"replaced: {len(existing_shas & new_shas)}, "
+        f"merged total: {len(merged)}"
+    )
 
     data_js = {
         "lastUpdate": 0,
-        "repoUrl": repo_url,
-        "entries": {"Benchmark": entries},
+        "repoUrl": _get_repo_url(),
+        "entries": {"Benchmark": merged},
     }
 
     with open(output_dir / "data.js", "w") as f:
-        f.write("window.BENCHMARK_DATA = ")
+        f.write(PREFIX)
         json.dump(data_js, f, indent=2)
         f.write(";\n")
 
     # Copy the custom index.html
     shutil.copy(".github/benchmark-index.html", output_dir / "index.html")
 
-    print(f"Assembled {len(entries)} benchmark entries into {output_dir / 'data.js'}")
+    print(f"Wrote {len(merged)} benchmark entries to {output_dir / 'data.js'}")
 
 
 if __name__ == "__main__":
