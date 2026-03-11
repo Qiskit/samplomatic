@@ -65,8 +65,10 @@ jobs:
               --seed=12345 || { echo "Skipping $LABEL (benchmarks failed)"; rm -f "${RESULTS_DIR}/${REF}.json"; }
           done
           git checkout main
+      - name: Fetch gh-pages
+        run: git fetch origin gh-pages || true
       - name: Assemble data.js
-        run: python .github/scripts/assemble_benchmark_data.py --mode=${{ inputs.mode }}
+        run: python .github/scripts/assemble_benchmark_data.py
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
