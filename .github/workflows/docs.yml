@@ -89,6 +89,7 @@ jobs:
           clean-exclude: |
             stable/*
             dev/*
+            benchmarks/*
       - name: Deploy to stable
         uses: JamesIves/github-pages-deploy-action@v4
         with:
