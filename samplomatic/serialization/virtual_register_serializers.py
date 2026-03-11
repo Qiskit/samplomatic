@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Specification Serializers"""
+"""VirtualRegister Serializers"""
 
 from ..virtual_registers import C1Register, PauliRegister, U2Register, Z2Register
 from .type_serializer import DataSerializer, TypeSerializer

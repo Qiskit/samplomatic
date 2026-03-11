@@ -20,6 +20,7 @@ from .haar_u2 import HaarU2
 from .uniform_c1 import UniformC1
 from .uniform_local_c1 import UniformLocalC1
 from .uniform_pauli import UniformPauli
+from .uniform_pauli_subset import UniformPauliSubset
 
 GROUP_TO_DISTRIBUTION: dict[_GroupMode, type[Distribution]] = _FrozenDict(
     {

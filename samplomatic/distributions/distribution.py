@@ -16,10 +16,11 @@ import abc
 
 from numpy.random import Generator
 
+from ..serializable import Serializable
 from ..virtual_registers import VirtualRegister, VirtualType
 
 
-class Distribution(abc.ABC):
+class Distribution(metaclass=Serializable):
     """A distribution over virtual gates.
 
     Args:

@@ -63,6 +63,12 @@ def test_basis_change_unsupported_register_type():
         BasisChangeSerializer.serialize(LOCAL_CLIFFORD, 1)
 
 
+def test_twirl_sampling_unsupported_distribution_type():
+    node = TwirlSamplingNode("lhs", "rhs", BalancedUniformPauli(10))
+    with pytest.raises(SerializationError, match="Cannot serialive"):
+        TwirlSamplingNodeSerializer.serialize(node, 1)
+
+
 @pytest.mark.parametrize("basis_change", [MEAS_PAULI_BASIS, PREP_PAULI_BASIS])
 @pytest.mark.parametrize("ssv", ChangeBasisNodeSerializer.SSVS)
 def test_change_basis_serializer_round_trip(basis_change, ssv):
