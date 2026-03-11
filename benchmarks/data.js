@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1773253521544,
+  "lastUpdate": 1773253836191,
   "repoUrl": "https://github.com/Qiskit/samplomatic",
   "entries": {
     "Benchmark": [
@@ -427,6 +427,93 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.0337814691242858",
             "extra": "mean: 2.3330901156000095 sec\nrounds: 5"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ian.hincks@gmail.com",
+            "name": "Ian Hincks",
+            "username": "ihincks"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b2c40508ed0abd3e3b75836e2b5a411efad4c273",
+          "message": "Fix AddInjectNoise/BoxKey parallelization bugs (#323)\n\n## Summary\n\nMade `BoxKey` hashing deterministic across Python processes by using\nSHA-256 instead of the built-in `hash()`, which is randomized by\n`PYTHONHASHSEED`. This caused `AddInjectNoise` to generate different\n`ref` names for identical boxes across runs, since it derived short hash\nkeys from `BoxKey.__hash__`. Also fixed a bug in\n`AddInjectNoise._get_ref()` where the computed ref was not being cached\ncorrectly. It is expected that these bugs were only visible when this\npass was being run in parallel by the qiskit pass manager.\n\n\n## Details and comments\n\nI found this because the `test_consistent_naming()` test of\nAddInjectNoise was randomly failing for me locally.",
+          "timestamp": "2026-03-11T15:53:30-02:30",
+          "tree_id": "f61e8f356ad795a0fb4e355600b22cb82c0bd08a",
+          "url": "https://github.com/Qiskit/samplomatic/commit/b2c40508ed0abd3e3b75836e2b5a411efad4c273"
+        },
+        "date": 1773253833813,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
+            "value": 0.1859978379488563,
+            "unit": "iter/sec",
+            "range": "stddev: 0.034497639740394145",
+            "extra": "mean: 5.376406580999986 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
+            "value": 0.13765045510099722,
+            "unit": "iter/sec",
+            "range": "stddev: 0.02212918592781107",
+            "extra": "mean: 7.264778015200005 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
+            "value": 0.08067189529673607,
+            "unit": "iter/sec",
+            "range": "stddev: 0.1150405609963219",
+            "extra": "mean: 12.39589074139999 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
+            "value": 0.08348075760335251,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0519090756008442",
+            "extra": "mean: 11.97880839500001 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
+            "value": 1.5740045671108784,
+            "unit": "iter/sec",
+            "range": "stddev: 0.002236064289502702",
+            "extra": "mean: 635.3221717999986 msec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
+            "value": 0.8380191793085057,
+            "unit": "iter/sec",
+            "range": "stddev: 0.09848346567724822",
+            "extra": "mean: 1.1932901116000152 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_serialization.py::test_serialized_size[100-5000]",
+            "value": 1.5855363060429988,
+            "unit": "iter/sec",
+            "range": "stddev: 0.0013537179710673985",
+            "extra": "mean: 630.7014202000119 msec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[no_modification-96-5000]",
+            "value": 0.46796274951298616,
+            "unit": "iter/sec",
+            "range": "stddev: 0.031667342255086404",
+            "extra": "mean: 2.1369222251999984 sec\nrounds: 5"
+          },
+          {
+            "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[individual_modification-96-5000]",
+            "value": 0.43735574386617554,
+            "unit": "iter/sec",
+            "range": "stddev: 0.031859403305954104",
+            "extra": "mean: 2.2864681990000006 sec\nrounds: 5"
           }
         ]
       }
