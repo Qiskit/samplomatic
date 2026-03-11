@@ -164,8 +164,21 @@ def main():
     new_shas = {e["commit"]["id"] for e in new_entries}
 
     merged = [e for e in existing_entries if e["commit"]["id"] not in new_shas] + new_entries
+
     # Sort by timestamp
-    merged.sort(key=lambda e: e.get("date", ""))
+    def _sort_key(entry):
+        d = entry.get("date", 0)
+        if isinstance(d, int | float):
+            return d
+        # ISO date string — parse to epoch for consistent comparison
+        from datetime import datetime
+
+        try:
+            return datetime.fromisoformat(d).timestamp()
+        except (ValueError, TypeError):
+            return 0
+
+    merged.sort(key=_sort_key)
 
     print(
         f"Existing: {len(existing_entries)}, "
