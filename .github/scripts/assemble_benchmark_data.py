@@ -182,8 +182,8 @@ def main():
 
     with open(output_dir / "data.js", "w") as f:
         f.write(PREFIX)
-        json.dump(data_js, f, indent=2)
-        f.write(";\n")
+        json.dump(data_js, f)
+        f.write("\n")
 
     # Copy the custom index.html
     shutil.copy(".github/benchmark-index.html", output_dir / "index.html")
