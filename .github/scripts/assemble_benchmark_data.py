@@ -10,9 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Assemble backfilled pytest-benchmark results into ``data.js`` for github-action-benchmark."""
+"""Assemble pytest-benchmark results into ``data.js`` for github-action-benchmark."""
 
-import argparse
 import json
 import shutil
 import subprocess
@@ -104,42 +103,15 @@ def _load_existing_data() -> list[dict]:
     return data.get("entries", {}).get("Benchmark", [])
 
 
-def _discover_refs(mode: str) -> list[str]:
-    """Return ordered list of refs to look for in results/."""
-    if mode == "commits":
-        results_dir = Path("results")
-        shas = [p.stem for p in results_dir.glob("*.json")]
-        return shas  # ordering doesn't matter; entries are sorted by timestamp after assembly
-    else:
-        return (
-            subprocess.run(
-                ["git", "tag", "--sort=creatordate", "--column=never"],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            .stdout.strip()
-            .split("\n")
-        )
-
-
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["tags", "commits"], default="tags")
-    args = parser.parse_args()
-
     results_dir = Path("results")
     output_dir = Path("benchmarks-output")
     output_dir.mkdir(exist_ok=True)
 
-    refs = _discover_refs(args.mode)
-
     # Build new entries from result files
     new_entries = []
-    for ref in refs:
-        result_file = results_dir / f"{ref}.json"
-        if not result_file.exists():
-            continue
+    for result_file in sorted(results_dir.glob("*.json")):
+        ref = result_file.stem
         try:
             with open(result_file) as f:
                 data = json.load(f)
@@ -160,6 +132,8 @@ def main():
 
     # Merge with existing data from gh-pages, deduplicating by commit SHA
     existing_entries = _load_existing_data()
+    if not existing_entries:
+        print("Warning: no existing data found on gh-pages (first run or fetch issue)")
     existing_shas = {e["commit"]["id"] for e in existing_entries}
     new_shas = {e["commit"]["id"] for e in new_entries}
 
