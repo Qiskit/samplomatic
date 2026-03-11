@@ -21,13 +21,31 @@ from .distribution import Distribution
 class UniformPauliSubset(Distribution):
     """The uniform distribution over a subset of virtual Pauli gates.
 
+    Here, ``paulis`` is an array with elements corresponding to Paulis as enumerated in
+    :class:`~.PauliRegister`. The length of an individual Pauli should be a divisor of
+    ``num_subsystems``. The output :class:`~.PauliRegister` is partitioned
+    contiguously such that each part samples independently from ``paulis``.
+
+    .. plot::
+        :include-source:
+        :context:
+
+        >>> import numpy as np
+        >>> from samplomatic.distributions import UniformPauliSubset
+        >>>
+        >>> # Create a distribution that samples a random phase on each qubit
+        >>> z_distribution = UniformPauliSubset(3, np.array([[0], [1]]))
+        >>>
+        >>> # Create a correlated phase distribution
+        >>> z_corr_distribution = UniformPauliSubset(3, np.array([[0, 0, 0], [1, 1, 1]]))
+
     Args:
         num_subsystems: The number of subsystems this distribution samples.
         paulis: The subset of Paulis to sample from.
 
     Raises:
         ValueError: If the number of subsystems is not divisible by the length of an element of
-        'paulis'.
+            ``paulis``.
     """
 
     def __init__(self, num_subsystems: int, paulis: np.ndarray):
