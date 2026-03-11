@@ -64,7 +64,7 @@ jobs:
               --benchmark-json="${RESULTS_DIR}/${REF}.json" \
               --seed=12345 || { echo "Skipping $LABEL (benchmarks failed)"; rm -f "${RESULTS_DIR}/${REF}.json"; }
           done
-          git checkout main
+          git checkout ${{ github.sha }}
       - name: Fetch gh-pages
         run: git fetch origin gh-pages || true
       - name: Assemble data.js
