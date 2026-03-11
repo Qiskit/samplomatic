@@ -25,45 +25,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[5000-96]",
-            "value": 0.14313880436621457,
+            "value": 0.14158239317531057,
             "unit": "iter/sec",
-            "range": "stddev: 0.16722779040070004",
-            "extra": "mean: 6.99 sec\nrounds: 5"
+            "range": "stddev: 0.18341680218912437",
+            "extra": "mean: 7.06 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[1650-5000-100]",
-            "value": 0.1358138403779566,
+            "value": 0.13492560734346581,
             "unit": "iter/sec",
-            "range": "stddev: 0.058629652608656026",
-            "extra": "mean: 7.36 sec\nrounds: 5"
+            "range": "stddev: 0.07310469135700447",
+            "extra": "mean: 7.41 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-1650-5000-100]",
-            "value": 0.11100859547491868,
+            "value": 0.11081390222170155,
             "unit": "iter/sec",
-            "range": "stddev: 0.01808947966104024",
-            "extra": "mean: 9.01 sec\nrounds: 5"
+            "range": "stddev: 0.07188402045971316",
+            "extra": "mean: 9.02 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-1650-5000-100]",
-            "value": 0.11055837176016624,
+            "value": 0.11156689730288522,
             "unit": "iter/sec",
-            "range": "stddev: 0.06514091840701275",
-            "extra": "mean: 9.04 sec\nrounds: 5"
+            "range": "stddev: 0.065274660303482",
+            "extra": "mean: 8.96 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[5000-100]",
-            "value": 8.915136715537797,
+            "value": 9.178862920141828,
             "unit": "iter/sec",
-            "range": "stddev: 0.03681733786892988",
-            "extra": "mean: 112.17 msec\nrounds: 11"
+            "range": "stddev: 0.033334540839670454",
+            "extra": "mean: 108.95 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[5000-100]",
-            "value": 4.7341107675309075,
+            "value": 4.169033440847924,
             "unit": "iter/sec",
-            "range": "stddev: 0.03487792279390053",
-            "extra": "mean: 211.23 msec\nrounds: 6"
+            "range": "stddev: 0.05255251683689332",
+            "extra": "mean: 239.86 msec\nrounds: 5"
           }
         ]
       },
@@ -89,45 +89,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.14418361274495606,
+            "value": 0.13531448218227812,
             "unit": "iter/sec",
-            "range": "stddev: 0.04555010891939101",
-            "extra": "mean: 6.94 sec\nrounds: 5"
+            "range": "stddev: 0.1298389684896437",
+            "extra": "mean: 7.39 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13510267127043868,
+            "value": 0.13521523816613623,
             "unit": "iter/sec",
-            "range": "stddev: 0.05094598546210305",
+            "range": "stddev: 0.047242182694310866",
             "extra": "mean: 7.40 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.10950495262079003,
+            "value": 0.10942517122147007,
             "unit": "iter/sec",
-            "range": "stddev: 0.05839524092349505",
-            "extra": "mean: 9.13 sec\nrounds: 5"
+            "range": "stddev: 0.08371602644028076",
+            "extra": "mean: 9.14 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.10031665145646532,
+            "value": 0.10101681431207953,
             "unit": "iter/sec",
-            "range": "stddev: 0.02108544735950017",
-            "extra": "mean: 9.97 sec\nrounds: 5"
+            "range": "stddev: 0.0457818594127461",
+            "extra": "mean: 9.90 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 8.889002280234301,
+            "value": 7.06957652467341,
             "unit": "iter/sec",
-            "range": "stddev: 0.03625908073584268",
-            "extra": "mean: 112.50 msec\nrounds: 11"
+            "range": "stddev: 0.04486794955721923",
+            "extra": "mean: 141.45 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 5.16846159705988,
+            "value": 4.992531613712471,
             "unit": "iter/sec",
-            "range": "stddev: 0.0022601296455139275",
-            "extra": "mean: 193.48 msec\nrounds: 5"
+            "range": "stddev: 0.0013024461221170795",
+            "extra": "mean: 200.30 msec\nrounds: 6"
           }
         ]
       },
@@ -153,45 +153,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.14294054352659863,
+            "value": 0.1378478617754943,
             "unit": "iter/sec",
-            "range": "stddev: 0.10726854999830569",
-            "extra": "mean: 7.00 sec\nrounds: 5"
+            "range": "stddev: 0.22363187910842905",
+            "extra": "mean: 7.25 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.1366212220765992,
+            "value": 0.1343007877814384,
             "unit": "iter/sec",
-            "range": "stddev: 0.03177542396367562",
-            "extra": "mean: 7.32 sec\nrounds: 5"
+            "range": "stddev: 0.05082213161435474",
+            "extra": "mean: 7.45 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13189519953780332,
+            "value": 0.12900599825936038,
             "unit": "iter/sec",
-            "range": "stddev: 0.048121235611882675",
-            "extra": "mean: 7.58 sec\nrounds: 5"
+            "range": "stddev: 0.0741420820807559",
+            "extra": "mean: 7.75 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.13038070166299695,
+            "value": 0.12981788699148833,
             "unit": "iter/sec",
-            "range": "stddev: 0.06098428477411048",
-            "extra": "mean: 7.67 sec\nrounds: 5"
+            "range": "stddev: 0.06589164051807554",
+            "extra": "mean: 7.70 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 7.9123907127193736,
+            "value": 7.928174407014138,
             "unit": "iter/sec",
-            "range": "stddev: 0.03900501764080201",
-            "extra": "mean: 126.38 msec\nrounds: 11"
+            "range": "stddev: 0.03954368518614909",
+            "extra": "mean: 126.13 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 5.0623526943951545,
+            "value": 5.0471995002008265,
             "unit": "iter/sec",
-            "range": "stddev: 0.0014338738221893249",
-            "extra": "mean: 197.54 msec\nrounds: 6"
+            "range": "stddev: 0.001316351662226363",
+            "extra": "mean: 198.13 msec\nrounds: 6"
           }
         ]
       },
@@ -217,45 +217,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.14559675266398175,
+            "value": 0.14256250131062653,
             "unit": "iter/sec",
-            "range": "stddev: 0.0423384883679152",
-            "extra": "mean: 6.87 sec\nrounds: 5"
+            "range": "stddev: 0.08988504664848786",
+            "extra": "mean: 7.01 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13803804900384212,
+            "value": 0.1368687056566257,
             "unit": "iter/sec",
-            "range": "stddev: 0.029520258516438334",
-            "extra": "mean: 7.24 sec\nrounds: 5"
+            "range": "stddev: 0.044922000131526106",
+            "extra": "mean: 7.31 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.1320665346336153,
+            "value": 0.1303092592153761,
             "unit": "iter/sec",
-            "range": "stddev: 0.017639575239860567",
-            "extra": "mean: 7.57 sec\nrounds: 5"
+            "range": "stddev: 0.043260638326346905",
+            "extra": "mean: 7.67 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.1305506865469412,
+            "value": 0.12962847254235876,
             "unit": "iter/sec",
-            "range": "stddev: 0.0327293673505501",
-            "extra": "mean: 7.66 sec\nrounds: 5"
+            "range": "stddev: 0.09721438394438968",
+            "extra": "mean: 7.71 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 7.861124365024852,
+            "value": 8.842529980116424,
             "unit": "iter/sec",
-            "range": "stddev: 0.03910775406479319",
-            "extra": "mean: 127.21 msec\nrounds: 11"
+            "range": "stddev: 0.03552699970294766",
+            "extra": "mean: 113.09 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 5.103538414090058,
+            "value": 4.974950898354562,
             "unit": "iter/sec",
-            "range": "stddev: 0.0009004393516572416",
-            "extra": "mean: 195.94 msec\nrounds: 6"
+            "range": "stddev: 0.002523381913377331",
+            "extra": "mean: 201.01 msec\nrounds: 5"
           }
         ]
       },
@@ -281,45 +281,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.14703081086904454,
+            "value": 0.13999045288461656,
             "unit": "iter/sec",
-            "range": "stddev: 0.055344869001631304",
-            "extra": "mean: 6.80 sec\nrounds: 5"
+            "range": "stddev: 0.1261140454843355",
+            "extra": "mean: 7.14 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13717659336404997,
+            "value": 0.13679041711029755,
             "unit": "iter/sec",
-            "range": "stddev: 0.054326496142002446",
-            "extra": "mean: 7.29 sec\nrounds: 5"
+            "range": "stddev: 0.054529912175571627",
+            "extra": "mean: 7.31 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13126894911600184,
+            "value": 0.13004239007966711,
             "unit": "iter/sec",
-            "range": "stddev: 0.025185949930861675",
-            "extra": "mean: 7.62 sec\nrounds: 5"
+            "range": "stddev: 0.06956297633387389",
+            "extra": "mean: 7.69 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.1308823218396491,
+            "value": 0.12925839667691183,
             "unit": "iter/sec",
-            "range": "stddev: 0.05985737746182248",
-            "extra": "mean: 7.64 sec\nrounds: 5"
+            "range": "stddev: 0.029005502141129416",
+            "extra": "mean: 7.74 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 7.664505513248134,
+            "value": 8.36237123666599,
             "unit": "iter/sec",
-            "range": "stddev: 0.04281839792970566",
-            "extra": "mean: 130.47 msec\nrounds: 11"
+            "range": "stddev: 0.04027994852298475",
+            "extra": "mean: 119.58 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 5.07188550186927,
+            "value": 4.4344864680610065,
             "unit": "iter/sec",
-            "range": "stddev: 0.0027984460295884667",
-            "extra": "mean: 197.17 msec\nrounds: 5"
+            "range": "stddev: 0.0339880038518505",
+            "extra": "mean: 225.51 msec\nrounds: 5"
           }
         ]
       },
@@ -345,45 +345,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.14437830428477108,
+            "value": 0.1401821515314771,
             "unit": "iter/sec",
-            "range": "stddev: 0.13485170829119644",
-            "extra": "mean: 6.93 sec\nrounds: 5"
+            "range": "stddev: 0.1433779270389731",
+            "extra": "mean: 7.13 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13708057982682217,
+            "value": 0.13647685959862346,
             "unit": "iter/sec",
-            "range": "stddev: 0.03997731767989056",
-            "extra": "mean: 7.29 sec\nrounds: 5"
+            "range": "stddev: 0.04013058268135843",
+            "extra": "mean: 7.33 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13139551859860252,
+            "value": 0.13075239563148086,
             "unit": "iter/sec",
-            "range": "stddev: 0.028275205265003184",
-            "extra": "mean: 7.61 sec\nrounds: 5"
+            "range": "stddev: 0.060894847923618156",
+            "extra": "mean: 7.65 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.1304853337468958,
+            "value": 0.12967931738493454,
             "unit": "iter/sec",
-            "range": "stddev: 0.08205419306102991",
-            "extra": "mean: 7.66 sec\nrounds: 5"
+            "range": "stddev: 0.08053695571276344",
+            "extra": "mean: 7.71 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 8.273478378276776,
+            "value": 8.16285217190793,
             "unit": "iter/sec",
-            "range": "stddev: 0.04015283999782146",
-            "extra": "mean: 120.87 msec\nrounds: 10"
+            "range": "stddev: 0.03858531083414676",
+            "extra": "mean: 122.51 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 4.953163230262663,
+            "value": 5.123331241888076,
             "unit": "iter/sec",
-            "range": "stddev: 0.0024332325137083866",
-            "extra": "mean: 201.89 msec\nrounds: 5"
+            "range": "stddev: 0.0015461504355223769",
+            "extra": "mean: 195.19 msec\nrounds: 6"
           }
         ]
       },
@@ -409,45 +409,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.14019782950927376,
+            "value": 0.13800572860051738,
             "unit": "iter/sec",
-            "range": "stddev: 0.05131616439375866",
-            "extra": "mean: 7.13 sec\nrounds: 5"
+            "range": "stddev: 0.3185839120218187",
+            "extra": "mean: 7.25 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13455373495226014,
+            "value": 0.13609392881044474,
             "unit": "iter/sec",
-            "range": "stddev: 0.06256480654080711",
-            "extra": "mean: 7.43 sec\nrounds: 5"
+            "range": "stddev: 0.07496956165087042",
+            "extra": "mean: 7.35 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.12898764523913955,
+            "value": 0.13138942715795726,
             "unit": "iter/sec",
-            "range": "stddev: 0.04090507838699",
-            "extra": "mean: 7.75 sec\nrounds: 5"
+            "range": "stddev: 0.03671614845287663",
+            "extra": "mean: 7.61 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.12910284911692485,
+            "value": 0.1295423779332337,
             "unit": "iter/sec",
-            "range": "stddev: 0.07969530946492044",
-            "extra": "mean: 7.75 sec\nrounds: 5"
+            "range": "stddev: 0.05810484735403487",
+            "extra": "mean: 7.72 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 7.533030080762902,
+            "value": 7.754218396842712,
             "unit": "iter/sec",
-            "range": "stddev: 0.04802806627210476",
-            "extra": "mean: 132.75 msec\nrounds: 10"
+            "range": "stddev: 0.04255784493280555",
+            "extra": "mean: 128.96 msec\nrounds: 11"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 4.611834447932001,
+            "value": 5.077123653380376,
             "unit": "iter/sec",
-            "range": "stddev: 0.002048180572710882",
-            "extra": "mean: 216.83 msec\nrounds: 5"
+            "range": "stddev: 0.0015633355704101361",
+            "extra": "mean: 196.96 msec\nrounds: 6"
           }
         ]
       },
@@ -473,45 +473,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.13379970090745108,
+            "value": 0.13992140268701506,
             "unit": "iter/sec",
-            "range": "stddev: 0.09620309936612606",
-            "extra": "mean: 7.47 sec\nrounds: 5"
+            "range": "stddev: 0.25648082423061",
+            "extra": "mean: 7.15 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.1357612901469814,
+            "value": 0.13694504093584497,
             "unit": "iter/sec",
-            "range": "stddev: 0.06335564652309172",
-            "extra": "mean: 7.37 sec\nrounds: 5"
+            "range": "stddev: 0.03459594627650346",
+            "extra": "mean: 7.30 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13123155289035154,
+            "value": 0.13070325936339441,
             "unit": "iter/sec",
-            "range": "stddev: 0.11659146990682441",
-            "extra": "mean: 7.62 sec\nrounds: 5"
+            "range": "stddev: 0.07741874185408734",
+            "extra": "mean: 7.65 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.13123316515941127,
+            "value": 0.13028025281322117,
             "unit": "iter/sec",
-            "range": "stddev: 0.038388736115385805",
-            "extra": "mean: 7.62 sec\nrounds: 5"
+            "range": "stddev: 0.03746959251391077",
+            "extra": "mean: 7.68 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.6171602384179833,
+            "value": 1.587000640087674,
             "unit": "iter/sec",
-            "range": "stddev: 0.003667944042291108",
-            "extra": "mean: 618.37 msec\nrounds: 5"
+            "range": "stddev: 0.000814712958014874",
+            "extra": "mean: 630.12 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.8782138977923716,
+            "value": 0.8528733339036775,
             "unit": "iter/sec",
-            "range": "stddev: 0.1269536932085573",
-            "extra": "mean: 1.14 sec\nrounds: 5"
+            "range": "stddev: 0.12508755500743451",
+            "extra": "mean: 1.17 sec\nrounds: 5"
           }
         ]
       },
@@ -537,45 +537,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.1452265722584025,
+            "value": 0.14382339755141807,
             "unit": "iter/sec",
-            "range": "stddev: 0.08834572082214547",
-            "extra": "mean: 6.89 sec\nrounds: 5"
+            "range": "stddev: 0.08348622878155593",
+            "extra": "mean: 6.95 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13765257111588342,
+            "value": 0.13649394663566838,
             "unit": "iter/sec",
-            "range": "stddev: 0.05450738661738323",
-            "extra": "mean: 7.26 sec\nrounds: 5"
+            "range": "stddev: 0.05051046243036964",
+            "extra": "mean: 7.33 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13186522393100517,
+            "value": 0.13159888033914194,
             "unit": "iter/sec",
-            "range": "stddev: 0.04347270516932866",
-            "extra": "mean: 7.58 sec\nrounds: 5"
+            "range": "stddev: 0.06882593392936323",
+            "extra": "mean: 7.60 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.13122645986062775,
+            "value": 0.13103519082326837,
             "unit": "iter/sec",
-            "range": "stddev: 0.07128176567246679",
-            "extra": "mean: 7.62 sec\nrounds: 5"
+            "range": "stddev: 0.08027040350009769",
+            "extra": "mean: 7.63 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.6091346257650347,
+            "value": 1.605646103205866,
             "unit": "iter/sec",
-            "range": "stddev: 0.002774719053741736",
-            "extra": "mean: 621.45 msec\nrounds: 5"
+            "range": "stddev: 0.0011209881827387923",
+            "extra": "mean: 622.80 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.8897181060056429,
+            "value": 0.8639002199447805,
             "unit": "iter/sec",
-            "range": "stddev: 0.0952547990703638",
-            "extra": "mean: 1.12 sec\nrounds: 5"
+            "range": "stddev: 0.08434778854168033",
+            "extra": "mean: 1.16 sec\nrounds: 5"
           }
         ]
       },
@@ -601,45 +601,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.1448643408469775,
+            "value": 0.1414225482126674,
             "unit": "iter/sec",
-            "range": "stddev: 0.09168344098060384",
-            "extra": "mean: 6.90 sec\nrounds: 5"
+            "range": "stddev: 0.11249232228882725",
+            "extra": "mean: 7.07 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13745116856145292,
+            "value": 0.13958300000400742,
             "unit": "iter/sec",
-            "range": "stddev: 0.05566056733636042",
-            "extra": "mean: 7.28 sec\nrounds: 5"
+            "range": "stddev: 0.05822450829976575",
+            "extra": "mean: 7.16 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13154964072561323,
+            "value": 0.13344485195062353,
             "unit": "iter/sec",
-            "range": "stddev: 0.08164653773710573",
-            "extra": "mean: 7.60 sec\nrounds: 5"
+            "range": "stddev: 0.09081772675213072",
+            "extra": "mean: 7.49 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.13122951954988266,
+            "value": 0.1320934077188512,
             "unit": "iter/sec",
-            "range": "stddev: 0.04289957082116645",
-            "extra": "mean: 7.62 sec\nrounds: 5"
+            "range": "stddev: 0.081636146540283",
+            "extra": "mean: 7.57 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.5864751692189154,
+            "value": 1.5431066769976887,
             "unit": "iter/sec",
-            "range": "stddev: 0.0028204830131121185",
-            "extra": "mean: 630.33 msec\nrounds: 5"
+            "range": "stddev: 0.006051101407519471",
+            "extra": "mean: 648.04 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.8842616401608892,
+            "value": 0.8481152372738303,
             "unit": "iter/sec",
-            "range": "stddev: 0.10331709420762644",
-            "extra": "mean: 1.13 sec\nrounds: 5"
+            "range": "stddev: 0.0773985174670121",
+            "extra": "mean: 1.18 sec\nrounds: 5"
           }
         ]
       },
@@ -665,45 +665,45 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.1855456121961316,
+            "value": 0.18725238255194143,
             "unit": "iter/sec",
-            "range": "stddev: 0.056915882835205205",
-            "extra": "mean: 5.39 sec\nrounds: 5"
+            "range": "stddev: 0.040328881512328656",
+            "extra": "mean: 5.34 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.14038246312896951,
+            "value": 0.13687621810519543,
             "unit": "iter/sec",
-            "range": "stddev: 0.036774011513108495",
-            "extra": "mean: 7.12 sec\nrounds: 5"
+            "range": "stddev: 0.037421294988606545",
+            "extra": "mean: 7.31 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.13444666882015413,
+            "value": 0.13036514312722416,
             "unit": "iter/sec",
-            "range": "stddev: 0.05225301074215418",
-            "extra": "mean: 7.44 sec\nrounds: 5"
+            "range": "stddev: 0.0547313457366231",
+            "extra": "mean: 7.67 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.13427023699976706,
+            "value": 0.13156200032013649,
             "unit": "iter/sec",
-            "range": "stddev: 0.04887173273622733",
-            "extra": "mean: 7.45 sec\nrounds: 5"
+            "range": "stddev: 0.051342655404393554",
+            "extra": "mean: 7.60 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.6149804057898498,
+            "value": 1.588129706697182,
             "unit": "iter/sec",
-            "range": "stddev: 0.004004204399474817",
-            "extra": "mean: 619.20 msec\nrounds: 5"
+            "range": "stddev: 0.0032963170158748266",
+            "extra": "mean: 629.67 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.8984713463140115,
+            "value": 0.8723536029862021,
             "unit": "iter/sec",
-            "range": "stddev: 0.08524664444576519",
-            "extra": "mean: 1.11 sec\nrounds: 5"
+            "range": "stddev: 0.08379938705164619",
+            "extra": "mean: 1.15 sec\nrounds: 5"
           }
         ]
       },
@@ -729,59 +729,59 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.20036158329266493,
+            "value": 0.20094989130169164,
             "unit": "iter/sec",
-            "range": "stddev: 0.14764293863920616",
-            "extra": "mean: 4.99 sec\nrounds: 5"
+            "range": "stddev: 0.13946094535457573",
+            "extra": "mean: 4.98 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.13716039854139525,
+            "value": 0.13752602246733933,
             "unit": "iter/sec",
-            "range": "stddev: 0.07168338568398637",
-            "extra": "mean: 7.29 sec\nrounds: 5"
+            "range": "stddev: 0.05492324649066974",
+            "extra": "mean: 7.27 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.08358394622484064,
+            "value": 0.0834170480105909,
             "unit": "iter/sec",
-            "range": "stddev: 0.04503775173833114",
-            "extra": "mean: 11.96 sec\nrounds: 5"
+            "range": "stddev: 0.07337295774127368",
+            "extra": "mean: 11.99 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.08350006871988976,
+            "value": 0.08260641159459024,
             "unit": "iter/sec",
-            "range": "stddev: 0.06191968852322017",
-            "extra": "mean: 11.98 sec\nrounds: 5"
+            "range": "stddev: 0.08517471686261414",
+            "extra": "mean: 12.11 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.6006064152221657,
+            "value": 1.5725049032306604,
             "unit": "iter/sec",
-            "range": "stddev: 0.0036500422812792014",
-            "extra": "mean: 624.76 msec\nrounds: 5"
+            "range": "stddev: 0.004902971117762718",
+            "extra": "mean: 635.93 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.8708358125796237,
+            "value": 0.8668986410912208,
             "unit": "iter/sec",
-            "range": "stddev: 0.08884932439065023",
+            "range": "stddev: 0.08747390085421498",
             "extra": "mean: 1.15 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[no_modification-96-5000]",
-            "value": 0.5783318191412695,
+            "value": 0.5845077246267717,
             "unit": "iter/sec",
-            "range": "stddev: 0.020157383598103998",
-            "extra": "mean: 1.73 sec\nrounds: 5"
+            "range": "stddev: 0.007033556493023018",
+            "extra": "mean: 1.71 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[individual_modification-96-5000]",
-            "value": 0.548051281660879,
+            "value": 0.5297812733136027,
             "unit": "iter/sec",
-            "range": "stddev: 0.030619955391122944",
-            "extra": "mean: 1.82 sec\nrounds: 5"
+            "range": "stddev: 0.028399919093115657",
+            "extra": "mean: 1.89 sec\nrounds: 5"
           }
         ]
       },
@@ -807,59 +807,59 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.20702849927072026,
+            "value": 0.20378941700339362,
             "unit": "iter/sec",
-            "range": "stddev: 0.1253865931765818",
-            "extra": "mean: 4.83 sec\nrounds: 5"
+            "range": "stddev: 0.08843969542777615",
+            "extra": "mean: 4.91 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.1377042327509705,
+            "value": 0.13644029461755017,
             "unit": "iter/sec",
-            "range": "stddev: 0.031225354814206234",
-            "extra": "mean: 7.26 sec\nrounds: 5"
+            "range": "stddev: 0.02124089705464447",
+            "extra": "mean: 7.33 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.08311168092423421,
+            "value": 0.08242218552319627,
             "unit": "iter/sec",
-            "range": "stddev: 0.061773760938767804",
-            "extra": "mean: 12.03 sec\nrounds: 5"
+            "range": "stddev: 0.07087005574073231",
+            "extra": "mean: 12.13 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.08308315762725477,
+            "value": 0.08244855189802963,
             "unit": "iter/sec",
-            "range": "stddev: 0.05595430313274252",
-            "extra": "mean: 12.04 sec\nrounds: 5"
+            "range": "stddev: 0.08935654793623096",
+            "extra": "mean: 12.13 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.6283383776557503,
+            "value": 1.5822260672708195,
             "unit": "iter/sec",
-            "range": "stddev: 0.003537008505339746",
-            "extra": "mean: 614.12 msec\nrounds: 5"
+            "range": "stddev: 0.0022239114239146524",
+            "extra": "mean: 632.02 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.9060992514069184,
+            "value": 0.8465841328025443,
             "unit": "iter/sec",
-            "range": "stddev: 0.07853315352443138",
-            "extra": "mean: 1.10 sec\nrounds: 5"
+            "range": "stddev: 0.06398799381723907",
+            "extra": "mean: 1.18 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[no_modification-96-5000]",
-            "value": 0.6077398546312113,
+            "value": 0.5733135186258844,
             "unit": "iter/sec",
-            "range": "stddev: 0.006839882017761993",
-            "extra": "mean: 1.65 sec\nrounds: 5"
+            "range": "stddev: 0.012204402310020596",
+            "extra": "mean: 1.74 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[individual_modification-96-5000]",
-            "value": 0.5847084877082461,
+            "value": 0.5493935473947259,
             "unit": "iter/sec",
-            "range": "stddev: 0.012014536051495833",
-            "extra": "mean: 1.71 sec\nrounds: 5"
+            "range": "stddev: 0.038049523792708",
+            "extra": "mean: 1.82 sec\nrounds: 5"
           }
         ]
       },
@@ -885,59 +885,59 @@ window.BENCHMARK_DATA = {
         "benches": [
           {
             "name": "test/performance/test_builder.py::TestBuilder::test_building_5k_circuit[96-5000]",
-            "value": 0.20829429459967774,
+            "value": 0.2023443423602391,
             "unit": "iter/sec",
-            "range": "stddev: 0.07408800147272306",
-            "extra": "mean: 4.80 sec\nrounds: 5"
+            "range": "stddev: 0.1498761555305761",
+            "extra": "mean: 4.94 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_5k_circuit[96-5000-1650]",
-            "value": 0.1379071586144855,
+            "value": 0.13957735726655596,
             "unit": "iter/sec",
-            "range": "stddev: 0.02433438252179178",
-            "extra": "mean: 7.25 sec\nrounds: 5"
+            "range": "stddev: 0.06034751499795206",
+            "extra": "mean: 7.16 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_noisy_circuit[-1.0-96-5000-1650]",
-            "value": 0.08316129916569344,
+            "value": 0.08444129036251755,
             "unit": "iter/sec",
-            "range": "stddev: 0.054398224091782535",
-            "extra": "mean: 12.02 sec\nrounds: 5"
+            "range": "stddev: 0.06396416729384741",
+            "extra": "mean: 11.84 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_sampling.py::TestSample::test_sampling_masked_noisy_circuit[2.0-96-5000-1650]",
-            "value": 0.08322021102278919,
+            "value": 0.08398667464799689,
             "unit": "iter/sec",
-            "range": "stddev: 0.0760221192346725",
-            "extra": "mean: 12.02 sec\nrounds: 5"
+            "range": "stddev: 0.10742537704691552",
+            "extra": "mean: 11.91 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_serialize_noisy_circuit[100-5000]",
-            "value": 1.5951296836928321,
+            "value": 1.599012647809791,
             "unit": "iter/sec",
-            "range": "stddev: 0.002586340911648449",
-            "extra": "mean: 626.91 msec\nrounds: 5"
+            "range": "stddev: 0.004104331270174221",
+            "extra": "mean: 625.39 msec\nrounds: 5"
           },
           {
             "name": "test/performance/test_serialization.py::test_deserialize_noisy_circuit[100-5000]",
-            "value": 0.880521224623344,
+            "value": 0.8951707881686639,
             "unit": "iter/sec",
-            "range": "stddev: 0.09075048607627946",
-            "extra": "mean: 1.14 sec\nrounds: 5"
+            "range": "stddev: 0.07176299612851494",
+            "extra": "mean: 1.12 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[no_modification-96-5000]",
-            "value": 0.5956179200057556,
+            "value": 0.5772287017818915,
             "unit": "iter/sec",
-            "range": "stddev: 0.01105553020201682",
-            "extra": "mean: 1.68 sec\nrounds: 5"
+            "range": "stddev: 0.05054737836694647",
+            "extra": "mean: 1.73 sec\nrounds: 5"
           },
           {
             "name": "test/performance/test_transpiler.py::test_transpiling_5k_circuit[individual_modification-96-5000]",
-            "value": 0.5851821647600688,
+            "value": 0.5750234371703922,
             "unit": "iter/sec",
-            "range": "stddev: 0.016840514735909855",
-            "extra": "mean: 1.71 sec\nrounds: 5"
+            "range": "stddev: 0.0068904969761051215",
+            "extra": "mean: 1.74 sec\nrounds: 5"
           }
         ]
       },
