@@ -56,6 +56,12 @@ pytest-benchmark list
 pytest-benchmark compare PATH --histogram --group-by=name
 ```
 
+#### Benchmark tracking
+
+Benchmarks are automatically run on every push to `main` and results are tracked over time on the [benchmark dashboard](https://qiskit.github.io/samplomatic/benchmarks/). The dashboard shows interactive time-series charts with release version markers.
+
+Historical benchmarks can be backfilled using the **Backfill Benchmarks** workflow, which can be triggered manually from the Actions tab. It supports iterating over tags or a range of commits.
+
 ### Linting and Formatting
 
 `ruff` is used for linting and formatting. Run the following to manually apply checks:
