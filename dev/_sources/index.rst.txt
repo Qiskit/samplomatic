@@ -9,3 +9,4 @@ Samplomatic Documentation
    api/index
    release_notes/index
    GitHub <https://github.com/Qiskit/samplomatic>
+   Benchmarks <https://qiskit.github.io/samplomatic/benchmarks/>
