@@ -98,8 +98,12 @@ def main():
         result_file = results_dir / f"{tag}.json"
         if not result_file.exists():
             continue
-        with open(result_file) as f:
-            data = json.load(f)
+        try:
+            with open(result_file) as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, ValueError):
+            print(f"Skipping {tag} (invalid JSON)")
+            continue
         commit = _git_info(tag)
         benches = _convert_benchmarks(data)
         if benches:
