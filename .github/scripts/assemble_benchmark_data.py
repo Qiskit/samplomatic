@@ -109,14 +109,7 @@ def _discover_refs(mode: str) -> list[str]:
     if mode == "commits":
         results_dir = Path("results")
         shas = [p.stem for p in results_dir.glob("*.json")]
-        if not shas:
-            return []
-        result = subprocess.run(
-            ["git", "log", "--format=%H", "--no-walk", "--sort=committerdate"] + shas,
-            capture_output=True,
-            text=True,
-        )
-        return [line for line in result.stdout.strip().split("\n") if line]
+        return shas  # ordering doesn't matter; entries are sorted by timestamp after assembly
     else:
         return (
             subprocess.run(
