@@ -2,6 +2,24 @@ name: Backfill Benchmarks
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "What to iterate over"
+        required: true
+        default: "tags"
+        type: choice
+        options:
+          - tags
+          - commits
+      start_ref:
+        description: "Start ref (exclusive) for commit mode, e.g. '0.15.0'"
+        required: false
+        type: string
+      end_ref:
+        description: "End ref (inclusive) for commit mode, default 'main'"
+        required: false
+        default: "main"
+        type: string
 
 permissions:
   contents: write
@@ -17,25 +35,38 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Run benchmarks for each tag
+      - name: Run benchmarks
         run: |
           RESULTS_DIR="$(pwd)/results"
           mkdir -p "$RESULTS_DIR"
-          for TAG in $(git tag --sort=creatordate); do
-            echo "=== Benchmarking $TAG ==="
-            git checkout "$TAG" 2>/dev/null || { echo "Skipping $TAG (checkout failed)"; continue; }
-            pip install --force-reinstall --no-deps -e . && pip install -e ".[dev,vis]" || { echo "Skipping $TAG (install failed)"; continue; }
+
+          if [ "${{ inputs.mode }}" = "commits" ]; then
+            REFS=$(git rev-list --reverse ${{ inputs.start_ref }}..${{ inputs.end_ref }})
+          else
+            REFS=$(git tag --sort=creatordate)
+          fi
+
+          for REF in $REFS; do
+            # Use short SHA for commits, full ref for tags
+            if [ "${{ inputs.mode }}" = "commits" ]; then
+              LABEL=$(git log -1 --format="%h" "$REF")
+            else
+              LABEL="$REF"
+            fi
+            echo "=== Benchmarking $LABEL ==="
+            git checkout "$REF" 2>/dev/null || { echo "Skipping $LABEL (checkout failed)"; continue; }
+            pip install --force-reinstall --no-deps -e . && pip install -e ".[dev,vis]" || { echo "Skipping $LABEL (install failed)"; continue; }
             if [ ! -d "test/performance" ]; then
-              echo "Skipping $TAG (no test/performance/)"
+              echo "Skipping $LABEL (no test/performance/)"
               continue
             fi
             python -m pytest test/performance \
-              --benchmark-json="${RESULTS_DIR}/${TAG}.json" \
-              --seed=12345 || { echo "Skipping $TAG (benchmarks failed)"; rm -f "${RESULTS_DIR}/${TAG}.json"; }
+              --benchmark-json="${RESULTS_DIR}/${REF}.json" \
+              --seed=12345 || { echo "Skipping $LABEL (benchmarks failed)"; rm -f "${RESULTS_DIR}/${REF}.json"; }
           done
           git checkout main
       - name: Assemble data.js
-        run: python .github/scripts/assemble_benchmark_data.py
+        run: python .github/scripts/assemble_benchmark_data.py --mode=${{ inputs.mode }}
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
