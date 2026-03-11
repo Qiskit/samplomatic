@@ -19,22 +19,21 @@ jobs:
           python-version: "3.12"
       - name: Run benchmarks for each tag
         run: |
-          mkdir -p results
+          RESULTS_DIR="$(pwd)/results"
+          mkdir -p "$RESULTS_DIR"
           for TAG in $(git tag --sort=creatordate); do
             echo "=== Benchmarking $TAG ==="
-            git checkout "$TAG" -- . 2>/dev/null || { echo "Skipping $TAG (checkout failed)"; continue; }
-            git clean -fd --exclude=results 2>/dev/null
-            pip install --force-reinstall --no-deps -e . 2>/dev/null && pip install -e ".[dev,vis]" 2>/dev/null || { echo "Skipping $TAG (install failed)"; git checkout main -- .; continue; }
+            git checkout "$TAG" 2>/dev/null || { echo "Skipping $TAG (checkout failed)"; continue; }
+            pip install --force-reinstall --no-deps -e . && pip install -e ".[dev,vis]" || { echo "Skipping $TAG (install failed)"; continue; }
             if [ ! -d "test/performance" ]; then
               echo "Skipping $TAG (no test/performance/)"
-              git checkout main -- .
               continue
             fi
             python -m pytest test/performance \
-              --benchmark-json="results/${TAG}.json" \
-              --seed=12345 || { echo "Skipping $TAG (benchmarks failed)"; }
-            git checkout main -- .
+              --benchmark-json="${RESULTS_DIR}/${TAG}.json" \
+              --seed=12345 || { echo "Skipping $TAG (benchmarks failed)"; rm -f "${RESULTS_DIR}/${TAG}.json"; }
           done
+          git checkout main
       - name: Assemble data.js
         run: python .github/scripts/assemble_benchmark_data.py
       - name: Deploy to gh-pages
