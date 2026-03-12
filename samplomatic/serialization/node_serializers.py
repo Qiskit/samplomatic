@@ -418,7 +418,7 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
             elif isinstance(distribution, UniformPauli):
                 distribution_type = "pauli_uniform"
             else:
-                raise SerializationError(f"Cannot serialive '{type(distribution)}' in SSV {ssv}.")
+                raise SerializationError(f"Cannot serialize '{type(distribution)}' in SSV {ssv}.")
             distribution = {
                 "type": distribution_type,
                 "num_subsystems": obj._distribution.num_subsystems,  # noqa: SLF001

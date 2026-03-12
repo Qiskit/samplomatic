@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 
 from samplomatic.distributions import HaarU2, UniformPauliSubset
-from samplomatic.virtual_registers import VirtualType
+from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 def test_attributes():
@@ -26,6 +26,10 @@ def test_attributes():
     assert distribution.num_subsystems == 13
     assert distribution.register_type is VirtualType.PAULI
     assert np.array_equal(distribution.paulis, [[1]])
+
+    distribution = UniformPauliSubset(12, np.array([[1, 2, 3]]))
+
+    assert np.array_equal(distribution.paulis, [[1, 2, 3]])
 
 
 def test_init_errors():
@@ -46,7 +50,17 @@ def test_equality():
 
 def test_sample(rng):
     """Test the distribution is behaving sensibly."""
-    assert UniformPauliSubset(1, np.array([[1]])).sample(1, rng).shape == (1, 1)
-    assert UniformPauliSubset(8, np.array([[1]])).sample(1, rng).shape == (8, 1)
-    assert UniformPauliSubset(8, np.array([[1, 2], [2, 1]])).sample(1, rng).shape == (8, 1)
-    assert UniformPauliSubset(8, np.array([[1, 2], [2, 1]])).sample(100, rng).shape == (8, 100)
+    assert UniformPauliSubset(1, np.array([[1]])).sample(1, rng) == PauliRegister([[1]])
+    assert UniformPauliSubset(8, np.array([[1]])).sample(1, rng) == PauliRegister([[1]] * 8)
+    assert UniformPauliSubset(8, np.array([[1, 2]])).sample(1, rng) == PauliRegister([[1], [2]] * 4)
+    assert UniformPauliSubset(6, np.array([[1, 2, 0]])).sample(1, rng) == PauliRegister(
+        [[1], [2], [0]] * 2
+    )
+
+    samples = UniformPauliSubset(2, np.array([[1, 3], [0, 2]])).sample(100, rng)
+    counts = {}
+    for sample in samples.virtual_gates:
+        if (key_sample := tuple(sample)) not in counts:
+            counts[key_sample] = 0
+        counts[key_sample] += 1
+    assert len(counts) == 2 and all(count > 0 for count in counts.values())

@@ -31,7 +31,7 @@ def _virtual_register_from_json(data: dict[str, str]) -> VirtualRegister:
     elif register_type == VirtualType.PAULI:
         return PauliRegister(array)
     else:
-        raise DeserializationError(f"Cannot deserialive '{register_type}' in SSV 1.")
+        raise DeserializationError(f"Cannot deserialize '{register_type}' in SSV 1.")
 
 
 class BasisChangeSerializer(TypeSerializer[BasisChange]):
@@ -51,7 +51,7 @@ class BasisChangeSerializer(TypeSerializer[BasisChange]):
                 VirtualType.Z2,
                 VirtualType.PAULI,
             ):
-                raise SerializationError(f"Cannot serialive '{register_type}' in SSV 1.")
+                raise SerializationError(f"Cannot serialize '{register_type}' in SSV 1.")
             return {
                 "alphabet": obj.alphabet,
                 "action": orjson.dumps(
