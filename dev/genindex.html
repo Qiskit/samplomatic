@@ -239,6 +239,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.UniformC1.html">UniformC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.UniformLocalC1.html">UniformLocalC1</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.distributions.UniformPauliSubset.html">UniformPauliSubset</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/samplomatic.exceptions.html">samplomatic.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of samplomatic.exceptions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -1361,9 +1362,11 @@
 </li>
         <li><a href="api/auto/samplomatic.samplex.nodes.PauliPastCliffordNode.html#samplomatic.samplex.nodes.PauliPastCliffordNode">PauliPastCliffordNode (class in samplomatic.samplex.nodes)</a>
 </li>
+        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister">PauliRegister (class in samplomatic.virtual_registers)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister">PauliRegister (class in samplomatic.virtual_registers)</a>
+        <li><a href="api/auto/samplomatic.distributions.UniformPauliSubset.html#samplomatic.distributions.UniformPauliSubset.paulis">paulis (samplomatic.distributions.UniformPauliSubset attribute)</a>
 </li>
         <li><a href="api/auto/samplomatic.visualization.plot_graph.html#samplomatic.visualization.plot_graph">plot_graph() (in module samplomatic.visualization)</a>
 </li>
@@ -1450,6 +1453,8 @@
 </li>
           <li><a href="api/auto/samplomatic.distributions.UniformPauli.html#samplomatic.distributions.UniformPauli.register_type">(samplomatic.distributions.UniformPauli attribute)</a>
 </li>
+          <li><a href="api/auto/samplomatic.distributions.UniformPauliSubset.html#samplomatic.distributions.UniformPauliSubset.register_type">(samplomatic.distributions.UniformPauliSubset attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.pre_samplex.PreChangeBasis.html#samplomatic.pre_samplex.PreChangeBasis.register_type">(samplomatic.pre_samplex.PreChangeBasis attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.pre_samplex.PreEmit.html#samplomatic.pre_samplex.PreEmit.register_type">(samplomatic.pre_samplex.PreEmit attribute)</a>
@@ -1535,6 +1540,8 @@
           <li><a href="api/auto/samplomatic.distributions.UniformLocalC1.html#samplomatic.distributions.UniformLocalC1.sample">(samplomatic.distributions.UniformLocalC1 method)</a>
 </li>
           <li><a href="api/auto/samplomatic.distributions.UniformPauli.html#samplomatic.distributions.UniformPauli.sample">(samplomatic.distributions.UniformPauli method)</a>
+</li>
+          <li><a href="api/auto/samplomatic.distributions.UniformPauliSubset.html#samplomatic.distributions.UniformPauliSubset.sample">(samplomatic.distributions.UniformPauliSubset method)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.ChangeBasisNode.html#samplomatic.samplex.nodes.ChangeBasisNode.sample">(samplomatic.samplex.nodes.ChangeBasisNode method)</a>
 </li>
@@ -1846,15 +1853,17 @@
 </li>
         <li><a href="api/auto/samplomatic.utils.unbox.html#samplomatic.utils.unbox">unbox() (in module samplomatic.utils)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.utils.undress_box.html#samplomatic.utils.undress_box">undress_box() (in module samplomatic.utils)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.distributions.UniformC1.html#samplomatic.distributions.UniformC1">UniformC1 (class in samplomatic.distributions)</a>
 </li>
         <li><a href="api/auto/samplomatic.distributions.UniformLocalC1.html#samplomatic.distributions.UniformLocalC1">UniformLocalC1 (class in samplomatic.distributions)</a>
 </li>
         <li><a href="api/auto/samplomatic.distributions.UniformPauli.html#samplomatic.distributions.UniformPauli">UniformPauli (class in samplomatic.distributions)</a>
+</li>
+        <li><a href="api/auto/samplomatic.distributions.UniformPauliSubset.html#samplomatic.distributions.UniformPauliSubset">UniformPauliSubset (class in samplomatic.distributions)</a>
 </li>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.union">union() (samplomatic.partition.Partition class method)</a>
 </li>
@@ -1960,7 +1969,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/03/11</div>
+              Last updated on 2026/03/12</div>
           </div>
           <div class="right-details">
             
