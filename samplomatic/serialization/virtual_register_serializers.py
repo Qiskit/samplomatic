@@ -77,7 +77,7 @@ class C1RegisterSerializer(TypeSerializer[C1Register]):
     TYPE_ID = "V3"
     TYPE = C1Register
 
-    class SSV1(DataSerializer[C1Register]):
+    class SSV2(DataSerializer[C1Register]):
         MIN_SSV = 2
 
         @classmethod
