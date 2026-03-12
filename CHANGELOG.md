@@ -21,6 +21,7 @@
 
 ### Changed
 
+- Increased the default SSV from `2` to `3`. ([#336](https://github.com/Qiskit/samplomatic/issues/336))
 - Changed `Twirl.group` parameter to accept `GroupMode` values instead of `VirtualType`. ([#300](https://github.com/Qiskit/samplomatic/issues/300))
 - Updated minimum qiskit version to 2.3.0. ([#304](https://github.com/Qiskit/samplomatic/issues/304))
 - Lookup tables for single-qubit Cliffords, `C1_LOOKUP_TABLE` and `C1_INVERSE_TABLE`, that were in the `virtual_registers.tables` submodule have been moved to the top-level `tables` module. ([#308](https://github.com/Qiskit/samplomatic/issues/308))
