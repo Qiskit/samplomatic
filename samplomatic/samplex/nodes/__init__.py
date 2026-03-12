@@ -10,7 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from .c1_past_clifford_node import C1PastCliffordNode
 from .change_basis_node import ChangeBasisNode
 from .collect_template_values import CollectTemplateValues
 from .collect_z2_to_output_node import CollectZ2ToOutputNode
@@ -22,6 +21,7 @@ from .inject_noise_node import InjectNoiseNode
 from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
+from .propagate_local_c1_node import PropagateLocalC1Node
 from .sampling_node import SamplingNode
 from .slice_register_node import SliceRegisterNode
 from .twirl_sampling_node import TwirlSamplingNode

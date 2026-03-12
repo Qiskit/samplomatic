@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""C1PastCliffordNode"""
+"""PropagateLocalC1Node"""
 
 from collections.abc import Sequence
 
@@ -18,19 +18,19 @@ import numpy as np
 
 from ...aliases import OperationName, RegisterName, SubsystemIndex
 from ...exceptions import SamplexBuildError, SamplexRuntimeError
-from ...tables.local_c1_tables import C1_PAST_CLIFFORD_LOOKUP_TABLES
+from ...tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
 from ...virtual_registers import VirtualType
 from .evaluation_node import EvaluationNode
 
-C1_PAST_CLIFFORD_INVARIANTS = frozenset({"id"})
+LOCAL_C1_PROPAGATE_INVARIANTS = frozenset({"id"})
 """Set of gates which a C1 element is invariant under conjugation with."""
 
 
-class C1PastCliffordNode(EvaluationNode):
-    """A node that propagates a C1 register past a Clifford gate.
+class PropagateLocalC1Node(EvaluationNode):
+    """A node that propagates a C1 register past a gate.
 
     Args:
-        op_name: The name of the Clifford gate.
+        op_name: The name of the gate.
         register_name: The name of the C1 register to propagate.
         subsystem_idxs: The subsystems in the register. The expected format is
             that of a collection of subsystems of the same size, i.e., that
@@ -45,9 +45,9 @@ class C1PastCliffordNode(EvaluationNode):
         subsystem_idxs: Sequence[Sequence[SubsystemIndex]],
     ):
         try:
-            self._lookup_table = C1_PAST_CLIFFORD_LOOKUP_TABLES[op_name]
+            self._lookup_table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[op_name]
         except KeyError:
-            supported_gates = list(C1_PAST_CLIFFORD_LOOKUP_TABLES)
+            supported_gates = list(LOCAL_C1_PROPAGATE_LOOKUP_TABLES)
             raise SamplexBuildError(f"Expected one of {supported_gates}, found {op_name}.")
 
         self._op_name = op_name
@@ -90,7 +90,7 @@ class C1PastCliffordNode(EvaluationNode):
 
     def __eq__(self, other):
         return (
-            isinstance(other, C1PastCliffordNode)
+            isinstance(other, PropagateLocalC1Node)
             and self._op_name == other._op_name
             and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
             and self._register_name == other._register_name

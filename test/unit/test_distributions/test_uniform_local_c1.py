@@ -16,7 +16,7 @@ import numpy as np
 import pytest
 
 from samplomatic.distributions import HaarU2, UniformLocalC1
-from samplomatic.samplex.nodes.c1_past_clifford_node import C1_PAST_CLIFFORD_LOOKUP_TABLES
+from samplomatic.samplex.nodes.propagate_local_c1_node import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
 from samplomatic.virtual_registers import VirtualType
 
 
@@ -52,7 +52,7 @@ def test_sample(rng):
 @pytest.mark.parametrize("gate", ["cx", "cz", "ecr"])
 def test_samples_are_local(rng, gate):
     """Test that every sampled pair stays local under conjugation by the gate."""
-    table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate]
+    table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[gate]
     samples = UniformLocalC1(2, gate).sample(1000, rng)
     vg = samples.virtual_gates
 
@@ -64,7 +64,7 @@ def test_samples_are_local(rng, gate):
 @pytest.mark.parametrize("gate", ["cx", "cz", "ecr"])
 def test_multiple_pairs_are_local(rng, gate):
     """Test locality when num_subsystems > 2 (multiple independent pairs)."""
-    table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate]
+    table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[gate]
     samples = UniformLocalC1(6, gate).sample(200, rng)
     vg = samples.virtual_gates
 
@@ -79,7 +79,7 @@ def test_multiple_pairs_are_local(rng, gate):
 @pytest.mark.parametrize("gate", ["cx", "cz", "ecr"])
 def test_samples_cover_all_valid_pairs(rng, gate):
     """Test that sampling covers the full support given enough draws."""
-    table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate]
+    table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[gate]
     expected_valid = set(map(tuple, np.argwhere(np.all(table >= 0, axis=-1))))
 
     samples = UniformLocalC1(2, gate).sample(100_000, rng)

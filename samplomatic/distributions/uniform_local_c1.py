@@ -14,13 +14,13 @@
 
 import numpy as np
 
-from ..tables.local_c1_tables import C1_PAST_CLIFFORD_LOOKUP_TABLES
+from ..tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
 from ..virtual_registers import C1Register, VirtualType
 from .distribution import Distribution
 
 
 class UniformLocalC1(Distribution):
-    """The uniform distribution over C1⊗C1 elements that stay local under conjugation.
+    """The uniform distribution over C1⊗C1 elements that stay local and C1 under conjugation.
 
     For each pair of consecutive subsystems, independently draws a pair ``(c0, c1)``
     uniformly from the set of C1⊗C1 elements that remain factorized as C1⊗C1 after
@@ -29,7 +29,7 @@ class UniformLocalC1(Distribution):
     Args:
         num_subsystems: The number of subsystems this distribution samples. Must be even.
         gate_name: A two-qubit gate name whose conjugation table appears in
-            :data:`~.C1_PAST_CLIFFORD_LOOKUP_TABLES`.
+            :data:`~.LOCAL_C1_PROPAGATE_LOOKUP_TABLES`.
     """
 
     def __init__(self, num_subsystems: int, gate_name: str):
@@ -37,12 +37,12 @@ class UniformLocalC1(Distribution):
         if num_subsystems % 2:
             raise ValueError(f"num_subsystems must be even, got {num_subsystems}.")
 
-        if gate_name not in C1_PAST_CLIFFORD_LOOKUP_TABLES:
+        if gate_name not in LOCAL_C1_PROPAGATE_LOOKUP_TABLES:
             raise ValueError(
                 f"Unknown gate {gate_name!r}. Expected one of "
-                f"{list(C1_PAST_CLIFFORD_LOOKUP_TABLES)}."
+                f"{list(LOCAL_C1_PROPAGATE_LOOKUP_TABLES)}."
             )
-        table = C1_PAST_CLIFFORD_LOOKUP_TABLES[gate_name]
+        table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[gate_name]
         if table.ndim != 3:
             raise ValueError(f"Gate {gate_name!r} is not a two-qubit gate.")
 

@@ -17,7 +17,6 @@ import orjson
 from ..distributions import HaarU2, UniformPauli
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
-    C1PastCliffordNode,
     ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
@@ -27,6 +26,7 @@ from ..samplex.nodes import (
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
+    PropagateLocalC1Node,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
@@ -521,13 +521,13 @@ class RightU2ParametricMultiplicationNodeSerializer(
             )
 
 
-class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
-    """Serializer for :class:`~.C1PastCliffordNode`."""
+class PropagateLocalC1NodeSerializer(TypeSerializer[PropagateLocalC1Node]):
+    """Serializer for :class:`~.PropagateLocalC1Node`."""
 
     TYPE_ID = "N13"
-    TYPE = C1PastCliffordNode
+    TYPE = PropagateLocalC1Node
 
-    class SSV3(DataSerializer[C1PastCliffordNode]):
+    class SSV3(DataSerializer[PropagateLocalC1Node]):
         MIN_SSV = 3
 
         @classmethod
@@ -540,7 +540,7 @@ class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
 
         @classmethod
         def deserialize(cls, data):
-            return C1PastCliffordNode(
+            return PropagateLocalC1Node(
                 data["op_name"],
                 data["register_name"],
                 array_from_json(data["subsystem_idxs"]),

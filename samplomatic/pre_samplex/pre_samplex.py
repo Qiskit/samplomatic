@@ -70,11 +70,6 @@ from ..samplex.nodes import (
     SliceRegisterNode,
     TwirlSamplingNode,
 )
-from ..samplex.nodes.c1_past_clifford_node import (
-    C1_PAST_CLIFFORD_INVARIANTS,
-    C1_PAST_CLIFFORD_LOOKUP_TABLES,
-    C1PastCliffordNode,
-)
 from ..samplex.nodes.change_basis_node import (
     LOCAL_CLIFFORD,
     MEAS_PAULI_BASIS,
@@ -84,6 +79,11 @@ from ..samplex.nodes.change_basis_node import (
 from ..samplex.nodes.pauli_past_clifford_node import (
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
+)
+from ..samplex.nodes.propagate_local_c1_node import (
+    LOCAL_C1_PROPAGATE_INVARIANTS,
+    LOCAL_C1_PROPAGATE_LOOKUP_TABLES,
+    PropagateLocalC1Node,
 )
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
@@ -137,9 +137,9 @@ _PROPAGATE_GROUPS: tuple[_PropagateGroup, ...] = (
     _PropagateGroup(
         frozenset({VirtualType.C1, VirtualType.PAULI}),
         VirtualType.C1,
-        C1_PAST_CLIFFORD_INVARIANTS,
-        C1_PAST_CLIFFORD_LOOKUP_TABLES,
-        C1PastCliffordNode,
+        LOCAL_C1_PROPAGATE_INVARIANTS,
+        LOCAL_C1_PROPAGATE_LOOKUP_TABLES,
+        PropagateLocalC1Node,
     ),
     _PropagateGroup(
         frozenset({VirtualType.PAULI}),

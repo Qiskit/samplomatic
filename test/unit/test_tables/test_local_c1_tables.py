@@ -18,7 +18,7 @@ from qiskit.circuit.library import CXGate, CZGate, ECRGate, HGate
 from qiskit.quantum_info import Clifford
 
 from samplomatic.tables.c1_tables import C1_TO_TABLEAU
-from samplomatic.tables.local_c1_tables import C1_PAST_CLIFFORD_LOOKUP_TABLES
+from samplomatic.tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
 
 
 @pytest.mark.parametrize("op_class", [HGate])
@@ -27,7 +27,7 @@ def test_1q_gate_tables(op_class):
     op = op_class()
     gate_cliff = Clifford(op)
     gate_inv = gate_cliff.adjoint()
-    table = C1_PAST_CLIFFORD_LOOKUP_TABLES[op.name]
+    table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[op.name]
 
     for c1_idx in range(24):
         c1_cliff = Clifford(C1_TO_TABLEAU[c1_idx], False)
@@ -46,7 +46,7 @@ def test_2q_gate_tables(op_class):
     op = op_class()
     gate_cliff = Clifford(op)
     gate_inv = gate_cliff.adjoint()
-    table = C1_PAST_CLIFFORD_LOOKUP_TABLES[op.name]
+    table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[op.name]
 
     for c0, c1 in product(range(24), repeat=2):
         cliff0 = Clifford(C1_TO_TABLEAU[c0], False)

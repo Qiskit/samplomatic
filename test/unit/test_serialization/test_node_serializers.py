@@ -16,7 +16,6 @@ import pytest
 from samplomatic.distributions import BalancedUniformPauli, UniformLocalC1, UniformPauli
 from samplomatic.exceptions import SerializationError
 from samplomatic.samplex.nodes import (
-    C1PastCliffordNode,
     ChangeBasisNode,
     CollectTemplateValues,
     CollectZ2ToOutputNode,
@@ -26,6 +25,7 @@ from samplomatic.samplex.nodes import (
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
+    PropagateLocalC1Node,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
@@ -38,7 +38,6 @@ from samplomatic.samplex.nodes.change_basis_node import (
 )
 from samplomatic.serialization.basis_change_serializers import BasisChangeSerializer
 from samplomatic.serialization.node_serializers import (
-    C1PastCliffordNodeSerializer,
     ChangeBasisNodeSerializer,
     CollectTemplateValuesSerializer,
     CollectZ2ToOutputNodeSerializer,
@@ -48,6 +47,7 @@ from samplomatic.serialization.node_serializers import (
     LeftMultiplicationNodeSerializer,
     LeftU2ParametricMultiplicationNodeSerializer,
     PauliPastCliffordNodeSerializer,
+    PropagateLocalC1NodeSerializer,
     RightMultiplicationNodeSerializer,
     RightU2ParametricMultiplicationNodeSerializer,
     SliceRegisterNodeSerializer,
@@ -189,9 +189,9 @@ def test_right_u2_multiplication_serializer_round_trip(ssv):
     assert node == TypeSerializer.deserialize(data)
 
 
-@pytest.mark.parametrize("ssv", C1PastCliffordNodeSerializer.SSVS)
+@pytest.mark.parametrize("ssv", PropagateLocalC1NodeSerializer.SSVS)
 def test_c1_past_clifford_serializer_round_trip(ssv):
-    node = C1PastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])
-    data = C1PastCliffordNodeSerializer.serialize(node, ssv)
+    node = PropagateLocalC1Node("cx", "my_reg", [(0, 1), (4, 2)])
+    data = PropagateLocalC1NodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
