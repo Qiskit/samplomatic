@@ -30,7 +30,7 @@ class UniformPauliSerializer(TypeSerializer[UniformPauli]):
     TYPE_ID = "D0"
     TYPE = UniformPauli
 
-    class SSV1(DataSerializer[UniformPauli]):
+    class SSV3(DataSerializer[UniformPauli]):
         MIN_SSV = 3
 
         @classmethod
@@ -48,7 +48,7 @@ class HaarU2Serializer(TypeSerializer[HaarU2]):
     TYPE_ID = "D1"
     TYPE = HaarU2
 
-    class SSV1(DataSerializer[HaarU2]):
+    class SSV3(DataSerializer[HaarU2]):
         MIN_SSV = 3
 
         @classmethod
@@ -66,7 +66,7 @@ class UniformC1Serializer(TypeSerializer[UniformC1]):
     TYPE_ID = "D2"
     TYPE = UniformC1
 
-    class SSV1(DataSerializer[UniformC1]):
+    class SSV3(DataSerializer[UniformC1]):
         MIN_SSV = 3
 
         @classmethod
@@ -84,7 +84,7 @@ class BalancedUniformPauliSerializer(TypeSerializer[BalancedUniformPauli]):
     TYPE_ID = "D3"
     TYPE = BalancedUniformPauli
 
-    class SSV1(DataSerializer[BalancedUniformPauli]):
+    class SSV3(DataSerializer[BalancedUniformPauli]):
         MIN_SSV = 3
 
         @classmethod
@@ -102,7 +102,7 @@ class UniformLocalC1Serializer(TypeSerializer[UniformLocalC1]):
     TYPE_ID = "D4"
     TYPE = UniformLocalC1
 
-    class SSV1(DataSerializer[UniformLocalC1]):
+    class SSV3(DataSerializer[UniformLocalC1]):
         MIN_SSV = 3
 
         @classmethod
@@ -120,7 +120,7 @@ class UniformPauliSubsetSerializer(TypeSerializer[UniformPauliSubset]):
     TYPE_ID = "D5"
     TYPE = UniformPauliSubset
 
-    class SSV1(DataSerializer[UniformPauliSubset]):
+    class SSV3(DataSerializer[UniformPauliSubset]):
         MIN_SSV = 3
 
         @classmethod
