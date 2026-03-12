@@ -53,8 +53,11 @@ The SSV history is summarized in the following table:
      - 0.14.0
      - Added :class:`~.C1Register` serialization; updated :class:`~.BasisChange` format.
    * - 3
-     - 0.16.0
-     - Added :class:`~.BalancedUniformPauli` distribution support in twirl nodes.
+     - 0.17.0
+     - Added :class:`~.PropagateLocalC1Node` and :class:`~DistributionSamplingNode` serialization;
+       added dedicated distribution serialization, including the new :class:`~BalancedPauli`,
+       :class:`~UniformLocalC1` and :class:`~UniformPauliSubset` classes; updated
+       :class:`~TwirlSamplingNode` format.
 
 Backwards compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^
