@@ -295,6 +295,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.CollectionNode.html">CollectionNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.CombineRegistersNode.html">CombineRegistersNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.ConversionNode.html">ConversionNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html">DistributionSamplingNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.EvaluationNode.html">EvaluationNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html">InjectNoiseNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/auto/samplomatic.samplex.nodes.LeftMultiplicationNode.html">LeftMultiplicationNode</a></li>
@@ -717,8 +718,6 @@
 </li>
         <li><a href="api/auto/samplomatic.constants.Direction.html#samplomatic.constants.Direction">Direction (class in samplomatic.constants)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch.direction">direction (samplomatic.pre_samplex.DanglerMatch attribute)</a>
 
         <ul>
@@ -741,7 +740,11 @@
           <li><a href="api/auto/samplomatic.pre_samplex.PreZ2Collect.html#samplomatic.pre_samplex.PreZ2Collect.direction">(samplomatic.pre_samplex.PreZ2Collect attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.distributions.Distribution.html#samplomatic.distributions.Distribution">Distribution (class in samplomatic.distributions)</a>
+</li>
+        <li><a href="api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html#samplomatic.samplex.nodes.DistributionSamplingNode">DistributionSamplingNode (class in samplomatic.samplex.nodes)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.draw">draw() (samplomatic.pre_samplex.PreSamplex method)</a>
 
@@ -918,6 +921,8 @@
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.ConversionNode.html#samplomatic.samplex.nodes.ConversionNode.get_style">(samplomatic.samplex.nodes.ConversionNode method)</a>
 </li>
+          <li><a href="api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html#samplomatic.samplex.nodes.DistributionSamplingNode.get_style">(samplomatic.samplex.nodes.DistributionSamplingNode method)</a>
+</li>
           <li><a href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode.get_style">(samplomatic.samplex.nodes.InjectNoiseNode method)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.get_style">(samplomatic.samplex.nodes.Node method)</a>
@@ -1003,14 +1008,14 @@
         </ul></li>
         <li><a href="api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.inputs">inputs() (samplomatic.samplex.Samplex method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.nodes.ChangeBasisNode.html#samplomatic.samplex.nodes.ChangeBasisNode.instantiates">instantiates() (samplomatic.samplex.nodes.ChangeBasisNode method)</a>
 
         <ul>
           <li><a href="api/auto/samplomatic.samplex.nodes.CombineRegistersNode.html#samplomatic.samplex.nodes.CombineRegistersNode.instantiates">(samplomatic.samplex.nodes.CombineRegistersNode method)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.ConversionNode.html#samplomatic.samplex.nodes.ConversionNode.instantiates">(samplomatic.samplex.nodes.ConversionNode method)</a>
+</li>
+          <li><a href="api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html#samplomatic.samplex.nodes.DistributionSamplingNode.instantiates">(samplomatic.samplex.nodes.DistributionSamplingNode method)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode.instantiates">(samplomatic.samplex.nodes.InjectNoiseNode method)</a>
 </li>
@@ -1021,6 +1026,8 @@
           <li><a href="api/auto/samplomatic.samplex.nodes.TwirlSamplingNode.html#samplomatic.samplex.nodes.TwirlSamplingNode.instantiates">(samplomatic.samplex.nodes.TwirlSamplingNode method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.intersection">intersection() (samplomatic.partition.Partition method)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.C1Register.html#samplomatic.virtual_registers.C1Register.inverse_table">inverse_table (samplomatic.virtual_registers.C1Register attribute)</a>
@@ -1293,6 +1300,8 @@
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.ConversionNode.html#samplomatic.samplex.nodes.ConversionNode.outgoing_register_type">(samplomatic.samplex.nodes.ConversionNode attribute)</a>
 </li>
+          <li><a href="api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html#samplomatic.samplex.nodes.DistributionSamplingNode.outgoing_register_type">(samplomatic.samplex.nodes.DistributionSamplingNode attribute)</a>
+</li>
           <li><a href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode.outgoing_register_type">(samplomatic.samplex.nodes.InjectNoiseNode attribute)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.outgoing_register_type">(samplomatic.samplex.nodes.Node attribute)</a>
@@ -1544,6 +1553,8 @@
           <li><a href="api/auto/samplomatic.distributions.UniformPauliSubset.html#samplomatic.distributions.UniformPauliSubset.sample">(samplomatic.distributions.UniformPauliSubset method)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.ChangeBasisNode.html#samplomatic.samplex.nodes.ChangeBasisNode.sample">(samplomatic.samplex.nodes.ChangeBasisNode method)</a>
+</li>
+          <li><a href="api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html#samplomatic.samplex.nodes.DistributionSamplingNode.sample">(samplomatic.samplex.nodes.DistributionSamplingNode method)</a>
 </li>
           <li><a href="api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html#samplomatic.samplex.nodes.InjectNoiseNode.sample">(samplomatic.samplex.nodes.InjectNoiseNode method)</a>
 </li>
