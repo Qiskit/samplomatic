@@ -1,0 +1,19 @@
+ChangeBasisMode
+===============
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: ChangeBasisMode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ChangeBasisMode.MEASURE
+      ~ChangeBasisMode.PREPARE
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: MEASURE
+   .. autoattribute:: PREPARE

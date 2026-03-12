@@ -1,0 +1,6 @@
+samplex_from_json
+=================
+
+.. currentmodule:: samplomatic.serialization
+
+.. autofunction:: samplex_from_json

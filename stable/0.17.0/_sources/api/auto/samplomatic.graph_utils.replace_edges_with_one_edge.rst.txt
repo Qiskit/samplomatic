@@ -1,0 +1,6 @@
+replace_edges_with_one_edge
+===========================
+
+.. currentmodule:: samplomatic.graph_utils
+
+.. autofunction:: replace_edges_with_one_edge

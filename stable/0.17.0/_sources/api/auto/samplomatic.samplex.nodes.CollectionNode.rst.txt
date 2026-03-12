@@ -1,0 +1,19 @@
+CollectionNode
+==============
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: CollectionNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~CollectionNode.collect
+      ~CollectionNode.get_style
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: collect
+   .. automethod:: get_style

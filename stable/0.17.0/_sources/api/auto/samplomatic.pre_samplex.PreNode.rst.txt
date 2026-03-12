@@ -1,0 +1,29 @@
+PreNode
+=======
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreNode.direction
+      ~PreNode.subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreNode.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: direction
+   .. autoattribute:: subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style

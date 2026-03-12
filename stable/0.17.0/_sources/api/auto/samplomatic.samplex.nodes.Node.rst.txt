@@ -1,0 +1,43 @@
+Node
+====
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: Node
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Node.num_parameters
+      ~Node.outgoing_register_type
+      ~Node.parameter_idxs
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Node.get_style
+      ~Node.instantiates
+      ~Node.outputs_to
+      ~Node.reads_from
+      ~Node.removes
+      ~Node.validate_and_update
+      ~Node.writes_to
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: num_parameters
+   .. autoattribute:: outgoing_register_type
+   .. autoattribute:: parameter_idxs
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: outputs_to
+   .. automethod:: reads_from
+   .. automethod:: removes
+   .. automethod:: validate_and_update
+   .. automethod:: writes_to

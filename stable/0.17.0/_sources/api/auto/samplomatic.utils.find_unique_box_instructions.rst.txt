@@ -1,0 +1,6 @@
+find_unique_box_instructions
+============================
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: find_unique_box_instructions

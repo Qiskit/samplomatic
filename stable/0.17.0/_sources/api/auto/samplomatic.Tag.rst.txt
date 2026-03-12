@@ -1,0 +1,19 @@
+Tag
+===
+
+.. currentmodule:: samplomatic
+
+.. autoclass:: Tag
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Tag.namespace
+      ~Tag.ref
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: namespace
+   .. autoattribute:: ref

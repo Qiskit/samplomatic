@@ -1,0 +1,53 @@
+VirtualRegister
+===============
+
+.. currentmodule:: samplomatic.virtual_registers
+
+.. autoclass:: VirtualRegister
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~VirtualRegister.CONVERTABLE_TYPES
+      ~VirtualRegister.DTYPE
+      ~VirtualRegister.GATE_SHAPE
+      ~VirtualRegister.SUBSYSTEM_SIZE
+      ~VirtualRegister.TYPE
+      ~VirtualRegister.num_samples
+      ~VirtualRegister.num_subsystems
+      ~VirtualRegister.shape
+      ~VirtualRegister.size
+      ~VirtualRegister.virtual_gates
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~VirtualRegister.convert_to
+      ~VirtualRegister.copy
+      ~VirtualRegister.empty
+      ~VirtualRegister.identity
+      ~VirtualRegister.select
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: CONVERTABLE_TYPES
+   .. autoattribute:: DTYPE
+   .. autoattribute:: GATE_SHAPE
+   .. autoattribute:: SUBSYSTEM_SIZE
+   .. autoattribute:: TYPE
+   .. autoattribute:: num_samples
+   .. autoattribute:: num_subsystems
+   .. autoattribute:: shape
+   .. autoattribute:: size
+   .. autoattribute:: virtual_gates
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: convert_to
+   .. automethod:: copy
+   .. automethod:: empty
+   .. automethod:: identity
+   .. automethod:: select
