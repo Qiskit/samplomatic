@@ -1,25 +1,25 @@
-C1PastCliffordNode
-==================
+PropagateLocalC1Node
+====================
 
 .. currentmodule:: samplomatic.samplex.nodes
 
-.. autoclass:: C1PastCliffordNode
+.. autoclass:: PropagateLocalC1Node
    :show-inheritance:
 
    .. rubric:: Attributes Summary
 
    .. autosummary::
 
-      ~C1PastCliffordNode.outgoing_register_type
+      ~PropagateLocalC1Node.outgoing_register_type
 
    .. rubric:: Methods Summary
 
    .. autosummary::
 
-      ~C1PastCliffordNode.evaluate
-      ~C1PastCliffordNode.get_style
-      ~C1PastCliffordNode.reads_from
-      ~C1PastCliffordNode.writes_to
+      ~PropagateLocalC1Node.evaluate
+      ~PropagateLocalC1Node.get_style
+      ~PropagateLocalC1Node.reads_from
+      ~PropagateLocalC1Node.writes_to
 
    .. rubric:: Attributes Documentation
 
