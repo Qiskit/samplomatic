@@ -14,7 +14,7 @@
 
 import numpy as np
 
-C1_PAST_CLIFFORD_LOOKUP_TABLES: dict[str, np.ndarray[np.intp]] = {
+LOCAL_C1_PROPAGATE_LOOKUP_TABLES: dict[str, np.ndarray[np.intp]] = {
     "h": np.array(
         [
             [0],
@@ -2019,10 +2019,10 @@ C1_PAST_CLIFFORD_LOOKUP_TABLES: dict[str, np.ndarray[np.intp]] = {
         dtype=np.intp,
     ),
 }
-"""Lookup tables for computing the conjugation of C1 operators by Clifford gates.
+"""Lookup tables for computing the conjugation of C1 operators by gates.
 
 Single-qubit C1 operators are indexed as in :class:`~.C1Register`\\s. Computing the
-conjugation of a C1 element by a Clifford can be done via slicing. For example,
-``C1_PAST_CLIFFORD_LOOKUP_TABLES["cx"][i, j]`` gives that of C1 elements ``i`` and ``j`` by CX.
-Two-qubit entries that do not remain local contain sentinel value ``-1``.
+conjugation of a C1 element by a gate can be done via slicing. For example,
+``LOCAL_C1_PROPAGATE_LOOKUP_TABLES["cx"][i, j]`` gives that of C1 elements ``i`` and ``j`` by CX.
+Entries that do not remain local or C1 contain sentinel value ``-1``.
 """

@@ -15,14 +15,14 @@ import numpy as np
 import pytest
 
 from samplomatic.exceptions import SamplexBuildError, SamplexRuntimeError
-from samplomatic.samplex.nodes import C1PastCliffordNode
+from samplomatic.samplex.nodes import PropagateLocalC1Node
 from samplomatic.virtual_registers import C1Register, VirtualType
 
 
-class TestC1PastClifford:
+class PropagateLocalC1:
     def test_one_qubit_gate(self):
         """Test propagating C1 register past a one-qubit Clifford gate."""
-        node = C1PastCliffordNode("h", "my_reg", [(3,), (1,), (0,)])
+        node = PropagateLocalC1Node("h", "my_reg", [(3,), (1,), (0,)])
 
         reg = C1Register(np.array([[0, 1], [4, 2], [2, 0], [3, 5]], dtype=np.uint8))
         node.evaluate({"my_reg": reg}, np.empty(()))
@@ -36,7 +36,7 @@ class TestC1PastClifford:
 
     def test_cx_gate(self):
         """Test propagating C1 register past a controlled-X gate."""
-        node = C1PastCliffordNode("cx", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("cx", "my_reg", [(0, 1)])
         assert node.outgoing_register_type is VirtualType.C1
 
         # Use Pauli subgroup inputs (C1 indices 0-3) which always remain local
@@ -48,7 +48,7 @@ class TestC1PastClifford:
 
     def test_cx_gate_non_pauli(self):
         """Test propagating non-Pauli C1 elements past a controlled-X gate."""
-        node = C1PastCliffordNode("cx", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("cx", "my_reg", [(0, 1)])
 
         # (22,13)→(23,15), (20,14)→(20,14)
         reg = C1Register(np.array([[22, 20], [13, 14]], dtype=np.uint8))
@@ -58,7 +58,7 @@ class TestC1PastClifford:
 
     def test_cz_gate(self):
         """Test propagating C1 register past a controlled-Z gate."""
-        node = C1PastCliffordNode("cz", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("cz", "my_reg", [(0, 1)])
         assert node.outgoing_register_type is VirtualType.C1
 
         # CZ Pauli table: (0,0)→(0,0), (2,3)→(3,2), (1,2)→(0,2)
@@ -69,7 +69,7 @@ class TestC1PastClifford:
 
     def test_cz_gate_non_pauli(self):
         """Test propagating non-Pauli C1 elements past a controlled-Z gate."""
-        node = C1PastCliffordNode("cz", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("cz", "my_reg", [(0, 1)])
 
         # (22,20)→(22,21), (20,22)→(21,22)
         reg = C1Register(np.array([[22, 20], [20, 22]], dtype=np.uint8))
@@ -79,7 +79,7 @@ class TestC1PastClifford:
 
     def test_ecr_gate(self):
         """Test propagating C1 register past an ECR gate."""
-        node = C1PastCliffordNode("ecr", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("ecr", "my_reg", [(0, 1)])
         assert node.outgoing_register_type is VirtualType.C1
 
         # ECR Pauli table: (0,0)→(0,0), (2,3)→(2,3), (1,2)→(1,2)
@@ -90,7 +90,7 @@ class TestC1PastClifford:
 
     def test_ecr_gate_non_pauli(self):
         """Test propagating non-Pauli C1 elements past an ECR gate."""
-        node = C1PastCliffordNode("ecr", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("ecr", "my_reg", [(0, 1)])
 
         # (20,12)→(21,12), (22,13)→(23,13)
         reg = C1Register(np.array([[20, 22], [12, 13]], dtype=np.uint8))
@@ -100,7 +100,7 @@ class TestC1PastClifford:
 
     def test_invalid_input_errors(self):
         """Test that non-local conjugation raises SamplexRuntimeError."""
-        node = C1PastCliffordNode("cx", "my_reg", [(0, 1)])
+        node = PropagateLocalC1Node("cx", "my_reg", [(0, 1)])
         # c0=4 (H), c1=0 (I) does not stay local under CX conjugation
         reg = C1Register(np.array([[4], [0]], dtype=np.uint8))
 
@@ -110,23 +110,23 @@ class TestC1PastClifford:
     def test_init_error(self):
         """Test init error."""
         with pytest.raises(SamplexBuildError, match=", found hadamard."):
-            C1PastCliffordNode("hadamard", "my_reg", [(3,), (1,), (0,)])
+            PropagateLocalC1Node("hadamard", "my_reg", [(3,), (1,), (0,)])
 
     def test_equality(self, dummy_evaluation_node):
-        node = C1PastCliffordNode("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        node = PropagateLocalC1Node("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
         assert node == node
-        assert node == C1PastCliffordNode("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node == PropagateLocalC1Node("cx", "my_reg", [(0, 3), (1, 4), (2, 5)])
         assert node != dummy_evaluation_node()
-        assert node != C1PastCliffordNode("cx", "my_reg", [(3, 0), (1, 4), (2, 5)])
-        assert node != C1PastCliffordNode("cx", "my_other_reg", [(0, 3), (1, 4), (2, 5)])
-        assert node != C1PastCliffordNode("ecr", "my_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node != PropagateLocalC1Node("cx", "my_reg", [(3, 0), (1, 4), (2, 5)])
+        assert node != PropagateLocalC1Node("cx", "my_other_reg", [(0, 3), (1, 4), (2, 5)])
+        assert node != PropagateLocalC1Node("ecr", "my_reg", [(0, 3), (1, 4), (2, 5)])
 
     def test_reads_from(self):
         """Test ``reads_from``."""
-        node = C1PastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])
+        node = PropagateLocalC1Node("cx", "my_reg", [(0, 1), (4, 2)])
         assert node.reads_from() == {"my_reg": ({0, 1, 2, 4}, VirtualType.C1)}
 
     def test_writes_to(self):
         """Test ``writes_to`` method."""
-        node = C1PastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])
+        node = PropagateLocalC1Node("cx", "my_reg", [(0, 1), (4, 2)])
         assert node.writes_to() == {"my_reg": ({0, 1, 2, 4}, VirtualType.C1)}
