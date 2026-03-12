@@ -6,6 +6,7 @@ samplomatic.annotations
    :no-heading:
    :skip: ChangeBasis
    :skip: InjectNoise
+   :skip: Tag
    :skip: Twirl
 
 Promoted Members

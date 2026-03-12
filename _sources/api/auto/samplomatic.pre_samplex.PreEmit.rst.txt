@@ -13,6 +13,7 @@ PreEmit
       ~PreEmit.direction
       ~PreEmit.register_type
       ~PreEmit.subsystems
+      ~PreEmit.twirl_gate
 
    .. rubric:: Methods Summary
 
@@ -25,6 +26,7 @@ PreEmit
    .. autoattribute:: direction
    .. autoattribute:: register_type
    .. autoattribute:: subsystems
+   .. autoattribute:: twirl_gate
 
    .. rubric:: Methods Documentation
 

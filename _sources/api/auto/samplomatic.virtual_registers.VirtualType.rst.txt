@@ -1,7 +1,7 @@
 VirtualType
 ===========
 
-.. currentmodule:: samplomatic.annotations
+.. currentmodule:: samplomatic.virtual_registers
 
 .. autoclass:: VirtualType
    :show-inheritance:

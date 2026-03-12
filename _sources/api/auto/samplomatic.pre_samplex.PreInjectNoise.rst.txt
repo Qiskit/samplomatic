@@ -16,6 +16,7 @@ PreInjectNoise
       ~PreInjectNoise.register_type
       ~PreInjectNoise.sign_idx
       ~PreInjectNoise.subsystems
+      ~PreInjectNoise.twirl_gate
 
    .. rubric:: Methods Summary
 
@@ -31,6 +32,7 @@ PreInjectNoise
    .. autoattribute:: register_type
    .. autoattribute:: sign_idx
    .. autoattribute:: subsystems
+   .. autoattribute:: twirl_gate
 
    .. rubric:: Methods Documentation
 

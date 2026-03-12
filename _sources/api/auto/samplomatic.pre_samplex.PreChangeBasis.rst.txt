@@ -15,6 +15,7 @@ PreChangeBasis
       ~PreChangeBasis.direction
       ~PreChangeBasis.register_type
       ~PreChangeBasis.subsystems
+      ~PreChangeBasis.twirl_gate
 
    .. rubric:: Methods Summary
 
@@ -29,6 +30,7 @@ PreChangeBasis
    .. autoattribute:: direction
    .. autoattribute:: register_type
    .. autoattribute:: subsystems
+   .. autoattribute:: twirl_gate
 
    .. rubric:: Methods Documentation
 

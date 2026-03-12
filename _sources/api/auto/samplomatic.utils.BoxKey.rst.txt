@@ -5,3 +5,13 @@ BoxKey
 
 .. autoclass:: BoxKey
    :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~BoxKey.hexdigest
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: hexdigest
