@@ -59,8 +59,14 @@ from samplomatic.virtual_registers import VirtualType
 
 
 def test_basis_change_unsupported_register_type():
-    with pytest.raises(SerializationError, match="Cannot serialive"):
+    with pytest.raises(SerializationError, match="Cannot serialize"):
         BasisChangeSerializer.serialize(LOCAL_CLIFFORD, 1)
+
+
+def test_twirl_sampling_unsupported_distribution_type():
+    node = TwirlSamplingNode("lhs", "rhs", BalancedUniformPauli(10))
+    with pytest.raises(SerializationError, match="Cannot serialize"):
+        TwirlSamplingNodeSerializer.serialize(node, 1)
 
 
 @pytest.mark.parametrize("basis_change", [MEAS_PAULI_BASIS, PREP_PAULI_BASIS])

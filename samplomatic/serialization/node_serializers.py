@@ -14,7 +14,7 @@
 
 import orjson
 
-from ..distributions import BalancedUniformPauli, Distribution, HaarU2, UniformLocalC1, UniformPauli
+from ..distributions import HaarU2, UniformPauli
 from ..exceptions import DeserializationError, SerializationError
 from ..samplex.nodes import (
     C1PastCliffordNode,
@@ -413,10 +413,12 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
 
         @classmethod
         def serialize(cls, obj, ssv):
-            if isinstance(obj._distribution, HaarU2):  # noqa: SLF001
+            if isinstance(distribution := obj._distribution, HaarU2):  # noqa: SLF001
                 distribution_type = "haar_u2"
-            else:
+            elif isinstance(distribution, UniformPauli):
                 distribution_type = "pauli_uniform"
+            else:
+                raise SerializationError(f"Cannot serialize '{type(distribution)}' in SSV {ssv}.")
             distribution = {
                 "type": distribution_type,
                 "num_subsystems": obj._distribution.num_subsystems,  # noqa: SLF001
@@ -443,48 +445,23 @@ class TwirlSamplingNodeSerializer(TypeSerializer[TwirlSamplingNode]):
 
         @classmethod
         def serialize(cls, obj, ssv):
-            distribution: Distribution = obj._distribution  # noqa: SLF001
-            distribution_spec = {"num_subsystems": distribution.num_subsystems}
-            if isinstance(distribution, UniformPauli):
-                distribution_spec["type"] = "pauli"
-            elif isinstance(distribution, BalancedUniformPauli):
-                distribution_spec["type"] = "balanced_pauli"
-            elif isinstance(distribution, HaarU2):
-                distribution_spec["type"] = "haar_u2"
-            elif isinstance(distribution, UniformLocalC1):
-                distribution_spec["type"] = "local_c1"
-                distribution_spec["gate_name"] = distribution.gate_name
-            else:
-                raise SerializationError(
-                    f"Cannot serialize a twirl node with the distribution {distribution}"
-                )
+            try:
+                type_id = TypeSerializer.TYPE_REGISTRY[(dist_type := type(obj._distribution))]  # noqa: SLF001
+            except KeyError:
+                raise SerializationError(f"Cannot serialize distribution of type {dist_type}.")
+            dist = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj._distribution, ssv)  # noqa: SLF001
             return {
                 "lhs_register_name": obj._lhs_register_name,  # noqa: SLF001
                 "rhs_register_name": obj._rhs_register_name,  # noqa: SLF001
-                "distribution": orjson.dumps(distribution_spec).decode("utf-8"),
+                "distribution": orjson.dumps(dist).decode("utf-8"),
             }
 
         @classmethod
         def deserialize(cls, data):
-            distribution_spec = orjson.loads(data["distribution"])
-            num_subsystems = distribution_spec["num_subsystems"]
-            distribution: Distribution
-            match distribution_spec["type"]:
-                case "pauli":
-                    distribution = UniformPauli(num_subsystems)
-                case "balanced_pauli":
-                    distribution = BalancedUniformPauli(num_subsystems)
-                case "haar_u2":
-                    distribution = HaarU2(num_subsystems)
-                case "local_c1":
-                    gate_name = distribution_spec["gate_name"]
-                    distribution = UniformLocalC1(num_subsystems, gate_name)
-                case _:
-                    raise DeserializationError(
-                        f"Unknown distribution type: {distribution_spec['type']}"
-                    )
             return TwirlSamplingNode(
-                data["lhs_register_name"], data["rhs_register_name"], distribution
+                data["lhs_register_name"],
+                data["rhs_register_name"],
+                TypeSerializer.deserialize(orjson.loads(data["distribution"])),
             )
 
 

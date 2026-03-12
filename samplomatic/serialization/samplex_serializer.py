@@ -42,6 +42,7 @@ from ..exceptions import SerializationError
 from ..samplex import Samplex
 from ..samplex.nodes import Node
 from ..ssv import SSV
+from .distribution_serializers import *  # noqa: F403
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
 from .specification_serializers import deserialize_specifications, serialize_specifications
