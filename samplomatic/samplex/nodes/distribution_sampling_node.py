@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""NewSamplingNode"""  # TODO: NAME ME
+"""DistributionSamplingNode"""  # TODO: NAME ME
 
 from ...aliases import NumSubsystems, RegisterName
 from ...distributions import Distribution
@@ -18,8 +18,8 @@ from ...virtual_registers import VirtualType
 from .sampling_node import SamplingNode
 
 
-class NewSamplingNode(SamplingNode):
-    """A node that produces samples.
+class DistributionSamplingNode(SamplingNode):
+    """A node that produces samples from a distribution.
 
     Args:
         register_name: The name of the register to store the samples.
@@ -50,7 +50,7 @@ class NewSamplingNode(SamplingNode):
 
     def __eq__(self, other):
         return (
-            isinstance(other, NewSamplingNode)
+            isinstance(other, DistributionSamplingNode)
             and self._register_name == other._register_name
             and self._distribution == other._distribution
         )

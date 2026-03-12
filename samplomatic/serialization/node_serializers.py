@@ -23,10 +23,10 @@ from ..samplex.nodes import (
     CollectZ2ToOutputNode,
     CombineRegistersNode,
     ConversionNode,
+    DistributionSamplingNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
-    NewSamplingNode,
     PauliPastCliffordNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
@@ -548,13 +548,13 @@ class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
             )
 
 
-class NewSamplingNodeSerializer(TypeSerializer[NewSamplingNode]):
-    """Serializer for :class:`~.TwirlSamplingNode`."""
+class DistributionSamplingNodeSerializer(TypeSerializer[DistributionSamplingNode]):
+    """Serializer for :class:`~.DistributionSamplingNode`."""
 
     TYPE_ID = "N14"
-    TYPE = NewSamplingNode
+    TYPE = DistributionSamplingNode
 
-    class SSV3(DataSerializer[NewSamplingNode]):
+    class SSV3(DataSerializer[DistributionSamplingNode]):
         MIN_SSV = 3
 
         @classmethod
@@ -571,7 +571,7 @@ class NewSamplingNodeSerializer(TypeSerializer[NewSamplingNode]):
 
         @classmethod
         def deserialize(cls, data):
-            return NewSamplingNode(
+            return DistributionSamplingNode(
                 data["register_name"],
                 TypeSerializer.deserialize(orjson.loads(data["distribution"])),
             )

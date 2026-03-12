@@ -17,10 +17,10 @@ from .collect_z2_to_output_node import CollectZ2ToOutputNode
 from .collection_node import CollectionNode
 from .combine_registers_node import CombineRegistersNode
 from .conversion_node import ConversionNode
+from .distribution_sampling_node import DistributionSamplingNode
 from .evaluation_node import EvaluationNode
 from .inject_noise_node import InjectNoiseNode
 from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
-from .new_sampling_node import NewSamplingNode
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
 from .sampling_node import SamplingNode

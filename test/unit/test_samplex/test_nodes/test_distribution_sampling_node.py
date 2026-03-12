@@ -10,17 +10,17 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test the NewSamplingNode class"""
+"""Test the DistributionSamplingNode class"""
 
 from samplomatic.distributions import UniformPauli
-from samplomatic.samplex.nodes import NewSamplingNode
+from samplomatic.samplex.nodes import DistributionSamplingNode
 from samplomatic.tensor_interface import TensorInterface
 from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
 def test_instantiates():
     """Test instantiation and basic attributes."""
-    node = NewSamplingNode("lhs", UniformPauli(10))
+    node = DistributionSamplingNode("lhs", UniformPauli(10))
     expected_dict = {"lhs": (10, VirtualType.PAULI)}
     assert node.instantiates() == expected_dict
     assert node.outgoing_register_type is VirtualType.PAULI
@@ -28,18 +28,18 @@ def test_instantiates():
 
 def test_equality(dummy_sampling_node):
     """Test equality."""
-    node = NewSamplingNode("lhs", UniformPauli(1))
+    node = DistributionSamplingNode("lhs", UniformPauli(1))
     assert node == node
-    assert node == NewSamplingNode("lhs", UniformPauli(1))
+    assert node == DistributionSamplingNode("lhs", UniformPauli(1))
     assert node != dummy_sampling_node()
-    assert node != NewSamplingNode("left", UniformPauli(1))
-    assert node != NewSamplingNode("lhs", UniformPauli(10))
+    assert node != DistributionSamplingNode("left", UniformPauli(1))
+    assert node != DistributionSamplingNode("lhs", UniformPauli(10))
 
 
 def test_sample(rng):
     """Test the sample method."""
     registers = {}
-    node = NewSamplingNode("lhs", UniformPauli(10))
+    node = DistributionSamplingNode("lhs", UniformPauli(10))
     samplex_input = TensorInterface([])
 
     node.sample(registers, rng, samplex_input, 100)

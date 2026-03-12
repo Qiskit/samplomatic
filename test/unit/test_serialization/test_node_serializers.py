@@ -22,10 +22,10 @@ from samplomatic.samplex.nodes import (
     CollectZ2ToOutputNode,
     CombineRegistersNode,
     ConversionNode,
+    DistributionSamplingNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
-    NewSamplingNode,
     PauliPastCliffordNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
@@ -45,10 +45,10 @@ from samplomatic.serialization.node_serializers import (
     CollectZ2ToOutputNodeSerializer,
     CombineRegistersNodeSerializer,
     ConversionNodeSerializer,
+    DistributionSamplingNodeSerializer,
     InjectNoiseNodeSerializer,
     LeftMultiplicationNodeSerializer,
     LeftU2ParametricMultiplicationNodeSerializer,
-    NewSamplingNodeSerializer,
     PauliPastCliffordNodeSerializer,
     RightMultiplicationNodeSerializer,
     RightU2ParametricMultiplicationNodeSerializer,
@@ -199,9 +199,9 @@ def test_c1_past_clifford_serializer_round_trip(ssv):
     assert node == TypeSerializer.deserialize(data)
 
 
-@pytest.mark.parametrize("ssv", NewSamplingNodeSerializer.SSVS)
+@pytest.mark.parametrize("ssv", DistributionSamplingNodeSerializer.SSVS)
 def test_new_sampling_serializer_round_trip(ssv):
-    node = NewSamplingNode("lhs", UniformPauli(10))
-    data = NewSamplingNodeSerializer.serialize(node, ssv)
+    node = DistributionSamplingNode("lhs", UniformPauli(10))
+    data = DistributionSamplingNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
