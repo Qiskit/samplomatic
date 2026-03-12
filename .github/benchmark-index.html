@@ -6,6 +6,8 @@
   <title>Samplomatic Benchmarks</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2"></script>
   <script src="data.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,12 +32,12 @@
       color: #555;
       font-family: monospace;
     }
-    canvas { width: 100% !important; }
+    canvas { width: 100% !important; cursor: pointer; }
   </style>
 </head>
 <body>
   <h1>Samplomatic Benchmarks</h1>
-  <p class="subtitle">Performance tracking across commits. Dashed lines mark release tags.</p>
+  <p class="subtitle">Performance tracking across commits. Dashed lines mark release tags. Drag or scroll to zoom, double-click or button to reset.</p>
   <div id="charts"></div>
 
   <script>
@@ -99,6 +101,11 @@
         const title = document.createElement("h2");
         title.textContent = benchName;
         container.appendChild(title);
+        const resetBtn = document.createElement("button");
+        resetBtn.textContent = "Reset zoom";
+        resetBtn.style.cssText = "float:right;font-size:0.75rem;padding:2px 8px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#f9f9f9;";
+        title.appendChild(document.createTextNode(" "));
+        title.appendChild(resetBtn);
         const canvas = document.createElement("canvas");
         container.appendChild(canvas);
         chartsDiv.appendChild(container);
@@ -106,6 +113,7 @@
         const labels = [];
         const values = [];
         const commitIds = [];
+        const commitMeta = [];
 
         for (const entry of entries) {
           const bench = entry.benches.find(b => b.name === benchName);
@@ -115,8 +123,14 @@
               ? new Date(entry.date).toLocaleDateString()
               : shortSha;
             labels.push(`${date} (${shortSha})`);
-            values.push(bench.value);
+            values.push(1.0 / bench.value);  // convert iter/sec to seconds
             commitIds.push(entry.commit.id);
+            commitMeta.push({
+              message: entry.commit.message || "",
+              url: entry.commit.url || "",
+              date: date,
+              sha: shortSha,
+            });
           }
         }
 
@@ -148,12 +162,12 @@
         const color = colors[colorIdx % colors.length];
         colorIdx++;
 
-        new Chart(canvas, {
+        const chart = new Chart(canvas, {
           type: "line",
           data: {
             labels: labels,
             datasets: [{
-              label: "iter/sec",
+              label: "seconds",
               data: values,
               borderColor: color,
               backgroundColor: color + "20",
@@ -170,23 +184,49 @@
               },
               y: {
                 beginAtZero: false,
-                title: { display: true, text: "iter/sec" },
+                title: { display: true, text: "seconds" },
               },
             },
+            onClick: function(evt, elements) {
+              if (elements.length > 0) {
+                const idx = elements[0].index;
+                const url = commitMeta[idx].url;
+                if (url) window.open(url, "_blank");
+              }
+            },
             plugins: {
+              zoom: {
+                pan: { enabled: true, mode: "x" },
+                zoom: {
+                  wheel: { enabled: true },
+                  pinch: { enabled: true },
+                  drag: { enabled: true, backgroundColor: "rgba(0,0,0,0.1)" },
+                  mode: "x",
+                },
+              },
               annotation: { annotations: annotations },
               tooltip: {
                 callbacks: {
+                  title: function(ctx) {
+                    const idx = ctx[0].dataIndex;
+                    return commitMeta[idx].message || labels[idx];
+                  },
                   afterBody: function(ctx) {
                     const idx = ctx[0].dataIndex;
+                    const meta = commitMeta[idx];
+                    const lines = [`${meta.date}  (${meta.sha})`];
                     const tagName = tagsBySha[commitIds[idx]];
-                    return tagName ? `Release: ${tagName}` : "";
+                    if (tagName) lines.push(`Release: ${tagName}`);
+                    lines.push(`Click point to open commit`);
+                    return lines.join("\n");
                   },
                 },
               },
             },
           },
         });
+        resetBtn.addEventListener("click", () => chart.resetZoom());
+        canvas.addEventListener("dblclick", () => chart.resetZoom());
       }
     })();
   </script>

@@ -21,19 +21,30 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ".[dev,vis]"
       - name: Run benchmarks
-        run: >-
-          python -m pytest test/performance
-          --benchmark-json=benchmark-results.json
-          --seed=12345
-      - name: Store benchmark result
+        run: |
+          mkdir -p results
+          python -m pytest test/performance \
+            --benchmark-json="results/$(git rev-parse HEAD).json" \
+            --seed=12345
+      - name: Check for alert
         uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: pytest
-          output-file-path: benchmark-results.json
+          output-file-path: results/${{ github.sha }}.json
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: benchmarks
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: true
+          auto-push: false
+          save-data-file: false
           alert-threshold: "110%"
           comment-on-alert: true
           fail-on-alert: false
+      - name: Fetch gh-pages
+        run: git fetch origin gh-pages || true
+      - name: Assemble data.js
+        run: python .github/scripts/assemble_benchmark_data.py
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: benchmarks-output
+          target-folder: benchmarks

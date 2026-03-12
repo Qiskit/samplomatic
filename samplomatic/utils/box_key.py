@@ -12,7 +12,9 @@
 
 """BoxKey"""
 
+import hashlib
 from collections.abc import Hashable
+from functools import cached_property
 
 from qiskit.circuit import Clbit, Qubit
 from qiskit.converters import circuit_to_dag
@@ -74,6 +76,7 @@ class BoxKey:
             nodes_specs,
             annotation_specs,
         )
+
         self._hash = None
 
     def _node_specs(
@@ -105,9 +108,27 @@ class BoxKey:
 
         return (op_hashable, param_hashable, qubit_hashable, clbit_hashable)
 
+    @staticmethod
+    def _to_canonical(obj) -> str:
+        """Recursively convert a nested hashable structure into a deterministic string."""
+        if isinstance(obj, frozenset):
+            elements = sorted(map(BoxKey._to_canonical, obj))
+            return f"{{{','.join(elements)}}}"
+        if isinstance(obj, tuple):
+            elements = map(BoxKey._to_canonical, obj)
+            return f"({','.join(elements)})"
+        return repr(obj)
+
+    @cached_property
+    def hexdigest(self) -> str:
+        """Cross-platform, process independent hex digest of this box."""
+        canonical = self._to_canonical(self._hashable_specs)
+        sha = hashlib.sha256(canonical.encode())
+        return sha.hexdigest()
+
     def __hash__(self):
         if self._hash is None:
-            self._hash = hash(self._hashable_specs)
+            self._hash = int.from_bytes(bytes.fromhex(self.hexdigest[:16]), "little")
         return self._hash
 
     def __eq__(self, other):
