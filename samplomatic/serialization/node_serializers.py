@@ -26,6 +26,7 @@ from ..samplex.nodes import (
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
+    NewSamplingNode,
     PauliPastCliffordNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
@@ -544,4 +545,33 @@ class C1PastCliffordNodeSerializer(TypeSerializer[C1PastCliffordNode]):
                 data["op_name"],
                 data["register_name"],
                 array_from_json(data["subsystem_idxs"]),
+            )
+
+
+class NewSamplingNodeSerializer(TypeSerializer[NewSamplingNode]):
+    """Serializer for :class:`~.TwirlSamplingNode`."""
+
+    TYPE_ID = "N14"
+    TYPE = NewSamplingNode
+
+    class SSV3(DataSerializer[NewSamplingNode]):
+        MIN_SSV = 3
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            try:
+                type_id = TypeSerializer.TYPE_REGISTRY[(dist_type := type(obj._distribution))]  # noqa: SLF001
+            except KeyError:
+                raise SerializationError(f"Cannot serialize distribution of type {dist_type}.")
+            dist = TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(obj._distribution, ssv)  # noqa: SLF001
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "distribution": orjson.dumps(dist).decode("utf-8"),
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return NewSamplingNode(
+                data["register_name"],
+                TypeSerializer.deserialize(orjson.loads(data["distribution"])),
             )

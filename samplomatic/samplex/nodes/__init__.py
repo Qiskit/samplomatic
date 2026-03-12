@@ -20,6 +20,7 @@ from .conversion_node import ConversionNode
 from .evaluation_node import EvaluationNode
 from .inject_noise_node import InjectNoiseNode
 from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
+from .new_sampling_node import NewSamplingNode
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
 from .sampling_node import SamplingNode
