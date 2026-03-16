@@ -205,3 +205,16 @@ def test_new_sampling_serializer_round_trip(ssv):
     data = DistributionSamplingNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
+
+
+@pytest.mark.parametrize(
+    ("node_type", "serializer"),
+    [
+        [LeftMultiplicationNode, LeftMultiplicationNodeSerializer],
+        [RightMultiplicationNode, RightMultiplicationNodeSerializer],
+    ],
+)
+def test_multiplication_node_ssv(node_type, serializer, rng):
+    node = node_type(UniformPauli(5).sample(1, rng), "a")
+    data = serializer.serialize(node, 2)
+    assert orjson.loads(data["operand"])["ssv"] == "2"
