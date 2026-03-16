@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.6.0 - 2025-09-03" href="release_notes_0.6.0.html" /><link rel="prev" title="0.8.0 - 2025-09-22" href="release_notes_0.8.0.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.17.0 - 2026-03-12" href="release_notes_0.17.0.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>0.7.0 - 2025-09-15 - samplomatic 0.1.dev1</title>
+        <title>0.17.1 - 2026-03-16 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -381,7 +381,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_0.17.1.html">Release notes for 0.17.1</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.17.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.17.0.html">Release notes for 0.17.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.16.1.html">Release notes for 0.16.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
@@ -394,7 +394,7 @@
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.10.0.html">Release notes for 0.10.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.9.0.html">Release notes for 0.9.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.8.0.html">Release notes for 0.8.0</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0.7.0.html">Release notes for 0.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.6.0.html">Release notes for 0.6.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.5.0.html">Release notes for 0.5.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
@@ -459,7 +459,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/release_notes/release_notes_0.7.0.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/release_notes/release_notes_0.17.1.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -480,45 +480,11 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="id1">
-<h1>0.7.0 - 2025-09-15<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
-<section id="removed">
-<h2>Removed<a class="headerlink" href="#removed" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Removed the <code class="docutils literal notranslate"><span class="pre">PauliRegister.from_paulis</span></code> method. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/14">#14</a>)</p></li>
-</ul>
-</section>
-<section id="added">
-<h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Added a <code class="docutils literal notranslate"><span class="pre">width</span></code> argument to <code class="docutils literal notranslate"><span class="pre">TensorInterface.describe()</span></code> for text wrapping, and added this description to <code class="docutils literal notranslate"><span class="pre">Samplex.__str__()</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/104">#104</a>)</p></li>
-<li><p>Added a <code class="docutils literal notranslate"><span class="pre">NoiseModelRequirement</span></code> class that describes a noise model required by a <code class="docutils literal notranslate"><span class="pre">Samplex</span></code> at sample time.
-Added a <code class="docutils literal notranslate"><span class="pre">Samplex.noise_models</span></code> property containing a dictionary of <code class="docutils literal notranslate"><span class="pre">NoiseModelRequirement</span></code>s. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/112">#112</a>)</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">InjectNoise</span></code> and <code class="docutils literal notranslate"><span class="pre">BasisTransform</span></code> to the top-level module, allowing, for example, <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">samplomatic</span> <span class="pre">import</span> <span class="pre">InjectNoise,</span> <span class="pre">BasisTransform</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/117">#117</a>)</p></li>
-</ul>
-</section>
-<section id="changed">
-<h2>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Measurement flips are now returned with shape <code class="docutils literal notranslate"><span class="pre">(num_randomizations,</span> <span class="pre">1,</span> <span class="pre">num_qubits)</span></code> to facilitate processing against a shots axis.
-Previously, they would be returned as <code class="docutils literal notranslate"><span class="pre">(num_randomizations,</span> <span class="pre">num_qubits)</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/105">#105</a>)</p></li>
-<li><p>In order to facilitate broadcasting, <code class="docutils literal notranslate"><span class="pre">Samplex.sample()</span></code> now expects an array of rates and a <code class="docutils literal notranslate"><span class="pre">qiskit.quantum_info.QubitSparsePauliList</span></code> for each noise reference.
-Previously, it expected a <code class="docutils literal notranslate"><span class="pre">qiskit.quantum_info.PauliLindbladMap</span></code>.
-This change is reflected in <code class="docutils literal notranslate"><span class="pre">Samplex.inputs()</span></code> which now requires a <code class="docutils literal notranslate"><span class="pre">qiskit.quantum_info.QubitSparsePauliList</span></code> for each element of <code class="docutils literal notranslate"><span class="pre">Samplex.noise_models</span></code>.
-The returned <code class="docutils literal notranslate"><span class="pre">TensorInterface</span></code> object then contains the bound <code class="docutils literal notranslate"><span class="pre">QubitSparsePauliList</span></code>s, as well as <code class="docutils literal notranslate"><span class="pre">TensorSpecification</span></code>s for the rates, the scale, and the local scales. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/112">#112</a>)</p></li>
-</ul>
-</section>
+<h1>0.17.1 - 2026-03-16<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <section id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Samplex.sample</span></code> arguments corresponding to <code class="docutils literal notranslate"><span class="pre">BasisTransform</span></code> and <code class="docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotations are indexed in physical qubit order, in other words, the order of the qubits in the outer-most circuit, restricted to those used by the box.
-Previously, they followed the order of <code class="docutils literal notranslate"><span class="pre">CircuitInstruction.qubits</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/116">#116</a>)</p></li>
-</ul>
-</section>
-<section id="improved">
-<h2>Improved<a class="headerlink" href="#improved" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">ParameterExpressionTable.evaluate</span></code> method now uses <code class="docutils literal notranslate"><span class="pre">ParameterExpression.bind_all</span></code> to increase performance. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/13">#13</a>)</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">InjectNoise.sample</span></code> now uses the <code class="docutils literal notranslate"><span class="pre">QubitSparsePauliList.to_dense_array</span></code> method for increased performance. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/14">#14</a>)</p></li>
+<li><p>Fixed a serialization issue with <code class="docutils literal notranslate"><span class="pre">LeftMultiplicationNode</span></code> and <code class="docutils literal notranslate"><span class="pre">RightMultiplicationNode</span></code> where the current SSV was used when serializing the operand, causing backwards compatibility issues. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/337">#337</a>)</p></li>
 </ul>
 </section>
 </section>
@@ -528,23 +494,23 @@ Previously, they followed the order of <code class="docutils literal notranslate
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_0.6.0.html">
+          <a class="next-page" href="release_notes_0.17.0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">0.6.0 - 2025-09-03</div>
+                <div class="title">0.17.0 - 2026-03-12</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="release_notes_0.8.0.html">
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0.8.0 - 2025-09-22</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -579,12 +545,8 @@ Previously, they followed the order of <code class="docutils literal notranslate
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0.7.0 - 2025-09-15</a><ul>
-<li><a class="reference internal" href="#removed">Removed</a></li>
-<li><a class="reference internal" href="#added">Added</a></li>
-<li><a class="reference internal" href="#changed">Changed</a></li>
+<li><a class="reference internal" href="#">0.17.1 - 2026-03-16</a><ul>
 <li><a class="reference internal" href="#fixed">Fixed</a></li>
-<li><a class="reference internal" href="#improved">Improved</a></li>
 </ul>
 </li>
 </ul>
