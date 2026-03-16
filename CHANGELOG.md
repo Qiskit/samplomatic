@@ -1,3 +1,10 @@
+## [0.17.1](https://github.com/Qiskit/samplomatic/tree/0.17.1) - 2026-03-16
+
+### Fixed
+
+- Fixed a serialization issue with `LeftMultiplicationNode` and `RightMultiplicationNode` where the current SSV was used when serializing the operand, causing backwards compatibility issues. ([#337](https://github.com/Qiskit/samplomatic/issues/337))
+
+
 ## [0.17.0](https://github.com/Qiskit/samplomatic/tree/0.17.0) - 2026-03-12
 
 ### Removed
