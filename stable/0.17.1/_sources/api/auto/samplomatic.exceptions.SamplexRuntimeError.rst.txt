@@ -1,0 +1,6 @@
+SamplexRuntimeError
+===================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: SamplexRuntimeError

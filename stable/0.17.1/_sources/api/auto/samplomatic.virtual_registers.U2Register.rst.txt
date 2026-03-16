@@ -1,0 +1,43 @@
+U2Register
+==========
+
+.. currentmodule:: samplomatic.virtual_registers
+
+.. autoclass:: U2Register
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~U2Register.CONVERTABLE_TYPES
+      ~U2Register.GATE_SHAPE
+      ~U2Register.SUBSYSTEM_SIZE
+      ~U2Register.TYPE
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~U2Register.identity
+      ~U2Register.inplace_multiply
+      ~U2Register.invert
+      ~U2Register.left_inplace_multiply
+      ~U2Register.left_multiply
+      ~U2Register.multiply
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: CONVERTABLE_TYPES
+   .. autoattribute:: GATE_SHAPE
+   .. autoattribute:: SUBSYSTEM_SIZE
+   .. autoattribute:: TYPE
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: identity
+   .. automethod:: inplace_multiply
+   .. automethod:: invert
+   .. automethod:: left_inplace_multiply
+   .. automethod:: left_multiply
+   .. automethod:: multiply

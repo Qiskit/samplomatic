@@ -1,0 +1,35 @@
+CollectTemplateValues
+=====================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: CollectTemplateValues
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~CollectTemplateValues.num_subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~CollectTemplateValues.collect
+      ~CollectTemplateValues.get_style
+      ~CollectTemplateValues.outputs_to
+      ~CollectTemplateValues.reads_from
+      ~CollectTemplateValues.validate_and_update
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: num_subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: collect
+   .. automethod:: get_style
+   .. automethod:: outputs_to
+   .. automethod:: reads_from
+   .. automethod:: validate_and_update

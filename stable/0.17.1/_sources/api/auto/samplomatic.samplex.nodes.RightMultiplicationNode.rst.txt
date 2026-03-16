@@ -1,0 +1,17 @@
+RightMultiplicationNode
+=======================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: RightMultiplicationNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~RightMultiplicationNode.evaluate
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate

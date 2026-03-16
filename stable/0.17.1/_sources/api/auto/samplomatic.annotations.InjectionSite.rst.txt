@@ -1,0 +1,19 @@
+InjectionSite
+=============
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: InjectionSite
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~InjectionSite.AFTER
+      ~InjectionSite.BEFORE
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: AFTER
+   .. autoattribute:: BEFORE

@@ -1,0 +1,35 @@
+CombineRegistersNode
+====================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: CombineRegistersNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~CombineRegistersNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~CombineRegistersNode.evaluate
+      ~CombineRegistersNode.get_style
+      ~CombineRegistersNode.instantiates
+      ~CombineRegistersNode.reads_from
+      ~CombineRegistersNode.validate_and_update
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: reads_from
+   .. automethod:: validate_and_update

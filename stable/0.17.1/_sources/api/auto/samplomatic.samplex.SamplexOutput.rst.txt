@@ -1,0 +1,7 @@
+SamplexOutput
+=============
+
+.. currentmodule:: samplomatic.samplex
+
+.. autoclass:: SamplexOutput
+   :show-inheritance:

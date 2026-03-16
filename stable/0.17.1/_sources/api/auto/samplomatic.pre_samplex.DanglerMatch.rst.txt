@@ -1,0 +1,31 @@
+DanglerMatch
+============
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: DanglerMatch
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~DanglerMatch.dangler_type
+      ~DanglerMatch.direction
+      ~DanglerMatch.node_types
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~DanglerMatch.match_node
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: dangler_type
+   .. autoattribute:: direction
+   .. autoattribute:: node_types
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: match_node

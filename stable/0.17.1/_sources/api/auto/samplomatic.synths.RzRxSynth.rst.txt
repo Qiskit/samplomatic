@@ -1,0 +1,31 @@
+RzRxSynth
+=========
+
+.. currentmodule:: samplomatic.synths
+
+.. autoclass:: RzRxSynth
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~RzRxSynth.compatible_register_types
+      ~RzRxSynth.num_params
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~RzRxSynth.generate_template_values
+      ~RzRxSynth.make_template
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: compatible_register_types
+   .. autoattribute:: num_params
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: generate_template_values
+   .. automethod:: make_template

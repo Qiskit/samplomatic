@@ -1,0 +1,27 @@
+Distribution
+============
+
+.. currentmodule:: samplomatic.distributions
+
+.. autoclass:: Distribution
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Distribution.register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Distribution.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: sample

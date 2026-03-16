@@ -1,0 +1,33 @@
+PreZ2Collect
+============
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreZ2Collect
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreZ2Collect.clbit_idxs
+      ~PreZ2Collect.direction
+      ~PreZ2Collect.subsystems
+      ~PreZ2Collect.subsystems_idxs
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreZ2Collect.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: clbit_idxs
+   .. autoattribute:: direction
+   .. autoattribute:: subsystems
+   .. autoattribute:: subsystems_idxs
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style

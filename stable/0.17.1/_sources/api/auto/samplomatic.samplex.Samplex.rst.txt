@@ -1,0 +1,49 @@
+Samplex
+=======
+
+.. currentmodule:: samplomatic.samplex
+
+.. autoclass:: Samplex
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Samplex.num_parameters
+      ~Samplex.parameters
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Samplex.add_edge
+      ~Samplex.add_input
+      ~Samplex.add_node
+      ~Samplex.add_output
+      ~Samplex.append_parameter_expression
+      ~Samplex.draw
+      ~Samplex.finalize
+      ~Samplex.inputs
+      ~Samplex.outputs
+      ~Samplex.sample
+      ~Samplex.set_passthrough_params
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: num_parameters
+   .. autoattribute:: parameters
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: add_edge
+   .. automethod:: add_input
+   .. automethod:: add_node
+   .. automethod:: add_output
+   .. automethod:: append_parameter_expression
+   .. automethod:: draw
+   .. automethod:: finalize
+   .. automethod:: inputs
+   .. automethod:: outputs
+   .. automethod:: sample
+   .. automethod:: set_passthrough_params

@@ -1,0 +1,6 @@
+DeserializationError
+====================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: DeserializationError

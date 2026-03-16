@@ -1,0 +1,33 @@
+ParameterExpressionTable
+========================
+
+.. currentmodule:: samplomatic.samplex
+
+.. autoclass:: ParameterExpressionTable
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ParameterExpressionTable.num_expressions
+      ~ParameterExpressionTable.num_parameters
+      ~ParameterExpressionTable.parameters
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~ParameterExpressionTable.append
+      ~ParameterExpressionTable.evaluate
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: num_expressions
+   .. autoattribute:: num_parameters
+   .. autoattribute:: parameters
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: append
+   .. automethod:: evaluate

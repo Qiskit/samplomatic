@@ -1,0 +1,6 @@
+SamplexBuildError
+=================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: SamplexBuildError
