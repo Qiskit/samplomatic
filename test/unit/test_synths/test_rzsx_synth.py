@@ -104,7 +104,7 @@ def test_u2_cliffords_make_cliffords(rng):
 
         # check all angles yield Clifford rotations
         is_clifford = np.array([False] * 3)
-        for angle in [-np.pi / 2, 0, np.pi / 2, np.pi]:
+        for angle in [-np.pi, -np.pi / 2, 0, np.pi / 2, np.pi]:
             is_clifford |= np.isclose(angles, angle)
         assert np.all(is_clifford), f"Angles for C1={c1} are not Clifford: {angles}"
 
