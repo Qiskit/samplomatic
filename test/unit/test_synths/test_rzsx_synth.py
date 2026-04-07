@@ -77,7 +77,7 @@ def test_generate_params_correctness_u2(rng):
 
 
 def test_u2_cliffords_make_cliffords(rng):
-    """Test that clifford gates synthesize to clifford angles."""
+    """Test that Clifford gates synthesize to Clifford angles."""
     all_c1 = C1Register(np.arange(0, 60, dtype=C1Register.DTYPE).reshape(1, -1) % 24)
     all_u2 = all_c1.convert_to(VirtualType.U2)
     synth = RzSxSynth()
