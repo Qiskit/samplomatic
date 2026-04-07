@@ -20,6 +20,8 @@ from ..exceptions import SynthError
 from ..virtual_registers import U2Register, VirtualType
 from .synth import Synth
 
+TOL = 1e-15
+
 
 class RzSxSynth(Synth[Qubit, Parameter, CircuitInstruction]):
     """Synthesizes arbitrary single-qubit gates into rz-sx-rz-sx-rz."""
@@ -55,6 +57,20 @@ class RzSxSynth(Synth[Qubit, Parameter, CircuitInstruction]):
             values[..., 0] = phi_plus_lambda - phi_minus_lambda - np.pi
 
             # restrict all angles to (-pi, pi]
-            return -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
+            values = -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
+
+            # if the gate is identity-like (middle angle is pi) we can unify the phases
+            mask = np.abs(values[..., 1] - np.pi) < TOL
+            values[mask, 0] += values[mask, 2]
+            values[mask, 2] = 0
+
+            # if the gate is a pi-pulse (middle angle is 0) we can also unify the phases
+            mask = np.abs(values[..., 1]) < TOL
+            values[mask, 0] -= values[mask, 2]
+            values[mask, 2] = 0
+
+            values = -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
+
+            return values
 
         raise SynthError(f"Register of type '{register_type.TYPE}' is not understood by {self}.")

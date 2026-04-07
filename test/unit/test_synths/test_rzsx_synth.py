@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,11 +13,12 @@
 import numpy as np
 import pytest
 from qiskit.circuit import Parameter, ParameterVector, QuantumCircuit, QuantumRegister
-from qiskit.quantum_info import Operator, average_gate_fidelity
+from qiskit.quantum_info import Clifford, Operator, average_gate_fidelity
 
 from samplomatic.distributions import HaarU2
 from samplomatic.exceptions import SynthError
 from samplomatic.synths import RzSxSynth
+from samplomatic.virtual_registers import C1Register, VirtualType
 
 
 def test_make_template():
@@ -73,3 +74,44 @@ def test_generate_params_correctness_u2(rng):
         circuit_unitary = Operator(circuit.assign_parameters(sample.ravel()))
         reg_unitary = Operator(u2.virtual_gates[1, idx]) ^ Operator(u2.virtual_gates[0, idx])
         assert np.isclose(average_gate_fidelity(circuit_unitary, reg_unitary), 1)
+
+
+def test_u2_cliffords_make_cliffords(rng):
+    """Test that clifford gates synthesize to clifford angles."""
+    all_c1 = C1Register(np.arange(0, 60, dtype=C1Register.DTYPE).reshape(1, -1) % 24)
+    all_u2 = all_c1.convert_to(VirtualType.U2)
+    synth = RzSxSynth()
+
+    # mess around with numerical precision and global phases
+    all_u2.virtual_gates[0, 25:26] *= np.exp(1j * 1e-15)
+    all_u2.virtual_gates[0, 26:27] *= np.exp(1j * -1e-15)
+    all_u2.virtual_gates[0, 25:26] += 1e-16
+    all_u2.virtual_gates[0, 26:27] -= 1e-16
+    all_u2.virtual_gates[0, 25:] *= np.exp(1j * rng.random((35, 1, 1)))
+
+    circuit = QuantumCircuit(1)
+    parameters = iter(ParameterVector("p", 3))
+    for qubit in circuit.qubits:
+        for instr in synth.make_template([qubit], parameters):
+            circuit.append(instr)
+
+    template_parameters = synth.generate_template_values(all_u2)
+    tableaus = all_c1.to_tableau()
+
+    for idx, angles in enumerate(template_parameters.reshape(-1, 3)):
+        c1 = all_c1.virtual_gates[0, idx]
+        u2 = all_u2.virtual_gates[0, idx]
+
+        # check all angles yield Clifford rotations
+        is_clifford = np.array([False] * 3)
+        for angle in [-np.pi / 2, 0, np.pi / 2, np.pi]:
+            is_clifford |= np.isclose(angles, angle)
+        assert np.all(is_clifford), f"Angles for C1={c1} are not Clifford: {angles}"
+
+        # check we have the Clifford we should
+        circuit_cliff = Clifford(circuit.assign_parameters(angles))
+        assert circuit_cliff == Clifford(tableaus[0, idx]), f"Found tableau inequality for C1={c1}"
+
+        # check for unitary synthesis correctness
+        circuit_unitary = Operator(circuit.assign_parameters(angles))
+        assert np.isclose(average_gate_fidelity(circuit_unitary, Operator(u2)), 1)
