@@ -56,21 +56,18 @@ class RzSxSynth(Synth[Qubit, Parameter, CircuitInstruction]):
             )
             values[..., 0] = phi_plus_lambda - phi_minus_lambda - np.pi
 
+            # if the gate is an RZ rotation we can unify the phases
+            center = np.remainder(values[..., 1], 2 * np.pi)
+            if np.any(mask := (np.abs(center - np.pi) < TOL)):
+                values[mask, 0] += values[mask, 2]
+                values[mask, 2] = 0
+
+            # if the gate is a pi-pulse  we can also unify the phases
+            if np.any(mask := (center < TOL)):
+                values[mask, 0] -= values[mask, 2]
+                values[mask, 2] = 0
+
             # restrict all angles to (-pi, pi]
-            values = -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
-
-            # if the gate is identity-like (middle angle is pi) we can unify the phases
-            mask = np.abs(values[..., 1] - np.pi) < TOL
-            values[mask, 0] += values[mask, 2]
-            values[mask, 2] = 0
-
-            # if the gate is a pi-pulse (middle angle is 0) we can also unify the phases
-            mask = np.abs(values[..., 1]) < TOL
-            values[mask, 0] -= values[mask, 2]
-            values[mask, 2] = 0
-
-            values = -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
-
-            return values
+            return -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
 
         raise SynthError(f"Register of type '{register_type.TYPE}' is not understood by {self}.")

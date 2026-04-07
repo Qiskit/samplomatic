@@ -20,6 +20,8 @@ from ..exceptions import SynthError
 from ..virtual_registers import U2Register, VirtualType
 from .synth import Synth
 
+TOL = 1e-15
+
 
 class RzRxSynth(Synth[Qubit, Parameter, CircuitInstruction]):
     """Synthesizes arbitrary single-qubit gates into rz-rx-rz."""
@@ -49,6 +51,17 @@ class RzRxSynth(Synth[Qubit, Parameter, CircuitInstruction]):
             values[..., 2] = phi_plus_lambda + phi_minus_lambda + np.pi / 2
             values[..., 1] = 2 * np.arctan2(np.abs(gates[..., 1, 0]), np.abs(gates[..., 0, 0]))
             values[..., 0] = phi_plus_lambda - phi_minus_lambda - np.pi / 2
+
+            # if the gate is an RZ rotation we can unify the phases
+            center = np.remainder(values[..., 1], 2 * np.pi)
+            if np.any(mask := (center < TOL)):
+                values[mask, 0] += values[mask, 2]
+                values[mask, 2] = 0
+
+            # if the gate is a pi-pulse  we can also unify the phases
+            if np.any(mask := (np.abs(center - np.pi) < TOL)):
+                values[mask, 0] -= values[mask, 2]
+                values[mask, 2] = 0
 
             # restrict all angles to (-pi, pi]
             return -np.remainder(-values + np.pi, 2 * np.pi) + np.pi
