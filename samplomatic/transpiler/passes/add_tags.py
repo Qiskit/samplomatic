@@ -19,7 +19,7 @@ from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 
 from ...aliases import CircuitInstruction
-from ...annotations import Tag, Twirl
+from ...annotations import InjectNoise, Tag, Twirl
 from ...utils import BoxKey, get_annotation, undress_box, validate_literals
 
 
@@ -36,6 +36,9 @@ class AddTags(TransformationPass):
     * ``'unique_instance'``: the ``ref`` is an incrementing counter (``t0``, ``t1``, ...),
       so every box in a circuit gets a unique ``ref``. The counter resets on each call to
       :meth:`run`.
+    * ``'noise_ref'``: the ``ref`` is taken from the box's :class:`~.InjectNoise` annotation's
+      ``ref`` field. Boxes without an :class:`~.InjectNoise` annotation are skipped (no
+      :class:`~.Tag` is added).
 
     Args:
         mode: The tagging mode. ``'unique_box'`` assigns the same ref to structurally
@@ -51,7 +54,7 @@ class AddTags(TransformationPass):
     @validate_literals("mode")
     def __init__(
         self,
-        mode: Literal["unique_box", "unique_instance"] = "unique_box",
+        mode: Literal["unique_box", "unique_instance", "noise_ref"] = "unique_box",
         overwrite: bool = False,
         prefix_ref: str = "t",
     ):
@@ -94,6 +97,10 @@ class AddTags(TransformationPass):
                     undressed_box, undressed_box.body.qubits, undressed_box.body.clbits
                 )
                 ref = self._get_ref(BoxKey(instr))
+            elif self.mode == "noise_ref":
+                if (inject_noise := get_annotation(node.op, InjectNoise)) is None:
+                    continue
+                ref = inject_noise.ref
             else:
                 # unique_instance: assign a fresh counter value per box per run()
                 ref = f"{self.prefix_ref}{next(instance_counter)}"

@@ -67,7 +67,7 @@ def generate_boxing_pass_manager(
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
-    add_tags: Literal["none", "unique_box", "unique_instance"] = "none",
+    add_tags: Literal["none", "unique_box", "unique_instance", "noise_ref"] = "none",
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -223,6 +223,10 @@ def generate_boxing_pass_manager(
             * ``'unique_instance'``: the ``ref`` is an incrementing counter (``t0``, ``t1``, ...),
               so every box in a circuit gets a unique ``ref``. The counter resets on each call to
               :meth:`run`.
+            * ``'noise_ref'``: the ``ref`` is taken from the box's :class:`~.InjectNoise`
+              annotation's ``ref`` field. Boxes without an :class:`~.InjectNoise` annotation are
+              skipped (no :class:`~.Tag` is added). Typically used together with a non-``'none'``
+              ``inject_noise_targets`` value.
 
     Returns:
         A pass manager that groups operations into boxes.

@@ -18,7 +18,7 @@ import pytest
 from qiskit.circuit import QuantumCircuit
 from qiskit.transpiler import PassManager
 
-from samplomatic.annotations import Tag, Twirl
+from samplomatic.annotations import InjectNoise, Tag, Twirl
 from samplomatic.transpiler.passes import AddTags
 from samplomatic.utils import get_annotation
 
@@ -192,3 +192,50 @@ def test_unique_instance_resets_per_circuit():
 
     assert refs0 == ["t0", "t1"]
     assert refs1 == ["t0", "t1"]
+
+
+def test_noise_ref_matches_inject_noise():
+    """Test that ``noise_ref`` mode sets ``Tag.ref`` equal to ``InjectNoise.ref``."""
+    noise_ref = "my_noise_ref"
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise(noise_ref)]):
+        circuit.cx(0, 1)
+
+    pm = PassManager([AddTags(mode="noise_ref")])
+    transpiled = pm.run(circuit)
+
+    tag = get_annotation(transpiled.data[0].operation, Tag)
+    assert tag is not None
+    assert tag.ref == noise_ref
+
+
+def test_noise_ref_skips_boxes_without_inject_noise():
+    """Test that boxes without ``InjectNoise`` get no ``Tag`` in ``noise_ref`` mode."""
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+
+    pm = PassManager([AddTags(mode="noise_ref")])
+    transpiled = pm.run(circuit)
+
+    assert get_annotation(transpiled.data[0].operation, Tag) is None
+
+
+def test_noise_ref_mixed_circuit():
+    """Test ``noise_ref`` mode with a mix of noisy and noise-free boxes."""
+    noise_ref = "nr"
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise(noise_ref)]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cz(0, 1)
+
+    pm = PassManager([AddTags(mode="noise_ref")])
+    transpiled = pm.run(circuit)
+
+    tag0 = get_annotation(transpiled.data[0].operation, Tag)
+    tag1 = get_annotation(transpiled.data[1].operation, Tag)
+
+    assert tag0 is not None
+    assert tag0.ref == noise_ref
+    assert tag1 is None

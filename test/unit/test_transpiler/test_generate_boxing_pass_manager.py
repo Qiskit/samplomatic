@@ -18,7 +18,7 @@ This function is more comprehensively tested in integration tests.
 import pytest
 from qiskit.circuit import QuantumCircuit
 
-from samplomatic.annotations import ChangeBasis, Tag, Twirl
+from samplomatic.annotations import ChangeBasis, InjectNoise, Tag, Twirl
 from samplomatic.transpiler import generate_boxing_pass_manager
 from samplomatic.utils import get_annotation
 
@@ -103,3 +103,22 @@ def test_add_tags_none_by_default():
 
     for instr in transpiled:
         assert get_annotation(instr.operation, Tag) is None
+
+
+def test_add_tags_noise_ref():
+    """Test ``add_tags='noise_ref'`` tags noisy boxes and skips noise-free boxes."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.measure_all()
+
+    pm = generate_boxing_pass_manager(inject_noise_targets="gates", add_tags="noise_ref")
+    transpiled = pm.run(circuit)
+
+    for instr in transpiled:
+        inject_noise = get_annotation(instr.operation, InjectNoise)
+        tag = get_annotation(instr.operation, Tag)
+        if inject_noise is not None:
+            assert tag is not None
+            assert tag.ref == inject_noise.ref
+        else:
+            assert tag is None
