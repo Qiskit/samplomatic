@@ -35,7 +35,7 @@ def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Ann
         The normalized annotations.
     """
     # Lazy import to avoid circular import with annotations -> utils -> annotations
-    from ..annotations import InjectNoise, Twirl
+    from ..annotations import InjectNoise, Tag, Twirl
 
     normalized_annotations = []
     for annot in annotations:
@@ -45,6 +45,8 @@ def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Ann
             )
         elif isinstance(annot, InjectNoise):
             normalized_annotations.append(InjectNoise(ref=annot.ref))
+        elif isinstance(annot, Tag):
+            normalized_annotations.append(Tag(ref=annot.ref))
     return normalized_annotations
 
 
