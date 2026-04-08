@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,7 +18,7 @@ This function is more comprehensively tested in integration tests.
 import pytest
 from qiskit.circuit import QuantumCircuit
 
-from samplomatic.annotations import ChangeBasis, Twirl
+from samplomatic.annotations import ChangeBasis, Tag, Twirl
 from samplomatic.transpiler import generate_boxing_pass_manager
 from samplomatic.utils import get_annotation
 
@@ -73,3 +73,33 @@ def test_decomposition(decomposition, measure_annotations):
 
         if twirl := get_annotation(box, Twirl):
             assert twirl.decomposition == decomposition
+
+
+@pytest.mark.parametrize("add_tags", ["unique_box", "unique_instance"])
+def test_add_tags(add_tags):
+    """Test that ``add_tags`` adds a :class:`~.Tag` to every box."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.cx(0, 1)
+    circuit.measure_all()
+
+    pm = generate_boxing_pass_manager(add_tags=add_tags)
+    transpiled = pm.run(circuit)
+
+    for instr in transpiled:
+        tag = get_annotation(instr.operation, Tag)
+        assert tag is not None
+        assert tag.ref != ""
+
+
+def test_add_tags_none_by_default():
+    """Test that boxes have no :class:`~.Tag` annotation by default."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.measure_all()
+
+    pm = generate_boxing_pass_manager()
+    transpiled = pm.run(circuit)
+
+    for instr in transpiled:
+        assert get_annotation(instr.operation, Tag) is None

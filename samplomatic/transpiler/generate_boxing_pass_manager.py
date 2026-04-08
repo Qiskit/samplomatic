@@ -22,6 +22,7 @@ from ..utils import deprecate_arg, validate_literals
 from .passes import (
     AbsorbSingleQubitGates,
     AddInjectNoise,
+    AddTags,
     AddTerminalRightDressedBoxes,
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
@@ -46,6 +47,7 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
     "inject_noise_strategy",
     "inject_noise_site",
     "remove_barriers",
+    "add_tags",
 )
 def generate_boxing_pass_manager(
     *,
@@ -65,6 +67,7 @@ def generate_boxing_pass_manager(
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
+    add_tags: Literal["none", "unique_box", "unique_instance"] = "none",
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -111,6 +114,8 @@ def generate_boxing_pass_manager(
     * If ``inject_noise_targets`` is not ``'none'``, it uses the
       :class:`~.AddInjectNoise` pass to replace boxes with new boxes that additionally have
       inject noise :class:`~.InjectNoise` annotations.
+    * If ``add_tags`` is not ``'none'``, it uses the :class:`~.AddTags` pass to add a
+      :class:`~.Tag` annotation to every box.
 
     Args:
         enable_gates: Whether to collect single- and multi-qubit gates into boxes using the
@@ -205,6 +210,20 @@ def generate_boxing_pass_manager(
             Boolean values are deprecated such that ``True`` corresponds to ``'immediately'`` and
             ``False`` corresponds to ``'never'``.
 
+        add_tags: Whether and how to add a :class:`~.Tag` annotation to every box using the
+            :class:`~.AddTags` pass. Boxes with pre-existing :class:`~.Tag` annotations are left
+            unchanged. The supported values are:
+
+            * ``'none'`` to not add any tags.
+            * ``'unique_box'``: the ``ref`` is a truncated hash of the box's structural content
+              (i.e. ignoring single-qubit gate, and see :class:`~.BoxKey`), so structurally
+              equivalent boxes share the same ``ref`` across circuits. Boxes with different
+              :class:`~.Twirl` specifications are treated as unique, but all other annotations are
+              ignored when comparing boxes.
+            * ``'unique_instance'``: the ``ref`` is an incrementing counter (``t0``, ``t1``, ...),
+              so every box in a circuit gets a unique ``ref``. The counter resets on each call to
+              :meth:`run`.
+
     Returns:
         A pass manager that groups operations into boxes.
 
@@ -251,6 +270,9 @@ def generate_boxing_pass_manager(
             strategy=inject_noise_strategy, site=inject_noise_site, targets=inject_noise_targets
         )
     )
+
+    if add_tags != "none":
+        passes.append(AddTags(mode=add_tags))
 
     if remove_barriers == "finally":
         passes.append(RemoveBarriers())
