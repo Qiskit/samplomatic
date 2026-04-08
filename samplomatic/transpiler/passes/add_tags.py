@@ -37,8 +37,8 @@ class AddTags(TransformationPass):
       so every box in a circuit gets a unique ``ref``. The counter resets on each call to
       :meth:`run`.
     * ``'noise_ref'``: the ``ref`` is taken from the box's :class:`~.InjectNoise` annotation's
-      ``ref`` field. Boxes without an :class:`~.InjectNoise` annotation are skipped (no
-      :class:`~.Tag` is added).
+      ``ref`` field joined by an underscore with its ``modifier_ref`` field when present. Boxes
+      without an :class:`~.InjectNoise` annotation are skipped.
 
     Args:
         mode: The tagging mode. ``'unique_box'`` assigns the same ref to structurally
@@ -100,7 +100,8 @@ class AddTags(TransformationPass):
             elif self.mode == "noise_ref":
                 if (inject_noise := get_annotation(node.op, InjectNoise)) is None:
                     continue
-                ref = inject_noise.ref
+                suffix = f"_{inject_noise.modifier_ref}" if inject_noise.modifier_ref else ""
+                ref = f"{inject_noise.ref}{suffix}"
             else:
                 # unique_instance: assign a fresh counter value per box per run()
                 ref = f"{self.prefix_ref}{next(instance_counter)}"

@@ -224,6 +224,9 @@ def generate_boxing_pass_manager(
               so every box in a circuit gets a unique ``ref``. The counter resets on each call to
               :meth:`run`.
             * ``'noise_ref'``: the ``ref`` is taken from the box's :class:`~.InjectNoise`
+              annotation's ``ref`` field joined by an underscore with its ``modifier_ref`` field
+              when present. Boxes without an :class:`~.InjectNoise` annotation are
+              skipped.``'noise_ref'``: the ``ref`` is taken from the box's :class:`~.InjectNoise`
               annotation's ``ref`` field. Boxes without an :class:`~.InjectNoise` annotation are
               skipped (no :class:`~.Tag` is added). Typically used together with a non-``'none'``
               ``inject_noise_targets`` value.

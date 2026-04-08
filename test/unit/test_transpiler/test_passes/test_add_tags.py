@@ -194,11 +194,12 @@ def test_unique_instance_resets_per_circuit():
     assert refs1 == ["t0", "t1"]
 
 
-def test_noise_ref_matches_inject_noise():
+@pytest.mark.parametrize("mod_ref", ["", "my_mod"])
+def test_noise_ref_matches_inject_noise(mod_ref):
     """Test that ``noise_ref`` mode sets ``Tag.ref`` equal to ``InjectNoise.ref``."""
     noise_ref = "my_noise_ref"
     circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise(noise_ref)]):
+    with circuit.box([Twirl(), InjectNoise(noise_ref, modifier_ref=mod_ref)]):
         circuit.cx(0, 1)
 
     pm = PassManager([AddTags(mode="noise_ref")])
@@ -206,7 +207,7 @@ def test_noise_ref_matches_inject_noise():
 
     tag = get_annotation(transpiled.data[0].operation, Tag)
     assert tag is not None
-    assert tag.ref == noise_ref
+    assert tag.ref == noise_ref + (f"_{mod_ref}" if mod_ref else "")
 
 
 def test_noise_ref_skips_boxes_without_inject_noise():
