@@ -23,6 +23,7 @@ from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import BuildError
 from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
+from ..trace_info import TraceInfo
 from ..virtual_registers import VirtualType
 from .builder import Builder
 from .specs import CollectionSpec, EmissionSpec, InstructionMode
@@ -45,6 +46,13 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         self.collection = collection
         self.emission = emission
         self.measured_qubits = QubitPartition(1, [])
+
+    @property
+    def _trace_info(self) -> TraceInfo | None:
+        """Return a TraceInfo from this box's emission, or None if debug is off or no refs."""
+        if not self.template_state.debug:
+            return None
+        return TraceInfo.from_emission_trace_refs(self.emission.trace_refs)
 
     def _append_dressed_layer(self) -> ParamIndices:
         """Add a dressed layer."""
@@ -88,18 +96,24 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         )
 
     def _emit_twirl(self, twirl_type: GroupMode):
+        trace_info = self._trace_info
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
             self.samplex_state.add_emit_twirl(
                 self.emission.gate_dependent_twirl_qubits,
                 twirl_type,
                 self.emission.twirl_gate,
+                trace_info=trace_info,
             )
             if len(self.emission.fallback_twirl_qubits):
                 self.samplex_state.add_emit_twirl(
-                    self.emission.fallback_twirl_qubits, GroupMode.PAULI
+                    self.emission.fallback_twirl_qubits,
+                    GroupMode.PAULI,
+                    trace_info=trace_info,
                 )
         else:
-            self.samplex_state.add_emit_twirl(self.emission.qubits, twirl_type)
+            self.samplex_state.add_emit_twirl(
+                self.emission.qubits, twirl_type, trace_info=trace_info
+            )
 
 
 class LeftBoxBuilder(BoxBuilder):
@@ -114,13 +128,20 @@ class LeftBoxBuilder(BoxBuilder):
 
     def parse(self, instr):
         if instr is None:
+            trace_info = self._trace_info
             if self.emission.basis_ref:
                 self.samplex_state.add_emit_left_basis_change(
-                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_change
+                    self.emission.qubits,
+                    self.emission.basis_ref,
+                    self.emission.basis_change,
+                    trace_info=trace_info,
                 )
             if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
                 self.samplex_state.add_emit_noise_left(
-                    self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+                    self.emission.qubits,
+                    self.emission.noise_ref,
+                    self.emission.noise_modifier_ref,
+                    trace_info=trace_info,
                 )
             self._mode = InstructionMode.PROPAGATE
             return
@@ -166,20 +187,29 @@ class LeftBoxBuilder(BoxBuilder):
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, self._mode, params)
+        self.samplex_state.add_propagate(instr, self._mode, params, trace_info=self._trace_info)
 
     def lhs(self):
         self._append_barrier("L")
         param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
+        self.samplex_state.add_collect(
+            self.collection.qubits,
+            self.collection.synth,
+            param_idxs,
+            trace_info=self._trace_info,
+        )
         self._append_barrier("M")
 
     def rhs(self):
         self._append_barrier("R")
 
+        trace_info = self._trace_info
         if self.emission.noise_ref and self.emission.noise_site is InjectionSite.AFTER:
             self.samplex_state.add_emit_noise_left(
-                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+                self.emission.qubits,
+                self.emission.noise_ref,
+                self.emission.noise_modifier_ref,
+                trace_info=trace_info,
             )
         if twirl_type := self.emission.twirl_type:
             self._emit_twirl(twirl_type)
@@ -191,7 +221,9 @@ class LeftBoxBuilder(BoxBuilder):
                     raise BuildError(
                         f"Cannot use {twirl_type.value} twirl in a box with measurements."
                     )
-                self.samplex_state.add_z2_collect(self.measured_qubits, self.clbit_idxs)
+                self.samplex_state.add_z2_collect(
+                    self.measured_qubits, self.clbit_idxs, trace_info=trace_info
+                )
 
     @staticmethod
     def yield_from_dag(dag):
@@ -225,19 +257,26 @@ class RightBoxBuilder(BoxBuilder):
 
     def parse(self, instr):
         if instr is None:
+            trace_info = self._trace_info
             if self.emission.noise_ref and self.emission.noise_site is InjectionSite.AFTER:
                 self.samplex_state.add_emit_noise_right(
-                    self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+                    self.emission.qubits,
+                    self.emission.noise_ref,
+                    self.emission.noise_modifier_ref,
+                    trace_info=trace_info,
                 )
             if self.emission.basis_ref:
                 self.samplex_state.add_emit_right_basis_change(
-                    self.emission.qubits, self.emission.basis_ref, self.emission.basis_change
+                    self.emission.qubits,
+                    self.emission.basis_ref,
+                    self.emission.basis_change,
+                    trace_info=trace_info,
                 )
             self._mode = InstructionMode.MULTIPLY
             return
 
         if (name := instr.op.name).startswith("barrier"):
-            params = self.template_state.append_remapped_gate(instr)
+            self.template_state.append_remapped_gate(instr)
             return
 
         if name.startswith("meas"):
@@ -257,21 +296,30 @@ class RightBoxBuilder(BoxBuilder):
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, self._mode, params)
+        self.samplex_state.add_propagate(instr, self._mode, params, trace_info=self._trace_info)
 
     def lhs(self):
         self._append_barrier("L")
+        trace_info = self._trace_info
         if twirl_type := self.emission.twirl_type:
             self._emit_twirl(twirl_type)
         if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
             self.samplex_state.add_emit_noise_right(
-                self.emission.qubits, self.emission.noise_ref, self.emission.noise_modifier_ref
+                self.emission.qubits,
+                self.emission.noise_ref,
+                self.emission.noise_modifier_ref,
+                trace_info=trace_info,
             )
 
     def rhs(self):
         self._append_barrier("M")
         param_idxs = self._append_dressed_layer()
-        self.samplex_state.add_collect(self.collection.qubits, self.collection.synth, param_idxs)
+        self.samplex_state.add_collect(
+            self.collection.qubits,
+            self.collection.synth,
+            param_idxs,
+            trace_info=self._trace_info,
+        )
         self._append_barrier("R")
 
     @staticmethod

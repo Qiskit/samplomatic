@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -68,18 +68,21 @@ def _build(stream: DAGCircuit, builder: Builder):
         _build(circuit_to_dag(nested_instr.op.body), inner_builder)
 
 
-def pre_build(circuit: QuantumCircuit) -> tuple[TemplateState, PreSamplex]:
+def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateState, PreSamplex]:
     """Build a template state and a pre-samplex for the given boxed-up circuit.
 
     This is a helper method to :func:`build` and is not intended to be useful in standard workflows.
 
     Args:
         circuit: The circuit to build.
+        debug: Whether to populate pre-nodes with information that traces them back to the boxes
+            that generated them. Tracing information is based on ``ref`` attributes of box
+            annotations.
 
     Returns:
         The built template state and the corresponding pre-samplex.
     """
-    template_state = TemplateState.construct_for_circuit(circuit)
+    template_state = TemplateState.construct_for_circuit(circuit, debug=debug)
     pre_samplex = PreSamplex(qubit_map=template_state.qubit_map, cregs=circuit.cregs)
     builder = get_builder(None, template_state.qubit_map.keys())
     builder.set_template_state(template_state).set_samplex_state(pre_samplex)
@@ -88,14 +91,17 @@ def pre_build(circuit: QuantumCircuit) -> tuple[TemplateState, PreSamplex]:
     return template_state, pre_samplex
 
 
-def build(circuit: QuantumCircuit) -> tuple[QuantumCircuit, Samplex]:
+def build(circuit: QuantumCircuit, debug: bool = False) -> tuple[QuantumCircuit, Samplex]:
     """Build a circuit template and samplex for the given boxed-up circuit.
 
     Args:
         circuit: The circuit to build.
+        debug: Whether to populate samplex nodes with information that traces them back to the boxes
+            that generated them. Tracing information is based on ``ref`` attributes of box
+            annotations.
 
     Returns:
         The built template circuit and the corresponding samplex.
     """
-    template_state, pre_samplex = pre_build(circuit)
+    template_state, pre_samplex = pre_build(circuit, debug=debug)
     return dag_to_circuit(template_state.template), pre_samplex.finalize().finalize()

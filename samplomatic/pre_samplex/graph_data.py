@@ -26,6 +26,7 @@ from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
+from ..trace_info import TraceInfo
 from ..virtual_registers import VirtualType
 from ..visualization.hover_style import EdgeStyle, NodeStyle
 
@@ -40,9 +41,17 @@ class PreNode:
     direction: Direction
     """The direction of virtual gates that can interact with this node."""
 
+    trace_info: TraceInfo | None = field(default=None, compare=False, repr=False, kw_only=True)
+    """Debug trace information, populated when building with ``debug=True``."""
+
     def get_style(self) -> NodeStyle:
         """Summarizes the style of this node when plotted via :func:`~.plot_graph`."""
-        return NodeStyle(title=type(self).__name__).append_data("Subsystems", list(self.subsystems))
+        style = NodeStyle(title=type(self).__name__).append_data(
+            "Subsystems", list(self.subsystems)
+        )
+        if self.trace_info is not None:
+            style.append_dict_data("trace_refs", self.trace_info.style_data())
+        return style
 
 
 @dataclass
