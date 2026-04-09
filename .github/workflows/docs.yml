@@ -40,6 +40,7 @@ jobs:
         make html
     - name: Upload built docs
       uses: actions/upload-artifact@v4
+      if: always() # set always() so we can look at the artifact even if the build fails
       with:
         name: sphinx-docs
         path: docs/_build/html
