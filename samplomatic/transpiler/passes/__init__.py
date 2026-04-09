@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,6 +14,7 @@
 
 from .absorb_single_qubit_gates import AbsorbSingleQubitGates
 from .add_inject_noise import AddInjectNoise
+from .add_tags import AddTags
 from .add_terminal_right_dressed_boxes import AddTerminalRightDressedBoxes
 from .group_gates_into_boxes import GroupGatesIntoBoxes
 from .group_meas_into_boxes import GroupMeasIntoBoxes
