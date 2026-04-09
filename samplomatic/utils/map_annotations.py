@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""map_annotations and related utilities."""
+"""Annotation editing utility functions"""
 
 from collections.abc import Callable
 
