@@ -40,11 +40,13 @@ class TemplateState:
         qubit_map: dict[Qubit, QubitIndex],
         param_iter: ParamIter,
         scope_idx: list[int],
+        debug: bool = False,
     ):
         self.template: DAGCircuit = template
         self.qubit_map = qubit_map
         self.param_iter = param_iter
         self.scope_idx = scope_idx
+        self.debug = debug
 
     def remap(
         self, scoped_qubit_map: dict[Qubit, Qubit], last_scope_idx: int | None = None
@@ -64,10 +66,10 @@ class TemplateState:
             for parent_scope_qubit, qubit in scoped_qubit_map.items()
         }
         scope_idx = self.scope_idx if last_scope_idx is None else self.scope_idx + [last_scope_idx]
-        return TemplateState(self.template, new_qubit_map, self.param_iter, scope_idx)
+        return TemplateState(self.template, new_qubit_map, self.param_iter, scope_idx, self.debug)
 
     @classmethod
-    def construct_for_circuit(cls, circuit: QuantumCircuit) -> Self:
+    def construct_for_circuit(cls, circuit: QuantumCircuit, debug: bool = False) -> Self:
         """Construct a new instance from a quantum circuit.
 
         Use this method when you need to parse the entirety of a particular circuit.
@@ -91,7 +93,7 @@ class TemplateState:
         max_params += circuit.num_parameters
         param_iter = ParamIter(5 * max_params)
 
-        return cls(template_circuit, qubit_map, param_iter, [])
+        return cls(template_circuit, qubit_map, param_iter, [], debug)
 
     def qubits(self, idxs: Iterable[int] | None = None) -> Sequence[Qubit]:
         """Return the qubits in the template at the given indices.
