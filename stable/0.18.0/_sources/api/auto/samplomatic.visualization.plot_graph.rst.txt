@@ -1,0 +1,6 @@
+plot_graph
+==========
+
+.. currentmodule:: samplomatic.visualization
+
+.. autofunction:: plot_graph

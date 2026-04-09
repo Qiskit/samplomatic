@@ -1,0 +1,37 @@
+ConversionNode
+==============
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: ConversionNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ConversionNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~ConversionNode.evaluate
+      ~ConversionNode.get_style
+      ~ConversionNode.instantiates
+      ~ConversionNode.reads_from
+      ~ConversionNode.removes
+      ~ConversionNode.validate_and_update
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: reads_from
+   .. automethod:: removes
+   .. automethod:: validate_and_update

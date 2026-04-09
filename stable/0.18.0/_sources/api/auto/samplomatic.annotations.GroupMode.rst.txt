@@ -1,0 +1,21 @@
+GroupMode
+=========
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: GroupMode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~GroupMode.BALANCED
+      ~GroupMode.LOCAL_C1
+      ~GroupMode.PAULI
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: BALANCED
+   .. autoattribute:: LOCAL_C1
+   .. autoattribute:: PAULI

@@ -1,0 +1,37 @@
+PreCollect
+==========
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreCollect
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreCollect.direction
+      ~PreCollect.param_idxs
+      ~PreCollect.subsystems
+      ~PreCollect.synth
+      ~PreCollect.trace_info
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreCollect.add_subsystems
+      ~PreCollect.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: direction
+   .. autoattribute:: param_idxs
+   .. autoattribute:: subsystems
+   .. autoattribute:: synth
+   .. autoattribute:: trace_info
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: add_subsystems
+   .. automethod:: get_style

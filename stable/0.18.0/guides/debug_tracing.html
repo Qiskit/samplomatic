@@ -1,0 +1,978 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API Reference" href="../api/index.html" /><link rel="prev" title="Samplex Inputs and Outputs" href="samplex_io.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>Debugging and Tracing - samplomatic 0.18.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet"></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2H2C1.73478 2 1.48043 2.10536 1.29289 2.29289C1.10536 2.48043 1 2.73478 1 3V13C1 13.2652 1.10536 13.5196 1.29289 13.7071C1.48043 13.8946 1.73478 14 2 14H14C14.2652 14 14.5196 13.8946 14.7071 13.7071C14.8946 13.5196 15 13.2652 15 13V3C15 2.73478 14.8946 2.48043 14.7071 2.29289C14.5196 2.10536 14.2652 2 14 2V2ZM2 3H10V13H2V3ZM14 13H11V3H14V13Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 3H2V4H14V3Z" fill="currentColor"/>
+      <path d="M14 12H2V13H14V12Z" fill="currentColor"/>
+      <path d="M14 6H2V7H14V6Z" fill="currentColor"/>
+      <path d="M14 9H2V10H14V9Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 8L6.00005 13L5.30005 12.3L9.60005 8L5.30005 3.7L6.00005 3L11 8Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 13H1V14H15V13Z" fill="currentColor"/>
+      <path d="M12.7 4.5C13.1 4.1 13.1 3.5 12.7 3.1L10.9 1.3C10.5 0.9 9.9 0.9 9.5 1.3L2 8.8V12H5.2L12.7 4.5ZM10.2 2L12 3.8L10.5 5.3L8.7 3.5L10.2 2ZM3 11V9.2L8 4.2L9.8 6L4.8 11H3Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 13.0002C11.5523 13.0002 12 12.5525 12 12.0002C12 11.4479 11.5523 11.0002 11 11.0002C10.4477 11.0002 10 11.4479 10 12.0002C10 12.5525 10.4477 13.0002 11 13.0002Z" fill="currentColor"/>
+      <path d="M14.8884 11.7394C14.5795 10.9524 14.0464 10.2734 13.3552 9.78646C12.664 9.29954 11.8451 9.02615 11 9.00017C10.1549 9.02615 9.33604 9.29954 8.64484 9.78646C7.95365 10.2734 7.42052 10.9524 7.11155 11.7394L7 12.0002L7.11155 12.2609C7.42052 13.0479 7.95365 13.727 8.64484 14.2139C9.33604 14.7008 10.1549 14.9742 11 15.0002C11.8451 14.9742 12.664 14.7008 13.3552 14.2139C14.0464 13.727 14.5795 13.0479 14.8884 12.2609L15 12.0002L14.8884 11.7394ZM11 14.0002C10.6044 14.0002 10.2178 13.8829 9.88886 13.6631C9.55996 13.4433 9.30362 13.131 9.15224 12.7655C9.00087 12.4001 8.96126 11.998 9.03843 11.61C9.1156 11.222 9.30608 10.8657 9.58579 10.586C9.86549 10.3063 10.2219 10.1158 10.6098 10.0386C10.9978 9.96143 11.3999 10.001 11.7654 10.1524C12.1308 10.3038 12.4432 10.5601 12.6629 10.889C12.8827 11.2179 13 11.6046 13 12.0002C12.9994 12.5304 12.7885 13.0388 12.4136 13.4137C12.0386 13.7887 11.5303 13.9996 11 14.0002Z" fill="currentColor"/>
+      <path d="M6 14.0002H4V2.00017H8V5.00017C8.00077 5.26515 8.10637 5.51906 8.29374 5.70643C8.48111 5.8938 8.73502 5.99941 9 6.00017H12V8.00017H13V5.00017C13.0018 4.93446 12.9893 4.86913 12.9634 4.80871C12.9375 4.74828 12.8988 4.6942 12.85 4.65017L9.35 1.15017C9.30599 1.10134 9.2519 1.06263 9.19147 1.03674C9.13104 1.01084 9.06572 0.998364 9 1.00017H4C3.73502 1.00094 3.48111 1.10654 3.29374 1.29391C3.10637 1.48128 3.00077 1.73519 3 2.00017V14.0002C3.00077 14.2652 3.10637 14.5191 3.29374 14.7064C3.48111 14.8938 3.73502 14.9994 4 15.0002H6V14.0002ZM9 2.20017L11.8 5.00017H9V2.20017Z" fill="currentColor"/>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">samplomatic 0.18.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/img/qiskit-light-logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">samplomatic 0.18.0</span>
+  
+</a>
+<form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dressed_boxes.html">Dressed boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transpiler.html">Transpiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplex_io.html">Samplex Inputs and Outputs</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Debugging and Tracing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/auto/samplomatic.build.html">samplomatic.build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/auto/samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/auto/samplomatic.Tag.html">Tag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/auto/samplomatic.Twirl.html">samplomatic.Twirl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/samplomatic.aliases.html">samplomatic.aliases</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.annotations.html">samplomatic.annotations</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of samplomatic.annotations</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.ChangeBasisMode.html">ChangeBasisMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.DecompositionMode.html">DecompositionMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.DressingMode.html">DressingMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.GroupMode.html">GroupMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.InjectLocalClifford.html">InjectLocalClifford</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.annotations.InjectionSite.html">InjectionSite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.ChangeBasis.html">samplomatic.ChangeBasis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html">samplomatic.InjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.Twirl.html">samplomatic.Twirl</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.builders.html">samplomatic.builders</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of samplomatic.builders</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.builders.pre_build.html">pre_build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.build.html">samplomatic.build</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.constants.html">samplomatic.constants</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of samplomatic.constants</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.constants.Direction.html">Direction</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.distributions.html">samplomatic.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of samplomatic.distributions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.BalancedUniformPauli.html">BalancedUniformPauli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.Distribution.html">Distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.HaarU2.html">HaarU2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.UniformC1.html">UniformC1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.UniformLocalC1.html">UniformLocalC1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.UniformPauli.html">UniformPauli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.distributions.UniformPauliSubset.html">UniformPauliSubset</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.exceptions.html">samplomatic.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of samplomatic.exceptions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.BuildError.html">BuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.DeserializationError.html">DeserializationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.ParameterError.html">ParameterError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SamplexBuildError.html">SamplexBuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SamplexConstructionError.html">SamplexConstructionError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SamplexError.html">SamplexError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SamplexInputError.html">SamplexInputError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SamplexRuntimeError.html">SamplexRuntimeError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SerializationError.html">SerializationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.SynthError.html">SynthError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.TemplateBuildError.html">TemplateBuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.exceptions.VirtualGateError.html">VirtualGateError</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.graph_utils.html">samplomatic.graph_utils</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of samplomatic.graph_utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.graph_utils.find_unreachable_nodes.html">find_unreachable_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.graph_utils.get_clusters.html">get_clusters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.graph_utils.replace_edges_with_one_edge.html">replace_edges_with_one_edge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.graph_utils.replace_nodes_with_one_node.html">replace_nodes_with_one_node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.graph_utils.NodeCandidate.html">NodeCandidate</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.partition.html">samplomatic.partition</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of samplomatic.partition</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.partition.Partition.html">Partition</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.pre_samplex.html">samplomatic.pre_samplex</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of samplomatic.pre_samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.DanglerMatch.html">DanglerMatch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreChangeBasis.html">PreChangeBasis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreCollect.html">PreCollect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreEdge.html">PreEdge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreEmit.html">PreEmit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreInjectNoise.html">PreInjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreNode.html">PreNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PrePropagate.html">PrePropagate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PrePropagateKey.html">PrePropagateKey</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreSamplex.html">PreSamplex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreZ2Collect.html">PreZ2Collect</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.samplex.html">samplomatic.samplex</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of samplomatic.samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.samplex.ParameterExpressionTable.html">ParameterExpressionTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.samplex.Samplex.html">Samplex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.samplex.SamplexOutput.html">SamplexOutput</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/samplomatic.samplex.nodes.html">samplomatic.samplex.nodes</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of samplomatic.samplex.nodes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.ChangeBasisNode.html">ChangeBasisNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.CollectTemplateValues.html">CollectTemplateValues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.CollectZ2ToOutputNode.html">CollectZ2ToOutputNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.CollectionNode.html">CollectionNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.CombineRegistersNode.html">CombineRegistersNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.ConversionNode.html">ConversionNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.DistributionSamplingNode.html">DistributionSamplingNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.EvaluationNode.html">EvaluationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.InjectNoiseNode.html">InjectNoiseNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.LeftMultiplicationNode.html">LeftMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.LeftU2ParametricMultiplicationNode.html">LeftU2ParametricMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.Node.html">Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.PauliPastCliffordNode.html">PauliPastCliffordNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.PropagateLocalC1Node.html">PropagateLocalC1Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.RightMultiplicationNode.html">RightMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.RightU2ParametricMultiplicationNode.html">RightU2ParametricMultiplicationNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.SamplingNode.html">SamplingNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.SliceRegisterNode.html">SliceRegisterNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.TwirlSamplingNode.html">TwirlSamplingNode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.U2ParametricMultiplicationNode.html">U2ParametricMultiplicationNode</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.serialization.html">samplomatic.serialization</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of samplomatic.serialization</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.serialization.samplex_from_json.html">samplex_from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.serialization.samplex_to_json.html">samplex_to_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.synths.html">samplomatic.synths</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of samplomatic.synths</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.synths.get_synth.html">get_synth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.synths.RzRxSynth.html">RzRxSynth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.synths.RzSxSynth.html">RzSxSynth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.synths.Synth.html">Synth</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.tensor_interface.html">samplomatic.tensor_interface</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of samplomatic.tensor_interface</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.tensor_interface.PauliLindbladMapSpecification.html">PauliLindbladMapSpecification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.tensor_interface.Specification.html">Specification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.tensor_interface.TensorInterface.html">TensorInterface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.tensor_interface.TensorSpecification.html">TensorSpecification</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.transpiler.html">samplomatic.transpiler</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html">generate_boxing_pass_manager</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.AddTags.html">AddTags</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.GroupMeasIntoBoxes.html">GroupMeasIntoBoxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.InlineBoxes.html">InlineBoxes</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/samplomatic.transpiler.passes.insert_noops.html">samplomatic.transpiler.passes.insert_noops</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes.insert_noops</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.insert_noops.AddNoops.html">AddNoops</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.insert_noops.AddNoopsActiveAccum.html">AddNoopsActiveAccum</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.insert_noops.AddNoopsActiveCircuit.html">AddNoopsActiveCircuit</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.insert_noops.AddNoopsAll.html">AddNoopsAll</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.extend_annotations.html">extend_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.filter_annotations.html">filter_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.get_annotation.html">get_annotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.map_annotations.html">map_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.replace_annotations.html">replace_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.strip_annotations.html">strip_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.unbox.html">unbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.undress_box.html">undress_box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.validate_literals.html">validate_literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.BoxKey.html">BoxKey</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.utils.FrozenDict.html">FrozenDict</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.virtual_registers.html">samplomatic.virtual_registers</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of samplomatic.virtual_registers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.C1Register.html">C1Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.GroupRegister.html">GroupRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.PauliRegister.html">PauliRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.U2Register.html">U2Register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.VirtualRegister.html">VirtualRegister</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.VirtualType.html">VirtualType</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.virtual_registers.Z2Register.html">Z2Register</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.visualization.html">samplomatic.visualization</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of samplomatic.visualization</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.visualization.plot_graph.html">plot_graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.18.0.html">Release notes for 0.18.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.17.1.html">Release notes for 0.17.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.17.0.html">Release notes for 0.17.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.16.1.html">Release notes for 0.16.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.16.0.html">Release notes for 0.16.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.15.0.html">Release notes for 0.15.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.10.1.html">Release notes for 0.10.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.10.0.html">Release notes for 0.10.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.9.0.html">Release notes for 0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.8.0.html">Release notes for 0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.7.0.html">Release notes for 0.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.6.0.html">Release notes for 0.6.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.5.0.html">Release notes for 0.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.3.0.html">Release notes for 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.2.0.html">Release notes for 0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.1.0.html">Release notes for 0.1.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Qiskit/samplomatic">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://qiskit.github.io/samplomatic/benchmarks/">Benchmarks</a></li>
+</ul>
+
+</div><div class="qiskit-previous-releases-container">
+    <input id="previous-releases-checkbox" name="previous-releases-checkbox" role="switch" type="checkbox">
+    <div class="qiskit-previous-releases-header-container"><label for="previous-releases-checkbox">
+            <p role="note">Previous Releases</p>
+            <div class="qiskit-previous-releases-toggle-container">
+                <div class="visually-hidden">Toggle navigation of Previous Releases</div>
+                <i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i>
+            </div>
+        </label>
+    </div>
+    <div class="qiskit-previous-releases-list-container">
+        <ul>
+        
+            <li><a href="/samplomatic/stable/0.17.1/index.html" rel="nofollow noindex">0.17.1</a></li>
+        
+            <li><a href="/samplomatic/stable/0.17.0/index.html" rel="nofollow noindex">0.17.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.16.1/index.html" rel="nofollow noindex">0.16.1</a></li>
+        
+            <li><a href="/samplomatic/stable/0.16.0/index.html" rel="nofollow noindex">0.16.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.15.0/index.html" rel="nofollow noindex">0.15.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.14.0/index.html" rel="nofollow noindex">0.14.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.13.0/index.html" rel="nofollow noindex">0.13.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.12.0/index.html" rel="nofollow noindex">0.12.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.11.0/index.html" rel="nofollow noindex">0.11.0</a></li>
+        
+            <li><a href="/samplomatic/stable/0.10.1/index.html" rel="nofollow noindex">0.10.1</a></li>
+        
+            <li><a href="/samplomatic/stable/0.10.0/index.html" rel="nofollow noindex">0.10.0</a></li>
+        
+        </ul>
+    </div>
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/guides/debug_tracing.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="debugging-and-tracing">
+<span id="debug-tracing"></span><h1>Debugging and Tracing<a class="headerlink" href="#debugging-and-tracing" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="../api/auto/samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> function transforms an annotated circuit into a template circuit and samplex pair.
+In a complex circuit it can be hard to tell which box in the original circuit corresponds to which
+barriers in the template, or which nodes in the samplex DAG.</p>
+<p>Samplomatic provides two complementary tracing tools:</p>
+<ul class="simple">
+<li><p><strong>Barrier labels</strong>: every barrier in the template circuit carries a label encoding its origin.
+These are always present regardless of whether <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> is set.</p></li>
+<li><p><strong>Trace info on samplex nodes</strong>: when <a class="reference internal" href="../api/auto/samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> is called with <code class="docutils literal notranslate"><span class="pre">debug=True</span></code>, every samplex
+node carries a <code class="xref py py-class docutils literal notranslate"><span class="pre">TraceInfo</span></code> object linking it back to the box or boxes that produced it.</p></li>
+</ul>
+<p>Both tools are most useful when boxes carry a <a class="reference internal" href="../api/auto/samplomatic.Tag.html#samplomatic.Tag" title="samplomatic.Tag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tag</span></code></a> annotation, which attaches a <code class="docutils literal notranslate"><span class="pre">ref</span></code>
+string to the box. Alternatively, <a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> references are also attached.</p>
+<section id="tagging-boxes">
+<h2>Tagging boxes<a class="headerlink" href="#tagging-boxes" title="Link to this heading">¶</a></h2>
+<p>A <a class="reference internal" href="../api/auto/samplomatic.Tag.html#samplomatic.Tag" title="samplomatic.Tag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tag</span></code></a> annotation attaches a <code class="docutils literal notranslate"><span class="pre">ref</span></code> string to a box. The <code class="docutils literal notranslate"><span class="pre">ref</span></code> then appears in barrier
+labels and in trace info on samplex nodes.</p>
+<p>The example circuit below has three boxes: two tagged CX boxes on disjoint qubit pairs, and an
+untagged right-dressed measurement box. The second CX box also carries an <a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a>
+annotation — both its <code class="docutils literal notranslate"><span class="pre">tag</span></code> ref and its noise <code class="docutils literal notranslate"><span class="pre">ref</span></code> will appear in the barrier labels. The two CX
+boxes cover different qubits, which enables the samplex optimizer to merge their propagation nodes
+into shared nodes — as we will see in the trace info section.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectNoise</span><span class="p">,</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">,</span> <span class="n">build</span>
+
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">circuit</span><span class="o">.</span><span class="n">box</span><span class="p">([</span><span class="n">Twirl</span><span class="p">(),</span> <span class="n">Tag</span><span class="p">(</span><span class="s2">&quot;cx_ab&quot;</span><span class="p">)]):</span>
+    <span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">circuit</span><span class="o">.</span><span class="n">box</span><span class="p">([</span><span class="n">Twirl</span><span class="p">(),</span> <span class="n">InjectNoise</span><span class="p">(</span><span class="s2">&quot;cx_noise&quot;</span><span class="p">),</span> <span class="n">Tag</span><span class="p">(</span><span class="s2">&quot;cx_cd&quot;</span><span class="p">)]):</span>
+    <span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">circuit</span><span class="o">.</span><span class="n">box</span><span class="p">([</span><span class="n">Twirl</span><span class="p">(),</span> <span class="n">Tag</span><span class="p">(</span><span class="s2">&quot;meas_box&quot;</span><span class="p">)]):</span>
+    <span class="n">circuit</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8e0d46fbc269732ed1db331aecf4c10762fc451db87c5cdd918c69ae42dae32f.png" src="../_images/8e0d46fbc269732ed1db331aecf4c10762fc451db87c5cdd918c69ae42dae32f.png" />
+</div>
+</div>
+</section>
+<section id="barrier-labels-in-the-template-circuit">
+<h2>Barrier labels in the template circuit<a class="headerlink" href="#barrier-labels-in-the-template-circuit" title="Link to this heading">¶</a></h2>
+<p>Calling <a class="reference internal" href="../api/auto/samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> on the circuit above produces a template whose barriers carry identifying
+labels. Each label has the form <code class="docutils literal notranslate"><span class="pre">{side}{scope}&#64;{key=value&amp;...}</span></code> where:</p>
+<ul class="simple">
+<li><p><strong>Side</strong>: <code class="docutils literal notranslate"><span class="pre">L</span></code> = left-dressing boundary, <code class="docutils literal notranslate"><span class="pre">M</span></code> = inner box content boundary, <code class="docutils literal notranslate"><span class="pre">R</span></code> = right-dressing
+boundary.</p></li>
+<li><p><strong>Scope</strong>: an integer index (or underscore-separated list for nested boxes) distinguishing multiple
+boxes at the same nesting level.</p></li>
+<li><p><strong>Annotations</strong>: a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>-prefixed, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>-separated list of <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pairs derived from the box’s
+annotations. The <code class="docutils literal notranslate"><span class="pre">tag</span></code> key comes from a <a class="reference internal" href="../api/auto/samplomatic.Tag.html#samplomatic.Tag" title="samplomatic.Tag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tag</span></code></a> annotation and <code class="docutils literal notranslate"><span class="pre">inject_noise</span></code> from an
+<a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation.</p></li>
+</ul>
+<p>Barriers from untagged boxes carry only the side and scope (e.g. <code class="docutils literal notranslate"><span class="pre">L2</span></code>), with no <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> suffix.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="p">,</span> <span class="n">samplex</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+<span class="n">template</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/29c52a598ed9338e3086007e3b438ab5227c981ecdef33cda19306767f06f76a.png" src="../_images/29c52a598ed9338e3086007e3b438ab5227c981ecdef33cda19306767f06f76a.png" />
+</div>
+</div>
+<p>The barrier labels can also be extracted programmatically:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">barrier_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">instr</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">instr</span> <span class="ow">in</span> <span class="n">template</span> <span class="k">if</span> <span class="n">instr</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;barrier&quot;</span><span class="p">]</span>
+<span class="n">barrier_labels</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;L0@tag=cx_ab&#39;,
+ &#39;M0@tag=cx_ab&#39;,
+ &#39;R0@tag=cx_ab&#39;,
+ &#39;L1@inject_noise=cx_noise&amp;tag=cx_cd&#39;,
+ &#39;M1@inject_noise=cx_noise&amp;tag=cx_cd&#39;,
+ &#39;R1@inject_noise=cx_noise&amp;tag=cx_cd&#39;,
+ &#39;L2@tag=meas_box&#39;,
+ &#39;M2@tag=meas_box&#39;,
+ &#39;R2@tag=meas_box&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="trace-info-on-samplex-nodes">
+<h2>Trace info on samplex nodes<a class="headerlink" href="#trace-info-on-samplex-nodes" title="Link to this heading">¶</a></h2>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> to <a class="reference internal" href="../api/auto/samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> attaches trace information to every samplex node. Each
+node’s <a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.trace_info" title="samplomatic.samplex.nodes.Node.trace_info"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trace_info</span></code></a> attribute is a <code class="xref py py-class docutils literal notranslate"><span class="pre">TraceInfo</span></code> object whose <code class="docutils literal notranslate"><span class="pre">trace_refs</span></code>
+dictionary maps annotation keys (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;tag&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;inject_noise&quot;</span></code>) to sets of ref strings. Nodes
+without a corresponding box annotation have <code class="docutils literal notranslate"><span class="pre">trace_info=None</span></code>.</p>
+<p>When <a class="reference internal" href="../api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.draw" title="samplomatic.samplex.Samplex.draw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">draw()</span></code></a> is called on a debug-built samplex, hovering over any node in the
+interactive graph reveals its <code class="docutils literal notranslate"><span class="pre">trace_refs</span></code> inside of the hover tooltip.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="p">,</span> <span class="n">samplex</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">samplex</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" crossorigin="anonymous"></script>                <div id="0ea1d08f-e2fd-4778-b14d-7f3ec62f740d" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("0ea1d08f-e2fd-4778-b14d-7f3ec62f740d")) {                    Plotly.newPlot(                        "0ea1d08f-e2fd-4778-b14d-7f3ec62f740d",                        [{"hoverinfo":"text","hovertext":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"line":{"color":"tomato","shape":"spline","smoothing":1.0},"marker":{"angleref":"previous","size":[0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,20,0,0,0],"symbol":["circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle","circle","circle","circle","circle","arrow","circle","circle","circle"]},"mode":"lines+markers","x":{"dtype":"f8","bdata":"AAAAAAAA0D9tc2N6whLgP\u002fBQFOgTje0\u002fQvFjzF079z8PKJtyhfX\u002fP2\u002fwhclUwQNAT6+UZYjjBkAAAAAAAAD4fwAAAAAAANA\u002fSREZVvFG3j+Dbi9pjD7hP9fdPNUhd+M\u002faQBvgQS95T8AAAAAAADoPwAAAAAAAOg\u002f529CIQLW7T+WJqWg2+vxP\u002fZ698d74fQ\u002fJuSDns2q9z8T8kHPZtX+PwAAAAAAAPh\u002fT6+UZYjjBkDOqs\u002fVVuwIQIy5awn5wgxA6SYxCKzUEEDVeOkmMVsTQI2XbhKDgBVAGeJYF7cRF0AAAAAAAAD4fwAAAAAAANA\u002fEVMiiV5G3z\u002fKVMGopKbhPzi+9sySwOM\u002f7BLVWwPj5T8AAAAAAADoPwAAAAAAAOg\u002fapp3nKJr7j96Nqs+V3vyP5RliGNdqPU\u002fTYQNT6+U+D8T8kHPZtX+PwAAAAAAAPh\u002fAAAAAAAA0D8Sa\u002fEpAMbfP3RBfcuceuY\u002fdmwE4nXd7T\u002f3Hi457pbyP55eKcsQx\u002fU\u002fnl4pyxDH9T\u002fh6ZWyDIX3Pzy9UpYhLvg\u002fSOF6FK6j+D+eXinLEMf5P55eKcsQx\u002fk\u002fTFmGONbp+T93cRsN4A36P55eKcsQM\u002fo\u002fRdjw9EpZ+j8T8kHPZtX+PwAAAAAAAPh\u002fE\u002fJBz2bV\u002fj9gdk8eFmoBQHqlLEMcrQNA5j+k375eBkD+1HjpJicJQB\u002f0bFZ9rgtAnl4pyxDHDkAAAAAAAAD4fwAAAAAAANA\u002fI2dhTzv83z\u002f0yB8MPJH3P2iWBKip3QZAhs5r7JIgEUBfKcsQx3oVQBniWBe3ERdAAAAAAAAA+H8AAAAAAADQP6m8HeG04N8\u002ftKuQ8pPM8T88a7ddaN7+P\u002fLNNjemKgZA6pWyDHGsC0CeXinLEMcOQAAAAAAAAPh\u002fnl4pyxDHDkAs1JrmHWcQQJSpglFJhxFAWvW52ordEkC40QDeAj8UQOJYF7fRgBVAGeJYF7cRF0AAAAAAAAD4fwAAAAAAANA\u002fP1JEhlW83z8Nw0fElNzlP8aKGkzD0Ow\u002fWqMeotEb8j+eXinLEMf1P55eKcsQx\u002fU\u002fM4C3QIJG9j\u002fyQc9m1cf2P67YX3ZPSvc\u002fPnlYqDXN9z8T8kHPZtX+PwAAAAAAAPh\u002fAAAAAAAA0D\u002fO34RCBBzeP2oTJ\u002fc7KOE\u002fiNf1C3Zj4z\u002fcSxqjdbDlPwAAAAAAAOg\u002fAAAAAAAA6D\u002fwxKwXQ7XtP1tfJLTlzPE\u002fIhrdQey29D9GtvP91Hj3PxPyQc9m1f4\u002fAAAAAAAA+H8T8kHPZtX+P0a28\u002f3U+AFAOgFNhA0tB0B3Tx4Wat0NQMgpOpLLXBJADeAtkKA4FUAZ4lgXtxEXQAAAAAAAAPh\u002fE\u002fJBz2bV\u002fj\u002f2KFyPwvUBQGUZ4lgXCQRAZBniWBdnBkAcyeU\u002fpNUIQLTIdr6fGgtAnl4pyxDHDkAAAAAAAAD4f55eKcsQxw5ARUdy+Q+pEECNKO0NvrIRQKhXyjLE4RJAidLe4AsZFEAkl\u002f+QfjsVQBniWBe3ERdAAAAAAAAA+H8="},"y":{"dtype":"f8","bdata":"nl4pyxDHD0B+jLlrCfkPQFr1udqKKBBAK4cW2c5fEEC5\u002fIf025gQQArXo3A9yhBAqFfKMsTxEEAAAAAAAAD4f55eKcsQxw9AvHSTGATWDkAZc9cS8o8OQGHD0ytlSQ5AzmbV52oFDkCeXinLEMcNQJ5eKcsQxw1A5PIf0m83DUAYBFYOLbIMQOALk6mCOQxA5IOezarPC0BPr5RliOMKQAAAAAAAAPh\u002fqFfKMsTxEECoV8oyxPEQQKlXyjLE8RBAqFfKMsTxEECoV8oyxPEQQKhXyjLE8RBAqFfKMsTxEEAAAAAAAAD4fwAAAAAAAPw\u002f4JwRpb3B+j9jO99PjXf6PzTvOEVHMvo\u002fSuoENBH2+T+eXinLEMf5P55eKcsQx\u002fk\u002fudqK\u002fWVr+T8HzhlR2jv5P27F\u002frJ7Lvk\u002f001iEFg5+T88vVKWIY75PwAAAAAAAPh\u002fAAAAAAAA\u002fD\u002fuWkI+6Nn8P2TMXUvI4\u002f0\u002fI0p7gy9s\u002fz\u002fzsFBrmsEAQLFQa5p3HAJAsVBrmnccAkAv\u002fyH99mkDQFBrmnecogRAqMZLN4ntBUDEQq1p3nEHQMRCrWnecQdAB\u002fAWSFCSB0CJQWDl0LIHQDarPldb0wdA+aBns+rzB0BPr5RliOMKQAAAAAAAAPh\u002fPL1SliGO+T+Ens2qz9X4P1tCPujZ+Pc\u002f\u002ffZ14Jzx9j8EVg4tsuH1Pwn5oGez6vQ\u002fnl4pyxDH8z8AAAAAAAD4f1\u002fSGK2jquY\u002fRfXWwFYJ5j\u002floISZtm\u002fjP0fOwp52eN8\u002feITTghfd1z\u002fNWDSdnQzSPwAAAAAAANA\u002fAAAAAAAA+H9f0hito6rmP5+OxwxUxuc\u002fUDHO34Su6j946SYxCIzuP+F\u002fK9mxQ\u002fE\u002fat5xio7k8j+eXinLEMfzPwAAAAAAAPh\u002fnl4pyxDH8z+eXinLEMfzP51eKcsQx\u002fM\u002fnl4pyxDH8z+eXinLEMfzP55eKcsQx\u002fM\u002fnl4pyxDH8z8AAAAAAAD4fxPyQc9mVQdAnl4pyxDHB0C+MJkqGCUIQGpv8IXJlAhAVn2utmIPCUA8vVKWIY4JQDy9UpYhjglANl66SQygCUAYldQJaLIJQHqlLEMcxQlA8tJNYhDYCUBPr5RliOMKQAAAAAAAAPh\u002fE\u002fJBz2ZVB0BLyAc9m1UGQClcj8L1DgZAQhzr4jbKBUDTvOMUHYsFQBPyQc9mVQVAE\u002fJBz2ZVBUBBguLHmO0EQF+6SQwCmwRAMEymCkZbBEB56SYxCCwEQE+vlGWI4wNAAAAAAAAA+H9Pr5RliOMKQE+vlGWI4wpAT6+UZYjjCkBPr5RliOMKQFCvlGWI4wpAT6+UZYjjCkBPr5RliOMKQAAAAAAAAPh\u002fT6+UZYjjA0BPr5RliOMDQE+vlGWI4wNAT6+UZYjjA0BQr5RliOMDQE+vlGWI4wNAT6+UZYjjA0AAAAAAAAD4f0+vlGWI4wNAT6+UZYjjA0BPr5RliOMDQE+vlGWI4wNAUK+UZYjjA0BPr5RliOMDQE+vlGWI4wNAAAAAAAAA+H8="},"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"text","hoverlabel":{"bgcolor":"lightyellow","font":{"color":"black","family":"Times New Roman"}},"hovertext":["\u003cb\u003eTwirlSamplingNode(\u003c+lhs_0, +rhs_0\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {lhs_0: (4, 'VirtualType.PAULI'), rhs_0: (4, 'VirtualType.PAULI')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {tag: ['meas_box']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eLHS Register\u003c\u002fb\u003e: 'lhs_0'\u003cbr\u003e\n ▸ \u003cb\u003eRHS Register\u003c\u002fb\u003e: 'rhs_0'\u003cbr\u003e\n ▸ \u003cb\u003eDistribution\u003c\u002fb\u003e: UniformPauli(\u003cnum_subsystems=4, register_type=VirtualType.PAULI\u003e)","\u003cb\u003eSliceRegisterNode(\u003crhs_0(r), +z2_collect_1\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {rhs_0: ([0, 1, 2, 3], 'VirtualType.PAULI')}\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {z2_collect_1: (4, 'VirtualType.Z2')}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Type\u003c\u002fb\u003e: \u003cVirtualType.Z2: 'z2'\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Register Name\u003c\u002fb\u003e: z2_collect_1\u003cbr\u003e\n ▸ \u003cb\u003eInput Register Name\u003c\u002fb\u003e: rhs_0","\u003cb\u003eCollectZ2ToOutputNode(\u003cz2_collect_1(r)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {z2_collect_1: ([0, 1, 2, 3], 'VirtualType.Z2')}\u003cbr\u003e\n• \u003cb\u003eoutputs_to\u003c\u002fb\u003e: {measurement_flips.c: ([0, 1, 2, 3], 'VirtualType.Z2')}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'z2_collect_1'\u003cbr\u003e\n ▸ \u003cb\u003eOutput Name\u003c\u002fb\u003e: measurement_flips.c\u003cbr\u003e\n ▸ \u003cb\u003eSubsystem Indices\u003c\u002fb\u003e\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• 0\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• 1\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• 2\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• 3","\u003cb\u003eTwirlSamplingNode(\u003c+lhs_2, +rhs_2\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {lhs_2: (2, 'VirtualType.PAULI'), rhs_2: (2, 'VirtualType.PAULI')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eLHS Register\u003c\u002fb\u003e: 'lhs_2'\u003cbr\u003e\n ▸ \u003cb\u003eRHS Register\u003c\u002fb\u003e: 'rhs_2'\u003cbr\u003e\n ▸ \u003cb\u003eDistribution\u003c\u002fb\u003e: UniformPauli(\u003cnum_subsystems=2, register_type=VirtualType.PAULI\u003e)","\u003cb\u003ePauliPastCliffordNode(\u003clhs_2(r), lhs_2(w)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {lhs_2: ([0, 1], 'VirtualType.PAULI')}\u003cbr\u003e\n• \u003cb\u003ewrites_to\u003c\u002fb\u003e: {lhs_2: ([0, 1], 'VirtualType.PAULI')}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOperation\u003c\u002fb\u003e: 'cx'\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'lhs_2'\u003cbr\u003e\n ▸ \u003cb\u003eSubsystem Indices\u003c\u002fb\u003e: [[0, 1]]","\u003cb\u003eInjectNoiseNode(\u003c+inject_noise_4, +sign_4\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {inject_noise_4: (2, 'VirtualType.PAULI'), sign_4: (1, 'VirtualType.Z2')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'inject_noise_4'\u003cbr\u003e\n ▸ \u003cb\u003eSubsystems\u003c\u002fb\u003e: 2\u003cbr\u003e\n ▸ \u003cb\u003eNoise Reference\u003c\u002fb\u003e: 'cx_noise'\u003cbr\u003e\n ▸ \u003cb\u003eModifier Reference\u003c\u002fb\u003e: ''","\u003cb\u003eCollectZ2ToOutputNode(\u003csign_4(r)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {sign_4: ([0], 'VirtualType.Z2')}\u003cbr\u003e\n• \u003cb\u003eoutputs_to\u003c\u002fb\u003e: {pauli_signs: ([0], 'VirtualType.Z2')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'sign_4'\u003cbr\u003e\n ▸ \u003cb\u003eOutput Name\u003c\u002fb\u003e: pauli_signs\u003cbr\u003e\n ▸ \u003cb\u003eSubsystem Indices\u003c\u002fb\u003e: [0]","\u003cb\u003eCombineRegistersNode(\u003cinject_noise_4(r), lhs_2(r), +collect_5\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {inject_noise_4: ([0, 1], 'VirtualType.PAULI'), lhs_2: ([0, 1], 'VirtualType.PAULI')}\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {collect_5: (2, 'VirtualType.U2')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Type\u003c\u002fb\u003e: U2\u003cbr\u003e\n ▸ \u003cb\u003eOutput Num Subsystems\u003c\u002fb\u003e: 2\u003cbr\u003e\n ▸ \u003cb\u003eOperands\u003c\u002fb\u003e: {'lhs_2': ([0, 1], [0, 1], 'VirtualType.PAULI'), 'inject_noise_4': ([0, 1], [0, 1], 'VirtualType.PAU...","\u003cb\u003eCollectTemplateValues(\u003ccollect_5(r)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {collect_5: ([0, 1], 'VirtualType.U2')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Name\u003c\u002fb\u003e: 'parameter_values'\u003cbr\u003e\n ▸ \u003cb\u003eTemplate Indices\u003c\u002fb\u003e: [[6, 7, 8], [9, 10, 11]]\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'collect_5'\u003cbr\u003e\n ▸ \u003cb\u003e\u003cclass 'samplomatic.synths.synth.Synth'\u003e\u003c\u002fb\u003e: RzSxSynth(\u003cnum_qubits_per_subsystem=1, num_params_per_subsystem=3\u003e)","\u003cb\u003eTwirlSamplingNode(\u003c+lhs_6, +rhs_6\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {lhs_6: (2, 'VirtualType.PAULI'), rhs_6: (2, 'VirtualType.PAULI')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {tag: ['cx_ab']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eLHS Register\u003c\u002fb\u003e: 'lhs_6'\u003cbr\u003e\n ▸ \u003cb\u003eRHS Register\u003c\u002fb\u003e: 'rhs_6'\u003cbr\u003e\n ▸ \u003cb\u003eDistribution\u003c\u002fb\u003e: UniformPauli(\u003cnum_subsystems=2, register_type=VirtualType.PAULI\u003e)","\u003cb\u003eCombineRegistersNode(\u003clhs_0(r), rhs_2(r), rhs_6(r), +collect_7\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• lhs_0: ([0, 1, 2, 3], 'VirtualType.PAULI')\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• rhs_2: ([0, 1], 'VirtualType.PAULI')\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• rhs_6: ([0, 1], 'VirtualType.PAULI')\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {collect_7: (4, 'VirtualType.U2')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_ab', 'cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Type\u003c\u002fb\u003e: U2\u003cbr\u003e\n ▸ \u003cb\u003eOutput Num Subsystems\u003c\u002fb\u003e: 4\u003cbr\u003e\n ▸ \u003cb\u003eOperands\u003c\u002fb\u003e: {'lhs_0': ([0, 1, 2, 3], [0, 1, 2, 3], 'VirtualType.PAULI'), 'rhs_2': ([0, 1], [2, 3], 'VirtualType....","\u003cb\u003eCollectTemplateValues(\u003ccollect_7(r)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {collect_7: ([0, 1, 2, 3], 'VirtualType.U2')}\u003cbr\u003e\n ▸ \u003cb\u003etrace_refs\u003c\u002fb\u003e: {inject_noise: ['cx_noise'], tag: ['cx_ab', 'cx_cd']}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Name\u003c\u002fb\u003e: 'parameter_values'\u003cbr\u003e\n ▸ \u003cb\u003eTemplate Indices\u003c\u002fb\u003e\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• [12, 13, 14]\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• [15, 16, 17]\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• [18, 19, 20]\n\u003c\u002fbr\u003e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• [21, 22, 23]\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'collect_7'\u003cbr\u003e\n ▸ \u003cb\u003e\u003cclass 'samplomatic.synths.synth.Synth'\u003e\u003c\u002fb\u003e: RzSxSynth(\u003cnum_qubits_per_subsystem=1, num_params_per_subsystem=3\u003e)","\u003cb\u003ePauliPastCliffordNode(\u003clhs_6(r), lhs_6(w)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {lhs_6: ([0, 1], 'VirtualType.PAULI')}\u003cbr\u003e\n• \u003cb\u003ewrites_to\u003c\u002fb\u003e: {lhs_6: ([0, 1], 'VirtualType.PAULI')}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOperation\u003c\u002fb\u003e: 'cx'\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'lhs_6'\u003cbr\u003e\n ▸ \u003cb\u003eSubsystem Indices\u003c\u002fb\u003e: [[0, 1]]","\u003cb\u003eSliceRegisterNode(\u003clhs_6(r), +collect_9\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {lhs_6: ([0, 1], 'VirtualType.PAULI')}\u003cbr\u003e\n• \u003cb\u003einstantiates\u003c\u002fb\u003e: {collect_9: (2, 'VirtualType.U2')}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Type\u003c\u002fb\u003e: \u003cVirtualType.U2: 'u2'\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Register Name\u003c\u002fb\u003e: collect_9\u003cbr\u003e\n ▸ \u003cb\u003eInput Register Name\u003c\u002fb\u003e: lhs_6","\u003cb\u003eCollectTemplateValues(\u003ccollect_9(r)\u003e)\u003c\u002fb\u003e\u003cbr\u003e\n• \u003cb\u003ereads_from\u003c\u002fb\u003e: {collect_9: ([0, 1], 'VirtualType.U2')}\u003cbr\u003e\n────────────────────────────\u003cb\u003e\u003c\u002fb\u003e\u003cbr\u003e\n ▸ \u003cb\u003eOutput Name\u003c\u002fb\u003e: 'parameter_values'\u003cbr\u003e\n ▸ \u003cb\u003eTemplate Indices\u003c\u002fb\u003e: [[0, 1, 2], [3, 4, 5]]\u003cbr\u003e\n ▸ \u003cb\u003eRegister Name\u003c\u002fb\u003e: 'collect_9'\u003cbr\u003e\n ▸ \u003cb\u003e\u003cclass 'samplomatic.synths.synth.Synth'\u003e\u003c\u002fb\u003e: RzSxSynth(\u003cnum_qubits_per_subsystem=1, num_params_per_subsystem=3\u003e)"],"marker":{"color":["red","limegreen","purple","red","limegreen","red","purple","limegreen","blue","red","limegreen","blue","limegreen","limegreen","blue"],"size":[30,20,30,30,20,30,30,20,30,30,20,30,20,20,30],"symbol":["star","circle","bowtie","star","circle","star","bowtie","circle","bowtie","star","circle","bowtie","circle","circle","bowtie"]},"mode":"markers+text","text":["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"],"x":{"dtype":"f8","bdata":"AAAAAAAA0D9Pr5RliOMGQBniWBe3ERdAAAAAAAAA0D8T8kHPZtX+PwAAAAAAANA\u002fGeJYF7cRF0CeXinLEMcOQBniWBe3ERdAAAAAAAAA0D8T8kHPZtX+PxniWBe3ERdAE\u002fJBz2bV\u002fj+eXinLEMcOQBniWBe3ERdA"},"y":{"dtype":"f8","bdata":"nl4pyxDHD0CoV8oyxPEQQKhXyjLE8RBAAAAAAAAA\u002fD88vVKWIY75P1\u002fSGK2jquY\u002fAAAAAAAA0D+eXinLEMfzP55eKcsQx\u002fM\u002fE\u002fJBz2ZVB0BPr5RliOMKQE+vlGWI4wpAT6+UZYjjA0BPr5RliOMDQE+vlGWI4wNA"},"type":"scatter","xaxis":"x","yaxis":"y"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"showticklabels":false,"showgrid":false,"showline":true,"linewidth":1,"linecolor":"black","mirror":true,"zeroline":false},"yaxis":{"anchor":"x","domain":[0.0,1.0],"showticklabels":false,"showgrid":false,"showline":true,"linewidth":1,"linecolor":"black","mirror":true,"zeroline":false},"margin":{"l":5,"r":5,"t":5,"b":5},"showlegend":false,"plot_bgcolor":"rgba(0,0,0,0)","paper_bgcolor":"white"},                        {"responsive": true}                    )                };            </script>        </div></div></div>
+</div>
+<p>Trace info can also be inspected programmatically. Notice that some nodes carry refs from both
+<code class="docutils literal notranslate"><span class="pre">'cx_ab'</span></code> and <code class="docutils literal notranslate"><span class="pre">'cx_cd'</span></code> — the samplex optimizer merged their parallel propagation nodes because
+the two boxes cover disjoint qubits and share a common predecessor from the right-dressed
+measurement box’s emission.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">samplex</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">trace_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">trace_info</span><span class="o">.</span><span class="n">trace_refs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="s2">&quot; ← merged&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">:</span><span class="s2">40s</span><span class="si">}</span><span class="s2">  tags=</span><span class="si">{</span><span class="n">tags</span><span class="si">}{</span><span class="n">merged</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TwirlSamplingNode                         tags={&#39;meas_box&#39;}
+TwirlSamplingNode                         tags={&#39;cx_cd&#39;}
+InjectNoiseNode                           tags={&#39;cx_cd&#39;}
+CollectZ2ToOutputNode                     tags={&#39;cx_cd&#39;}
+CombineRegistersNode                      tags={&#39;cx_cd&#39;}
+CollectTemplateValues                     tags={&#39;cx_cd&#39;}
+TwirlSamplingNode                         tags={&#39;cx_ab&#39;}
+CombineRegistersNode                      tags={&#39;cx_ab&#39;, &#39;cx_cd&#39;} ← merged
+CollectTemplateValues                     tags={&#39;cx_ab&#39;, &#39;cx_cd&#39;} ← merged
+</pre></div>
+</div>
+</div>
+</div>
+<p>To find all nodes that originate from a specific box, filter by the <code class="docutils literal notranslate"><span class="pre">&quot;tag&quot;</span></code> key:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tag_ref</span> <span class="o">=</span> <span class="s2">&quot;cx_ab&quot;</span>
+<span class="n">matching_nodes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">node</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">samplex</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">trace_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tag_ref</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">trace_info</span><span class="o">.</span><span class="n">trace_refs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+<span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes originating from box &#39;</span><span class="si">{</span><span class="n">tag_ref</span><span class="si">}</span><span class="s2">&#39;:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">matching_nodes</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Nodes originating from box &#39;cx_ab&#39;:
+  TwirlSamplingNode
+  CombineRegistersNode
+  CollectTemplateValues
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="understanding-the-samplex-dag">
+<h2>Understanding the samplex DAG<a class="headerlink" href="#understanding-the-samplex-dag" title="Link to this heading">¶</a></h2>
+<p>The samplex returned by <a class="reference internal" href="../api/auto/samplomatic.build.html#samplomatic.build" title="samplomatic.build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> is a directed acyclic graph (DAG) where <strong>edges denote
+register dependency</strong>: an edge from node A to node B means B must wait for A to have acted on
+the shared virtual registers before B is allowed to act. This is not a temporal ordering like
+the DAG of a quantum circuit — instead the graph flows from nodes responsible for generating
+randomizations to nodes responsible for synthesizing them as outputs.</p>
+<p>There are three node types, each with a distinct visual style in the interactive plot:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Shape</p></th>
+<th class="head"><p>Color</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Star</p></td>
+<td><p>Red</p></td>
+<td><p><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.SamplingNode.html#samplomatic.samplex.nodes.SamplingNode" title="samplomatic.samplex.nodes.SamplingNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplingNode</span></code></a></p></td>
+<td><p>Instantiates new virtual registers from a distribution or input</p></td>
+</tr>
+<tr class="row-odd"><td><p>Circle</p></td>
+<td><p>Green</p></td>
+<td><p><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.EvaluationNode.html#samplomatic.samplex.nodes.EvaluationNode" title="samplomatic.samplex.nodes.EvaluationNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvaluationNode</span></code></a></p></td>
+<td><p>Transforms, combines, or propagates virtual registers</p></td>
+</tr>
+<tr class="row-even"><td><p>Bowtie</p></td>
+<td><p>Blue / Purple</p></td>
+<td><p><a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.CollectionNode.html#samplomatic.samplex.nodes.CollectionNode" title="samplomatic.samplex.nodes.CollectionNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectionNode</span></code></a></p></td>
+<td><p>Reads registers and writes to <code class="docutils literal notranslate"><span class="pre">sample()</span></code> outputs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Execution proceeds in three phases: all sampling nodes run first (in parallel), evaluation nodes
+run next in topological order (parallel within each generation), and collection nodes run last
+(in parallel). The graphviz layout reflects this — sampling nodes appear at the top, collection
+nodes at the bottom.</p>
+</section>
+<section id="reading-hover-tooltips">
+<h2>Reading hover tooltips<a class="headerlink" href="#reading-hover-tooltips" title="Link to this heading">¶</a></h2>
+<p>Every node in the interactive visualization shows a tooltip when hovered. The tooltip contains:</p>
+<ul class="simple">
+<li><p><strong>Node class name</strong> and its integer graph index.</p></li>
+<li><p><strong>Register manifests</strong>: which registers the node instantiates, reads from, writes to, and
+removes. These tell you how data flows between nodes.</p></li>
+<li><p><strong>Node-specific details</strong>: the distribution type for sampling nodes, the operand for
+multiplication nodes, the template parameter indices for collection nodes, etc.</p></li>
+<li><p><strong>Trace refs</strong> (only when <code class="docutils literal notranslate"><span class="pre">debug=True</span></code>): the annotation keys and ref strings linking the
+node back to its originating box(es).</p></li>
+</ul>
+<p>Clicking the plot and then hovering over individual nodes is the fastest way to understand what
+a given node does without reading source code.</p>
+</section>
+<section id="orienting-in-a-samplex">
+<h2>Orienting in a samplex<a class="headerlink" href="#orienting-in-a-samplex" title="Link to this heading">¶</a></h2>
+<p>Before diving into the visualization, <code class="docutils literal notranslate"><span class="pre">print(samplex)</span></code> gives a quick text summary of the node
+count, required inputs, and promised outputs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="p">,</span> <span class="n">samplex</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">samplex</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Samplex(&lt;15 nodes&gt;)
+  Inputs:
+  - &#39;pauli_lindblad_maps.cx_noise&#39; &lt;PauliLindbladMap&gt;: A PauliLindblad map acting on 2
+      qubits, with &#39;num_terms_cx_noise&#39; terms.
+
+  Outputs:
+    * &#39;measurement_flips.c&#39; &lt;bool[&#39;num_randomizations&#39;, 1, 4]&gt;: Bit-flip corrections for
+        measurement twirling.
+    * &#39;parameter_values&#39; &lt;float32[&#39;num_randomizations&#39;, 24]&gt;: Parameter values valid for an
+        associated template circuit.
+    * &#39;pauli_signs&#39; &lt;bool[&#39;num_randomizations&#39;, 1]&gt;: Signs from sampled Pauli Lindblad
+        maps, where boolean values represent the parity of the number of non-trivial factors in the
+        sampled error that arise from negative rates. In other words, in order to implement basic
+        PEC, the sign used to correct expectation values should be ``(-1)**bool_value``. The order
+        matches the iteration order of boxes in the original circuit with noise injection
+        annotations.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspecting-registers-with-keep-registers">
+<h2>Inspecting registers with <code class="docutils literal notranslate"><span class="pre">keep_registers</span></code><a class="headerlink" href="#inspecting-registers-with-keep-registers" title="Link to this heading">¶</a></h2>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">keep_registers=True</span></code> to <a class="reference internal" href="../api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.sample" title="samplomatic.samplex.Samplex.sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sample()</span></code></a> retains the intermediate
+<a class="reference internal" href="../api/auto/samplomatic.virtual_registers.VirtualRegister.html#samplomatic.virtual_registers.VirtualRegister" title="samplomatic.virtual_registers.VirtualRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualRegister</span></code></a> objects that are live at the end of sampling, storing them in
+<code class="docutils literal notranslate"><span class="pre">outputs.metadata[&quot;registers&quot;]</span></code>. Each register is a 2D array (shape
+<code class="docutils literal notranslate"><span class="pre">(num_subsystems,</span> <span class="pre">num_randomizations)</span></code>, with possible trailing gate-shape dimensions) of virtual
+group elements.</p>
+<p>This is useful for verifying that virtual gates were combined correctly, or for inspecting the
+raw Pauli or unitary samples before they are synthesized into rotation angles.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.quantum_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">PauliLindbladMap</span>
+
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">samplex</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;pauli_lindblad_maps.cx_noise&quot;</span><span class="p">:</span> <span class="n">PauliLindbladMap</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)},</span>
+    <span class="n">num_randomizations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">keep_registers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">reg</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;registers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: type=</span><span class="si">{</span><span class="n">reg</span><span class="o">.</span><span class="n">TYPE</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">, shape=</span><span class="si">{</span><span class="n">reg</span><span class="o">.</span><span class="n">virtual_gates</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lhs_0: type=pauli, shape=(4, 3)
+rhs_0: type=pauli, shape=(4, 3)
+lhs_2: type=pauli, shape=(2, 3)
+rhs_2: type=pauli, shape=(2, 3)
+inject_noise_4: type=pauli, shape=(2, 3)
+sign_4: type=z2, shape=(1, 3)
+lhs_6: type=pauli, shape=(2, 3)
+rhs_6: type=pauli, shape=(2, 3)
+z2_collect_1: type=z2, shape=(4, 3)
+collect_7: type=u2, shape=(4, 3, 2, 2)
+collect_9: type=u2, shape=(2, 3, 2, 2)
+collect_5: type=u2, shape=(2, 3, 2, 2)
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can view the contents of the end-state of a particular register. In the particular example below, the register has type <a class="reference internal" href="../api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister" title="samplomatic.virtual_registers.PauliRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">PauliRegister</span></code></a>; see the API documentation for details about the storage format.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lhs_2:&quot;</span><span class="p">,</span> <span class="n">outputs</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;registers&quot;</span><span class="p">][</span><span class="s2">&quot;lhs_2&quot;</span><span class="p">])</span>
+<span class="n">outputs</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;registers&quot;</span><span class="p">][</span><span class="s2">&quot;lhs_2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">virtual_gates</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lhs_2: PauliRegister(&lt;2, 3&gt;)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0, 2, 2],
+       [3, 0, 0]], dtype=uint8)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="how-samplex-nodes-map-to-template-parameters">
+<h2>How samplex nodes map to template parameters<a class="headerlink" href="#how-samplex-nodes-map-to-template-parameters" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">outputs[&quot;parameter_values&quot;]</span></code> array returned by <a class="reference internal" href="../api/auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex.sample" title="samplomatic.samplex.Samplex.sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sample()</span></code></a> has shape
+<code class="docutils literal notranslate"><span class="pre">(num_randomizations,</span> <span class="pre">N)</span></code> where <code class="docutils literal notranslate"><span class="pre">N</span></code> matches <code class="docutils literal notranslate"><span class="pre">len(template.parameters)</span></code>. Each column corresponds
+to one parameter in the template circuit — the i-th column fills in <code class="docutils literal notranslate"><span class="pre">template.parameters[i]</span></code>.</p>
+<p>The <a class="reference internal" href="../api/auto/samplomatic.samplex.nodes.CollectTemplateValues.html#samplomatic.samplex.nodes.CollectTemplateValues" title="samplomatic.samplex.nodes.CollectTemplateValues"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectTemplateValues</span></code></a> collection nodes are the link between virtual registers and
+template parameters. Each such node holds index information that records which columns of the
+output array itwrites to. This makes it possible to trace which virtual-gate subsystems drive
+which template parameters.</p>
+<p>See the <a class="reference internal" href="samplex_io.html"><span class="doc">Samplex Inputs and Outputs</span></a> guide for how to bind the sampled parameter values to the template
+circuit and run experiments.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic.samplex.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">CollectTemplateValues</span>
+
+<span class="n">template</span><span class="p">,</span> <span class="n">samplex</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">samplex</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">CollectTemplateValues</span><span class="p">):</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">trace_info</span><span class="o">.</span><span class="n">trace_refs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tag&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">trace_info</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tags=</span><span class="si">{</span><span class="n">tags</span><span class="si">}</span><span class="s2">  →  template param indices: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">template_idxs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tags={&#39;cx_cd&#39;}  →  template param indices: [[6, 7, 8], [9, 10, 11]]
+tags={&#39;cx_ab&#39;, &#39;cx_cd&#39;}  →  template param indices: [[12, 13, 14], [15, 16, 17], [18, 19, 20], [21, 22, 23]]
+tags=set()  →  template param indices: [[0, 1, 2], [3, 4, 5]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="automatic-tagging-via-the-transpiler">
+<h2>Automatic tagging via the transpiler<a class="headerlink" href="#automatic-tagging-via-the-transpiler" title="Link to this heading">¶</a></h2>
+<p>When using <a class="reference internal" href="../api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">add_tags</span></code> parameter automatically adds
+<a class="reference internal" href="../api/auto/samplomatic.Tag.html#samplomatic.Tag" title="samplomatic.Tag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tag</span></code></a> annotations to all boxes. Three modes are available:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">&quot;unique_instance&quot;</span></code></strong>: assigns sequential refs <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">t1</span></code>, … to boxes in circuit order.
+Every box gets a distinct ref regardless of its structure.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">&quot;unique_box&quot;</span></code></strong>: computes a structural hash of each box’s content and assigns the same ref to
+all structurally equivalent boxes. Useful for grouping boxes by type rather than position.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">&quot;noise_ref&quot;</span></code></strong>: copies the <code class="docutils literal notranslate"><span class="pre">ref</span></code> from each box’s <a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation, and only
+tags boxes that have one. Useful when meaningful noise refs already exist.</p></li>
+</ul>
+<p>The example below applies <code class="docutils literal notranslate"><span class="pre">&quot;unique_instance&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;unique_box&quot;</span></code> to a circuit whose two CX boxes
+are structurally equivalent. With <code class="docutils literal notranslate"><span class="pre">&quot;unique_instance&quot;</span></code> each gets a distinct ref, while with
+<code class="docutils literal notranslate"><span class="pre">&quot;unique_box&quot;</span></code> they share one.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_boxing_pass_manager</span>
+
+<span class="n">base_circuit</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">base_circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">base_circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">base_circuit</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>
+
+<span class="c1"># unique_instance: every box gets a distinct tag ref</span>
+<span class="n">pm</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">add_tags</span><span class="o">=</span><span class="s2">&quot;unique_instance&quot;</span><span class="p">)</span>
+<span class="n">boxed</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">base_circuit</span><span class="p">)</span>
+<span class="n">template</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">boxed</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unique_instance barrier labels:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">instr</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">instr</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;barrier&quot;</span> <span class="ow">and</span> <span class="n">instr</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">instr</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>unique_instance barrier labels:
+  L0@tag=t0
+  M0@tag=t0
+  R0@tag=t0
+  L1@tag=t1
+  M1@tag=t1
+  R1@tag=t1
+  L2@tag=t2
+  M2@tag=t2
+  R2@tag=t2
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../api/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">API Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="samplex_io.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Samplex Inputs and Outputs</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, IBM
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 2026/04/09</div>
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Debugging and Tracing</a><ul>
+<li><a class="reference internal" href="#tagging-boxes">Tagging boxes</a></li>
+<li><a class="reference internal" href="#barrier-labels-in-the-template-circuit">Barrier labels in the template circuit</a></li>
+<li><a class="reference internal" href="#trace-info-on-samplex-nodes">Trace info on samplex nodes</a></li>
+<li><a class="reference internal" href="#understanding-the-samplex-dag">Understanding the samplex DAG</a></li>
+<li><a class="reference internal" href="#reading-hover-tooltips">Reading hover tooltips</a></li>
+<li><a class="reference internal" href="#orienting-in-a-samplex">Orienting in a samplex</a></li>
+<li><a class="reference internal" href="#inspecting-registers-with-keep-registers">Inspecting registers with <code class="docutils literal notranslate"><span class="pre">keep_registers</span></code></a></li>
+<li><a class="reference internal" href="#how-samplex-nodes-map-to-template-parameters">How samplex nodes map to template parameters</a></li>
+<li><a class="reference internal" href="#automatic-tagging-via-the-transpiler">Automatic tagging via the transpiler</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=ba2e7b09"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

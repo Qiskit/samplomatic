@@ -1,0 +1,33 @@
+Partition
+=========
+
+.. currentmodule:: samplomatic.partition
+
+.. autoclass:: Partition
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Partition.add
+      ~Partition.copy
+      ~Partition.difference
+      ~Partition.from_elements
+      ~Partition.get_indices
+      ~Partition.intersection
+      ~Partition.overlaps_with
+      ~Partition.restrict
+      ~Partition.union
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: add
+   .. automethod:: copy
+   .. automethod:: difference
+   .. automethod:: from_elements
+   .. automethod:: get_indices
+   .. automethod:: intersection
+   .. automethod:: overlaps_with
+   .. automethod:: restrict
+   .. automethod:: union

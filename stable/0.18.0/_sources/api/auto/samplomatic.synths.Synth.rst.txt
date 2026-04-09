@@ -1,0 +1,33 @@
+Synth
+=====
+
+.. currentmodule:: samplomatic.synths
+
+.. autoclass:: Synth
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Synth.compatible_register_types
+      ~Synth.num_params
+      ~Synth.num_qubits
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Synth.generate_template_values
+      ~Synth.make_template
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: compatible_register_types
+   .. autoattribute:: num_params
+   .. autoattribute:: num_qubits
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: generate_template_values
+   .. automethod:: make_template
