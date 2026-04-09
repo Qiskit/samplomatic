@@ -4,7 +4,7 @@
 
 - Added the ``add_tags`` option to :func:`~samplomatic.transpiler.generate_boxing_pass_manager` and the :class:`~samplomatic.transpiler.passes.AddTags` transpiler pass. When enabled, a :class:`~samplomatic.annotations.Tag` annotation is automatically added to every box. Two modes are supported: ``'unique_box'`` assigns the same hash-based ref to structurally equivalent boxes, and ``'unique_instance'`` assigns a unique incrementing ref (``t0``, ``t1``, ...) to every box in the circuit. ([#342](https://github.com/Qiskit/samplomatic/issues/342))
 - Added the `debug` option to `build()` that populates debug/trace information on samplex nodes, enabling users to trace nodes back to their originating box annotations. ([#345](https://github.com/Qiskit/samplomatic/issues/345))
-- Added `map_annotations`, `strip_annotations`, `filter_annotations`, `extend_annotations`, and `replace_annotations` utilities to `samplomtic.utils` for modifying annotations on existing circuits. ([#347](https://github.com/Qiskit/samplomatic/issues/347))
+- Added `map_annotations()`, `strip_annotations()`, `filter_annotations()`, `extend_annotations()`, and `replace_annotations()` utilities to `samplomtic.utils` for modifying annotations on existing circuits. ([#347](https://github.com/Qiskit/samplomatic/issues/347))
 
 ### Improved
 
@@ -12,7 +12,7 @@
 
 ### Fixed
 
-- Fixed `samplomatic.utils.default_normalize_annotations` to also keep `Tag` annotations, in addition to `InjectNoise` and `Twirl` annotations. ([#343](https://github.com/Qiskit/samplomatic/issues/343))
+- Fixed `samplomatic.utils.default_normalize_annotations()` to also keep `Tag` annotations, in addition to `InjectNoise` and `Twirl` annotations. ([#343](https://github.com/Qiskit/samplomatic/issues/343))
 
 
 ## [0.17.1](https://github.com/Qiskit/samplomatic/tree/0.17.1) - 2026-03-16
