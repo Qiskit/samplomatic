@@ -46,7 +46,7 @@ class PreNode:
 
     def get_style(self) -> NodeStyle:
         """Summarizes the style of this node when plotted via :func:`~.plot_graph`."""
-        style = NodeStyle(title=type(self).__name__).append_data(
+        style = NodeStyle(title=type(self).__name__).append_list_data(
             "Subsystems", list(self.subsystems)
         )
         if self.trace_info is not None:

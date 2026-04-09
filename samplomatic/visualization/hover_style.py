@@ -46,13 +46,18 @@ class ItemDatum(Datum):
 
     __slots__ = ("value",)
 
+    VALUE_LIMIT: int = 100
+
     def __init__(self, name: str, value: Any, bullet: str | None = None):
         super().__init__(name, bullet)
         self.value = value
 
     @property
     def html(self) -> str:
-        return f"{super().html}: {self.value}"
+        value = str(self.value)
+        if len(value) > self.VALUE_LIMIT:
+            value = value[: self.VALUE_LIMIT] + "..."
+        return f"{super().html}: {value}"
 
 
 class ListDatum(Datum):

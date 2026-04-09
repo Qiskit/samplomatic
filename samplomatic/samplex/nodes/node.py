@@ -180,11 +180,18 @@ class Node(metaclass=Serializable):
     def __eq__(self, other) -> bool: ...
 
 
+def _truncate_idx_list(idxs: list[int], max_display: int = 10) -> list[int]:
+    # truncate long index lists for display, keeping small cases fully informative
+    if len(idxs) > max_display:
+        return idxs[:max_display] + [f"... +{len(idxs) - max_display}"]
+    return idxs
+
+
 def _reg_style(register_manifest):
     # helper to format node style
     return {
         reg_name: (
-            int(idxs) if isinstance(idxs, Number) else sorted(map(int, idxs)),
+            int(idxs) if isinstance(idxs, Number) else _truncate_idx_list(sorted(map(int, idxs))),
             str(reg_type),
         )
         for reg_name, (idxs, reg_type) in sorted(register_manifest.items())

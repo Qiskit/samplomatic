@@ -134,5 +134,5 @@ class PauliPastCliffordNode(EvaluationNode):
             .get_style()
             .append_data("Operation", repr(self._op_name))
             .append_data("Register Name", repr(self._register_name))
-            .append_data("Subsystem Indices", self._subsystem_idxs.tolist())
+            .append_list_data("Subsystem Indices", self._subsystem_idxs.tolist())
         )
