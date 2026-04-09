@@ -204,6 +204,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guides/dressed_boxes.html">Dressed boxes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guides/transpiler.html">Transpiler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guides/samplex_io.html">Samplex Inputs and Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guides/debug_tracing.html">Debugging and Tracing</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -508,7 +509,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PreInjectNoise.html#samplomatic.pre_samplex.PreInjectNoise" title="samplomatic.pre_samplex.PreInjectNoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreInjectNoise</span></code></a>(subsystems, direction, ...[, ...])</p></td>
 <td><p>The inject noise emit node type used during samplex building.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.PreNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreNode</span></code></a>(subsystems, direction)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PreNode.html#samplomatic.pre_samplex.PreNode" title="samplomatic.pre_samplex.PreNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreNode</span></code></a>(subsystems, direction, *[, trace_info])</p></td>
 <td><p>The node type used during samplex building, different than the type in the final samplex.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PrePropagate.html#samplomatic.pre_samplex.PrePropagate" title="samplomatic.pre_samplex.PrePropagate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrePropagate</span></code></a>(subsystems, direction, ...[, ...])</p></td>
@@ -520,7 +521,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex" title="samplomatic.pre_samplex.PreSamplex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreSamplex</span></code></a>([graph, qubit_map, dangling, ...])</p></td>
 <td><p>The sampling IR between a boxed-up circuit and a <a class="reference internal" href="auto/samplomatic.samplex.Samplex.html#samplomatic.samplex.Samplex" title="samplomatic.samplex.Samplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Samplex</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PreZ2Collect.html#samplomatic.pre_samplex.PreZ2Collect" title="samplomatic.pre_samplex.PreZ2Collect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreZ2Collect</span></code></a>(subsystems, clbit_idxs, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.pre_samplex.PreZ2Collect.html#samplomatic.pre_samplex.PreZ2Collect" title="samplomatic.pre_samplex.PreZ2Collect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreZ2Collect</span></code></a>(subsystems, clbit_idxs, ...[, ...])</p></td>
 <td><p>The Z2-collection node type used during samplex building.</p></td>
 </tr>
 </tbody>

@@ -14,6 +14,7 @@ PreCollect
       ~PreCollect.param_idxs
       ~PreCollect.subsystems
       ~PreCollect.synth
+      ~PreCollect.trace_info
 
    .. rubric:: Methods Summary
 
@@ -28,6 +29,7 @@ PreCollect
    .. autoattribute:: param_idxs
    .. autoattribute:: subsystems
    .. autoattribute:: synth
+   .. autoattribute:: trace_info
 
    .. rubric:: Methods Documentation
 

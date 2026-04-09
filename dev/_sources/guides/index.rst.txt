@@ -8,3 +8,4 @@ Guides
    dressed_boxes
    transpiler
    samplex_io
+   debug_tracing

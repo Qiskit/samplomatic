@@ -12,6 +12,7 @@ PreNode
 
       ~PreNode.direction
       ~PreNode.subsystems
+      ~PreNode.trace_info
 
    .. rubric:: Methods Summary
 
@@ -23,6 +24,7 @@ PreNode
 
    .. autoattribute:: direction
    .. autoattribute:: subsystems
+   .. autoattribute:: trace_info
 
    .. rubric:: Methods Documentation
 

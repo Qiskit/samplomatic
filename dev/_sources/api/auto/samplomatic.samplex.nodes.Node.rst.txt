@@ -13,6 +13,7 @@ Node
       ~Node.num_parameters
       ~Node.outgoing_register_type
       ~Node.parameter_idxs
+      ~Node.trace_info
 
    .. rubric:: Methods Summary
 
@@ -31,6 +32,7 @@ Node
    .. autoattribute:: num_parameters
    .. autoattribute:: outgoing_register_type
    .. autoattribute:: parameter_idxs
+   .. autoattribute:: trace_info
 
    .. rubric:: Methods Documentation
 
