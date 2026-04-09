@@ -17,6 +17,13 @@ from .deprecation import deprecate_arg
 from .find_unique_box_instructions import find_unique_box_instructions
 from .frozen_dict import FrozenDict
 from .get_annotation import get_annotation
+from .map_annotations import (
+    extend_annotations,
+    filter_annotations,
+    map_annotations,
+    replace_annotations,
+    strip_annotations,
+)
 from .unbox import unbox
 from .undress_box import undress_box
 from .validate_literals import validate_literals
