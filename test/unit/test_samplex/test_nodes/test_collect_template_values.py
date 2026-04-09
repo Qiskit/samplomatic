@@ -36,6 +36,7 @@ def test_construction():
     assert node.reads_from() == {"x": ({2, 3}, VirtualType.U2)}
     assert not node.writes_to() and not node.instantiates() and not node.removes()
     assert node.outgoing_register_type is None
+    assert np.array_equal(node.template_idxs, [[0, 1, 3], [2, 4, 5]])
 
 
 def test_equality(dummy_collection_node):
