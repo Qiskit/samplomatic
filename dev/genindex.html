@@ -355,8 +355,13 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.extend_annotations.html">extend_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.filter_annotations.html">filter_annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.get_annotation.html">get_annotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.map_annotations.html">map_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.replace_annotations.html">replace_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.strip_annotations.html">strip_annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.unbox.html">unbox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.undress_box.html">undress_box</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/auto/samplomatic.utils.validate_literals.html">validate_literals</a></li>
@@ -808,6 +813,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.nodes.EvaluationNode.html#samplomatic.samplex.nodes.EvaluationNode">EvaluationNode (class in samplomatic.samplex.nodes)</a>
 </li>
+        <li><a href="api/auto/samplomatic.utils.extend_annotations.html#samplomatic.utils.extend_annotations">extend_annotations() (in module samplomatic.utils)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -816,6 +823,8 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/auto/samplomatic.utils.filter_annotations.html#samplomatic.utils.filter_annotations">filter_annotations() (in module samplomatic.utils)</a>
+</li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.finalize">finalize() (samplomatic.pre_samplex.PreSamplex method)</a>
 
         <ul>
@@ -832,6 +841,8 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreEdge.html#samplomatic.pre_samplex.PreEdge.force_register_copy">force_register_copy (samplomatic.pre_samplex.PreEdge attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.tensor_interface.PauliLindbladMapSpecification.html#samplomatic.tensor_interface.PauliLindbladMapSpecification.free_dimensions">free_dimensions (samplomatic.tensor_interface.PauliLindbladMapSpecification attribute)</a>
 
         <ul>
@@ -842,8 +853,6 @@
           <li><a href="api/auto/samplomatic.tensor_interface.TensorSpecification.html#samplomatic.tensor_interface.TensorSpecification.free_dimensions">(samplomatic.tensor_interface.TensorSpecification attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.partition.Partition.html#samplomatic.partition.Partition.from_elements">from_elements() (samplomatic.partition.Partition class method)</a>
 </li>
         <li><a href="api/auto/samplomatic.virtual_registers.PauliRegister.html#samplomatic.virtual_registers.PauliRegister.from_name">from_name() (samplomatic.virtual_registers.PauliRegister class method)</a>
@@ -1124,6 +1133,8 @@
           <li><a href="api/auto/samplomatic.synths.Synth.html#samplomatic.synths.Synth.make_template">(samplomatic.synths.Synth method)</a>
 </li>
         </ul></li>
+        <li><a href="api/auto/samplomatic.utils.map_annotations.html#samplomatic.utils.map_annotations">map_annotations() (in module samplomatic.utils)</a>
+</li>
         <li><a href="api/auto/samplomatic.pre_samplex.DanglerMatch.html#samplomatic.pre_samplex.DanglerMatch.match_node">match_node() (samplomatic.pre_samplex.DanglerMatch method)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.max_param_idx">max_param_idx (samplomatic.pre_samplex.PreSamplex attribute)</a>
@@ -1485,14 +1496,16 @@
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.remove_force_copy_nodes">remove_force_copy_nodes() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/auto/samplomatic.samplex.nodes.ConversionNode.html#samplomatic.samplex.nodes.ConversionNode.removes">removes() (samplomatic.samplex.nodes.ConversionNode method)</a>
 
         <ul>
           <li><a href="api/auto/samplomatic.samplex.nodes.Node.html#samplomatic.samplex.nodes.Node.removes">(samplomatic.samplex.nodes.Node method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/auto/samplomatic.utils.replace_annotations.html#samplomatic.utils.replace_annotations">replace_annotations() (in module samplomatic.utils)</a>
+</li>
         <li><a href="api/auto/samplomatic.graph_utils.replace_edges_with_one_edge.html#samplomatic.graph_utils.replace_edges_with_one_edge">replace_edges_with_one_edge() (in module samplomatic.graph_utils)</a>
 </li>
         <li><a href="api/auto/samplomatic.graph_utils.replace_nodes_with_one_node.html#samplomatic.graph_utils.replace_nodes_with_one_node">replace_nodes_with_one_node() (in module samplomatic.graph_utils)</a>
@@ -1775,6 +1788,8 @@
         <li><a href="api/auto/samplomatic.tensor_interface.Specification.html#samplomatic.tensor_interface.Specification">Specification (class in samplomatic.tensor_interface)</a>
 </li>
         <li><a href="api/auto/samplomatic.tensor_interface.TensorInterface.html#samplomatic.tensor_interface.TensorInterface.specs">specs (samplomatic.tensor_interface.TensorInterface attribute)</a>
+</li>
+        <li><a href="api/auto/samplomatic.utils.strip_annotations.html#samplomatic.utils.strip_annotations">strip_annotations() (in module samplomatic.utils)</a>
 </li>
         <li><a href="api/auto/samplomatic.pre_samplex.PreSamplex.html#samplomatic.pre_samplex.PreSamplex.subgraphs">subgraphs() (samplomatic.pre_samplex.PreSamplex method)</a>
 </li>
