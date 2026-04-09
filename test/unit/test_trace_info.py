@@ -30,6 +30,16 @@ def test_from_emission_trace_refs_empty_returns_none(refs):
     assert TraceInfo.from_emission_trace_refs(refs) is None
 
 
+def test_copy():
+    """Test that we get a deep copy."""
+    a = TraceInfo({"tag": {"t0", "t1"}, "noise": {"n0"}})
+    b = a.copy()
+    assert a.trace_refs == b.trace_refs
+    assert a.trace_refs is not b.trace_refs
+    for origin_type, origin in a.trace_refs.items():
+        assert b.trace_refs[origin_type] is not origin
+
+
 def test_merge():
     """Merge performs set union on overlapping keys and copies disjoint keys."""
     a = TraceInfo({"tag": {"t0", "t1"}, "noise": {"n0"}})

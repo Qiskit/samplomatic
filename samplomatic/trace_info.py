@@ -55,6 +55,12 @@ class TraceInfo:
         """
         return {k: sorted(v) for k, v in self.trace_refs.items()}
 
+    def copy(self) -> "TraceInfo":
+        """Return a deep copy of this instance."""
+        return TraceInfo(
+            {origin_type: set(origin) for origin_type, origin in self.trace_refs.items()}
+        )
+
     def merge(self, other: "TraceInfo"):
         """Mutate this instance by merging in another :class:`TraceInfo` instance.
 

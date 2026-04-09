@@ -83,7 +83,9 @@ def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateSta
         The built template state and the corresponding pre-samplex.
     """
     template_state = TemplateState.construct_for_circuit(circuit, debug=debug)
-    pre_samplex = PreSamplex(qubit_map=template_state.qubit_map, cregs=circuit.cregs)
+    pre_samplex = PreSamplex(
+        qubit_map=template_state.qubit_map, cregs=circuit.cregs, debug=template_state.debug
+    )
     builder = get_builder(None, template_state.qubit_map.keys())
     builder.set_template_state(template_state).set_samplex_state(pre_samplex)
     _build(circuit_to_dag(circuit), builder)

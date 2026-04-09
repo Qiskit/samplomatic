@@ -251,6 +251,7 @@ class PreSamplex:
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
         forced_copy_node_idxs: set[NodeIndex] | None = None,
+        debug: bool = False,
     ):
         self.graph = PyDiGraph[PreNode, PreEdge](multigraph=True) if graph is None else graph
         self.qubit_map: dict[Qubit, QubitIndex] = {} if qubit_map is None else qubit_map
@@ -274,6 +275,7 @@ class PreSamplex:
         self._forced_copy_node_idxs: set[NodeIndex] = (
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
+        self.debug = debug
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
         """Remap the object to a new :class:`~.PreSamplex` object.
@@ -297,6 +299,7 @@ class PreSamplex:
             self._twirled_clbits,
             self.passthrough_params,
             self._forced_copy_node_idxs,
+            self.debug,
         )
 
     def find_danglers(
@@ -1254,9 +1257,23 @@ class PreSamplex:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
 
             # Propagate trace info to all newly created samplex nodes.
-            if pre_node.trace_info is not None:
-                for new_node_idx in set(samplex.graph.node_indices()) - existing_node_idxs:
-                    samplex.graph[new_node_idx].trace_info = pre_node.trace_info
+            if self.debug:
+                # Merge the pre_node's own trace_info with that of its direct predecessors so that
+                # collection nodes (which receive virtual gate contributions from other boxes) carry
+                # the full set of contributing box refs, not just the owning box's ref.
+                merged_trace_info: TraceInfo | None = pre_node.trace_info
+                for pred_idx in self.graph.predecessor_indices(pre_node_idx):
+                    pred_trace = self.graph[pred_idx].trace_info
+                    if pred_trace is not None:
+                        if merged_trace_info is None:
+                            merged_trace_info = pred_trace.copy()
+                        elif merged_trace_info is pre_node.trace_info:
+                            merged_trace_info = merged_trace_info.copy().merge(pred_trace)
+                        else:
+                            merged_trace_info.merge(pred_trace)
+                if merged_trace_info is not None:
+                    for new_node_idx in set(samplex.graph.node_indices()) - existing_node_idxs:
+                        samplex.graph[new_node_idx].trace_info = merged_trace_info
 
         max_param_idx = self.max_param_idx
         if self.passthrough_params:
