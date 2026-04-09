@@ -125,7 +125,7 @@ class CollectTemplateValues(CollectionNode):
             super()
             .get_style()
             .append_data("Output Name", repr(self._template_params_name))
-            .append_data("Template Indices", self._template_idxs.tolist())
+            .append_list_data("Template Indices", self._template_idxs.tolist())
             .append_data("Register Name", repr(self._register_name))
             .append_data(Synth, repr(self._synth))
         )

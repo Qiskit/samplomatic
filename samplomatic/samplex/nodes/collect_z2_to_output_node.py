@@ -82,7 +82,7 @@ class CollectZ2ToOutputNode(CollectionNode):
             .get_style()
             .append_data("Register Name", repr(self._register_name))
             .append_data("Output Name", self._output_name)
-            .append_data("Subsystem Indices", self._subsystem_idxs)
+            .append_list_data("Subsystem Indices", self._subsystem_idxs.tolist())
         )
         style.marker = "bowtie"
         style.color = "purple"
