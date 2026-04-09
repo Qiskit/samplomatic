@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="undress_box" href="samplomatic.utils.undress_box.html" /><link rel="prev" title="get_annotation" href="samplomatic.utils.get_annotation.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="undress_box" href="samplomatic.utils.undress_box.html" /><link rel="prev" title="strip_annotations" href="samplomatic.utils.strip_annotations.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>unbox - samplomatic 0.17.1</title>
+        <title>unbox - samplomatic 0.18.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">samplomatic 0.17.1</div></a>
+      <a href="../../index.html"><div class="brand">samplomatic 0.18.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.17.1</span>
+  <span class="sidebar-brand-text">samplomatic 0.18.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -204,6 +204,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guides/dressed_boxes.html">Dressed boxes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guides/transpiler.html">Transpiler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guides/samplex_io.html">Samplex Inputs and Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guides/debug_tracing.html">Debugging and Tracing</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -338,6 +339,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../samplomatic.transpiler.passes.html">samplomatic.transpiler.passes</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of samplomatic.transpiler.passes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AbsorbSingleQubitGates.html">AbsorbSingleQubitGates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddInjectNoise.html">AddInjectNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddTags.html">AddTags</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.AddTerminalRightDressedBoxes.html">AddTerminalRightDressedBoxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupGatesIntoBoxes.html">GroupGatesIntoBoxes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.transpiler.passes.GroupMeasIntoBoxes.html">GroupMeasIntoBoxes</a></li>
@@ -355,8 +357,13 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.extend_annotations.html">extend_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.filter_annotations.html">filter_annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.find_unique_box_instructions.html">find_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.get_annotation.html">get_annotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.map_annotations.html">map_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.replace_annotations.html">replace_annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.strip_annotations.html">strip_annotations</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">unbox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.undress_box.html">undress_box</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.validate_literals.html">validate_literals</a></li>
@@ -381,6 +388,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.18.0.html">Release notes for 0.18.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.17.1.html">Release notes for 0.17.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.17.0.html">Release notes for 0.17.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../release_notes/release_notes_0.16.1.html">Release notes for 0.16.1</a></li>
@@ -419,6 +427,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.17.1/index.html" rel="nofollow noindex">0.17.1</a></li>
         
             <li><a href="/samplomatic/stable/0.17.0/index.html" rel="nofollow noindex">0.17.0</a></li>
         
@@ -483,7 +493,7 @@
 <h1>unbox<a class="headerlink" href="#unbox" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="samplomatic.utils.unbox">
-<span class="sig-prename descclassname"><span class="pre">samplomatic.utils.</span></span><span class="sig-name descname"><span class="pre">unbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.3)"><span class="pre">QuantumCircuit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.3)"><span class="pre">QuantumCircuit</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.17/samplomatic/utils/unbox.py#L18-L31"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.unbox" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">samplomatic.utils.</span></span><span class="sig-name descname"><span class="pre">unbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.3)"><span class="pre">QuantumCircuit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.3)"><span class="pre">QuantumCircuit</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/stable/0.18/samplomatic/utils/unbox.py#L18-L31"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.unbox" title="Link to this definition">¶</a></dt>
 <dd><p>Return a circuit with all box operations inlined.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -511,14 +521,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.utils.get_annotation.html">
+          <a class="prev-page" href="samplomatic.utils.strip_annotations.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">get_annotation</div>
+                <div class="title">strip_annotations</div>
                 
               </div>
             </a>
@@ -532,7 +542,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/03/16</div>
+              Last updated on 2026/04/09</div>
           </div>
           <div class="right-details">
             
@@ -566,7 +576,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a8455094"></script>
+</div><script src="../../_static/documentation_options.js?v=ba2e7b09"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>

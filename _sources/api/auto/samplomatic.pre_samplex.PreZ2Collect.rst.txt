@@ -14,6 +14,7 @@ PreZ2Collect
       ~PreZ2Collect.direction
       ~PreZ2Collect.subsystems
       ~PreZ2Collect.subsystems_idxs
+      ~PreZ2Collect.trace_info
 
    .. rubric:: Methods Summary
 
@@ -27,6 +28,7 @@ PreZ2Collect
    .. autoattribute:: direction
    .. autoattribute:: subsystems
    .. autoattribute:: subsystems_idxs
+   .. autoattribute:: trace_info
 
    .. rubric:: Methods Documentation
 

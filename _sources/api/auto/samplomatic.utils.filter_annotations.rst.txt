@@ -1,0 +1,6 @@
+filter_annotations
+==================
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: filter_annotations

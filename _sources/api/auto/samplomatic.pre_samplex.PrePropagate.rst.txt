@@ -17,6 +17,7 @@ PrePropagate
       ~PrePropagate.params
       ~PrePropagate.partition
       ~PrePropagate.subsystems
+      ~PrePropagate.trace_info
 
    .. rubric:: Methods Summary
 
@@ -33,6 +34,7 @@ PrePropagate
    .. autoattribute:: params
    .. autoattribute:: partition
    .. autoattribute:: subsystems
+   .. autoattribute:: trace_info
 
    .. rubric:: Methods Documentation
 
