@@ -184,17 +184,19 @@ class TestReplaceAnnotations:
         with circuit.box([Twirl(group="pauli")]):
             circuit.cx(0, 1)
         new_twirl = Twirl(group="local_c1")
-        result = replace_annotations(circuit, lambda a: new_twirl if isinstance(a, Twirl) else a)
+        result = replace_annotations(
+            circuit, lambda a: [new_twirl] if isinstance(a, Twirl) else [a]
+        )
         assert list(result.data[0].operation.annotations) == [new_twirl]
 
-    def test_deletes_when_none(self):
-        """Annotations for which fn returns None are removed."""
+    def test_deletes_when_empty_list(self):
+        """Annotations for which fn returns [] are removed."""
         circuit = QuantumCircuit(2)
         twirl = Twirl()
         noise = InjectNoise("ref")
         with circuit.box([twirl, noise]):
             circuit.cx(0, 1)
-        result = replace_annotations(circuit, lambda a: None if isinstance(a, InjectNoise) else a)
+        result = replace_annotations(circuit, lambda a: [] if isinstance(a, InjectNoise) else [a])
         assert list(result.data[0].operation.annotations) == [twirl]
 
     def test_all_annotations_visited(self):
@@ -205,17 +207,19 @@ class TestReplaceAnnotations:
         with circuit.box([t1, t2]):
             circuit.cx(0, 1)
         new_twirl = Twirl(group="balanced_pauli")
-        result = replace_annotations(circuit, lambda a: new_twirl if isinstance(a, Twirl) else a)
+        result = replace_annotations(
+            circuit, lambda a: [new_twirl] if isinstance(a, Twirl) else [a]
+        )
         anns = list(result.data[0].operation.annotations)
         assert anns == [new_twirl, new_twirl]
 
     def test_passthrough_unchanged(self):
-        """Returning the annotation unchanged leaves it in place."""
+        """Returning the annotation in a list leaves it in place."""
         circuit = QuantumCircuit(2)
         change_basis = ChangeBasis(ref="cb")
         with circuit.box([change_basis]):
             circuit.cx(0, 1)
-        result = replace_annotations(circuit, lambda a: a)
+        result = replace_annotations(circuit, lambda a: [a])
         assert list(result.data[0].operation.annotations) == [change_basis]
 
     def test_mixed_replace_and_delete(self):
@@ -226,6 +230,16 @@ class TestReplaceAnnotations:
         with circuit.box([noise, old_twirl]):
             circuit.cx(0, 1)
         new_twirl = Twirl(group="local_c1")
-        result = replace_annotations(circuit, lambda a: new_twirl if isinstance(a, Twirl) else None)
+        result = replace_annotations(circuit, lambda a: [new_twirl] if isinstance(a, Twirl) else [])
         anns = list(result.data[0].operation.annotations)
         assert anns == [new_twirl]
+
+    def test_one_to_many_expansion(self):
+        """fn can expand one annotation into multiple."""
+        circuit = QuantumCircuit(2)
+        twirl = Twirl()
+        with circuit.box([twirl]):
+            circuit.cx(0, 1)
+        noise = InjectNoise("ref")
+        result = replace_annotations(circuit, lambda a: [a, noise] if isinstance(a, Twirl) else [a])
+        assert list(result.data[0].operation.annotations) == [twirl, noise]

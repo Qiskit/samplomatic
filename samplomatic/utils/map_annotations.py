@@ -143,21 +143,22 @@ def extend_annotations(circuit: QuantumCircuit, *annotations: Annotation) -> Qua
 
 def replace_annotations(
     circuit: QuantumCircuit,
-    fn: Callable[[Annotation], Annotation | None],
+    fn: Callable[[Annotation], list[Annotation]],
 ) -> QuantumCircuit:
-    """Return a new circuit with annotations replaced or removed according to a callable.
+    """Return a new circuit with annotations replaced according to a callable.
 
-    For each annotation on each box, ``fn`` is called with the annotation instance. If ``fn``
-    returns an :class:`~qiskit.circuit.Annotation`, that value replaces the original. If ``fn``
-    returns ``None``, the annotation is removed.
+    For each annotation on each box, ``fn`` is called with the annotation instance and must return
+    a list of annotations to substitute in its place. Returning a single-element list replaces the
+    annotation, returning an empty list removes it, and returning a multi-element list expands one
+    annotation into several.
 
     Args:
         circuit: The circuit whose box annotations to replace.
-        fn: A callable that receives each annotation and returns either a replacement annotation
-            or ``None`` to delete it.
+        fn: A callable that receives each annotation and returns the list of annotations to
+            substitute in its place.
 
     Returns:
-        A new circuit with annotations replaced or removed per ``fn``.
+        A new circuit with annotations replaced per ``fn``.
 
     .. plot::
         :include-source:
@@ -172,16 +173,7 @@ def replace_annotations(
 
         # Replace Twirl annotations, delete anything else
         updated = replace_annotations(
-            circuit, lambda a: Twirl(group="local_c1") if isinstance(a, Twirl) else None
+            circuit, lambda a: [Twirl(group="local_c1")] if isinstance(a, Twirl) else []
         )
     """
-
-    def _replace(anns: list[Annotation]) -> list[Annotation]:
-        result = []
-        for a in anns:
-            out = fn(a)
-            if out is not None:
-                result.append(out)
-        return result
-
-    return map_annotations(circuit, _replace)
+    return map_annotations(circuit, lambda anns: [out for a in anns for out in fn(a)])
