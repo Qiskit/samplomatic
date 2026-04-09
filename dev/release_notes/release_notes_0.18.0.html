@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.3.0 - 2025-08-22" href="release_notes_0.3.0.html" /><link rel="prev" title="0.5.0 - 2025-08-26" href="release_notes_0.5.0.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.17.1 - 2026-03-16" href="release_notes_0.17.1.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>0.4.0 - 2025-08-26 - samplomatic 0.1.dev1</title>
+        <title>0.18.0 - 2026-04-09 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -388,7 +388,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_0.18.0.html">Release notes for 0.18.0</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.18.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.17.1.html">Release notes for 0.17.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.17.0.html">Release notes for 0.17.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.16.1.html">Release notes for 0.16.1</a></li>
@@ -405,7 +405,7 @@
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.7.0.html">Release notes for 0.7.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.6.0.html">Release notes for 0.6.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.5.0.html">Release notes for 0.5.0</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0.4.0.html">Release notes for 0.4.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.3.0.html">Release notes for 0.3.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.2.0.html">Release notes for 0.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.1.0.html">Release notes for 0.1.0</a></li>
@@ -469,7 +469,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/release_notes/release_notes_0.4.0.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/release_notes/release_notes_0.18.0.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -490,25 +490,25 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="id1">
-<h1>0.4.0 - 2025-08-26<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1>0.18.0 - 2026-04-09<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Added support for measurements after twirled measurements. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/82">#82</a>)</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">add_tags</span></code> option to :func:<code class="docutils literal notranslate"><span class="pre">~samplomatic.transpiler.generate_boxing_pass_manager</span></code> and the :class:<code class="docutils literal notranslate"><span class="pre">~samplomatic.transpiler.passes.AddTags</span></code> transpiler pass. When enabled, a :class:<code class="docutils literal notranslate"><span class="pre">~samplomatic.annotations.Tag</span></code> annotation is automatically added to every box. Two modes are supported: <code class="docutils literal notranslate"><span class="pre">'unique_box'</span></code> assigns the same hash-based ref to structurally equivalent boxes, and <code class="docutils literal notranslate"><span class="pre">'unique_instance'</span></code> assigns a unique incrementing ref (<code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">t1</span></code>, …) to every box in the circuit. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/342">#342</a>)</p></li>
+<li><p>Added the <code class="docutils literal notranslate"><span class="pre">debug</span></code> option to <code class="docutils literal notranslate"><span class="pre">build()</span></code> that populates debug/trace information on samplex nodes, enabling users to trace nodes back to their originating box annotations. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/345">#345</a>)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">map_annotations()</span></code>, <code class="docutils literal notranslate"><span class="pre">strip_annotations()</span></code>, <code class="docutils literal notranslate"><span class="pre">filter_annotations()</span></code>, <code class="docutils literal notranslate"><span class="pre">extend_annotations()</span></code>, and <code class="docutils literal notranslate"><span class="pre">replace_annotations()</span></code> utilities to <code class="docutils literal notranslate"><span class="pre">samplomtic.utils</span></code> for modifying annotations on existing circuits. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/347">#347</a>)</p></li>
 </ul>
 </section>
-<section id="changed">
-<h2>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h2>
+<section id="improved">
+<h2>Improved<a class="headerlink" href="#improved" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Moved <code class="docutils literal notranslate"><span class="pre">num_randomizations</span></code> back to a kwarg of <code class="docutils literal notranslate"><span class="pre">Samplex.sample()</span></code>. This has flip-flopped a couple of times as we optimize workflow. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/84">#84</a>)</p></li>
+<li><p>Improved the two synthesizers <code class="docutils literal notranslate"><span class="pre">RzRxSynth</span></code> and <code class="docutils literal notranslate"><span class="pre">RzSxSynth</span></code> to always generate Clifford angles when given a U2 gate that is Clifford. It is only possible to end up with non-Clifford angles when the gate being synthesized is a Z rotation, or a pi-gate of some angle. Either case leads to a degree of freedom in how to distribute the angle between the first and last RZ gate of the synthesis. This was fixed by enforcing the last angle be 0 in both cases. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/341">#341</a>)</p></li>
 </ul>
 </section>
 <section id="fixed">
 <h2>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Fixed a bug in <code class="docutils literal notranslate"><span class="pre">TensorInterface.__getitem__</span></code> for non-string inputs where it was incorrectly attempting to slice arrays whose shape did not match the full broadcasted shape of the interface. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/83">#83</a>)</p></li>
-<li><p>Fixed serialization of <code class="docutils literal notranslate"><span class="pre">Samplex</span></code> by including the passthrough parameters field.
-Previously, this would result in inconsistent output parameter values when sampling from the same samplex with the same input arguments. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/86">#86</a>)</p></li>
+<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">samplomatic.utils.default_normalize_annotations()</span></code> to also keep <code class="docutils literal notranslate"><span class="pre">Tag</span></code> annotations, in addition to <code class="docutils literal notranslate"><span class="pre">InjectNoise</span></code> and <code class="docutils literal notranslate"><span class="pre">Twirl</span></code> annotations. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/343">#343</a>)</p></li>
 </ul>
 </section>
 </section>
@@ -518,23 +518,23 @@ Previously, this would result in inconsistent output parameter values when sampl
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_0.3.0.html">
+          <a class="next-page" href="release_notes_0.17.1.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">0.3.0 - 2025-08-22</div>
+                <div class="title">0.17.1 - 2026-03-16</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="release_notes_0.5.0.html">
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0.5.0 - 2025-08-26</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -569,9 +569,9 @@ Previously, this would result in inconsistent output parameter values when sampl
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0.4.0 - 2025-08-26</a><ul>
+<li><a class="reference internal" href="#">0.18.0 - 2026-04-09</a><ul>
 <li><a class="reference internal" href="#added">Added</a></li>
-<li><a class="reference internal" href="#changed">Changed</a></li>
+<li><a class="reference internal" href="#improved">Improved</a></li>
 <li><a class="reference internal" href="#fixed">Fixed</a></li>
 </ul>
 </li>
