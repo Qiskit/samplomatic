@@ -88,6 +88,7 @@ from ..samplex.nodes.propagate_local_c1_node import (
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
+from ..trace_info import TraceInfo
 from ..utils import FrozenDict
 from ..virtual_registers import U2Register, VirtualType
 from ..visualization import plot_graph
@@ -250,6 +251,7 @@ class PreSamplex:
         twirled_clbits: set[ClbitIndex] | None = None,
         passthrough_params: ParamSpec | None = None,
         forced_copy_node_idxs: set[NodeIndex] | None = None,
+        debug: bool = False,
     ):
         self.graph = PyDiGraph[PreNode, PreEdge](multigraph=True) if graph is None else graph
         self.qubit_map: dict[Qubit, QubitIndex] = {} if qubit_map is None else qubit_map
@@ -273,6 +275,7 @@ class PreSamplex:
         self._forced_copy_node_idxs: set[NodeIndex] = (
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
+        self.debug = debug
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
         """Remap the object to a new :class:`~.PreSamplex` object.
@@ -296,6 +299,7 @@ class PreSamplex:
             self._twirled_clbits,
             self.passthrough_params,
             self._forced_copy_node_idxs,
+            self.debug,
         )
 
     def find_danglers(
@@ -472,6 +476,7 @@ class PreSamplex:
         synth: Synth,
         param_idxs: ParamIndices,
         node_idx: NodeIndex | None = None,
+        trace_info: TraceInfo | None = None,
     ):
         """Add or extend a node to collect virtual gates of types allowed by the ``synth``.
 
@@ -486,6 +491,7 @@ class PreSamplex:
             synth: The synthesizer to generate gate parameters.
             param_idxs: The indices of the parameters in the corresponding template.
             node_idx: The index of the node to be extended to include the provided qubits.
+            trace_info: Optional debug trace info to attach to the node.
 
         Returns:
             The index of the new node in the graph.
@@ -495,7 +501,7 @@ class PreSamplex:
             self.graph[node_idx].add_subsystems(subsystems, param_idxs)
         else:
             node_idx = self.graph.add_node(
-                PreCollect(subsystems, Direction.BOTH, synth, param_idxs)
+                PreCollect(subsystems, Direction.BOTH, synth, param_idxs, trace_info=trace_info)
             )
 
         # collect any nodes that need collecting and unmark them as dangling
@@ -526,12 +532,18 @@ class PreSamplex:
 
         return node_idx
 
-    def add_z2_collect(self, qubits: QubitPartition, clbit_idxs: Sequence[ClbitIndex]) -> int:
+    def add_z2_collect(
+        self,
+        qubits: QubitPartition,
+        clbit_idxs: Sequence[ClbitIndex],
+        trace_info: TraceInfo | None = None,
+    ) -> int:
         """Add a node to collect virtual gates to Z2 output.
 
         Args:
             qubits: The qubits to collect virtual gates on.
             clbit_idxs: The indices of the clbits measured to (in the same order as qubits).
+            trace_info: Optional debug trace info to attach to the node.
 
         Raises:
             SamplexBuildError if number of qubits doesn't match number of clbits
@@ -559,7 +571,9 @@ class PreSamplex:
                     break
                 val += len(reg)
 
-        node_idx = self.graph.add_node(PreZ2Collect(subsystems, clbit_dict, subsystems_dict))
+        node_idx = self.graph.add_node(
+            PreZ2Collect(subsystems, clbit_dict, subsystems_dict, trace_info=trace_info)
+        )
 
         collected_subsystems = QubitIndicesPartition(1, [])
         # Collect relevant nodes which are an optional dangler, and leave them optionally dangling
@@ -606,6 +620,7 @@ class PreSamplex:
         qubits: QubitPartition,
         register_type: GroupMode,
         twirl_gate: str | None = None,
+        trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates left and right of the same type.
 
@@ -613,6 +628,7 @@ class PreSamplex:
             qubits: The qubits to emit virtual gates on.
             register_type: The type of virtual gate to emit.
             twirl_gate: The 2Q gate name for ``UniformLocalC1`` sampling, or ``None``.
+            trace_info: Optional debug trace info to attach to the node.
 
         Raises:
             SamplexBuildError: When `qubits` has overlap with a hanging emit node with a different
@@ -624,7 +640,13 @@ class PreSamplex:
         """
         subsystems = self.qubits_to_indices(qubits)
         node_idx = self.graph.add_node(
-            PreEmit(subsystems, Direction.BOTH, register_type, twirl_gate=twirl_gate)
+            PreEmit(
+                subsystems,
+                Direction.BOTH,
+                register_type,
+                twirl_gate=twirl_gate,
+                trace_info=trace_info,
+            )
         )
 
         # find collectors (or propagators leading to collectors) for right-to-left emission and
@@ -676,7 +698,11 @@ class PreSamplex:
         return node_idx
 
     def add_emit_noise_left(
-        self, qubits: QubitPartition, noise_ref: StrRef, modifier_ref: StrRef = ""
+        self,
+        qubits: QubitPartition,
+        noise_ref: StrRef,
+        modifier_ref: StrRef = "",
+        trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the left.
 
@@ -684,6 +710,7 @@ class PreSamplex:
             qubits: The qubits to emit virtual gates on.
             noise_ref: Unique identifier of the noise to inject.
             modifier_ref: Unique identifier for modifiers to apply to this Pauli Lindblad map.
+            trace_info: Optional debug trace info to attach to the node.
 
         Raises:
             SamplexBuildError: If a Pauli Lindblad map with the same `noise_ref` but of different
@@ -711,11 +738,16 @@ class PreSamplex:
             noise_ref,
             modifier_ref,
             next(self._pauli_lindblad_map_count),
+            trace_info=trace_info,
         )
         return self._add_emit_left(node)
 
     def add_emit_noise_right(
-        self, qubits: QubitPartition, noise_ref: StrRef, modifier_ref: StrRef = ""
+        self,
+        qubits: QubitPartition,
+        noise_ref: StrRef,
+        modifier_ref: StrRef = "",
+        trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the right.
 
@@ -723,6 +755,7 @@ class PreSamplex:
             qubits: The qubits to emit virtual gates on.
             noise_ref: Unique identifier of the noise to inject.
             modifier_ref: Unique identifier for modifiers to apply to this Pauli Lindblad map.
+            trace_info: Optional debug trace info to attach to the node.
 
         Raises:
             SamplexBuildError: If a Pauli Lindblad map with the same `noise_ref` but of different
@@ -750,6 +783,7 @@ class PreSamplex:
             noise_ref,
             modifier_ref,
             next(self._pauli_lindblad_map_count),
+            trace_info=trace_info,
         )
         return self._add_emit_right(node)
 
@@ -758,6 +792,7 @@ class PreSamplex:
         qubits: QubitPartition,
         basis_ref: StrRef,
         basis_change: FrameChangeMode,
+        trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates left to change frames.
 
@@ -783,7 +818,14 @@ class PreSamplex:
 
         subsystems = self.qubits_to_indices(qubits)
         virtual_type = VirtualType.U2 if type(basis_change) is ChangeBasisMode else VirtualType.C1
-        node = PreChangeBasis(subsystems, Direction.LEFT, virtual_type, basis_ref, basis_change)
+        node = PreChangeBasis(
+            subsystems,
+            Direction.LEFT,
+            virtual_type,
+            basis_ref,
+            basis_change,
+            trace_info=trace_info,
+        )
         return self._add_emit_left(node)
 
     def add_emit_right_basis_change(
@@ -791,6 +833,7 @@ class PreSamplex:
         qubits: QubitPartition,
         basis_ref: StrRef,
         basis_change: FrameChangeMode,
+        trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates right to change frames.
 
@@ -816,10 +859,23 @@ class PreSamplex:
 
         subsystems = self.qubits_to_indices(qubits)
         virtual_type = VirtualType.U2 if type(basis_change) is ChangeBasisMode else VirtualType.C1
-        node = PreChangeBasis(subsystems, Direction.RIGHT, virtual_type, basis_ref, basis_change)
+        node = PreChangeBasis(
+            subsystems,
+            Direction.RIGHT,
+            virtual_type,
+            basis_ref,
+            basis_change,
+            trace_info=trace_info,
+        )
         return self._add_emit_right(node)
 
-    def add_propagate(self, instr: DAGOpNode, mode: InstructionMode, params: ParamSpec):
+    def add_propagate(
+        self,
+        instr: DAGOpNode,
+        mode: InstructionMode,
+        params: ParamSpec,
+        trace_info: TraceInfo | None = None,
+    ):
         """Add a node that propagates virtual gates through an operation.
 
         This method deduces which direction to propagate virtual gates by inspecting the previous
@@ -829,6 +885,7 @@ class PreSamplex:
             instr: The circuit instruction to propagate through.
             mode: What mode to use for propagation.
             params: The parameters of the instruction.
+            trace_info: Optional debug trace info to attach to the node.
 
         Raises:
             SamplexBuildError: If the qubits of ``instr`` have partial overlap with dangling qubits
@@ -861,7 +918,10 @@ class PreSamplex:
 
         # time ordering: (emit> | propagate>) --> new propagate>
         rightward_node_candidate = NodeCandidate(
-            self.graph, PrePropagate(subsystems, Direction.RIGHT, op, partition, mode, params)
+            self.graph,
+            PrePropagate(
+                subsystems, Direction.RIGHT, op, partition, mode, params, trace_info=trace_info
+            ),
         )
         match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         all_found_qubit_idxs = set()
@@ -882,7 +942,10 @@ class PreSamplex:
 
         # time ordering: (collect< | propagate<) <-- new propagate<
         leftward_node_candidate = NodeCandidate(
-            self.graph, PrePropagate(subsystems, Direction.LEFT, op, partition, mode, params)
+            self.graph,
+            PrePropagate(
+                subsystems, Direction.LEFT, op, partition, mode, params, trace_info=trace_info
+            ),
         )
         all_found_qubit_idxs = set()
         match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
@@ -935,6 +998,18 @@ class PreSamplex:
                         for i in range(num_parts)
                     ],
                 )
+
+                # Merge trace info from all contributing nodes (set union per key)
+                merged_trace_info: TraceInfo | None = None
+                for node in nodes:
+                    if node.trace_info is not None:
+                        if merged_trace_info is None:
+                            merged_trace_info = TraceInfo(
+                                {k: set(v) for k, v in node.trace_info.trace_refs.items()}
+                            )
+                        else:
+                            merged_trace_info.merge(node.trace_info)
+
                 if any(
                     node.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
                     and not node.operation.is_parameterized()
@@ -954,6 +1029,7 @@ class PreSamplex:
                             nodes[0].mode,  # all nodes have same spec
                             params=[],
                             bounded_params=params,
+                            trace_info=merged_trace_info,
                         ),
                     )
 
@@ -971,6 +1047,7 @@ class PreSamplex:
                             combined_partition,
                             mode=nodes[0].mode,
                             params=params,
+                            trace_info=merged_trace_info,
                         ),
                     )
 
@@ -1144,6 +1221,10 @@ class PreSamplex:
         for topological_idx, pre_node_idx in enumerate(topological_sort(self.graph)):
             pre_node = self.graph[pre_node_idx]
             order[pre_node_idx] = topological_idx
+
+            # Track nodes present before lowering so we can attach trace info to new ones.
+            existing_node_idxs = set(samplex.graph.node_indices())
+
             if isinstance(pre_node, PreChangeBasis):
                 self.add_change_basis_node(
                     samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
@@ -1174,6 +1255,25 @@ class PreSamplex:
                 )
             else:
                 raise SamplexBuildError(f"No lowering method found for {pre_node}.")
+
+            # Propagate trace info to all newly created samplex nodes.
+            if self.debug:
+                # Merge the pre_node's own trace_info with that of its direct predecessors so that
+                # collection nodes (which receive virtual gate contributions from other boxes) carry
+                # the full set of contributing box refs, not just the owning box's ref.
+                merged_trace_info: TraceInfo | None = pre_node.trace_info
+                for pred_idx in self.graph.predecessor_indices(pre_node_idx):
+                    pred_trace = self.graph[pred_idx].trace_info
+                    if pred_trace is not None:
+                        if merged_trace_info is None:
+                            merged_trace_info = pred_trace.copy()
+                        elif merged_trace_info is pre_node.trace_info:
+                            merged_trace_info = merged_trace_info.copy().merge(pred_trace)
+                        else:
+                            merged_trace_info.merge(pred_trace)
+                if merged_trace_info is not None:
+                    for new_node_idx in set(samplex.graph.node_indices()) - existing_node_idxs:
+                        samplex.graph[new_node_idx].trace_info = merged_trace_info
 
         max_param_idx = self.max_param_idx
         if self.passthrough_params:

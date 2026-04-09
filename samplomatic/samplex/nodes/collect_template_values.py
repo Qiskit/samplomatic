@@ -81,6 +81,11 @@ class CollectTemplateValues(CollectionNode):
         """The number of subsystems being collected."""
         return self._template_idxs.shape[0]
 
+    @property
+    def template_idxs(self) -> ParamIndices:
+        """Specification of which entries of the template parameter value array to write to."""
+        return self._template_idxs
+
     def outputs_to(self):
         return [self._template_params_name]
 
