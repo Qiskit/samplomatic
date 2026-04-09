@@ -753,6 +753,109 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <img alt="../_images/30de9d6c4e46c6b8e0e070be123dd83857d750af9b1a7f9239861a4b20b79aab.png" src="../_images/30de9d6c4e46c6b8e0e070be123dd83857d750af9b1a7f9239861a4b20b79aab.png" />
 </div>
 </div>
+<section id="how-stratification-works">
+<h3>How stratification works<a class="headerlink" href="#how-stratification-works" title="Link to this heading">¶</a></h3>
+<p>The boxing pass manager runs two key passes in sequence:</p>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code></strong> — stratifies entangling gates into boxes. Single-qubit gates are ignored entirely at this stage; only two-qubit gates are grouped.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code></strong> — absorbs each single-qubit gate into the nearest eligible box to its right.</p></li>
+</ol>
+<p>During stratification, <code class="docutils literal notranslate"><span class="pre">GroupGatesIntoBoxes</span></code> traverses the circuit DAG in topological order and places each two-qubit gate in the <strong>earliest group</strong> whose qubits are not yet occupied. Three kinds of instructions act as <strong>delimiters</strong> that flush the current group for their qubits, forcing subsequent gates on those qubits into a new group:</p>
+<ul class="simple">
+<li><p><strong>Barriers</strong></p></li>
+<li><p><strong>Existing box instructions</strong></p></li>
+<li><p><strong>Measurements</strong></p></li>
+</ul>
+<p>Single-qubit gates are not delimiters — they have no effect on grouping and are left for <code class="docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code> to handle. No commutativity analysis is currently performed; the grouping respects the topological order of the circuit as-is.</p>
+</section>
+<section id="why-remove-barriers-after-stratification-is-the-recommended-default">
+<h3>Why <code class="docutils literal notranslate"><span class="pre">remove_barriers=&quot;after_stratification&quot;</span></code> is the recommended default<a class="headerlink" href="#why-remove-barriers-after-stratification-is-the-recommended-default" title="Link to this heading">¶</a></h3>
+<p>The default <code class="docutils literal notranslate"><span class="pre">&quot;after_stratification&quot;</span></code> mode is chosen because it combines two benefits:</p>
+<ol class="arabic simple">
+<li><p>Barriers constrain how entangling gates are grouped (they act as delimiters during stratification).</p></li>
+<li><p>Barriers are removed <em>before</em> <a class="reference internal" href="../api/auto/samplomatic.transpiler.passes.AbsorbSingleQubitGates.html#samplomatic.transpiler.passes.AbsorbSingleQubitGates" title="samplomatic.transpiler.passes.AbsorbSingleQubitGates"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbsorbSingleQubitGates</span></code></a> runs, so single-qubit gates can still flow across former barrier positions and be absorbed into the nearest box.</p></li>
+</ol>
+<p>By contrast:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> keeps barriers throughout, which traps single-qubit gates between a barrier and a box, preventing their absorption and leaving untwirled rotations in the circuit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;immediately&quot;</span></code> removes barriers before stratification, so they have no effect on grouping at all.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;finally&quot;</span></code> is useful when you want barriers in the output circuit (e.g., for visualization), but be aware that single-qubit gates between a barrier and a box will not be absorbed.</p></li>
+</ul>
+</section>
+</section>
+<section id="boxing-isa-circuits-with-barriers">
+<h2>Boxing ISA circuits with barriers<a class="headerlink" href="#boxing-isa-circuits-with-barriers" title="Link to this heading">¶</a></h2>
+<p>Circuits with a repeated structure—Trotterized Hamiltonian simulations, variational ansatze, error amplification sequences—are typically built programmatically and then transpiled to ISA form. Manually adding boxes to an already-transpiled circuit is cumbersome, so the natural workflow is:</p>
+<ol class="arabic simple">
+<li><p>Build the logical circuit, inserting <strong>barriers</strong> at the layer boundaries you want to become box boundaries.</p></li>
+<li><p>Transpile to ISA. Qiskit’s transpiler preserves barriers through routing and optimization.</p></li>
+<li><p>Run <a class="reference internal" href="../api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code></a> on the ISA circuit.</p></li>
+</ol>
+<p>Barriers are needed when the end of one layer does not cover all qubits: the greedy algorithm would otherwise place gates from the next layer—on those “free” qubits—into the same group. As a concrete example, consider a two-step Heisenberg ZZ simulation on a 5-qubit ring. Each Trotter step has three bond layers: even bonds <code class="docutils literal notranslate"><span class="pre">(0,1),</span> <span class="pre">(2,3)</span></code>, odd bonds <code class="docutils literal notranslate"><span class="pre">(1,2),</span> <span class="pre">(3,4)</span></code>, and the wrap bond <code class="docutils literal notranslate"><span class="pre">(4,0)</span></code>. After the odd-bond layer, qubits 0 and 4 are both free. Without a barrier, the wrap bond <code class="docutils literal notranslate"><span class="pre">(4,0)</span></code> gets greedy-grouped with bonds from the <em>next</em> Trotter step that use those free qubits, mixing gates from different steps in the same box.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">QuantumCircuit</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># 5-qubit ring: bonds (0,1), (1,2), (2,3), (3,4), (4,0)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">)</span>
+<span class="n">heisenberg</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># Layer 1: even bonds (0,1) and (2,3)</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">heisenberg</span><span class="o">.</span><span class="n">rzz</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">heisenberg</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+    <span class="c1"># Layer 2: odd bonds (1,2) and (3,4) -- qubits 0 and 4 are now free</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">heisenberg</span><span class="o">.</span><span class="n">rzz</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">heisenberg</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+    <span class="c1"># Layer 3: wrap bond (4,0) -- both qubits were free after layer 2</span>
+    <span class="n">heisenberg</span><span class="o">.</span><span class="n">rzz</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">heisenberg</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># separates the two Trotter steps</span>
+
+<span class="n">heisenberg</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>
+
+<span class="n">heisenberg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/b14b652fb5d425c7e1b2ed676bb4c2ae7d76acaec64c5d5aac07dc5753f60fd0.png" src="../_images/b14b652fb5d425c7e1b2ed676bb4c2ae7d76acaec64c5d5aac07dc5753f60fd0.png" />
+</div>
+</div>
+<p>We transpile to ISA form, assuming the underlying device has CX as the native entangler. Note that the barriers survive transpilation and remain visible in the output circuit.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
+
+<span class="n">preset_pm</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span>
+    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rz&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">,</span> <span class="s2">&quot;cx&quot;</span><span class="p">],</span>
+    <span class="n">coupling_map</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+    <span class="n">optimization_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">isa_circuit</span> <span class="o">=</span> <span class="n">preset_pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">heisenberg</span><span class="p">)</span>
+<span class="n">isa_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/71be3e2afe0491ec1d7d37f4bb2fcffa4b1eeb2c3eefc971f1fad6d49089758b.png" src="../_images/71be3e2afe0491ec1d7d37f4bb2fcffa4b1eeb2c3eefc971f1fad6d49089758b.png" />
+</div>
+</div>
+<p>Now we apply the boxing pass manager to the ISA circuit. Each of the three bond layers becomes a separate box in each Trotter step.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pm</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
+<span class="n">boxed_isa</span> <span class="o">=</span> <span class="n">boxing_pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">isa_circuit</span><span class="p">)</span>
+<span class="n">boxed_isa</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/52eaa945d1bdfbfe87e8b6669d879990a60c3fe6fd1ae880e3f631267a2eb33f.png" src="../_images/52eaa945d1bdfbfe87e8b6669d879990a60c3fe6fd1ae880e3f631267a2eb33f.png" />
+</div>
+</div>
 </section>
 <section id="incorporate-samplomatic-s-pass-manager-into-qiskit-s-preset-pass-managers">
 <h2>Incorporate Samplomatic’s pass manager into <code class="docutils literal notranslate"><span class="pre">Qiskit</span></code>’s preset pass managers<a class="headerlink" href="#incorporate-samplomatic-s-pass-manager-into-qiskit-s-preset-pass-managers" title="Link to this heading">¶</a></h2>
@@ -786,6 +889,65 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <img alt="../_images/89571660b0022f27cd1184e59f7122e188e2ea8ef1afbadb4bcd86057a33061c.png" src="../_images/89571660b0022f27cd1184e59f7122e188e2ea8ef1afbadb4bcd86057a33061c.png" />
 </div>
 </div>
+<p>This pattern also combines naturally with the barrier-based ISA boxing workflow. The boxing pass manager runs as a post-scheduling step, after barriers from the original logical circuit have survived transpilation, so they guide stratification exactly as expected.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">preset_pm</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span>
+    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rz&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">,</span> <span class="s2">&quot;cx&quot;</span><span class="p">],</span>
+    <span class="n">coupling_map</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+    <span class="n">optimization_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">preset_pm</span><span class="o">.</span><span class="n">post_scheduling</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
+
+<span class="n">boxed_heisenberg</span> <span class="o">=</span> <span class="n">preset_pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">heisenberg</span><span class="p">)</span>
+<span class="n">boxed_heisenberg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d11a195105e6fcbbdc8fed2bbd6315e15af6853cbd15736f0fc4727fd536f040.png" src="../_images/d11a195105e6fcbbdc8fed2bbd6315e15af6853cbd15736f0fc4727fd536f040.png" />
+</div>
+</div>
+</section>
+<section id="inspecting-and-modifying-annotations">
+<h2>Inspecting and modifying annotations<a class="headerlink" href="#inspecting-and-modifying-annotations" title="Link to this heading">¶</a></h2>
+<p>After auto-boxing, you may want to inspect the annotations on specific boxes or adjust them—for example, to add noise injection to select boxes, remove annotations from some boxes, or change the twirling group. Samplomatic provides a set of utility functions in <a class="reference internal" href="../api/samplomatic.utils.html#module-samplomatic.utils" title="samplomatic.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">samplomatic.utils</span></code></a> for this purpose. All of them return a <strong>new circuit</strong> without modifying the original.</p>
+<p><a class="reference internal" href="../api/auto/samplomatic.utils.extend_annotations.html#samplomatic.utils.extend_annotations" title="samplomatic.utils.extend_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">extend_annotations()</span></code></a> appends one or more annotations to every box in the circuit.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic</span><span class="w"> </span><span class="kn">import</span> <span class="n">InjectNoise</span><span class="p">,</span> <span class="n">Twirl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">extend_annotations</span>
+
+<span class="n">boxed</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
+
+<span class="c1"># Add InjectNoise to every box</span>
+<span class="n">with_noise</span> <span class="o">=</span> <span class="n">extend_annotations</span><span class="p">(</span><span class="n">boxed</span><span class="p">,</span> <span class="n">InjectNoise</span><span class="p">(</span><span class="s2">&quot;my_noise_ref&quot;</span><span class="p">))</span>
+<span class="n">with_noise</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/95f4febb73e454cd4e32722bdc9a97b4d8e36404f9347bfd67a4ca4071335a3a.png" src="../_images/95f4febb73e454cd4e32722bdc9a97b4d8e36404f9347bfd67a4ca4071335a3a.png" />
+</div>
+</div>
+<p><a class="reference internal" href="../api/auto/samplomatic.utils.filter_annotations.html#samplomatic.utils.filter_annotations" title="samplomatic.utils.filter_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_annotations()</span></code></a> keeps only annotations of specified types, removing the rest. <a class="reference internal" href="../api/auto/samplomatic.utils.replace_annotations.html#samplomatic.utils.replace_annotations" title="samplomatic.utils.replace_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">replace_annotations()</span></code></a> applies a callable to each annotation; the callable returns a list of annotations to substitute in its place (return <code class="docutils literal notranslate"><span class="pre">[]</span></code> to remove, a single-element list to replace, or a multi-element list to expand).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">filter_annotations</span><span class="p">,</span> <span class="n">replace_annotations</span>
+
+<span class="c1"># Keep only Twirl annotations, drop everything else</span>
+<span class="n">twirl_only</span> <span class="o">=</span> <span class="n">filter_annotations</span><span class="p">(</span><span class="n">with_noise</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">)</span>
+
+<span class="c1"># Replace the twirling group on every Twirl annotation</span>
+<span class="n">updated</span> <span class="o">=</span> <span class="n">replace_annotations</span><span class="p">(</span>
+    <span class="n">twirl_only</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">[</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;local_c1&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The general-purpose <a class="reference internal" href="../api/auto/samplomatic.utils.map_annotations.html#samplomatic.utils.map_annotations" title="samplomatic.utils.map_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_annotations()</span></code></a> function accepts any callable mapping a list of annotations to a new list, giving you full control over per-box transformations. <a class="reference internal" href="../api/auto/samplomatic.utils.strip_annotations.html#samplomatic.utils.strip_annotations" title="samplomatic.utils.strip_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">strip_annotations()</span></code></a> is a convenience wrapper that removes all annotations from every box.</p>
+<p>For bulk changes like adding <a class="reference internal" href="../api/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> to all gate boxes, the <code class="docutils literal notranslate"><span class="pre">inject_noise_targets</span></code> parameter of <a class="reference internal" href="../api/auto/samplomatic.transpiler.generate_boxing_pass_manager.html#samplomatic.transpiler.generate_boxing_pass_manager" title="samplomatic.transpiler.generate_boxing_pass_manager"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_boxing_pass_manager()</span></code></a> is still the most concise option. These utilities are most useful for selective per-box edits that the pass manager parameters do not cover.</p>
 </section>
 <section id="build-your-circuit">
 <h2>Build your circuit<a class="headerlink" href="#build-your-circuit" title="Link to this heading">¶</a></h2>
@@ -932,8 +1094,14 @@ uncollected due to the unboxed measurements.</p>
 <li><a class="reference internal" href="#choose-how-to-annotate-your-boxes">Choose how to annotate your boxes</a></li>
 <li><a class="reference internal" href="#prepare-your-circuit-for-noise-injection">Prepare your circuit for noise injection</a></li>
 <li><a class="reference internal" href="#select-a-twirling-strategy">Select a twirling strategy</a></li>
-<li><a class="reference internal" href="#specify-how-to-treat-barriers">Specify how to treat barriers</a></li>
+<li><a class="reference internal" href="#specify-how-to-treat-barriers">Specify how to treat barriers</a><ul>
+<li><a class="reference internal" href="#how-stratification-works">How stratification works</a></li>
+<li><a class="reference internal" href="#why-remove-barriers-after-stratification-is-the-recommended-default">Why <code class="docutils literal notranslate"><span class="pre">remove_barriers=&quot;after_stratification&quot;</span></code> is the recommended default</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#boxing-isa-circuits-with-barriers">Boxing ISA circuits with barriers</a></li>
 <li><a class="reference internal" href="#incorporate-samplomatic-s-pass-manager-into-qiskit-s-preset-pass-managers">Incorporate Samplomatic’s pass manager into <code class="docutils literal notranslate"><span class="pre">Qiskit</span></code>’s preset pass managers</a></li>
+<li><a class="reference internal" href="#inspecting-and-modifying-annotations">Inspecting and modifying annotations</a></li>
 <li><a class="reference internal" href="#build-your-circuit">Build your circuit</a></li>
 </ul>
 </li>
