@@ -15,7 +15,7 @@ from itertools import product
 
 import numpy as np
 import pytest
-from qiskit.circuit.library import CXGate, CZGate, ECRGate, HGate
+from qiskit.circuit.library import CXGate, CZGate, ECRGate, HGate, SGate, SXGate
 from qiskit.quantum_info import Clifford, Pauli
 
 from samplomatic.exceptions import SamplexBuildError
@@ -32,7 +32,7 @@ class TestLookupTables:
         3: Pauli("Y"),
     }
 
-    @pytest.mark.parametrize("op_class", [HGate])
+    @pytest.mark.parametrize("op_class", [HGate, SGate, SXGate])
     def test_1q_gate_tables(self, op_class):
         """Test the lookup tables for one-qubit gates."""
         op = op_class()

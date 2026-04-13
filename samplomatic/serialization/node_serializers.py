@@ -334,6 +334,10 @@ class RightMultiplicationNodeSerializer(TypeSerializer[RightMultiplicationNode])
             )
 
 
+_SSV1_PAULI_PAST_CLIFFORD_OP_NAMES = frozenset({"cx", "cz", "ecr"})
+"""All allowed op names for :class:`~.PauliPastCliffordNode` in SSVs 1-3."""
+
+
 class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
     """Serializer for :class:`~.PauliPastCliffordNode`."""
 
@@ -342,6 +346,29 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
 
     class SSV1(DataSerializer[PauliPastCliffordNode]):
         MIN_SSV = 1
+        MAX_SSV = 3
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            op_name = obj._op_name  # noqa: SLF001
+            if op_name not in _SSV1_PAULI_PAST_CLIFFORD_OP_NAMES:
+                raise SerializationError(f"Cannot serialize op_name '{op_name}' in SSV {ssv}.")
+            return {
+                "op_name": op_name,
+                "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
+                "register_name": obj._register_name,  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return PauliPastCliffordNode(
+                data["op_name"],
+                data["register_name"],
+                array_from_json(data["subsystem_idxs"]),
+            )
+
+    class SSV4(DataSerializer[PauliPastCliffordNode]):
+        MIN_SSV = 4
 
         @classmethod
         def serialize(cls, obj, ssv):

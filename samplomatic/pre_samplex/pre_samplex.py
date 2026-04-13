@@ -22,6 +22,16 @@ from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, Qubit
+from qiskit.circuit.gate import Gate
+from qiskit.circuit.library import (
+    IGate,
+    RXGate,
+    RZGate,
+    SGate,
+    SXGate,
+    XGate,
+    ZGate,
+)
 from rustworkx.rustworkx import (
     PyDiGraph,
     topological_generations,
@@ -77,6 +87,7 @@ from ..samplex.nodes.change_basis_node import (
     BasisChange,
 )
 from ..samplex.nodes.pauli_past_clifford_node import (
+    PAULI_PAST_CLIFFORD_CANONICAL_NAMES,
     PAULI_PAST_CLIFFORD_INVARIANTS,
     PAULI_PAST_CLIFFORD_LOOKUP_TABLES,
 )
@@ -150,6 +161,53 @@ _PROPAGATE_GROUPS: tuple[_PropagateGroup, ...] = (
         PauliPastCliffordNode,
     ),
 )
+
+
+def _resolve_to_clifford_gate(gate: Gate) -> Gate | None:
+    """Return the named Clifford gate equivalent to ``gate`` at its concrete angle, or None.
+
+    For concrete-parameter rotation gates (rz, p, rx) whose angle is a multiple of π/2,
+    returns the equivalent named Clifford gate. This allows Pauli propagation via lookup tables
+    even when the circuit uses rotation gates at Clifford angles.
+
+    Returns ``None`` for symbolic (unbound) parameters, non-Clifford angles, or gate types
+    not handled here.
+    """
+    if gate.is_parameterized():
+        return None
+
+    if not isinstance(gate, RZGate | RXGate) and gate.name != "p":
+        return None
+
+    angle = float(gate.params[0]) % (2 * np.pi)
+
+    if gate.name in ("rz", "p"):
+        candidates = [
+            (0.0, IGate()),
+            (np.pi / 2, SGate()),
+            (np.pi, ZGate()),
+            (3 * np.pi / 2, SGate()),  # sdg has same Pauli action as s; canonicalize to s
+        ]
+    else:  # rx
+        candidates = [
+            (0.0, IGate()),
+            (np.pi / 2, SXGate()),
+            (np.pi, XGate()),
+            (3 * np.pi / 2, SXGate()),  # sxdg has same Pauli action as sx; canonicalize to sx
+        ]
+
+    for target_angle, clifford_gate in candidates:
+        if np.isclose(angle, target_angle, atol=1e-10):
+            return clifford_gate
+
+    return None
+
+
+_CANONICAL_GATE_CONSTRUCTORS = {
+    "s": SGate,
+    "sx": SXGate,
+}
+"""Maps canonical gate names to their constructors, for canonicalizing non-canonical names."""
 
 
 @lru_cache
@@ -897,6 +955,17 @@ class PreSamplex:
         op = instr.op
         if op.name in NO_PROPAGATE:
             return
+
+        # For PROPAGATE-mode single-qubit rotations at Clifford angles, resolve to the equivalent
+        # named Clifford gate. This must happen before PrePropagate creation so that the
+        # PrePropagateKey uses the resolved name, preventing incorrect merging of nodes with
+        # different rotation angles (e.g., rz(π/2) and rz(π) must not be merged).
+        if mode is InstructionMode.PROPAGATE and op.num_qubits == 1:
+            resolved = _resolve_to_clifford_gate(op)
+            if resolved is not None:
+                op = resolved
+            elif op.name in PAULI_PAST_CLIFFORD_CANONICAL_NAMES:
+                op = _CANONICAL_GATE_CONSTRUCTORS[PAULI_PAST_CLIFFORD_CANONICAL_NAMES[op.name]]()
 
         # in the future when we have multi-qubit virtual groups, this can't be hard-coded to 1
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
