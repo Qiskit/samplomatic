@@ -109,10 +109,10 @@ def test_equal_boxes_produce_equal_keys():
 
 def test_boxes_with_delays_barriers_measures():
     """Test that BoxKeys can contain measures, barriers, and delays."""
-    body = QuantumCircuit(1)
+    body = QuantumCircuit(1, 1)
     body.delay(42, 0)
     body.barrier()
-    body.measure_all()
+    body.measure([0], [0])
     instr = CircuitInstruction(BoxOp(body), body.qubits)
 
     key1 = BoxKey(instr)
