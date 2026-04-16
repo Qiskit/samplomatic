@@ -107,6 +107,19 @@ def test_equal_boxes_produce_equal_keys():
 
     assert key1 == key2
 
+def test_boxes_with_delays_barriers_measures():
+    """Test that BoxKeys can contain measures, barriers, and delays."""
+    body = QuantumCircuit(1, 1)
+    body.delay(42, 0)
+    body.barrier()
+    body.measure([0], [0])
+    instr = CircuitInstruction(BoxOp(body), body.qubits, body.clbits)
+
+    key1 = BoxKey(instr)
+    key2 = BoxKey(deepcopy(instr))
+
+    assert key1 == key2
+
 
 def test_different_boxes_produce_different_specs():
     """Test that different boxes produce different specifications."""
