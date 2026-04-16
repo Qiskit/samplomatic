@@ -112,7 +112,7 @@ def test_boxes_with_delays_barriers_measures():
     body = QuantumCircuit(1, 1)
     body.delay(42, 0)
     body.barrier()
-    # body.measure([0], [0]) # TODO: This errors...?
+    body.measure([0], [0])
     instr = CircuitInstruction(BoxOp(body), body.qubits, body.clbits)
 
     key1 = BoxKey(instr)
