@@ -6,19 +6,3 @@ In such cases, please refer to [the Qiskit SDK's deprecation file](https://githu
 However, since this project is still relatively young, we require the flexibility to fix poor design decisions as they are discovered, which may occasionally come with the need to make a change with no deprecation period.
 
 In any case, the [changelog](CHANGELOG.md) keeps a detailed record of all changes and deprecations.
-
-
-## Beta Stability warnings
-
-This library raises a beta stability `UserWarning` on import to highlight the current beta status.
-This is intended to catch the eye of those who may not notice the status in the `README.md`, `CONTRIBUTING.md`, or `DEPRECATION.md` files.
-The warning is only raised once per installed version of samplomatic, even in separate Python sessions.
-This is implemented by storing some non-essential runtime state in your state directory.
-Run
-
-```python
-from samplomatic._beta_warning import _get_config_path
-print(_get_config_path())
-```
-
-to find your state directory. This directory is safe to delete; it is recreated as needed.
