@@ -71,6 +71,12 @@ def test_twirl_sampling_unsupported_distribution_type():
         TwirlSamplingNodeSerializer.serialize(node, 1)
 
 
+def test_pauli_past_clifford_ssv1_rejects_new_op_names():
+    node = PauliPastCliffordNode("h", "my_reg", [(0,), (1,)])
+    with pytest.raises(SerializationError, match="Cannot serialize op_name"):
+        PauliPastCliffordNodeSerializer.serialize(node, 3)
+
+
 @pytest.mark.parametrize("basis_change", [MEAS_PAULI_BASIS, PREP_PAULI_BASIS])
 @pytest.mark.parametrize("ssv", ChangeBasisNodeSerializer.SSVS)
 def test_change_basis_serializer_round_trip(basis_change, ssv):
@@ -143,6 +149,15 @@ def test_pauli_past_clifford_serializer_round_trip(ssv):
     data = PauliPastCliffordNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
+
+
+def test_pauli_past_clifford_new_gate_names_ssv4():
+    """New gate names (h, s, sx, sh, hs) serialize/deserialize correctly at SSV4."""
+    for op_name in ["h", "s", "sx", "sh", "hs"]:
+        node = PauliPastCliffordNode(op_name, "my_reg", [(0,), (1,), (2,)])
+        data = PauliPastCliffordNodeSerializer.serialize(node, 4)
+        orjson.dumps(data)
+        assert node == TypeSerializer.deserialize(data)
 
 
 @pytest.mark.parametrize("ssv", SliceRegisterNodeSerializer.SSVS)

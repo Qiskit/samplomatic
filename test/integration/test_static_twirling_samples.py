@@ -395,6 +395,28 @@ def make_circuits():
 
     yield circuit, "balanced_pauli"
 
+    # 1Q Clifford gates in PROPAGATE mode (between two multi-qubit gates in the same Twirl box)
+    for gate_name in ["sx", "s", "sdg", "sxdg"]:
+        circuit = QuantumCircuit(3)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.cz(0, 1)
+            getattr(circuit, gate_name)(1)
+            circuit.cz(1, 2)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1, 2)
+        yield circuit, f"propagate_1q_clifford_{gate_name}"
+
+    # rz at Clifford angles resolved and canonicalized via _resolve_to_clifford_gate
+    for angle, label in [(np.pi / 2, "pi_over_2"), (3 * np.pi / 2, "3pi_over_2")]:
+        circuit = QuantumCircuit(3)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.cz(0, 1)
+            circuit.rz(angle, 1)
+            circuit.cz(1, 2)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.noop(0, 1, 2)
+        yield circuit, f"propagate_rz_{label}"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
