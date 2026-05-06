@@ -1672,7 +1672,9 @@ class PreSamplex:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
         else:
             if op_name == "rzz":
-                if not np.allclose(pre_propagate.bounded_params, np.pi / 2):
+                if pre_propagate.operation.is_parameterized() or not np.allclose(
+                    np.abs(pre_propagate.bounded_params), np.pi / 2
+                ):
                     raise SamplexBuildError("Non-Clifford angles for RZZ are not supported.")
             if op_name in propagate_group.invariants:
                 propagate_node = None

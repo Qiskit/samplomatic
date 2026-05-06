@@ -402,7 +402,7 @@ def make_circuits():
 
     with circuit.box([Twirl(dressing="right")]):
         circuit.noop(0, 3)
-        circuit.rzz(np.pi / 2, 1, 2)
+        circuit.rzz(-np.pi / 2, 1, 2)
 
     yield circuit, "rzz_half_pi"
 

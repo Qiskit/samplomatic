@@ -17,7 +17,7 @@ This file is meant for such cases.
 """
 
 import pytest
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic import Twirl
 from samplomatic.builders import build, pre_build
@@ -25,11 +25,12 @@ from samplomatic.exceptions import BuildError, SamplexBuildError
 
 
 class TestGeneralBuildErrors:
-    def test_rzz_must_be_clifford(self):
+    @pytest.mark.parametrize("param", [1.0, Parameter("theta")])
+    def test_rzz_must_be_clifford(self, param):
         """Test that non-Clifford angles for RZZ raises an error."""
         circuit = QuantumCircuit(2)
         with circuit.box([Twirl()]):
-            circuit.rzz(1, 0, 1)
+            circuit.rzz(param, 0, 1)
             circuit.measure_all()
 
         with pytest.raises(SamplexBuildError, match="Non-Clifford angles"):
