@@ -395,6 +395,17 @@ def make_circuits():
 
     yield circuit, "balanced_pauli"
 
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.rzz(np.pi / 2, 0, 1)
+        circuit.rzz(np.pi / 2, 2, 3)
+
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 3)
+        circuit.rzz(np.pi / 2, 1, 2)
+
+    yield circuit, "rzz_half_pi"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:

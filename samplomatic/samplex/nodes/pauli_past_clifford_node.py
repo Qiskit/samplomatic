@@ -50,6 +50,15 @@ PAULI_PAST_CLIFFORD_LOOKUP_TABLES = {
         ],
         dtype=np.intp,
     ),
+    "rzz": np.array(
+        [
+            [[0, 0], [0, 1], [1, 3], [1, 2]],
+            [[1, 0], [1, 1], [0, 3], [0, 2]],
+            [[3, 1], [3, 0], [2, 2], [2, 3]],
+            [[2, 1], [2, 0], [3, 2], [3, 3]],
+        ],
+        dtype=np.intp,
+    ),
 }
 """Lookup tables for computing the conjugation of Pauli operators by Clifford gates.
 
