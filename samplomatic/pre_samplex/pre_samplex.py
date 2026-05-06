@@ -45,7 +45,7 @@ from ..aliases import (
 )
 from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
-from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
+from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, SUPPORTED_FRACTIONAL_GATES, Direction
 from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -1011,7 +1011,7 @@ class PreSamplex:
                             merged_trace_info.merge(node.trace_info)
 
                 if any(
-                    node.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+                    node.operation.name in SUPPORTED_FRACTIONAL_GATES
                     and not node.operation.is_parameterized()
                     for node in nodes
                 ):
@@ -1671,6 +1671,11 @@ class PreSamplex:
                 else:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
         else:
+            if op_name == "rzz":
+                if pre_propagate.operation.is_parameterized() or not np.allclose(
+                    np.abs(pre_propagate.bounded_params), np.pi / 2
+                ):
+                    raise SamplexBuildError("Non-Clifford angles for RZZ are not supported.")
             if op_name in propagate_group.invariants:
                 propagate_node = None
             else:

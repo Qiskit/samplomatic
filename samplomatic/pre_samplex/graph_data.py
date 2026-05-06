@@ -12,7 +12,6 @@
 
 """Graph Data"""
 
-from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -22,7 +21,7 @@ from qiskit.circuit.gate import Gate
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
 from ..annotations import GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
-from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
+from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
@@ -209,7 +208,7 @@ class PrePropagate(PreNode):
     params: ParamSpec
     """The parameters required by the node."""
 
-    bounded_params: Iterable[float] | None = None
+    bounded_params: list[float] | None = None
     """List of bounded params if ``operation`` is a fractional gate with a bounded parameter.
 
     If the node involves a relevant operation with a single subsystem, the parameter is
@@ -219,7 +218,7 @@ class PrePropagate(PreNode):
     def __post_init__(self):
         # Current construction assumes one parameter per gate.
         if (
-            self.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+            self.operation.name in SUPPORTED_FRACTIONAL_GATES
             and not self.operation.is_parameterized()
         ):
             if self.bounded_params is None:

@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -44,4 +44,18 @@ SUPPORTED_1Q_FRACTIONAL_GATES: set[str] = {"rx", "rz"}
 """
 The names of all Qiskit built-in fractional single-qubit gates which are supported for virtual
 gate propagation in Samplomatic.
+"""
+
+SUPPORTED_2Q_FRACTIONAL_GATES: set[str] = {"rzz"}
+"""
+The names of all Qiskit built-in fractional two-qubit gates which are supported for virtual
+gate propagation in Samplomatic.
+"""
+
+SUPPORTED_FRACTIONAL_GATES: set[str] = SUPPORTED_1Q_FRACTIONAL_GATES.union(
+    SUPPORTED_2Q_FRACTIONAL_GATES
+)
+"""
+The names of all Qiskit built-in fractional gates which are supported for virtual gate propagation
+in Samplomatic.
 """
