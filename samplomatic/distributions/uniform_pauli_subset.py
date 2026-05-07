@@ -102,4 +102,4 @@ class UniformPauliSubset(Distribution):
         )
 
 
-UniformPhase = partial(UniformPauliSubset.from_name, name="phase")
+uniform_phase = partial(UniformPauliSubset.from_name, name="phase")

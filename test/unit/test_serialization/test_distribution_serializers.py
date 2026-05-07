@@ -22,6 +22,7 @@ from samplomatic.distributions import (
     UniformPauli,
     UniformPauliSubset,
 )
+from samplomatic.exceptions import SerializationError
 from samplomatic.serialization.distribution_serializers import (
     BalancedUniformPauliSerializer,
     HaarU2Serializer,
@@ -31,6 +32,13 @@ from samplomatic.serialization.distribution_serializers import (
     UniformPauliSubsetSerializer,
 )
 from samplomatic.serialization.type_serializer import TypeSerializer
+
+
+def test_local_c1_distribution_rzz_error():
+    """Test that rzz is not supported before SSV 4."""
+    distribution = UniformLocalC1(12, "rzz")
+    with pytest.raises(SerializationError, match="rzz"):
+        UniformLocalC1Serializer.serialize(distribution, 3)
 
 
 @pytest.mark.parametrize("ssv", UniformPauliSerializer.SSVS)

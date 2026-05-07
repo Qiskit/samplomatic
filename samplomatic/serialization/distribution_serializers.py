@@ -105,14 +105,26 @@ class UniformLocalC1Serializer(TypeSerializer[UniformLocalC1]):
 
     class SSV3(DataSerializer[UniformLocalC1]):
         MIN_SSV = 3
+        MAX_SSV = 3
 
         @classmethod
         def serialize(cls, obj, ssv):
-            if ssv < 4 and obj.gate_name == "rzz":
+            if obj.gate_name == "rzz":
                 raise SerializationError(
                     f"Encountered a UniformLocalC1 distribution with operation rzz and SSV {ssv}, "
                     "but require SSV at least 4."
                 )
+            return {"num_subsystems": obj.num_subsystems, "gate_name": obj.gate_name}
+
+        @classmethod
+        def deserialize(cls, data):
+            return UniformLocalC1(data["num_subsystems"], data["gate_name"])
+
+    class SSV4(DataSerializer[UniformLocalC1]):
+        MIN_SSV = 4
+
+        @classmethod
+        def serialize(cls, obj, ssv):
             return {"num_subsystems": obj.num_subsystems, "gate_name": obj.gate_name}
 
         @classmethod

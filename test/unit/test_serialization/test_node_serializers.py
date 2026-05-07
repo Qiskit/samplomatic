@@ -27,6 +27,7 @@ from samplomatic.samplex.nodes import (
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
     PropagateLocalC1Node,
+    PropagateLocalPauliNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
@@ -50,6 +51,7 @@ from samplomatic.serialization.node_serializers import (
     LeftU2ParametricMultiplicationNodeSerializer,
     PauliPastCliffordNodeSerializer,
     PropagateLocalC1NodeSerializer,
+    PropagateLocalPauliNodeSerializer,
     RightMultiplicationNodeSerializer,
     RightU2ParametricMultiplicationNodeSerializer,
     SliceRegisterNodeSerializer,
@@ -63,6 +65,18 @@ from samplomatic.virtual_registers import VirtualType
 def test_basis_change_unsupported_register_type():
     with pytest.raises(SerializationError, match="Cannot serialize"):
         BasisChangeSerializer.serialize(LOCAL_CLIFFORD, 1)
+
+
+def test_pauli_past_clifford_node_rzz_error():
+    node = PauliPastCliffordNode("rzz", "my_reg", [(0, 1), (4, 2)])
+    with pytest.raises(SerializationError, match="rzz"):
+        PauliPastCliffordNodeSerializer.serialize(node, 3)
+
+
+def test_c1_past_clifford_node_rzz_error():
+    node = PropagateLocalC1Node("rzz", "my_reg", [(0, 1), (4, 2)])
+    with pytest.raises(SerializationError, match="rzz"):
+        PropagateLocalC1NodeSerializer.serialize(node, 3)
 
 
 def test_twirl_sampling_unsupported_distribution_type():
@@ -218,3 +232,11 @@ def test_multiplication_node_ssv(node_type, serializer, rng):
     node = node_type(UniformPauli(5).sample(1, rng), "a")
     data = serializer.serialize(node, 2)
     assert orjson.loads(data["operand"])["ssv"] == "2"
+
+
+@pytest.mark.parametrize("ssv", PropagateLocalPauliNodeSerializer.SSVS)
+def test_propagate_local_pauli_serializer_round_trip(ssv):
+    node = PropagateLocalPauliNode("rzz", "my_reg", [(0, 1), (4, 2)])
+    data = PropagateLocalPauliNodeSerializer.serialize(node, ssv)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
