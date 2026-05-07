@@ -33,29 +33,31 @@ class GroupMode(str, Enum):
     Sample the Pauli group if no entangler is present.
     """
 
-    PARAMETRIC_RZZ = "parametric_rzz"
-    """Sample from the commutant of RZZ uniformly and iid.
+    LOCAL_PAULI = "local_pauli"
+    """Sample from the Pauli gates that stay Pauli under conjugation by an entangler uniformly and
+    iid.
 
-    The commutant consists of the 8 two-qubit Paulis that commute with ZZ for any angle.
-    Sample the Pauli group if no RZZ is present.
+    For non-Clifford or parametric entanglers, this mode currently uses the subgroup of the Paulis
+    that commute with the generators. For Clifford gates, this mode falls back to the Pauli group.
     """
 
     PHASE = "phase"
     """Sample the phase group I, Z uniformly and iid."""
 
 
-GATE_DEPENDENT_TWIRLING_GROUPS = frozenset([GroupMode.LOCAL_C1, GroupMode.PARAMETRIC_RZZ])
+GATE_DEPENDENT_TWIRLING_GROUPS = frozenset([GroupMode.LOCAL_C1, GroupMode.LOCAL_PAULI])
 """A subset of group modes that depend on an entangler."""
 
 
 GroupLiteral: TypeAlias = (
-    GroupMode | Literal["pauli", "balanced_pauli", "local_c1", "parametric_rzz", "phase"]
+    GroupMode | Literal["pauli", "balanced_pauli", "local_c1", "local_pauli", "phase"]
 )
 """Which set of gates and distribution to sample with.
 
  * ``pauli``: Sample the Pauli group uniformly and iid.
  * ``balanced_pauli``: Sample the Pauli group, balancing the proportions of I, X, Y, and Z.
  * ``local_c1``: Sample C1 gates that stay C1 under conjugation by an entangler uniformly and iid.
- * ``parametric_rzz``: Sample from the commutant of RZZ uniformly and iid.
+ * ``local_pauli``: Sample Pauli gates that stay Pauli under conjugation by an entangler uniformly
+   and iid.
  * ``phase``: Sample the phase group I, Z uniformly and iid.
 """

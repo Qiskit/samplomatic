@@ -13,7 +13,7 @@
 """Graph Data"""
 
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any
 
 import numpy as np
 from qiskit.circuit.gate import Gate
@@ -215,8 +215,8 @@ class PrePropagate(PreNode):
     automatically extracted from the operation.
     """
 
-    rzz_strategy: Literal["pauli", "commutant"] | None = None
-    """If the operation is RZZ, whether to twirl with the commutant or not."""
+    commutant_twirl: bool = False
+    """If the operation is non-Clifford, whether to twirl with the commutant or not."""
 
     def __post_init__(self):
         # Current construction assumes one parameter per gate.
@@ -271,8 +271,8 @@ class PrePropagateKey:
     is_parameterized: bool
     """Whether or not the operation is parameterized."""
 
-    rzz_strategy: Literal["pauli", "commutant"] | None = None
-    """If the operation is RZZ, whether to twirl with the commutant or not."""
+    commutant_twirl: bool = False
+    """If the operation is non-Clifford, whether to twirl with the commutant or not."""
 
     def __eq__(self, other: Any) -> bool:
         return (
@@ -281,7 +281,7 @@ class PrePropagateKey:
             and self.operation_name == other.operation_name
             and self.direction == other.direction
             and self.is_parameterized == other.is_parameterized
-            and self.rzz_strategy == other.rzz_strategy
+            and self.commutant_twirl == other.commutant_twirl
         )
 
     def __hash__(self):
@@ -291,7 +291,7 @@ class PrePropagateKey:
                 self.operation_name,
                 self.direction,
                 self.is_parameterized,
-                self.rzz_strategy,
+                self.commutant_twirl,
             )
         )
 

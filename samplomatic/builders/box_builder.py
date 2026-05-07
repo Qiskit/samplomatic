@@ -48,9 +48,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         self.measured_qubits = QubitPartition(1, [])
 
     def set_samplex_state(self, samplex_state):
-        samplex_state.rzz_strategy = (
-            "commutant" if self.emission.twirl_type is GroupMode.PARAMETRIC_RZZ else "pauli"
-        )
+        samplex_state.commutant_twirl = self.emission.twirl_type is GroupMode.LOCAL_PAULI
         return super().set_samplex_state(samplex_state)
 
     @property

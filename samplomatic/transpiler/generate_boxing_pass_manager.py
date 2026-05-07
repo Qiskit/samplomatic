@@ -57,7 +57,7 @@ def generate_boxing_pass_manager(
     twirling_strategy: Literal[
         "active", "active_accum", "active_circuit", "all"
     ] = "active_circuit",
-    twirling_group: Literal["pauli", "balanced_pauli", "local_c1", "parametric_rzz"] = "pauli",
+    twirling_group: Literal["pauli", "balanced_pauli", "local_c1", "local_pauli"] = "pauli",
     decomposition: Literal["rzsx", "rzrx"] = "rzsx",
     inject_noise_targets: Literal["none", "gates", "measures", "all"] = "none",
     inject_noise_strategy: Literal[
@@ -154,8 +154,8 @@ def generate_boxing_pass_manager(
             * ``'local_c1'`` uses the subgroup of single-qubit Cliffords that are conjugated to
               single-qubit Cliffords on any entangling gates in the box, and the Pauli group
               everywhere else.
-            * ``'parametric_rzz'`` uses the Pauli subgroup that commutes with ZZ for parametric RZZ
-              gates, and the Pauli group everywhere else.
+            * ``'local_pauli'`` uses the Pauli subgroup that commutes with an entangler for
+              non-Clifford gates, and the Pauli group everywhere else.
 
 
         decomposition: The gate sequence into which single-qubit dressing gates are synthesized.

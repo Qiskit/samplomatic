@@ -117,7 +117,7 @@ def make_circuits():
     yield circuit, "balanced_pauli_parametric"
 
     circuit = QuantumCircuit(4)
-    with circuit.box([Twirl("parametric_rzz")]):
+    with circuit.box([Twirl("local_pauli")]):
         circuit.rzz(Parameter("a"), 0, 1)
         circuit.rzz(Parameter("b"), 2, 3)
 
@@ -127,7 +127,7 @@ def make_circuits():
     yield circuit, "rzz_unbound_angles"
 
     circuit = QuantumCircuit(4)
-    with circuit.box([Twirl("parametric_rzz")]):
+    with circuit.box([Twirl("local_pauli")]):
         circuit.rzz(Parameter("a"), 0, 1)
         circuit.rzz(np.pi / 3, 2, 3)
 

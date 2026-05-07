@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""PropagateParametricRzzNode"""
+"""PropagateLocalPauliNode"""
 
 from collections.abc import Sequence
 
@@ -31,27 +31,25 @@ In symplectic ordering (I=0, Z=1, X=2, Y=3), these are the pairs where both
 qubits are in {I,Z} or both are in {X,Y}.
 """
 
-PARAMETRIC_RZZ_LOOKUP_TABLE = np.array(
-    [
-        [[0, 0], [0, 1], [-1, -1], [-1, -1]],
-        [[1, 0], [1, 1], [-1, -1], [-1, -1]],
-        [[-1, -1], [-1, -1], [2, 2], [2, 3]],
-        [[-1, -1], [-1, -1], [3, 2], [3, 3]],
-    ],
-    dtype=np.intp,
-)
-"""Lookup table for propagating Paulis past a parametric RZZ gate.
-
-Commutant elements (both in {I,Z} or both in {X,Y}) map to themselves.
-Non-commutant elements map to -1 (sentinel) indicating an invalid state.
-"""
+_COMMUTANT_TABLES = {
+    "rzz": np.array(
+        [
+            [[0, 0], [0, 1], [-1, -1], [-1, -1]],
+            [[1, 0], [1, 1], [-1, -1], [-1, -1]],
+            [[-1, -1], [-1, -1], [2, 2], [2, 3]],
+            [[-1, -1], [-1, -1], [3, 2], [3, 3]],
+        ],
+        dtype=np.intp,
+    ),
+}
 
 
-class PropagateParametricRzzNode(EvaluationNode):
-    """A node that guards Pauli propagation past a parametric RZZ gate.
+class PropagateLocalPauliNode(EvaluationNode):
+    """A node that guards Pauli propagation past a gate.
 
-    Only Paulis from the commutant of ZZ (those that commute with RZZ for any
-    angle) are allowed through. Non-commutant Paulis trigger a runtime error.
+    Only Paulis from the commutant of the gate generator (those that commute
+    with the gate for any angle) are allowed through. Non-commutant Paulis
+    trigger a runtime error.
 
     Args:
         register_name: The name of the Pauli register to propagate.
@@ -59,15 +57,24 @@ class PropagateParametricRzzNode(EvaluationNode):
             that of a collection of subsystems of the same size, i.e., that
             of a 2D array where the left-most axes is over subsystems and
             the right-most axes is over qubits.
+        op_name: The name of the gate operation (e.g. ``"rzz"``).
     """
 
     def __init__(
         self,
+        op_name: str,
         register_name: RegisterName,
         subsystem_idxs: Sequence[Sequence[SubsystemIndex]],
     ):
+        if op_name not in _COMMUTANT_TABLES:
+            raise ValueError(
+                f"Unsupported operation {op_name!r}. "
+                f"Supported operations: {sorted(_COMMUTANT_TABLES)}."
+            )
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
         self._register_name = register_name
+        self._op_name = op_name
+        self._table = _COMMUTANT_TABLES[op_name]
 
     @property
     def outgoing_register_type(self) -> VirtualType:
@@ -78,13 +85,11 @@ class PropagateParametricRzzNode(EvaluationNode):
         subsys = self._subsystem_idxs
 
         paulis_in = reg.virtual_gates[subsys]
-        paulis_out = PARAMETRIC_RZZ_LOOKUP_TABLE[
-            tuple(paulis_in[:, i] for i in range(subsys.shape[-1]))
-        ]
+        paulis_out = self._table[tuple(paulis_in[:, i] for i in range(subsys.shape[-1]))]
 
         if np.any(paulis_out < 0):
             raise SamplexRuntimeError(
-                "Pauli values are not in the commutant of RZZ after propagation."
+                f"Pauli values are not in the commutant of {self._op_name!r} after propagation."
             )
 
         reg.virtual_gates[subsys] = np.transpose(paulis_out, (0, 2, 1))
@@ -107,7 +112,8 @@ class PropagateParametricRzzNode(EvaluationNode):
 
     def __eq__(self, other):
         return (
-            isinstance(other, PropagateParametricRzzNode)
+            isinstance(other, PropagateLocalPauliNode)
+            and self._op_name == other._op_name
             and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
             and self._register_name == other._register_name
         )
@@ -116,7 +122,7 @@ class PropagateParametricRzzNode(EvaluationNode):
         return (
             super()
             .get_style()
-            .append_data("Operation", "'rzz' (parametric)")
+            .append_data("Operation", f"{self._op_name!r}")
             .append_data("Register Name", repr(self._register_name))
             .append_list_data("Subsystem Indices", self._subsystem_idxs.tolist())
         )

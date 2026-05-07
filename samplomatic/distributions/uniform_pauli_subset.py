@@ -12,10 +12,17 @@
 
 """UniformPauliSubset"""
 
+from functools import partial
+
 import numpy as np
 
 from ..virtual_registers import PauliRegister, VirtualType
 from .distribution import Distribution
+
+LOOKUP_TABLES = {
+    "rzz": np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 2], [2, 3], [3, 2], [3, 3]]),
+    "phase": np.array([[0], [1]]),
+}
 
 
 class UniformPauliSubset(Distribution):
@@ -57,6 +64,10 @@ class UniformPauliSubset(Distribution):
             )
         self._paulis = (paulis % 4).astype(PauliRegister.DTYPE)
 
+    @classmethod
+    def from_name(cls, num_subsystems: int, name: str) -> "UniformPauliSubset":
+        return cls(num_subsystems, LOOKUP_TABLES[name])
+
     @property
     def register_type(self):
         return VirtualType.PAULI
@@ -79,3 +90,6 @@ class UniformPauliSubset(Distribution):
             and self.num_subsystems == other.num_subsystems
             and np.array_equal(self.paulis, other.paulis)
         )
+
+
+UniformPhase = partial(UniformPauliSubset.from_name, name="phase")

@@ -28,7 +28,7 @@ from ..samplex.nodes import (
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
     PropagateLocalC1Node,
-    PropagateParametricRzzNode,
+    PropagateLocalPauliNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
@@ -588,13 +588,13 @@ class DistributionSamplingNodeSerializer(TypeSerializer[DistributionSamplingNode
             )
 
 
-class PropagateParametricRzzNodeSerializer(TypeSerializer[PropagateParametricRzzNode]):
-    """Serializer for :class:`~.PropagateParametricRzzNode`."""
+class PropagateLocalPauliNodeSerializer(TypeSerializer[PropagateLocalPauliNode]):
+    """Serializer for :class:`~.PropagateLocalPauliNode`."""
 
     TYPE_ID = "N15"
-    TYPE = PropagateParametricRzzNode
+    TYPE = PropagateLocalPauliNode
 
-    class SSV3(DataSerializer[PropagateParametricRzzNode]):
+    class SSV3(DataSerializer[PropagateLocalPauliNode]):
         MIN_SSV = 4
 
         @classmethod
@@ -602,11 +602,13 @@ class PropagateParametricRzzNodeSerializer(TypeSerializer[PropagateParametricRzz
             return {
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
+                "op_name": obj._op_name,  # noqa: SLF001
             }
 
         @classmethod
         def deserialize(cls, data):
-            return PropagateParametricRzzNode(
+            return PropagateLocalPauliNode(
                 data["register_name"],
                 array_from_json(data["subsystem_idxs"]),
+                data["op_name"],
             )

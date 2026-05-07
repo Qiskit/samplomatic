@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from functools import lru_cache
 from itertools import count
-from typing import TYPE_CHECKING, Any, Literal, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, Qubit
@@ -45,8 +45,13 @@ from ..aliases import (
 )
 from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
-from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, SUPPORTED_FRACTIONAL_GATES, Direction
-from ..distributions import GROUP_TO_DISTRIBUTION, UniformPauliSubset
+from ..constants import (
+    SUPPORTED_1Q_FRACTIONAL_GATES,
+    SUPPORTED_2Q_FRACTIONAL_GATES,
+    SUPPORTED_FRACTIONAL_GATES,
+    Direction,
+)
+from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
@@ -85,7 +90,7 @@ from ..samplex.nodes.propagate_local_c1_node import (
     LOCAL_C1_PROPAGATE_LOOKUP_TABLES,
     PropagateLocalC1Node,
 )
-from ..samplex.nodes.propagate_parametric_rzz_node import PropagateParametricRzzNode
+from ..samplex.nodes.propagate_local_pauli_node import PropagateLocalPauliNode
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
@@ -277,15 +282,15 @@ class PreSamplex:
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
         self.debug = debug
-        self._rzz_strategy = "pauli"
+        self._commutant_twirl = False
 
     @property
-    def rzz_strategy(self) -> Literal["pauli", "commutant"]:
-        return self._rzz_strategy
+    def commutant_twirl(self) -> bool:
+        return self._commutant_twirl
 
-    @rzz_strategy.setter
-    def rzz_strategy(self, value: Literal["pauli", "commutant"]):
-        self._rzz_strategy = value
+    @commutant_twirl.setter
+    def commutant_twirl(self, value: bool):
+        self._commutant_twirl = value
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
         """Remap the object to a new :class:`~.PreSamplex` object.
@@ -925,7 +930,7 @@ class PreSamplex:
         # recall that this is indexing out of `subsystems`, not qubits
         num_qubits = instr.num_qubits
         partition = SubsystemIndicesPartition(num_qubits, [tuple(range(num_qubits))])
-        rzz_strategy = self.rzz_strategy if op.name == "rzz" else None
+        commutant_twirl = self.commutant_twirl & (op.name in SUPPORTED_2Q_FRACTIONAL_GATES)
 
         # time ordering: (emit> | propagate>) --> new propagate>
         rightward_node_candidate = NodeCandidate(
@@ -937,7 +942,7 @@ class PreSamplex:
                 partition,
                 mode,
                 params,
-                rzz_strategy=rzz_strategy,
+                commutant_twirl=commutant_twirl,
                 trace_info=trace_info,
             ),
         )
@@ -968,7 +973,7 @@ class PreSamplex:
                 partition,
                 mode,
                 params,
-                rzz_strategy=rzz_strategy,
+                commutant_twirl=commutant_twirl,
                 trace_info=trace_info,
             ),
         )
@@ -1015,7 +1020,7 @@ class PreSamplex:
                     *(node.subsystems for node in nodes)
                 )
                 num_elements = nodes[0].partition.num_elements_per_part
-                rzz_strategy = nodes[0].rzz_strategy
+                commutant_twirl = nodes[0].commutant_twirl
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
                     num_elements,
@@ -1055,7 +1060,7 @@ class PreSamplex:
                             nodes[0].mode,  # all nodes have same spec
                             params=[],
                             bounded_params=params,
-                            rzz_strategy=rzz_strategy,
+                            commutant_twirl=commutant_twirl,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1074,7 +1079,7 @@ class PreSamplex:
                             combined_partition,
                             mode=nodes[0].mode,
                             params=params,
-                            rzz_strategy=rzz_strategy,
+                            commutant_twirl=commutant_twirl,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1099,7 +1104,7 @@ class PreSamplex:
                     operation_name=node.operation.name,
                     direction=node.direction,
                     is_parameterized=node.operation.is_parameterized(),
-                    rzz_strategy=node.rzz_strategy,
+                    commutant_twirl=node.commutant_twirl,
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -1505,11 +1510,7 @@ class PreSamplex:
         pre_emit = cast(PreEmit, self.graph[pre_emit_idx])
         reg_idx = order[pre_emit_idx]
 
-        if pre_emit.register_type is GroupMode.PARAMETRIC_RZZ:
-            from ..samplex.nodes.propagate_parametric_rzz_node import RZZ_COMMUTANT_PAULIS
-
-            distribution = UniformPauliSubset(len(pre_emit.subsystems), RZZ_COMMUTANT_PAULIS)
-        elif pre_emit.twirl_gate is not None:
+        if pre_emit.twirl_gate is not None:
             distribution = GROUP_TO_DISTRIBUTION[pre_emit.register_type](
                 len(pre_emit.subsystems), pre_emit.twirl_gate
             )
@@ -1704,33 +1705,29 @@ class PreSamplex:
                 else:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
         else:
+            node_class = propagate_group.node_class
             if op_name in propagate_group.invariants:
-                propagate_node = None
-            elif op_name == "rzz":
-                if pre_propagate.rzz_strategy == "commutant":
-                    propagate_node = PropagateParametricRzzNode(
-                        actual_register_name,
-                        np.array(list(pre_propagate.partition), dtype=np.intp),
-                    )
+                node_class = None
+            elif op_name in SUPPORTED_2Q_FRACTIONAL_GATES:
+                if pre_propagate.commutant_twirl:
+                    node_class = PropagateLocalPauliNode
                 else:
                     if pre_propagate.bounded_params is None or not np.allclose(
                         np.abs(pre_propagate.bounded_params), np.pi / 2
                     ):
                         raise SamplexBuildError(
-                            "Non-Clifford and unbound angles are only supported for Twirl with "
-                            "GroupMode PARAMETRIC_RZZ."
+                            "Non-Clifford and unbound fractional entanglers are only supported for "
+                            "Twirl with 'GroupMode LOCAL_PAULI'."
                         )
-                    propagate_node = propagate_group.node_class(
-                        op_name,
-                        actual_register_name,
-                        np.array(list(pre_propagate.partition), dtype=np.intp),
-                    )
-            else:
-                propagate_node = propagate_group.node_class(
+            propagate_node = (
+                None
+                if node_class is None
+                else node_class(
                     op_name,
                     actual_register_name,
                     np.array(list(pre_propagate.partition), dtype=np.intp),
                 )
+            )
 
         if propagate_node is not None:
             node_idx = samplex.add_node(propagate_node)

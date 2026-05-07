@@ -421,7 +421,7 @@ def make_circuits():
     yield circuit, "rzz_local_c1_half_pi"
 
     circuit = QuantumCircuit(4)
-    with circuit.box([Twirl("parametric_rzz")]):
+    with circuit.box([Twirl("local_pauli")]):
         circuit.rzz(np.pi / 4, 0, 1)
         circuit.rzz(np.pi / 3, 2, 3)
 
@@ -431,7 +431,7 @@ def make_circuits():
     yield circuit, "rzz_non_clifford_bound_angles"
 
     circuit = QuantumCircuit(4)
-    with circuit.box([Twirl("parametric_rzz")]):
+    with circuit.box([Twirl("local_pauli")]):
         circuit.rzz(np.pi / 4, 0, 1)
         circuit.cz(2, 3)
 

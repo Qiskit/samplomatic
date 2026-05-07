@@ -12,10 +12,6 @@
 
 """Distributions"""
 
-from functools import partial
-
-import numpy as np
-
 from ..annotations import GroupMode as _GroupMode
 from ..utils import FrozenDict as _FrozenDict
 from .balanced_uniform_pauli import BalancedUniformPauli
@@ -24,17 +20,14 @@ from .haar_u2 import HaarU2
 from .uniform_c1 import UniformC1
 from .uniform_local_c1 import UniformLocalC1
 from .uniform_pauli import UniformPauli
-from .uniform_pauli_subset import UniformPauliSubset
+from .uniform_pauli_subset import UniformPauliSubset, UniformPhase
 
 GROUP_TO_DISTRIBUTION: dict[_GroupMode, type[Distribution]] = _FrozenDict(
     {
         _GroupMode.PAULI: UniformPauli,
         _GroupMode.BALANCED: BalancedUniformPauli,
         _GroupMode.LOCAL_C1: UniformLocalC1,
-        _GroupMode.PHASE: partial(UniformPauliSubset, paulis=np.array([[0], [1]])),
-        _GroupMode.PARAMETRIC_RZZ: partial(
-            UniformPauliSubset,
-            paulis=np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 2], [2, 3], [3, 2], [3, 3]]),
-        ),
+        _GroupMode.PHASE: UniformPhase,
+        _GroupMode.LOCAL_PAULI: UniformPauliSubset.from_name,
     }
 )
