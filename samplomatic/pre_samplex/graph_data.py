@@ -216,7 +216,12 @@ class PrePropagate(PreNode):
     """
 
     commutant_twirl: bool = False
-    """If the operation is non-Clifford, whether to twirl with the commutant or not."""
+    """Whether this operation should be twirled with its commutant.
+
+    If the operation is not a fractional gate, this value will be ``False``. If it is a
+    fractional gate, ``True`` signals that it should be twirled by its commutant, while
+    ``False`` signals that its angle has been bound to a Clifford.
+    """
 
     def __post_init__(self):
         # Current construction assumes one parameter per gate.
@@ -272,7 +277,7 @@ class PrePropagateKey:
     """Whether or not the operation is parameterized."""
 
     commutant_twirl: bool = False
-    """If the operation is non-Clifford, whether to twirl with the commutant or not."""
+    """Whether this operation should be twirled with its commutant."""
 
     def __eq__(self, other: Any) -> bool:
         return (

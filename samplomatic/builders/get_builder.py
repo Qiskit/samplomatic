@@ -42,7 +42,7 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
 
     Inspects the box body DAG for two-qubit gates and splits qubits accordingly.
     Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_twirl_qubits``,
-    and ``twirl_gate``. If no two-qubit gates are found, sets``twirl_type`` to PAULI.
+    and ``twirl_gate``. If no two-qubit gates are found, sets ``twirl_type`` to PAULI.
 
     Raises:
         BuildError: If the same qubit pair has duplicate 2Q gates.

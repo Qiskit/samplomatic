@@ -34,8 +34,7 @@ class GroupMode(str, Enum):
     """
 
     LOCAL_PAULI = "local_pauli"
-    """Sample from the Pauli gates that stay Pauli under conjugation by an entangler uniformly and
-    iid.
+    """Sample from Pauli gates that stay Pauli under conjugation by an entangler uniformly and iid.
 
     For non-Clifford or parametric entanglers, this mode currently uses the subgroup of the Paulis
     that commute with the generators. For Clifford gates, this mode falls back to the Pauli group.

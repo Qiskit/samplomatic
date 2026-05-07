@@ -58,6 +58,11 @@ The SSV history is summarized in the following table:
        added dedicated distribution serialization, including the new :class:`~BalancedPauli`,
        :class:`~UniformLocalC1` and :class:`~UniformPauliSubset` classes; updated
        :class:`~TwirlSamplingNode` format.
+   * - 4
+     - 0.18.0
+     - Added :class:`~PropagateLocalPauliNode` and support for RZZ in
+       :class:`~PauliPastCliffordNode`, :class:`~PropagateLocalC1Node`, and
+       :class:`~UniformLocalC1`.
 
 Backwards compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^

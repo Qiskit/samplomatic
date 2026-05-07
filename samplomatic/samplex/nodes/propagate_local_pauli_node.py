@@ -18,18 +18,8 @@ import numpy as np
 
 from ...aliases import RegisterName, SubsystemIndex
 from ...exceptions import SamplexRuntimeError
-from ...virtual_registers import PauliRegister, VirtualType
+from ...virtual_registers import VirtualType
 from .evaluation_node import EvaluationNode
-
-RZZ_COMMUTANT_PAULIS = np.array(
-    [[0, 0], [0, 1], [1, 0], [1, 1], [2, 2], [2, 3], [3, 2], [3, 3]],
-    dtype=PauliRegister.DTYPE,
-)
-"""The 8 two-qubit Paulis that commute with ZZ for any angle.
-
-In symplectic ordering (I=0, Z=1, X=2, Y=3), these are the pairs where both
-qubits are in {I,Z} or both are in {X,Y}.
-"""
 
 _COMMUTANT_TABLES = {
     "rzz": np.array(
@@ -45,19 +35,17 @@ _COMMUTANT_TABLES = {
 
 
 class PropagateLocalPauliNode(EvaluationNode):
-    """A node that guards Pauli propagation past a gate.
+    """A node that propagates a Pauli register past a gate.
 
-    Only Paulis from the commutant of the gate generator (those that commute
+    Only Paulis from the commutant of the gate generators (those that commute
     with the gate for any angle) are allowed through. Non-commutant Paulis
     trigger a runtime error.
 
     Args:
         register_name: The name of the Pauli register to propagate.
-        subsystem_idxs: The subsystems in the register. The expected format is
-            that of a collection of subsystems of the same size, i.e., that
-            of a 2D array where the left-most axes is over subsystems and
-            the right-most axes is over qubits.
-        op_name: The name of the gate operation (e.g. ``"rzz"``).
+        subsystem_idxs: The subsystems in the register specified as a 2D array where the left-most
+            axes is over subsystems and the right-most axes is over indices in the subsystem.
+        op_name: The name of the gate operation.
     """
 
     def __init__(

@@ -47,7 +47,6 @@ from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import (
     SUPPORTED_1Q_FRACTIONAL_GATES,
-    SUPPORTED_2Q_FRACTIONAL_GATES,
     SUPPORTED_FRACTIONAL_GATES,
     Direction,
 )
@@ -282,21 +281,6 @@ class PreSamplex:
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
         self.debug = debug
-        self._commutant_twirl = False
-
-    @property
-    def commutant_twirl(self) -> bool:
-        """Whether to twirl fractional entanglers with its commutant.
-
-        A value of ``True`` will twirl a fractional gate with its commutant regardless
-        of parameter value, while ``False`` will expect error unless the angle is bound to a
-        value that results in a non-identity Clifford.
-        """
-        return self._commutant_twirl
-
-    @commutant_twirl.setter
-    def commutant_twirl(self, value: bool):
-        self._commutant_twirl = value
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
         """Remap the object to a new :class:`~.PreSamplex` object.
@@ -896,6 +880,7 @@ class PreSamplex:
         mode: InstructionMode,
         params: ParamSpec,
         trace_info: TraceInfo | None = None,
+        commutant_twirl: bool = False,
     ):
         """Add a node that propagates virtual gates through an operation.
 
@@ -907,6 +892,7 @@ class PreSamplex:
             mode: What mode to use for propagation.
             params: The parameters of the instruction.
             trace_info: Optional debug trace info to attach to the node.
+            commutant_twirl: Whether to twirl fractional gates with their commutants.
 
         Raises:
             SamplexBuildError: If the qubits of ``instr`` have partial overlap with dangling qubits
@@ -936,7 +922,6 @@ class PreSamplex:
         # recall that this is indexing out of `subsystems`, not qubits
         num_qubits = instr.num_qubits
         partition = SubsystemIndicesPartition(num_qubits, [tuple(range(num_qubits))])
-        commutant_twirl = self.commutant_twirl & (op.name in SUPPORTED_2Q_FRACTIONAL_GATES)
 
         # time ordering: (emit> | propagate>) --> new propagate>
         rightward_node_candidate = NodeCandidate(
@@ -1711,29 +1696,19 @@ class PreSamplex:
                 else:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
         else:
-            node_class = propagate_group.node_class
             if op_name in propagate_group.invariants:
-                node_class = None
-            elif op_name in SUPPORTED_2Q_FRACTIONAL_GATES:
-                if pre_propagate.commutant_twirl:
-                    node_class = PropagateLocalPauliNode
-                else:
-                    if pre_propagate.bounded_params is None or not np.allclose(
-                        np.abs(pre_propagate.bounded_params), np.pi / 2
-                    ):
-                        raise SamplexBuildError(
-                            "Non-Clifford and unbound fractional entanglers are only supported for "
-                            "Twirl with 'GroupMode LOCAL_PAULI'."
-                        )
-            propagate_node = (
-                None
-                if node_class is None
-                else node_class(
+                propagate_node = None
+            else:
+                node_class = (
+                    PropagateLocalPauliNode
+                    if pre_propagate.commutant_twirl
+                    else propagate_group.node_class
+                )
+                propagate_node = node_class(
                     op_name,
                     actual_register_name,
                     np.array(list(pre_propagate.partition), dtype=np.intp),
                 )
-            )
 
         if propagate_node is not None:
             node_idx = samplex.add_node(propagate_node)

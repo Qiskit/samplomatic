@@ -600,9 +600,9 @@ class PropagateLocalPauliNodeSerializer(TypeSerializer[PropagateLocalPauliNode])
         @classmethod
         def serialize(cls, obj, ssv):
             return {
+                "op_name": obj._op_name,  # noqa: SLF001
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
-                "op_name": obj._op_name,  # noqa: SLF001
             }
 
         @classmethod
