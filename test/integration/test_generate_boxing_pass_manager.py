@@ -183,3 +183,27 @@ def test_qiskit_pm_integration_with_trotterized_circuit(linear_target, twirling_
 
     # ensure it's buildable
     build(transpiled_circuit)
+
+
+@pytest.mark.parametrize("enable_measures", [False, True])
+def test_generate_boxing_pass_manager_buildable_rzz_circuits(enable_measures):
+    """Test that ``generate_boxing_pass_manager`` generates buildable circuit with rzzs."""
+    pm = generate_boxing_pass_manager(
+        enable_gates=True,
+        enable_measures=enable_measures,
+        twirling_group="local_pauli",
+    )
+
+    circuit = QuantumCircuit(4)
+    circuit.rzz(1, 0, 1)
+    circuit.rzz(2, 2, 3)
+    circuit.rzz(3, 1, 2)
+    circuit.measure_all()
+
+    boxed_circuit = pm.run(circuit)
+
+    # ensure it's buildable
+    _, samplex = build(boxed_circuit)
+
+    # take samples to ensure no runtime errors from non-commuting Paulis
+    samplex.sample(num_randomizations=100)

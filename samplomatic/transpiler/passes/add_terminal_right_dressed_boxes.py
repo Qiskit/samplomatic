@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -18,6 +18,8 @@ from dataclasses import dataclass
 from qiskit.circuit import BoxOp, QuantumCircuit, Qubit
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.transpiler.basepasses import TransformationPass
+
+from samplomatic.annotations.group_mode import GroupLiteral
 
 from ...annotations import ChangeBasis, Twirl
 from ...utils import get_annotation
@@ -71,17 +73,23 @@ class AddTerminalRightDressedBoxes(TransformationPass):
         All boxes added by this pass are empty, so consider combining this pass with
         :class:`AbsorbSingleQubitGates` if you would like nearby single-qubit gates to be placed
         into the boxes this pass adds.
+
+    Args:
+        group: The group to use for the box.
     """
 
-    @classmethod
-    def _new_box(cls, qubits: Iterable[Qubit], qubit_map: dict[Qubit, int]) -> BoxOp:
+    def __init__(self, group: GroupLiteral = "pauli"):
+        super().__init__()
+        self.group = group
+
+    def _new_box(self, qubits: Iterable[Qubit], qubit_map: dict[Qubit, int]) -> BoxOp:
         # we go a bit out of our way to use the same qubit instances as the original circuit and
         # also to sort them. neither of these steps is necessary, however, the former makes writing
         # tests more convenient because it makes it easier to use built-in circuit equality, and
         # the latter minimizes surprise to users.
         qubits = sorted(qubits, key=qubit_map.get)
         body = QuantumCircuit(qubits)
-        return qubits, BoxOp(body=body, annotations=[Twirl(dressing="right", group="pauli")])
+        return qubits, BoxOp(body=body, annotations=[Twirl(dressing="right", group=self.group)])
 
     @classmethod
     def _get_terminal_qubits(cls, node: DAGOpNode) -> tuple[set[Qubit], set[Qubit], set[Qubit]]:

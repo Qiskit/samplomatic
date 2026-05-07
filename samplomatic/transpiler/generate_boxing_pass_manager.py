@@ -269,7 +269,8 @@ def generate_boxing_pass_manager(
     elif twirling_strategy == "all":
         passes.append(AddNoopsAll())
 
-    passes.append(AddTerminalRightDressedBoxes())
+    terminal_group = "phase" if twirling_group == "local_pauli" else "pauli"
+    passes.append(AddTerminalRightDressedBoxes(group=terminal_group))
 
     if remove_barriers == "after_stratification":
         passes.append(RemoveBarriers())
