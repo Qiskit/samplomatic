@@ -17,6 +17,8 @@ from collections.abc import Callable, Sequence
 from qiskit.circuit import Annotation, Qubit
 from qiskit.converters import circuit_to_dag
 
+from samplomatic.constants import SUPPORTED_2Q_FRACTIONAL_GATES
+
 from ..aliases import DAGOpNode
 from ..annotations import (
     GATE_DEPENDENT_TWIRLING_GROUPS,
@@ -64,19 +66,20 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
             seen_pairs.add(pair)
             gate_names.add(node.op.name)
 
+    if emission.twirl_type == GroupMode.LOCAL_PAULI:
+        gate_names = gate_names.intersection(SUPPORTED_2Q_FRACTIONAL_GATES)
+
     if not gate_names:
         emission.twirl_type = GroupMode.PAULI
         return
 
-    if emission.twirl_type == GroupMode.LOCAL_C1:
-        if len(gate_names) > 1:
-            raise BuildError(
-                f"Cannot use local C1 twirling with multiple 2Q gate types: {gate_names}."
-            )
-        (gate,) = gate_names
-        emission.twirl_gate = gate
-    else:
-        emission.twirl_gate = "rzz"
+    if len(gate_names) > 1:
+        raise BuildError(
+            f"Cannot use {emission.twirl_type} twirling with multiple 2Q gate types: {gate_names}."
+        )
+
+    (gate,) = gate_names
+    emission.twirl_gate = gate
 
     # Gate-dependent qubits: flatten pairs preserving operand order
     gate_dependent_qubit_list = []
