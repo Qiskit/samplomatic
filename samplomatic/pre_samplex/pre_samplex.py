@@ -286,6 +286,12 @@ class PreSamplex:
 
     @property
     def commutant_twirl(self) -> bool:
+        """Whether to twirl fractional entanglers with its commutant.
+
+        A value of ``True`` will twirl a fractional gate with its commutant regardless
+        of parameter value, while ``False`` will expect error unless the angle is bound to a
+        value that results in a non-identity Clifford.
+        """
         return self._commutant_twirl
 
     @commutant_twirl.setter

@@ -23,6 +23,7 @@ LOOKUP_TABLES = {
     "rzz": np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 2], [2, 3], [3, 2], [3, 3]]),
     "phase": np.array([[0], [1]]),
 }
+"""Lookup tables for common distributions."""
 
 
 class UniformPauliSubset(Distribution):
@@ -66,6 +67,15 @@ class UniformPauliSubset(Distribution):
 
     @classmethod
     def from_name(cls, num_subsystems: int, name: str) -> "UniformPauliSubset":
+        """Return a new instance from a specific distribution name.
+
+        Args:
+            num_subsystems: The number of subsystems this distribution samples.
+            name: The distribution name to use.
+
+        Returns:
+            The new distribution.
+        """
         return cls(num_subsystems, LOOKUP_TABLES[name])
 
     @property
