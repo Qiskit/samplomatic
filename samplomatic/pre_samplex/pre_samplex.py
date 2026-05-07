@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from functools import lru_cache
 from itertools import count
-from typing import TYPE_CHECKING, Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple, cast
 
 import numpy as np
 from qiskit.circuit import ClassicalRegister, Qubit
@@ -46,7 +46,7 @@ from ..aliases import (
 from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, SUPPORTED_FRACTIONAL_GATES, Direction
-from ..distributions import GROUP_TO_DISTRIBUTION
+from ..distributions import GROUP_TO_DISTRIBUTION, UniformPauliSubset
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
@@ -85,6 +85,7 @@ from ..samplex.nodes.propagate_local_c1_node import (
     LOCAL_C1_PROPAGATE_LOOKUP_TABLES,
     PropagateLocalC1Node,
 )
+from ..samplex.nodes.propagate_parametric_rzz_node import PropagateParametricRzzNode
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
@@ -276,6 +277,15 @@ class PreSamplex:
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
         self.debug = debug
+        self._rzz_strategy = "pauli"
+
+    @property
+    def rzz_strategy(self) -> Literal["pauli", "commutant"]:
+        return self._rzz_strategy
+
+    @rzz_strategy.setter
+    def rzz_strategy(self, value: Literal["pauli", "commutant"]):
+        self._rzz_strategy = value
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
         """Remap the object to a new :class:`~.PreSamplex` object.
@@ -915,12 +925,20 @@ class PreSamplex:
         # recall that this is indexing out of `subsystems`, not qubits
         num_qubits = instr.num_qubits
         partition = SubsystemIndicesPartition(num_qubits, [tuple(range(num_qubits))])
+        rzz_strategy = self.rzz_strategy if op.name == "rzz" else None
 
         # time ordering: (emit> | propagate>) --> new propagate>
         rightward_node_candidate = NodeCandidate(
             self.graph,
             PrePropagate(
-                subsystems, Direction.RIGHT, op, partition, mode, params, trace_info=trace_info
+                subsystems,
+                Direction.RIGHT,
+                op,
+                partition,
+                mode,
+                params,
+                rzz_strategy=rzz_strategy,
+                trace_info=trace_info,
             ),
         )
         match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
@@ -944,7 +962,14 @@ class PreSamplex:
         leftward_node_candidate = NodeCandidate(
             self.graph,
             PrePropagate(
-                subsystems, Direction.LEFT, op, partition, mode, params, trace_info=trace_info
+                subsystems,
+                Direction.LEFT,
+                op,
+                partition,
+                mode,
+                params,
+                rzz_strategy=rzz_strategy,
+                trace_info=trace_info,
             ),
         )
         all_found_qubit_idxs = set()
@@ -990,6 +1015,7 @@ class PreSamplex:
                     *(node.subsystems for node in nodes)
                 )
                 num_elements = nodes[0].partition.num_elements_per_part
+                rzz_strategy = nodes[0].rzz_strategy
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
                     num_elements,
@@ -1029,6 +1055,7 @@ class PreSamplex:
                             nodes[0].mode,  # all nodes have same spec
                             params=[],
                             bounded_params=params,
+                            rzz_strategy=rzz_strategy,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1047,6 +1074,7 @@ class PreSamplex:
                             combined_partition,
                             mode=nodes[0].mode,
                             params=params,
+                            rzz_strategy=rzz_strategy,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1071,6 +1099,7 @@ class PreSamplex:
                     operation_name=node.operation.name,
                     direction=node.direction,
                     is_parameterized=node.operation.is_parameterized(),
+                    rzz_strategy=node.rzz_strategy,
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -1476,7 +1505,11 @@ class PreSamplex:
         pre_emit = cast(PreEmit, self.graph[pre_emit_idx])
         reg_idx = order[pre_emit_idx]
 
-        if pre_emit.twirl_gate is not None:
+        if pre_emit.register_type is GroupMode.PARAMETRIC_RZZ:
+            from ..samplex.nodes.propagate_parametric_rzz_node import RZZ_COMMUTANT_PAULIS
+
+            distribution = UniformPauliSubset(len(pre_emit.subsystems), RZZ_COMMUTANT_PAULIS)
+        elif pre_emit.twirl_gate is not None:
             distribution = GROUP_TO_DISTRIBUTION[pre_emit.register_type](
                 len(pre_emit.subsystems), pre_emit.twirl_gate
             )
@@ -1671,13 +1704,27 @@ class PreSamplex:
                 else:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
         else:
-            if op_name == "rzz":
-                if pre_propagate.operation.is_parameterized() or not np.allclose(
-                    np.abs(pre_propagate.bounded_params), np.pi / 2
-                ):
-                    raise SamplexBuildError("Non-Clifford angles for RZZ are not supported.")
             if op_name in propagate_group.invariants:
                 propagate_node = None
+            elif op_name == "rzz":
+                if pre_propagate.rzz_strategy == "commutant":
+                    propagate_node = PropagateParametricRzzNode(
+                        actual_register_name,
+                        np.array(list(pre_propagate.partition), dtype=np.intp),
+                    )
+                else:
+                    if pre_propagate.bounded_params is None or not np.allclose(
+                        np.abs(pre_propagate.bounded_params), np.pi / 2
+                    ):
+                        raise SamplexBuildError(
+                            "Non-Clifford and unbound angles are only supported for Twirl with "
+                            "GroupMode PARAMETRIC_RZZ."
+                        )
+                    propagate_node = propagate_group.node_class(
+                        op_name,
+                        actual_register_name,
+                        np.array(list(pre_propagate.partition), dtype=np.intp),
+                    )
             else:
                 propagate_node = propagate_group.node_class(
                     op_name,

@@ -33,7 +33,7 @@ class TestGeneralBuildErrors:
             circuit.rzz(param, 0, 1)
             circuit.measure_all()
 
-        with pytest.raises(SamplexBuildError, match="Non-Clifford angles"):
+        with pytest.raises(SamplexBuildError, match="Non-Clifford and unbound angles"):
             build(circuit)
 
     def test_no_propagation_through_conditional_error(self):

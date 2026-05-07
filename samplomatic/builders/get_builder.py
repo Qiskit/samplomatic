@@ -40,10 +40,9 @@ from .specs import CollectionSpec, EmissionSpec
 def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     """Classify qubits in a gate-dependent twirl box into entangling and fallback qubits.
 
-    Inspects the box body DAG for 2Q gates and splits qubits accordingly.
+    Inspects the box body DAG for two-qubit gates and splits qubits accordingly.
     Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_twirl_qubits``,
-    and ``twirl_gate``. If no 2Q gates are found, downgrades
-    ``twirl_type`` to PAULI.
+    and ``twirl_gate``. If no two-qubit gates are found, sets``twirl_type`` to PAULI.
 
     Raises:
         BuildError: If the same qubit pair has duplicate 2Q gates.
@@ -69,15 +68,17 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
         emission.twirl_type = GroupMode.PAULI
         return
 
-    if len(gate_names) > 1:
-        raise BuildError(
-            f"Cannot use gate-dependent twirling with multiple 2Q gate types: {gate_names}."
-        )
+    if emission.twirl_type == GroupMode.LOCAL_C1:
+        if len(gate_names) > 1:
+            raise BuildError(
+                f"Cannot use local C1 twirling with multiple 2Q gate types: {gate_names}."
+            )
+        (gate,) = gate_names
+        emission.twirl_gate = gate
+    else:
+        emission.twirl_gate = "rzz"
 
-    (gate,) = gate_names
-    emission.twirl_gate = gate
-
-    # C1 qubits: flatten pairs preserving operand order
+    # Gate-dependent qubits: flatten pairs preserving operand order
     gate_dependent_qubit_list = []
     seen_qubits = set()
     for pair in seen_pairs:
@@ -85,6 +86,11 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
             if q not in seen_qubits:
                 seen_qubits.add(q)
                 gate_dependent_qubit_list.append((q,))
+
+    if not gate_dependent_qubit_list:
+        emission.twirl_type = GroupMode.PAULI
+        return
+
     emission.gate_dependent_twirl_qubits = QubitPartition(1, gate_dependent_qubit_list)
 
     # Pauli qubits: remainder

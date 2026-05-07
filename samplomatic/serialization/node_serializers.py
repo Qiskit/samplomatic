@@ -28,6 +28,7 @@ from ..samplex.nodes import (
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
     PropagateLocalC1Node,
+    PropagateParametricRzzNode,
     RightMultiplicationNode,
     RightU2ParametricMultiplicationNode,
     SliceRegisterNode,
@@ -345,8 +346,13 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if (op_name := obj._op_name) == "rzz" and ssv < 4:  # noqa: SLF001
+                raise SerializationError(
+                    f"Encountered a PauliPastCliffordNode with operation rzz and SSV {ssv}, but "
+                    "require SSV at least 4."
+                )
             return {
-                "op_name": obj._op_name,  # noqa: SLF001
+                "op_name": op_name,
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
             }
@@ -533,8 +539,13 @@ class PropagateLocalC1NodeSerializer(TypeSerializer[PropagateLocalC1Node]):
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if (op_name := obj._op_name) == "rzz" and ssv < 4:  # noqa: SLF001
+                raise SerializationError(
+                    f"Encountered a PropagateLocalC1Node with operation rzz and SSV {ssv}, but "
+                    "require SSV at least 4."
+                )
             return {
-                "op_name": obj._op_name,  # noqa: SLF001
+                "op_name": op_name,
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
             }
@@ -574,4 +585,28 @@ class DistributionSamplingNodeSerializer(TypeSerializer[DistributionSamplingNode
             return DistributionSamplingNode(
                 data["register_name"],
                 TypeSerializer.deserialize(orjson.loads(data["distribution"])),
+            )
+
+
+class PropagateParametricRzzNodeSerializer(TypeSerializer[PropagateParametricRzzNode]):
+    """Serializer for :class:`~.PropagateParametricRzzNode`."""
+
+    TYPE_ID = "N15"
+    TYPE = PropagateParametricRzzNode
+
+    class SSV3(DataSerializer[PropagateParametricRzzNode]):
+        MIN_SSV = 4
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            return {
+                "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
+                "register_name": obj._register_name,  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return PropagateParametricRzzNode(
+                data["register_name"],
+                array_from_json(data["subsystem_idxs"]),
             )

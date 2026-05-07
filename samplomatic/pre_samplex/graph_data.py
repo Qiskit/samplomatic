@@ -13,7 +13,7 @@
 """Graph Data"""
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 from qiskit.circuit.gate import Gate
@@ -160,7 +160,7 @@ class PreEmit(PreNode):
     """The type and distribution of virtual gates to emit."""
 
     twirl_gate: str | None = field(default=None, kw_only=True)
-    """The gate name used for ``UniformLocalC1`` sampling, or ``None``."""
+    """The gate name used for gate-dependent sampling, or ``None``."""
 
     def get_style(self):
         style = (
@@ -215,6 +215,9 @@ class PrePropagate(PreNode):
     automatically extracted from the operation.
     """
 
+    rzz_strategy: Literal["pauli", "commutant"] | None = None
+    """If the operation is RZZ, whether to twirl with the commutant or not."""
+
     def __post_init__(self):
         # Current construction assumes one parameter per gate.
         if (
@@ -268,6 +271,9 @@ class PrePropagateKey:
     is_parameterized: bool
     """Whether or not the operation is parameterized."""
 
+    rzz_strategy: Literal["pauli", "commutant"] | None = None
+    """If the operation is RZZ, whether to twirl with the commutant or not."""
+
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, PrePropagateKey)
@@ -275,10 +281,19 @@ class PrePropagateKey:
             and self.operation_name == other.operation_name
             and self.direction == other.direction
             and self.is_parameterized == other.is_parameterized
+            and self.rzz_strategy == other.rzz_strategy
         )
 
     def __hash__(self):
-        return hash((self.mode, self.operation_name, self.direction, self.is_parameterized))
+        return hash(
+            (
+                self.mode,
+                self.operation_name,
+                self.direction,
+                self.is_parameterized,
+                self.rzz_strategy,
+            )
+        )
 
 
 @dataclass

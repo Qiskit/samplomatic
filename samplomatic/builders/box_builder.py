@@ -47,6 +47,12 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
         self.emission = emission
         self.measured_qubits = QubitPartition(1, [])
 
+    def set_samplex_state(self, samplex_state):
+        samplex_state.rzz_strategy = (
+            "commutant" if self.emission.twirl_type is GroupMode.PARAMETRIC_RZZ else "pauli"
+        )
+        return super().set_samplex_state(samplex_state)
+
     @property
     def _trace_info(self) -> TraceInfo | None:
         """Return a TraceInfo from this box's emission, or None if debug is off or no refs."""
@@ -98,12 +104,13 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
     def _emit_twirl(self, twirl_type: GroupMode):
         trace_info = self._trace_info
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
-            self.samplex_state.add_emit_twirl(
-                self.emission.gate_dependent_twirl_qubits,
-                twirl_type,
-                self.emission.twirl_gate,
-                trace_info=trace_info,
-            )
+            if len(self.emission.gate_dependent_twirl_qubits):
+                self.samplex_state.add_emit_twirl(
+                    self.emission.gate_dependent_twirl_qubits,
+                    twirl_type,
+                    self.emission.twirl_gate,
+                    trace_info=trace_info,
+                )
             if len(self.emission.fallback_twirl_qubits):
                 self.samplex_state.add_emit_twirl(
                     self.emission.fallback_twirl_qubits,
@@ -214,8 +221,9 @@ class LeftBoxBuilder(BoxBuilder):
         if twirl_type := self.emission.twirl_type:
             self._emit_twirl(twirl_type)
             if len(self.measured_qubits) != 0:
-                if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS or (
-                    GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+                if twirl_type is GroupMode.LOCAL_C1 or (
+                    twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
+                    and GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
                     != VirtualType.PAULI
                 ):
                     raise BuildError(

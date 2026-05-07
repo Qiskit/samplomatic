@@ -67,10 +67,11 @@ class UniformPauliSubset(Distribution):
         return self._paulis
 
     def sample(self, size, rng):
-        slices = rng.integers(
-            0, len(self.paulis), self.num_subsystems // self.paulis.shape[1] * size
-        )
-        return PauliRegister(self.paulis[slices].reshape(self.num_subsystems, size))
+        pauli_width = self.paulis.shape[1]
+        num_groups = self.num_subsystems // pauli_width
+        slices = rng.integers(0, len(self.paulis), num_groups * size)
+        raw = self.paulis[slices].reshape(num_groups, size, pauli_width)
+        return PauliRegister(raw.transpose(0, 2, 1).reshape(self.num_subsystems, size))
 
     def __eq__(self, other):
         return (

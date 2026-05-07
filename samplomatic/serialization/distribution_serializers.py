@@ -20,6 +20,7 @@ from ..distributions import (
     UniformPauli,
     UniformPauliSubset,
 )
+from ..exceptions import SerializationError
 from ..utils.serialization import array_from_json, array_to_json
 from .type_serializer import DataSerializer, TypeSerializer
 
@@ -107,6 +108,11 @@ class UniformLocalC1Serializer(TypeSerializer[UniformLocalC1]):
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if ssv < 4 and obj.gate_name == "rzz":
+                raise SerializationError(
+                    f"Encountered a UniformLocalC1 distribution with operation rzz and SSV {ssv}, "
+                    "but require SSV at least 4."
+                )
             return {"num_subsystems": obj.num_subsystems, "gate_name": obj.gate_name}
 
         @classmethod
