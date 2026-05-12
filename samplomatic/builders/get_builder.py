@@ -90,10 +90,6 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
                 seen_qubits.add(q)
                 gate_dependent_qubit_list.append((q,))
 
-    if not gate_dependent_qubit_list:
-        emission.twirl_type = GroupMode.PAULI
-        return
-
     emission.gate_dependent_twirl_qubits = QubitPartition(1, gate_dependent_qubit_list)
 
     # Pauli qubits: remainder

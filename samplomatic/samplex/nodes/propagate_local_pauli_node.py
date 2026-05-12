@@ -77,7 +77,7 @@ class PropagateLocalPauliNode(EvaluationNode):
 
         if np.any(paulis_out < 0):
             raise SamplexRuntimeError(
-                f"Pauli values are not in the commutant of {self._op_name!r} after propagation."
+                f"Pauli values not in the commutant of {self._op_name!r} cannot be propagated."
             )
 
         reg.virtual_gates[subsys] = np.transpose(paulis_out, (0, 2, 1))

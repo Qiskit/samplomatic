@@ -23,7 +23,7 @@ from .uniform_local_c1 import UniformLocalC1
 from .uniform_pauli import UniformPauli
 from .uniform_pauli_subset import UniformPauliSubset
 
-GROUP_TO_DISTRIBUTION: dict[_GroupMode, Callable[[], Distribution]] = _FrozenDict(
+GROUP_TO_DISTRIBUTION: dict[_GroupMode, Callable[[int], Distribution]] = _FrozenDict(
     {
         _GroupMode.PAULI: UniformPauli,
         _GroupMode.BALANCED: BalancedUniformPauli,
