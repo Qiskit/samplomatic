@@ -634,7 +634,7 @@ class PropagateLocalPauliNodeSerializer(TypeSerializer[PropagateLocalPauliNode])
     TYPE_ID = "N15"
     TYPE = PropagateLocalPauliNode
 
-    class SSV3(DataSerializer[PropagateLocalPauliNode]):
+    class SSV4(DataSerializer[PropagateLocalPauliNode]):
         MIN_SSV = 4
 
         @classmethod
