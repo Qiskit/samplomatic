@@ -21,7 +21,7 @@ from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic import Twirl
 from samplomatic.builders import build, pre_build
-from samplomatic.exceptions import BuildError, SamplexBuildError
+from samplomatic.exceptions import BuildError
 
 
 class TestGeneralBuildErrors:
@@ -33,7 +33,7 @@ class TestGeneralBuildErrors:
             circuit.rzz(param, 0, 1)
             circuit.measure_all()
 
-        with pytest.raises(SamplexBuildError, match="Non-Clifford angles"):
+        with pytest.raises(BuildError, match="Non-Clifford and unbound fractional"):
             build(circuit)
 
     def test_no_propagation_through_conditional_error(self):

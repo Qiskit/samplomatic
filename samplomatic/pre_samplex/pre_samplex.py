@@ -45,7 +45,11 @@ from ..aliases import (
 )
 from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
-from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, SUPPORTED_FRACTIONAL_GATES, Direction
+from ..constants import (
+    SUPPORTED_1Q_FRACTIONAL_GATES,
+    SUPPORTED_FRACTIONAL_GATES,
+    Direction,
+)
 from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -85,6 +89,7 @@ from ..samplex.nodes.propagate_local_c1_node import (
     LOCAL_C1_PROPAGATE_LOOKUP_TABLES,
     PropagateLocalC1Node,
 )
+from ..samplex.nodes.propagate_local_pauli_node import PropagateLocalPauliNode
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
@@ -875,6 +880,7 @@ class PreSamplex:
         mode: InstructionMode,
         params: ParamSpec,
         trace_info: TraceInfo | None = None,
+        commutant_twirl: bool = False,
     ):
         """Add a node that propagates virtual gates through an operation.
 
@@ -886,6 +892,7 @@ class PreSamplex:
             mode: What mode to use for propagation.
             params: The parameters of the instruction.
             trace_info: Optional debug trace info to attach to the node.
+            commutant_twirl: Whether to twirl fractional gates with their commutants.
 
         Raises:
             SamplexBuildError: If the qubits of ``instr`` have partial overlap with dangling qubits
@@ -920,7 +927,14 @@ class PreSamplex:
         rightward_node_candidate = NodeCandidate(
             self.graph,
             PrePropagate(
-                subsystems, Direction.RIGHT, op, partition, mode, params, trace_info=trace_info
+                subsystems,
+                Direction.RIGHT,
+                op,
+                partition,
+                mode,
+                params,
+                commutant_twirl=commutant_twirl,
+                trace_info=trace_info,
             ),
         )
         match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
@@ -944,7 +958,14 @@ class PreSamplex:
         leftward_node_candidate = NodeCandidate(
             self.graph,
             PrePropagate(
-                subsystems, Direction.LEFT, op, partition, mode, params, trace_info=trace_info
+                subsystems,
+                Direction.LEFT,
+                op,
+                partition,
+                mode,
+                params,
+                commutant_twirl=commutant_twirl,
+                trace_info=trace_info,
             ),
         )
         all_found_qubit_idxs = set()
@@ -990,6 +1011,7 @@ class PreSamplex:
                     *(node.subsystems for node in nodes)
                 )
                 num_elements = nodes[0].partition.num_elements_per_part
+                commutant_twirl = nodes[0].commutant_twirl
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
                     num_elements,
@@ -1029,6 +1051,7 @@ class PreSamplex:
                             nodes[0].mode,  # all nodes have same spec
                             params=[],
                             bounded_params=params,
+                            commutant_twirl=commutant_twirl,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1047,6 +1070,7 @@ class PreSamplex:
                             combined_partition,
                             mode=nodes[0].mode,
                             params=params,
+                            commutant_twirl=commutant_twirl,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1071,6 +1095,7 @@ class PreSamplex:
                     operation_name=node.operation.name,
                     direction=node.direction,
                     is_parameterized=node.operation.is_parameterized(),
+                    commutant_twirl=node.commutant_twirl,
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -1671,15 +1696,15 @@ class PreSamplex:
                 else:
                     propagate_node = LeftMultiplicationNode(register, actual_register_name)
         else:
-            if op_name == "rzz":
-                if pre_propagate.operation.is_parameterized() or not np.allclose(
-                    np.abs(pre_propagate.bounded_params), np.pi / 2
-                ):
-                    raise SamplexBuildError("Non-Clifford angles for RZZ are not supported.")
             if op_name in propagate_group.invariants:
                 propagate_node = None
             else:
-                propagate_node = propagate_group.node_class(
+                node_class = (
+                    PropagateLocalPauliNode
+                    if pre_propagate.commutant_twirl
+                    else propagate_group.node_class
+                )
+                propagate_node = node_class(
                     op_name,
                     actual_register_name,
                     np.array(list(pre_propagate.partition), dtype=np.intp),

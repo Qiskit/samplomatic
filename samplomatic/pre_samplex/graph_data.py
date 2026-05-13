@@ -160,7 +160,7 @@ class PreEmit(PreNode):
     """The type and distribution of virtual gates to emit."""
 
     twirl_gate: str | None = field(default=None, kw_only=True)
-    """The gate name used for ``UniformLocalC1`` sampling, or ``None``."""
+    """The gate name used for gate-dependent sampling, or ``None``."""
 
     def get_style(self):
         style = (
@@ -213,6 +213,14 @@ class PrePropagate(PreNode):
 
     If the node involves a relevant operation with a single subsystem, the parameter is
     automatically extracted from the operation.
+    """
+
+    commutant_twirl: bool = False
+    """Whether this operation should be twirled with its commutant.
+
+    If the operation is not a fractional gate, this value will be ``False``. If it is a
+    fractional gate, ``True`` signals that it should be twirled by its commutant, while
+    ``False`` signals that its angle has been bound to a Clifford.
     """
 
     def __post_init__(self):
@@ -268,6 +276,9 @@ class PrePropagateKey:
     is_parameterized: bool
     """Whether or not the operation is parameterized."""
 
+    commutant_twirl: bool = False
+    """Whether this operation should be twirled with its commutant."""
+
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, PrePropagateKey)
@@ -275,10 +286,19 @@ class PrePropagateKey:
             and self.operation_name == other.operation_name
             and self.direction == other.direction
             and self.is_parameterized == other.is_parameterized
+            and self.commutant_twirl == other.commutant_twirl
         )
 
     def __hash__(self):
-        return hash((self.mode, self.operation_name, self.direction, self.is_parameterized))
+        return hash(
+            (
+                self.mode,
+                self.operation_name,
+                self.direction,
+                self.is_parameterized,
+                self.commutant_twirl,
+            )
+        )
 
 
 @dataclass

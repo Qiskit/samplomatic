@@ -17,6 +17,8 @@ from typing import TypeAlias
 import numpy as np
 from qiskit.circuit import Barrier
 
+from samplomatic.constants import SUPPORTED_2Q_FRACTIONAL_GATES
+
 from ..aliases import DAGOpNode, ParamIndices
 from ..annotations import GATE_DEPENDENT_TWIRLING_GROUPS, GroupMode, InjectionSite
 from ..distributions import GROUP_TO_DISTRIBUTION
@@ -98,12 +100,13 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
     def _emit_twirl(self, twirl_type: GroupMode):
         trace_info = self._trace_info
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
-            self.samplex_state.add_emit_twirl(
-                self.emission.gate_dependent_twirl_qubits,
-                twirl_type,
-                self.emission.twirl_gate,
-                trace_info=trace_info,
-            )
+            if len(self.emission.gate_dependent_twirl_qubits):
+                self.samplex_state.add_emit_twirl(
+                    self.emission.gate_dependent_twirl_qubits,
+                    twirl_type,
+                    self.emission.twirl_gate,
+                    trace_info=trace_info,
+                )
             if len(self.emission.fallback_twirl_qubits):
                 self.samplex_state.add_emit_twirl(
                     self.emission.fallback_twirl_qubits,
@@ -114,6 +117,21 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             self.samplex_state.add_emit_twirl(
                 self.emission.qubits, twirl_type, trace_info=trace_info
             )
+
+    def _validate_fractional_gate(self, instr: DAGOpNode):
+        if instr.op.name not in SUPPORTED_2Q_FRACTIONAL_GATES:
+            return False
+
+        if self.emission.twirl_type == GroupMode.LOCAL_PAULI:
+            return True
+
+        if instr.op.is_parameterized() or not np.allclose(np.abs(instr.op.params), np.pi / 2):
+            raise BuildError(
+                "Non-Clifford and unbound fractional entanglers are only supported for "
+                "Twirl with 'GroupMode LOCAL_PAULI'."
+            )
+
+        return False
 
 
 class LeftBoxBuilder(BoxBuilder):
@@ -164,6 +182,7 @@ class LeftBoxBuilder(BoxBuilder):
             )
             return
 
+        commutant_twirl = False
         if (num_qubits := instr.num_qubits) == 1:
             if self.measured_qubits.overlaps_with(instr.qargs):
                 raise BuildError(
@@ -183,11 +202,18 @@ class LeftBoxBuilder(BoxBuilder):
                     f"Cannot handle instruction {name} to the right of a measurement in a "
                     "left-dressed box."
                 )
+            commutant_twirl = commutant_twirl | self._validate_fractional_gate(instr)
             params = self.template_state.append_remapped_gate(instr)
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, self._mode, params, trace_info=self._trace_info)
+        self.samplex_state.add_propagate(
+            instr,
+            self._mode,
+            params,
+            trace_info=self._trace_info,
+            commutant_twirl=commutant_twirl,
+        )
 
     def lhs(self):
         self._append_barrier("L")
@@ -214,8 +240,9 @@ class LeftBoxBuilder(BoxBuilder):
         if twirl_type := self.emission.twirl_type:
             self._emit_twirl(twirl_type)
             if len(self.measured_qubits) != 0:
-                if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS or (
-                    GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+                if twirl_type is GroupMode.LOCAL_C1 or (
+                    twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
+                    and GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
                     != VirtualType.PAULI
                 ):
                     raise BuildError(
@@ -279,6 +306,7 @@ class RightBoxBuilder(BoxBuilder):
             self.template_state.append_remapped_gate(instr)
             return
 
+        commutant_twirl = False
         if name.startswith("meas"):
             raise BuildError("Measurements are not currently supported in right-dressed boxes.")
 
@@ -292,11 +320,18 @@ class RightBoxBuilder(BoxBuilder):
                     params.extend((None, param) for param in instr.op.params)
 
         elif num_qubits > 1:
+            commutant_twirl = commutant_twirl | self._validate_fractional_gate(instr)
             params = self.template_state.append_remapped_gate(instr)
         else:
             raise BuildError(f"Instruction {instr} could not be parsed.")
 
-        self.samplex_state.add_propagate(instr, self._mode, params, trace_info=self._trace_info)
+        self.samplex_state.add_propagate(
+            instr,
+            self._mode,
+            params,
+            trace_info=self._trace_info,
+            commutant_twirl=commutant_twirl,
+        )
 
     def lhs(self):
         self._append_barrier("L")
