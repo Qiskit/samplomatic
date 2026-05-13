@@ -11,6 +11,7 @@ PrePropagate
    .. autosummary::
 
       ~PrePropagate.bounded_params
+      ~PrePropagate.commutant_twirl
       ~PrePropagate.direction
       ~PrePropagate.mode
       ~PrePropagate.operation
@@ -28,6 +29,7 @@ PrePropagate
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: bounded_params
+   .. autoattribute:: commutant_twirl
    .. autoattribute:: direction
    .. autoattribute:: mode
    .. autoattribute:: operation

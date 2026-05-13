@@ -10,6 +10,7 @@ PrePropagateKey
 
    .. autosummary::
 
+      ~PrePropagateKey.commutant_twirl
       ~PrePropagateKey.direction
       ~PrePropagateKey.is_parameterized
       ~PrePropagateKey.mode
@@ -17,6 +18,7 @@ PrePropagateKey
 
    .. rubric:: Attributes Documentation
 
+   .. autoattribute:: commutant_twirl
    .. autoattribute:: direction
    .. autoattribute:: is_parameterized
    .. autoattribute:: mode

@@ -305,6 +305,7 @@
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.Node.html">Node</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.PauliPastCliffordNode.html">PauliPastCliffordNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.PropagateLocalC1Node.html">PropagateLocalC1Node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.PropagateLocalPauliNode.html">PropagateLocalPauliNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.RightMultiplicationNode.html">RightMultiplicationNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.RightU2ParametricMultiplicationNode.html">RightU2ParametricMultiplicationNode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="samplomatic.samplex.nodes.SamplingNode.html">SamplingNode</a></li>
@@ -495,7 +496,7 @@
 <h1>UniformPauliSubset<a class="headerlink" href="#uniformpaulisubset" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.distributions.UniformPauliSubset">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.distributions.</span></span><span class="sig-name descname"><span class="pre">UniformPauliSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">paulis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_pauli_subset.py#L21-L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformPauliSubset" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.distributions.</span></span><span class="sig-name descname"><span class="pre">UniformPauliSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">paulis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_pauli_subset.py#L29-L102"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformPauliSubset" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="samplomatic.distributions.Distribution.html#samplomatic.distributions.Distribution" title="samplomatic.distributions.distribution.Distribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distribution</span></code></a></p>
 <p>The uniform distribution over a subset of virtual Pauli gates.</p>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">paulis</span></code> is an array with elements corresponding to Paulis as enumerated in
@@ -541,7 +542,10 @@ contiguously such that each part samples independently from <code class="docutil
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.sample" title="samplomatic.distributions.UniformPauliSubset.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(size, rng)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.from_name" title="samplomatic.distributions.UniformPauliSubset.from_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_name</span></code></a>(num_subsystems, name)</p></td>
+<td><p>Return a new instance from a specific distribution name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.sample" title="samplomatic.distributions.UniformPauliSubset.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(size, rng)</p></td>
 <td><p>Sample the distribution.</p></td>
 </tr>
 </tbody>
@@ -561,8 +565,25 @@ contiguously such that each part samples independently from <code class="docutil
 
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.distributions.UniformPauliSubset.from_name">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset" title="samplomatic.distributions.uniform_pauli_subset.UniformPauliSubset"><span class="pre">UniformPauliSubset</span></a></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_pauli_subset.py#L68-L79"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformPauliSubset.from_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new instance from a specific distribution name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_subsystems</strong> – The number of subsystems this distribution samples.</p></li>
+<li><p><strong>name</strong> – The distribution name to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new distribution.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.distributions.UniformPauliSubset.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_pauli_subset.py#L69-L73"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformPauliSubset.sample" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/distributions/uniform_pauli_subset.py#L90-L95"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.distributions.UniformPauliSubset.sample" title="Link to this definition">¶</a></dt>
 <dd><p>Sample the distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -616,7 +637,7 @@ contiguously such that each part samples independently from <code class="docutil
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/05/07</div>
+              Last updated on 2026/05/13</div>
           </div>
           <div class="right-details">
             
@@ -641,6 +662,7 @@ contiguously such that each part samples independently from <code class="docutil
 <li><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset"><code class="docutils literal notranslate"><span class="pre">UniformPauliSubset</span></code></a><ul>
 <li><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.paulis"><code class="docutils literal notranslate"><span class="pre">UniformPauliSubset.paulis</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.register_type"><code class="docutils literal notranslate"><span class="pre">UniformPauliSubset.register_type</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.from_name"><code class="docutils literal notranslate"><span class="pre">UniformPauliSubset.from_name()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.distributions.UniformPauliSubset.sample"><code class="docutils literal notranslate"><span class="pre">UniformPauliSubset.sample()</span></code></a></li>
 </ul>
 </li>

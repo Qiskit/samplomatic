@@ -17,6 +17,7 @@ UniformPauliSubset
 
    .. autosummary::
 
+      ~UniformPauliSubset.from_name
       ~UniformPauliSubset.sample
 
    .. rubric:: Attributes Documentation
@@ -26,4 +27,5 @@ UniformPauliSubset
 
    .. rubric:: Methods Documentation
 
+   .. automethod:: from_name
    .. automethod:: sample
