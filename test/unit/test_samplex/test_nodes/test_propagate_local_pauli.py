@@ -35,7 +35,7 @@ def test_invalid_input_errors():
     node = PropagateLocalPauliNode("rzz", "my_reg", [(0, 1)])
     reg = PauliRegister(np.array([[2], [0]], dtype=np.uint8))
 
-    with pytest.raises(SamplexRuntimeError, match="Pauli values are not in the commutant of"):
+    with pytest.raises(SamplexRuntimeError, match="Pauli values not in the commutant of"):
         node.evaluate({"my_reg": reg}, np.empty(()))
 
 
