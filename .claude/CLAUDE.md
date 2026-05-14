@@ -60,7 +60,7 @@ The core pipeline is: **annotated circuit** → `build()` → **(template circui
 - **Ruff rules**: pydocstyle (D), pycodestyle (E), pyflakes (F), isort (I), private-member-access (SLF), pyupgrade (UP)
 - All files require Apache 2.0 license headers (enforced by pre-commit)
 - When modifying a file, update its copyright year to the current calendar year (e.g. `(C) Copyright IBM 2025, 2026.`)
-- Python 3.10+ (use `X | Y` union syntax, etc.)
+- Python 3.10+ (use `X | Y` union syntax, etc.); do **not** use `from __future__ import annotations` — use string literals for the rare forward-reference case instead
 - **Import removal hazard**: The pre-commit hook runs `ruff --fix`, which auto-removes unused imports (rule F401). When adding new imports, always add the corresponding usage in the same edit to avoid the import being stripped at commit time. If you need to add imports incrementally, use a `# noqa: F401` comment and remove it once the usage is in place.
 
 ## Testing

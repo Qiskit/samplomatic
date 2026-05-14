@@ -62,7 +62,8 @@ The SSV history is summarized in the following table:
      - 0.18.0
      - Added :class:`~PropagateLocalPauliNode` and support for RZZ in
        :class:`~PauliPastCliffordNode`, :class:`~PropagateLocalC1Node`, and
-       :class:`~UniformLocalC1`.
+       :class:`~UniformLocalC1`; added lookup table store infrastructure to the
+       serialization header.
 
 Backwards compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^
