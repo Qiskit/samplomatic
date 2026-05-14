@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+import numpy as np
 import orjson
 import pytest
 
@@ -38,6 +39,8 @@ from samplomatic.samplex.nodes.change_basis_node import (
     MEAS_PAULI_BASIS,
     PREP_PAULI_BASIS,
 )
+from samplomatic.samplex.nodes.pauli_past_clifford_node import PAULI_PAST_CLIFFORD_LOOKUP_TABLES
+from samplomatic.samplex.nodes.propagate_local_pauli_node import _COMMUTANT_TABLES
 from samplomatic.serialization.basis_change_serializers import BasisChangeSerializer
 from samplomatic.serialization.node_serializers import (
     ChangeBasisNodeSerializer,
@@ -59,6 +62,7 @@ from samplomatic.serialization.node_serializers import (
 )
 from samplomatic.serialization.type_serializer import TypeSerializer
 from samplomatic.synths import RzSxSynth
+from samplomatic.tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
 from samplomatic.virtual_registers import VirtualType
 
 
@@ -152,7 +156,7 @@ def test_right_multiplication_serializer_round_trip(ssv, rng):
 
 
 @pytest.mark.parametrize("ssv", PauliPastCliffordNodeSerializer.SSVS)
-def test_pauli_past_clifford_serializer_round_trip(ssv):
+def test_pauli_past_clifford_serializer_round_trip(ssv, lookup_table_store):
     node = PauliPastCliffordNode("cx", "my_reg", [(0, 1), (4, 2)])
     data = PauliPastCliffordNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
@@ -206,7 +210,7 @@ def test_right_u2_multiplication_serializer_round_trip(ssv):
 
 
 @pytest.mark.parametrize("ssv", PropagateLocalC1NodeSerializer.SSVS)
-def test_c1_past_clifford_serializer_round_trip(ssv):
+def test_c1_past_clifford_serializer_round_trip(ssv, lookup_table_store):
     node = PropagateLocalC1Node("cx", "my_reg", [(0, 1), (4, 2)])
     data = PropagateLocalC1NodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
@@ -235,8 +239,30 @@ def test_multiplication_node_ssv(node_type, serializer, rng):
 
 
 @pytest.mark.parametrize("ssv", PropagateLocalPauliNodeSerializer.SSVS)
-def test_propagate_local_pauli_serializer_round_trip(ssv):
+def test_propagate_local_pauli_serializer_round_trip(ssv, lookup_table_store):
     node = PropagateLocalPauliNode("rzz", "my_reg", [(0, 1), (4, 2)])
     data = PropagateLocalPauliNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
+
+
+def test_pauli_past_clifford_registers_lookup_table_in_store(lookup_table_store):
+    node = PauliPastCliffordNode("cx", "my_reg", [(0, 1)])
+    PauliPastCliffordNodeSerializer.serialize(node, 4)
+    assert np.array_equal(
+        lookup_table_store.lookup("N8:cx"), PAULI_PAST_CLIFFORD_LOOKUP_TABLES["cx"]
+    )
+
+
+def test_propagate_local_c1_registers_lookup_table_in_store(lookup_table_store):
+    node = PropagateLocalC1Node("cx", "my_reg", [(0, 1)])
+    PropagateLocalC1NodeSerializer.serialize(node, 4)
+    assert np.array_equal(
+        lookup_table_store.lookup("N13:cx"), LOCAL_C1_PROPAGATE_LOOKUP_TABLES["cx"]
+    )
+
+
+def test_propagate_local_pauli_registers_lookup_table_in_store(lookup_table_store):
+    node = PropagateLocalPauliNode("rzz", "my_reg", [(0, 1)])
+    PropagateLocalPauliNodeSerializer.serialize(node, 4)
+    assert np.array_equal(lookup_table_store.lookup("N15:rzz"), _COMMUTANT_TABLES["rzz"])
