@@ -89,12 +89,12 @@ def test_json_round_trip(arr):
     assert result.shape == arr.shape
 
 
-def test_json_round_trip_intp_dtype_preserved():
+def test_json_round_trip_intp_serialized_as_int64():
     arr = np.array([0, 1, 2], dtype=np.intp)
     store = LookupTableStore()
     store.register("N7", "idx", arr)
     restored = LookupTableStore.from_json(store.to_json())
-    assert restored.lookup("N7:idx").dtype == np.dtype(np.intp)
+    assert restored.lookup("N7:idx").dtype == np.dtype(np.int64)
 
 
 def test_json_round_trip_empty():

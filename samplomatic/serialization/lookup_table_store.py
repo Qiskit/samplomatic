@@ -87,8 +87,6 @@ class LookupTableStore:
     def from_json(cls, data: str) -> "LookupTableStore":
         """Deserialize a store from a JSON string.
 
-        Arrays stored as ``int64`` are restored to ``np.intp`` dtype.
-
         Args:
             data: A JSON string produced by :meth:`to_json`.
 
@@ -97,11 +95,7 @@ class LookupTableStore:
         """
         store = cls()
         for key, array_json in orjson.loads(data).items():
-            array = array_from_json(array_json)
-            # Restore int64 back to np.intp
-            if array.dtype == np.dtype(np.int64):
-                array = array.astype(np.intp)
-            store._store[key] = array  # noqa: SLF001
+            store._store[key] = array_from_json(array_json)  # noqa: SLF001
         return store
 
 
