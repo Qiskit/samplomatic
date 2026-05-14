@@ -53,16 +53,21 @@ class PropagateLocalPauliNode(EvaluationNode):
         op_name: str,
         register_name: RegisterName,
         subsystem_idxs: Sequence[Sequence[SubsystemIndex]],
+        *,
+        lookup_table: np.ndarray | None = None,
     ):
-        if op_name not in _COMMUTANT_TABLES:
-            raise ValueError(
-                f"Unsupported operation {op_name!r}. "
-                f"Supported operations: {sorted(_COMMUTANT_TABLES)}."
-            )
+        if lookup_table is not None:
+            self._table = lookup_table
+        else:
+            if op_name not in _COMMUTANT_TABLES:
+                raise ValueError(
+                    f"Unsupported operation {op_name!r}. "
+                    f"Supported operations: {sorted(_COMMUTANT_TABLES)}."
+                )
+            self._table = _COMMUTANT_TABLES[op_name]
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
         self._register_name = register_name
         self._op_name = op_name
-        self._table = _COMMUTANT_TABLES[op_name]
 
     @property
     def outgoing_register_type(self) -> VirtualType:

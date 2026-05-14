@@ -38,6 +38,7 @@ from ..samplex.nodes.combine_registers_node import CombineType
 from ..synths import RzRxSynth, RzSxSynth
 from ..virtual_registers import VirtualType
 from .basis_change_serializers import BasisChangeSerializer
+from .lookup_table_store import get_lookup_table_store
 from .type_serializer import DataSerializer, TypeSerializer
 from .utils import array_from_json, array_to_json, slice_from_json, slice_to_json
 
@@ -371,6 +372,7 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
 
         @classmethod
         def serialize(cls, obj, ssv):
+            get_lookup_table_store().register("N8", obj._op_name, obj._lookup_table)  # noqa: SLF001
             return {
                 "op_name": obj._op_name,  # noqa: SLF001
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
@@ -379,10 +381,12 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
 
         @classmethod
         def deserialize(cls, data):
+            op_name = data["op_name"]
             return PauliPastCliffordNode(
-                data["op_name"],
+                op_name,
                 data["register_name"],
                 array_from_json(data["subsystem_idxs"]),
+                lookup_table=get_lookup_table_store().lookup(f"N8:{op_name}"),
             )
 
 
@@ -584,6 +588,7 @@ class PropagateLocalC1NodeSerializer(TypeSerializer[PropagateLocalC1Node]):
 
         @classmethod
         def serialize(cls, obj, ssv):
+            get_lookup_table_store().register("N13", obj._op_name, obj._lookup_table)  # noqa: SLF001
             return {
                 "op_name": obj._op_name,  # noqa: SLF001
                 "subsystem_idxs": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
@@ -592,10 +597,12 @@ class PropagateLocalC1NodeSerializer(TypeSerializer[PropagateLocalC1Node]):
 
         @classmethod
         def deserialize(cls, data):
+            op_name = data["op_name"]
             return PropagateLocalC1Node(
-                data["op_name"],
+                op_name,
                 data["register_name"],
                 array_from_json(data["subsystem_idxs"]),
+                lookup_table=get_lookup_table_store().lookup(f"N13:{op_name}"),
             )
 
 
@@ -639,6 +646,7 @@ class PropagateLocalPauliNodeSerializer(TypeSerializer[PropagateLocalPauliNode])
 
         @classmethod
         def serialize(cls, obj, ssv):
+            get_lookup_table_store().register("N15", obj._op_name, obj._table)  # noqa: SLF001
             return {
                 "op_name": obj._op_name,  # noqa: SLF001
                 "register_name": obj._register_name,  # noqa: SLF001
@@ -647,8 +655,10 @@ class PropagateLocalPauliNodeSerializer(TypeSerializer[PropagateLocalPauliNode])
 
         @classmethod
         def deserialize(cls, data):
+            op_name = data["op_name"]
             return PropagateLocalPauliNode(
-                data["op_name"],
+                op_name,
                 data["register_name"],
                 array_from_json(data["subsystem_idxs"]),
+                lookup_table=get_lookup_table_store().lookup(f"N15:{op_name}"),
             )

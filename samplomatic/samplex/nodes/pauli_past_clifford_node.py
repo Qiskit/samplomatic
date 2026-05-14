@@ -90,12 +90,17 @@ class PauliPastCliffordNode(EvaluationNode):
         op_name: OperationName,
         register_name: RegisterName,
         subsystem_idxs: Sequence[Sequence[SubsystemIndex]],
+        *,
+        lookup_table: np.ndarray | None = None,
     ):
-        try:
-            self._lookup_table = PAULI_PAST_CLIFFORD_LOOKUP_TABLES[op_name]
-        except KeyError:
-            supported_gates = list(PAULI_PAST_CLIFFORD_LOOKUP_TABLES)
-            raise SamplexBuildError(f"Expected one of {supported_gates}, found {op_name}.")
+        if lookup_table is not None:
+            self._lookup_table = lookup_table
+        else:
+            try:
+                self._lookup_table = PAULI_PAST_CLIFFORD_LOOKUP_TABLES[op_name]
+            except KeyError:
+                supported_gates = list(PAULI_PAST_CLIFFORD_LOOKUP_TABLES)
+                raise SamplexBuildError(f"Expected one of {supported_gates}, found {op_name}.")
 
         self._op_name = op_name
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
