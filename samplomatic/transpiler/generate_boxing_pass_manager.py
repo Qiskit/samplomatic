@@ -12,6 +12,7 @@
 
 """generate_boxing_pass_manager"""
 
+from collections.abc import Iterable, Sequence  # noqa: F401
 from typing import Literal
 
 from qiskit.transpiler import PassManager
@@ -26,6 +27,7 @@ from .passes import (
     AddTerminalRightDressedBoxes,
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
+    InsertLayerBarriers,
 )
 from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 
@@ -68,6 +70,7 @@ def generate_boxing_pass_manager(
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
     add_tags: Literal["none", "unique_box", "unique_instance", "noise_ref"] = "none",
+    infer_layers: "bool | Sequence[Iterable[tuple[int, int]]]" = False,
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -234,6 +237,17 @@ def generate_boxing_pass_manager(
               skipped (no :class:`~.Tag` is added). Typically used together with a non-``'none'``
               ``inject_noise_targets`` value.
 
+        infer_layers: Whether to insert helper barriers at inferred 2Q layer boundaries
+            using :class:`~.InsertLayerBarriers` before grouping. The supported values are:
+
+            * ``False`` (default) to disable layer inference entirely.
+            * ``True`` to infer the layer templates from any barrier-separated regions of
+              the input circuit.
+            * A sequence of layer templates (each a collection of qubit-index pairs
+              ``(q0, q1)``) to use as explicit layer types. Useful when the input circuit
+              has had its barriers removed by the transpiler so that the layer pattern
+              cannot be recovered by inference alone.
+
     Returns:
         A pass manager that groups operations into boxes.
 
@@ -249,6 +263,10 @@ def generate_boxing_pass_manager(
     passes = []
     if remove_barriers == "immediately":
         passes.append(RemoveBarriers())
+
+    if infer_layers is not False:
+        templates = None if infer_layers is True else infer_layers
+        passes.append(InsertLayerBarriers(layer_templates=templates))
 
     if enable_gates:
         passes.append(
