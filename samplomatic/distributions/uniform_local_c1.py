@@ -32,17 +32,23 @@ class UniformLocalC1(Distribution):
             :data:`~.LOCAL_C1_PROPAGATE_LOOKUP_TABLES`.
     """
 
-    def __init__(self, num_subsystems: int, gate_name: str):
+    def __init__(
+        self, num_subsystems: int, gate_name: str, *, lookup_table: np.ndarray | None = None
+    ):
         super().__init__(num_subsystems)
         if num_subsystems % 2:
             raise ValueError(f"num_subsystems must be even, got {num_subsystems}.")
 
-        if gate_name not in LOCAL_C1_PROPAGATE_LOOKUP_TABLES:
-            raise ValueError(
-                f"Unknown gate {gate_name!r}. Expected one of "
-                f"{list(LOCAL_C1_PROPAGATE_LOOKUP_TABLES)}."
-            )
-        table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[gate_name]
+        if lookup_table is not None:
+            table = lookup_table
+        else:
+            if gate_name not in LOCAL_C1_PROPAGATE_LOOKUP_TABLES:
+                raise ValueError(
+                    f"Unknown gate {gate_name!r}. Expected one of "
+                    f"{list(LOCAL_C1_PROPAGATE_LOOKUP_TABLES)}."
+                )
+            table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[gate_name]
+
         if table.ndim != 3:
             raise ValueError(f"Gate {gate_name!r} is not a two-qubit gate.")
 
