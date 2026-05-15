@@ -1131,13 +1131,23 @@ class PreSamplex:
            :class:`~.Direction.RIGHT` edges, and
          * the :class:`~.Direction.LEFT` edges connected to twirl emissions before other emissions,
             * the twirl emissions sorted according to reverse ``order``,
-            * the others according to ``order``,
-         * while the :class:`~.Direction.RIGHT` place twirl emissions after other emissions, both
-           individually sorted according to ``order``.
+            * among the others, :class:`~.PrePropagate` nodes before other non-twirl nodes,
+              each group sorted according to ``order``,
+         * while the :class:`~.Direction.RIGHT` place twirl emissions after other emissions, with
+           :class:`~.PrePropagate` nodes before other non-twirl nodes among the latter, both
+           groups individually sorted according to ``order``.
 
         This order scheme is designed so that it corresponds to circuit-temporal precedence of
         predecessors. For example, a pre-collector will have inbound edges marked both left and
         right. We need to know in which order to multiply them together. This method is that order.
+
+        The :class:`~.PrePropagate`-vs-other-non-twirl tie-breaker is required because
+        :meth:`merge_parallel_pre_propagate_nodes` re-creates the merged node via
+        :func:`~.replace_nodes_with_one_node`, which assigns a fresh (high) graph index. The
+        topological sort then places the merged node late, which would otherwise reverse the
+        relative order of :class:`~.PrePropagate` and emit-style non-twirl predecessors (e.g.
+        :class:`~.PreChangeBasis`), silently breaking the operand order of the downstream
+        :class:`~.CombineRegistersNode`.
 
         Args:
             pre_node_idx: The pre-node to get the predecessors of.
@@ -1149,13 +1159,17 @@ class PreSamplex:
         """
         edge_sort_keys = {}
         for pred_idx in self.graph.predecessor_indices(pre_node_idx):
+            pred_node = self.graph.get_node_data(pred_idx)
             direction = self.graph.get_edge_data(pred_idx, pre_node_idx).direction
-            from_twirl = type(self.graph.get_node_data(pred_idx)) is PreEmit
+            from_twirl = type(pred_node) is PreEmit
+            # Among non-twirl predecessors, PrePropagate must sort before emit-style nodes
+            # (PreChangeBasis, PreInjectNoise) regardless of topological position.
+            type_priority = 0 if isinstance(pred_node, PrePropagate) else 1
             pred_order = order[pred_idx]
             if direction is Direction.LEFT:
                 pred_order = -pred_order if from_twirl else pred_order
                 from_twirl = not from_twirl
-            edge_sort_keys[pred_idx] = (direction, from_twirl, pred_order)
+            edge_sort_keys[pred_idx] = (direction, from_twirl, type_priority, pred_order)
 
         return sorted(edge_sort_keys.keys(), key=lambda x: edge_sort_keys[x])
 
