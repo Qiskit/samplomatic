@@ -232,7 +232,7 @@ class ConversionNodeSerializer(TypeSerializer[ConversionNode]):
                 "existing_type": obj.existing_type.value,
                 "new_name": obj.new_name,
                 "new_type": obj.new_type.value,
-                "num_subsystems": obj.num_subsystems,
+                "num_subsystems": str(obj.num_subsystems),
                 "remove_existing": str(obj.remove_existing),
             }
 

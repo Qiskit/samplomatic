@@ -65,6 +65,8 @@ from ..samplex.nodes import (
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
+    ConversionNode,
+    DistributionSamplingNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
@@ -103,6 +105,7 @@ from .graph_data import (
     PreEdge,
     PreEmit,
     PreInjectNoise,
+    PreMeasurePropagate,
     PreNode,
     PrePropagate,
     PrePropagateKey,
@@ -510,7 +513,9 @@ class PreSamplex:
             )
 
         # collect any nodes that need collecting and unmark them as dangling
-        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
+        match = DanglerMatch(
+            node_types=(PreEmit, PrePropagate, PreMeasurePropagate), direction=Direction.RIGHT
+        )
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             if self.graph.has_edge(found_idx, node_idx):
                 # The force_register_copy stays the same and doesn't need update.
@@ -620,12 +625,66 @@ class PreSamplex:
 
         return node_idx
 
+    def add_measure_propagate(
+        self,
+        instr: DAGOpNode,
+        clbit_idx: ClbitIndex,
+        creg_name: str,
+        creg_offset: int,
+        trace_info: TraceInfo | None = None,
+    ) -> int | None:
+        """Add a node that propagates virtual Paulis through a measurement.
+
+        This creates a :class:`~.PreMeasurePropagate` node that, during lowering, produces
+        both a Z2 measurement flip output and a continued Pauli register with preserved X
+        component and randomized Z component.
+
+        Args:
+            instr: The measurement instruction.
+            clbit_idx: The global classical bit index.
+            creg_name: The classical register name.
+            creg_offset: The index within the classical register.
+            trace_info: Optional debug trace info to attach to the node.
+
+        Returns:
+            The index of the new node, or None if no rightward danglers were found.
+        """
+        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
+
+        if clbit_idx in self._twirled_clbits:
+            raise SamplexBuildError(
+                "Cannot twirl more than one measurement on the same classical bit"
+            )
+
+        match = DanglerMatch(
+            node_types=(PreEmit, PrePropagate, PreMeasurePropagate), direction=Direction.RIGHT
+        )
+        found_predecessors = list(self.find_then_remove_danglers(match, subsystems))
+
+        if not found_predecessors:
+            return None
+
+        node = PreMeasurePropagate(subsystems, creg_name, creg_offset, trace_info=trace_info)
+        node_idx = self.graph.add_node(node)
+
+        for pred_idx, pred_subsystems in found_predecessors:
+            edge = PreEdge(
+                pred_subsystems, Direction.RIGHT, pred_idx in self._forced_copy_node_idxs
+            )
+            self.graph.add_edge(pred_idx, node_idx, edge)
+
+        self._twirled_clbits.add(clbit_idx)
+        self.add_dangler(subsystems.all_elements, node_idx, DanglerType.OPTIONAL)
+
+        return node_idx
+
     def add_emit_twirl(
         self,
         qubits: QubitPartition,
         register_type: GroupMode,
         twirl_gate: str | None = None,
         trace_info: TraceInfo | None = None,
+        skip_leftward: bool = False,
     ) -> NodeIndex:
         """Add a node that emits virtual gates left and right of the same type.
 
@@ -634,6 +693,9 @@ class PreSamplex:
             register_type: The type of virtual gate to emit.
             twirl_gate: The 2Q gate name for ``UniformLocalC1`` sampling, or ``None``.
             trace_info: Optional debug trace info to attach to the node.
+            skip_leftward: If True, skip leftward edge creation. Use
+                :meth:`connect_emit_leftward` later to complete the leftward connection
+                once hard gates have created their leftward propagation chain.
 
         Raises:
             SamplexBuildError: When `qubits` has overlap with a hanging emit node with a different
@@ -654,10 +716,36 @@ class PreSamplex:
             )
         )
 
-        # find collectors (or propagators leading to collectors) for right-to-left emission and
-        # connect this emission there. we do NOT want to remove them as dangling because they
-        # might need to be used again for future emissions, for example, a Pauli twirl followed by
-        # a noise injection.
+        if not skip_leftward:
+            self._connect_emit_leftward(node_idx, subsystems)
+
+        # mark the new node as dangling
+        self.add_dangler(subsystems.all_elements, node_idx)
+
+        return node_idx
+
+    def connect_emit_leftward(self, node_idx: NodeIndex):
+        """Connect an existing emit node's leftward component to current leftward danglers.
+
+        This completes the deferred leftward connection for a node created with
+        ``skip_leftward=True``. Call after hard gates have created their leftward
+        propagation chain.
+
+        Args:
+            node_idx: The index of the PreEmit node to connect.
+
+        Raises:
+            SamplexBuildError: If no leftward collector is found for any subsystem.
+        """
+        subsystems = self.graph[node_idx].subsystems
+        self._connect_emit_leftward(node_idx, subsystems)
+
+    def _connect_emit_leftward(self, node_idx: NodeIndex, subsystems: QubitIndicesPartition):
+        """Connect an emit node leftward to collectors/propagators.
+
+        We do NOT remove them as dangling because they might need to be used again for
+        future emissions, for example, a Pauli twirl followed by a noise injection.
+        """
         match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
 
         aggregate_found_subsystems = set()
@@ -674,11 +762,6 @@ class PreSamplex:
             raise SamplexBuildError(
                 f"Found an emission without a collector on subsystems {without_collector}."
             )
-
-        # mark the new node as dangling
-        self.add_dangler(subsystems.all_elements, node_idx)
-
-        return node_idx
 
     def _add_emit_left(self, node: PreEmit):
         """Add a pre-emit with `Direction.LEFT`.
@@ -909,7 +992,6 @@ class PreSamplex:
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
 
         if op.name.startswith("meas"):
-            self.enforce_no_propagation(instr)
             return
 
         # Track passthrough parameters (even if no node is created)
@@ -937,8 +1019,10 @@ class PreSamplex:
                 trace_info=trace_info,
             ),
         )
-        match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
         all_found_qubit_idxs = set()
+        match = DanglerMatch(
+            node_types=(PreEmit, PrePropagate, PreMeasurePropagate), direction=Direction.RIGHT
+        )
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             all_found_qubit_idxs.update(found_subsystems.all_elements)
             edge = PreEdge(
@@ -1270,6 +1354,14 @@ class PreSamplex:
                 )
             elif isinstance(pre_node, PreZ2Collect):
                 self.add_collect_z2_to_output_node(
+                    samplex,
+                    pre_node_idx,
+                    pre_nodes_to_nodes,
+                    order,
+                    register_names,
+                )
+            elif isinstance(pre_node, PreMeasurePropagate):
+                self.add_measure_propagate_nodes(
                     samplex,
                     pre_node_idx,
                     pre_nodes_to_nodes,
@@ -1804,6 +1896,118 @@ class PreSamplex:
             )
 
             samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
+
+    def add_measure_propagate_nodes(
+        self,
+        samplex: Samplex,
+        pre_node_idx: NodeIndex,
+        pre_nodes_to_nodes: dict[NodeIndex, NodeIndex],
+        order: dict[NodeIndex, int],
+        register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
+    ):
+        """Lower a :class:`~.PreMeasurePropagate` node to samplex nodes.
+
+        Creates two parallel paths from the incoming Pauli register:
+        - Fork A: Pauli→Z2 conversion then CollectZ2ToOutputNode (measurement flip)
+        - Fork B: Pauli→Z2→Pauli conversion + phase sampling + combination (continued Pauli)
+
+        Args:
+            samplex: The samplex to add nodes to.
+            pre_node_idx: The index of the PreMeasurePropagate node.
+            pre_nodes_to_nodes: A map from pre-node indices to node indices.
+            order: A map from pre-node indices to topological order.
+            register_names: A map for register name tracking between nodes.
+        """
+        from ..distributions import UniformPauliSubset
+
+        pre_node = cast(PreMeasurePropagate, self.graph[pre_node_idx])
+        reg_idx = order[pre_node_idx]
+        num_subsystems = len(pre_node.subsystems)
+
+        # Combine incoming registers into a single Pauli register
+        combined_name = f"meas_prop_{reg_idx}"
+        combine_node_idx, actual_register_name = self.add_combine_node(
+            samplex,
+            pre_node_idx,
+            pre_nodes_to_nodes,
+            order,
+            register_names,
+            combined_name,
+            VirtualType.PAULI,
+        )
+
+        # Fork A: Pauli → Z2 → CollectZ2ToOutput (measurement flip)
+        z2_name_a = f"meas_prop_z2a_{reg_idx}"
+        pauli_to_z2_a = ConversionNode(
+            existing_name=actual_register_name,
+            existing_type=VirtualType.PAULI,
+            new_name=z2_name_a,
+            new_type=VirtualType.Z2,
+            num_subsystems=num_subsystems,
+            remove_existing=False,
+        )
+        p2z_a_idx = samplex.add_node(pauli_to_z2_a)
+        samplex.add_edge(combine_node_idx, p2z_a_idx)
+
+        z2_collect = CollectZ2ToOutputNode(
+            z2_name_a,
+            np.arange(num_subsystems, dtype=np.uint32),
+            f"measurement_flips.{pre_node.creg_name}",
+            [pre_node.creg_offset],
+        )
+        samplex.add_edge(p2z_a_idx, samplex.add_node(z2_collect))
+
+        # Fork B: Pauli → Z2 → Pauli (X-only) + phase sampling → combined output
+        z2_name_b = f"meas_prop_z2b_{reg_idx}"
+        pauli_to_z2_b = ConversionNode(
+            existing_name=actual_register_name,
+            existing_type=VirtualType.PAULI,
+            new_name=z2_name_b,
+            new_type=VirtualType.Z2,
+            num_subsystems=num_subsystems,
+            remove_existing=True,
+        )
+        p2z_b_idx = samplex.add_node(pauli_to_z2_b)
+        samplex.add_edge(p2z_a_idx, p2z_b_idx)
+
+        x_only_name = f"meas_prop_x_{reg_idx}"
+        z2_to_pauli = ConversionNode(
+            existing_name=z2_name_b,
+            existing_type=VirtualType.Z2,
+            new_name=x_only_name,
+            new_type=VirtualType.PAULI,
+            num_subsystems=num_subsystems,
+            remove_existing=True,
+        )
+        z2p_idx = samplex.add_node(z2_to_pauli)
+        samplex.add_edge(p2z_b_idx, z2p_idx)
+
+        # Sample random phase (I or Z)
+        phase_name = f"meas_prop_phase_{reg_idx}"
+        phase_dist = UniformPauliSubset.from_name(num_subsystems, "phase")
+        phase_sampler = DistributionSamplingNode(phase_name, phase_dist)
+        phase_idx = samplex.add_node(phase_sampler)
+
+        # Combine X-only Pauli with random phase
+        output_name = f"meas_prop_out_{reg_idx}"
+        idxs = list(range(num_subsystems))
+        combine_output = CombineRegistersNode(
+            output_type=VirtualType.PAULI,
+            output_register_name=output_name,
+            num_output_subsystems=num_subsystems,
+            operands={
+                x_only_name: (idxs, idxs, VirtualType.PAULI),
+                phase_name: (idxs, idxs, VirtualType.PAULI),
+            },
+        )
+        combine_out_idx = samplex.add_node(combine_output)
+        samplex.add_edge(z2p_idx, combine_out_idx)
+        samplex.add_edge(phase_idx, combine_out_idx)
+
+        # Register output for successors
+        pre_nodes_to_nodes[pre_node_idx] = combine_out_idx
+        for pre_successor_idx in self.graph.successor_indices(pre_node_idx):
+            register_names[pre_successor_idx][pre_node_idx] = output_name
 
     def subgraphs(self) -> list[PyDiGraph[PreNode, PreEdge]]:
         """Return a list of disconnected components."""

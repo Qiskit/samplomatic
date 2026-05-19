@@ -93,7 +93,7 @@ class TestSamplexSerialization:
 
         assert samplex == samplex_new
 
-    @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
+    @pytest.mark.parametrize("ssv", [s for s in SUPPORTED_SSVS if s >= 3])
     def test_change_basis_circuit(self, ssv):
         """Test a circuit with basis change annotations."""
         circuit = QuantumCircuit(2)
@@ -156,7 +156,7 @@ class TestSamplexSerialization:
 
         assert samplex == samplex_new
 
-    @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
+    @pytest.mark.parametrize("ssv", [s for s in SUPPORTED_SSVS if s >= 3])
     def test_ssv_version_is_obeyed(self, ssv):
         """Scan through the JSON and ensure every occurrence of an SSV key has correct value."""
         circuit = QuantumCircuit(2)

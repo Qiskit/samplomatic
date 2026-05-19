@@ -205,25 +205,17 @@ class TestBuildPreSamplex:
         with pytest.raises(SamplexBuildError, match="overlaps partially with .* collectors.* left"):
             pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
 
-    def test_error_right_propagate_through_measurement(self):
-        """Test that propagation through measurement to the right raises an error"""
+    def test_propagate_through_measurement_is_noop(self):
+        """Test that add_propagate on a measurement is a no-op."""
         qreg = QuantumRegister(1)
 
         pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
         pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
-        with pytest.raises(SamplexBuildError, match="Cannot propagate through measure instruction"):
-            pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
-
-    def test_error_left_propagate_through_measurement(self):
-        """Test that propagation through measurement to the left raises an error"""
-        qreg = QuantumRegister(1)
-
-        pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
-        pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
         pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
-        with pytest.raises(SamplexBuildError, match="Found an emission without a collector"):
-            pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
+
+        assert len(pre_samplex.graph.nodes()) == 2
+        assert len(pre_samplex.graph.edges()) == 1
 
     def test_add_propagate_measurement(self):
         """Test that add_propagate on a measurement works when no virtual gate is met."""

@@ -153,6 +153,47 @@ class PreZ2Collect(PreNode):
 
 
 @dataclass
+class PreMeasurePropagate(PreNode):
+    """Propagation through a measurement: extracts X for Z2 flip, randomizes Z for continued Pauli.
+
+    During lowering, this node produces both:
+    - A Z2 output (measurement flip from the X component)
+    - A continued Pauli register (X preserved, Z randomized via phase distribution)
+    """
+
+    creg_name: str
+    """The classical register name this measurement writes to."""
+
+    creg_offset: int
+    """The index within the classical register."""
+
+    direction: Direction = field(init=False)
+
+    def __post_init__(self):
+        self.direction = Direction.RIGHT
+
+    def get_style(self) -> NodeStyle:
+        style = (
+            super()
+            .get_style()
+            .append_data("Direction", self.direction.name)
+            .append_data("Classical Register", f"{self.creg_name}[{self.creg_offset}]")
+        )
+        style.marker = "diamond"
+        style.color = "green"
+        style.size = 30
+        return style
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            isinstance(other, PreMeasurePropagate)
+            and self.subsystems == other.subsystems
+            and self.creg_name == other.creg_name
+            and self.creg_offset == other.creg_offset
+        )
+
+
+@dataclass
 class PreEmit(PreNode):
     """The emission node type used during samplex building."""
 

@@ -45,7 +45,9 @@ class TestGeneralBuildErrors:
         with circuit.if_test((circuit.clbits[0], 1)):
             circuit.x(1)
 
-        with pytest.raises(BuildError, match="Cannot propagate through if_else instruction."):
+        with pytest.raises(
+            BuildError, match="Cannot use twirled classical bits in classical conditions"
+        ):
             pre_build(circuit)
 
     def test_bad_order_right_box(self):

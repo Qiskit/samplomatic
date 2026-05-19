@@ -97,26 +97,39 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             Barrier(len(all_qubits), label), all_qubits
         )
 
-    def _emit_twirl(self, twirl_type: GroupMode):
+    def _emit_twirl(self, twirl_type: GroupMode, skip_leftward: bool = False) -> list[int]:
         trace_info = self._trace_info
+        node_idxs = []
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
             if len(self.emission.gate_dependent_twirl_qubits):
-                self.samplex_state.add_emit_twirl(
-                    self.emission.gate_dependent_twirl_qubits,
-                    twirl_type,
-                    self.emission.twirl_gate,
-                    trace_info=trace_info,
+                node_idxs.append(
+                    self.samplex_state.add_emit_twirl(
+                        self.emission.gate_dependent_twirl_qubits,
+                        twirl_type,
+                        self.emission.twirl_gate,
+                        trace_info=trace_info,
+                        skip_leftward=skip_leftward,
+                    )
                 )
             if len(self.emission.fallback_twirl_qubits):
-                self.samplex_state.add_emit_twirl(
-                    self.emission.fallback_twirl_qubits,
-                    GroupMode.PAULI,
-                    trace_info=trace_info,
+                node_idxs.append(
+                    self.samplex_state.add_emit_twirl(
+                        self.emission.fallback_twirl_qubits,
+                        GroupMode.PAULI,
+                        trace_info=trace_info,
+                        skip_leftward=skip_leftward,
+                    )
                 )
         else:
-            self.samplex_state.add_emit_twirl(
-                self.emission.qubits, twirl_type, trace_info=trace_info
+            node_idxs.append(
+                self.samplex_state.add_emit_twirl(
+                    self.emission.qubits,
+                    twirl_type,
+                    trace_info=trace_info,
+                    skip_leftward=skip_leftward,
+                )
             )
+        return node_idxs
 
     def _validate_fractional_gate(self, instr: DAGOpNode):
         if instr.op.name not in SUPPORTED_2Q_FRACTIONAL_GATES:
@@ -133,6 +146,27 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
 
         return False
 
+    def _resolve_clbit(self, clbit_idx: int) -> tuple[str, int]:
+        """Resolve a global clbit index to (classical register name, offset within register)."""
+        val = 0
+        for reg in self.samplex_state._cregs:  # noqa: SLF001
+            if clbit_idx < val + len(reg):
+                return reg.name, clbit_idx - val
+            val += len(reg)
+        raise BuildError(f"Could not resolve clbit index {clbit_idx} to a classical register.")
+
+    def _validate_twirl_supports_measurement(self):
+        """Validate that the current twirl type is compatible with measurements."""
+        twirl_type = self.emission.twirl_type
+        if not twirl_type:
+            return
+        if twirl_type is GroupMode.LOCAL_C1 or (
+            twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
+            and GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+            != VirtualType.PAULI
+        ):
+            raise BuildError(f"Cannot use {twirl_type.value} twirl in a box with measurements.")
+
 
 class LeftBoxBuilder(BoxBuilder):
     """Box builder for left dressings."""
@@ -141,8 +175,8 @@ class LeftBoxBuilder(BoxBuilder):
         super().__init__(collection=collection, emission=emission)
 
         self.measured_qubits = QubitPartition(1, [])
-        self.clbit_idxs = []
         self._mode = InstructionMode.MULTIPLY
+        self._deferred_emit_idxs: list[int] = []
 
     def parse(self, instr):
         if instr is None:
@@ -172,6 +206,7 @@ class LeftBoxBuilder(BoxBuilder):
             return
 
         if name.startswith("meas"):
+            self._validate_twirl_supports_measurement()
             for qubit in instr.qargs:
                 if (qubit,) not in self.measured_qubits:
                     self.measured_qubits.add((qubit,))
@@ -180,18 +215,16 @@ class LeftBoxBuilder(BoxBuilder):
                         "Cannot measure the same qubit more than once in a dressed box."
                     )
             self.template_state.append_remapped_gate(instr)
-            self.clbit_idxs.extend(
-                [self.template_state.template.find_bit(clbit)[0] for clbit in instr.cargs]
-            )
+            for clbit in instr.cargs:
+                clbit_idx = self.template_state.template.find_bit(clbit)[0]
+                creg_name, creg_offset = self._resolve_clbit(clbit_idx)
+                self.samplex_state.add_measure_propagate(
+                    instr, clbit_idx, creg_name, creg_offset, trace_info=self._trace_info
+                )
             return
 
         commutant_twirl = False
         if (num_qubits := instr.num_qubits) == 1:
-            if self.measured_qubits.overlaps_with(instr.qargs):
-                raise BuildError(
-                    "Cannot handle single-qubit gate to the right of a measurement in a "
-                    "left-dressed box. "
-                )
             if self._mode is InstructionMode.PROPAGATE:
                 params = self.template_state.append_remapped_gate(instr)
             else:
@@ -200,11 +233,6 @@ class LeftBoxBuilder(BoxBuilder):
                     params.extend((None, param) for param in instr.op.params)
 
         elif num_qubits > 1:
-            if self.measured_qubits.overlaps_with(instr.qargs):
-                raise BuildError(
-                    f"Cannot handle instruction {name} to the right of a measurement in a "
-                    "left-dressed box."
-                )
             commutant_twirl = commutant_twirl | self._validate_fractional_gate(instr)
             params = self.template_state.append_remapped_gate(instr)
         else:
@@ -278,7 +306,6 @@ class RightBoxBuilder(BoxBuilder):
         super().__init__(collection=collection, emission=emission)
 
         self.measured_qubits = QubitPartition(1, [])
-        self.clbit_idxs = []
         self._mode = InstructionMode.PROPAGATE
 
     def parse(self, instr):
@@ -307,7 +334,22 @@ class RightBoxBuilder(BoxBuilder):
 
         commutant_twirl = False
         if name.startswith("meas"):
-            raise BuildError("Measurements are not currently supported in right-dressed boxes.")
+            self._validate_twirl_supports_measurement()
+            for qubit in instr.qargs:
+                if (qubit,) not in self.measured_qubits:
+                    self.measured_qubits.add((qubit,))
+                else:
+                    raise BuildError(
+                        "Cannot measure the same qubit more than once in a dressed box."
+                    )
+            self.template_state.append_remapped_gate(instr)
+            for clbit in instr.cargs:
+                clbit_idx = self.template_state.template.find_bit(clbit)[0]
+                creg_name, creg_offset = self._resolve_clbit(clbit_idx)
+                self.samplex_state.add_measure_propagate(
+                    instr, clbit_idx, creg_name, creg_offset, trace_info=self._trace_info
+                )
+            return
 
         elif (num_qubits := instr.num_qubits) == 1:
             # the action of this single-qubit gate will be absorbed into the dressing

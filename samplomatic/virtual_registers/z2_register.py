@@ -33,7 +33,7 @@ class Z2Register(GroupRegister):
     GATE_SHAPE = ()
     SUBSYSTEM_SIZE = 1
     DTYPE = np.uint8
-    CONVERTABLE_TYPES = frozenset({VirtualType.Z2})
+    CONVERTABLE_TYPES = frozenset({VirtualType.Z2, VirtualType.PAULI})
 
     def __init__(self, virtual_gates):
         super().__init__(virtual_gates)
@@ -42,6 +42,13 @@ class Z2Register(GroupRegister):
     @classmethod
     def identity(cls, num_subsystems, num_samples):
         return cls(np.zeros((num_subsystems, num_samples), dtype=np.uint8))
+
+    def convert_to(self, register_type):
+        if register_type is VirtualType.PAULI:
+            from .pauli_register import PauliRegister
+
+            return PauliRegister(np.left_shift(self._array, 1))
+        return super().convert_to(register_type)
 
     def multiply(self, other, subsystem_idxs: list[SubsystemIndex] | slice = slice(None)):
         try:
