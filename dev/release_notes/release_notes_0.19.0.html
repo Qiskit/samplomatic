@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.11.0 - 2025-10-28" href="release_notes_0.11.0.html" /><link rel="prev" title="0.13.0 - 2025-11-06" href="release_notes_0.13.0.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="0.18.0 - 2026-04-09" href="release_notes_0.18.0.html" /><link rel="prev" title="Release Notes" href="index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>0.12.0 - 2025-11-03 - samplomatic 0.1.dev1</title>
+        <title>0.19.0 - 2026-05-19 - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -389,7 +389,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Release Notes</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="release_notes_0.19.0.html">Release notes for 0.19.0</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.19.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.18.0.html">Release notes for 0.18.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.17.1.html">Release notes for 0.17.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.17.0.html">Release notes for 0.17.0</a></li>
@@ -398,7 +398,7 @@
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.15.0.html">Release notes for 0.15.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.14.0.html">Release notes for 0.14.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.13.0.html">Release notes for 0.13.0</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release notes for 0.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes_0.12.0.html">Release notes for 0.12.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.11.0.html">Release notes for 0.11.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.10.1.html">Release notes for 0.10.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes_0.10.0.html">Release notes for 0.10.0</a></li>
@@ -473,7 +473,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/release_notes/release_notes_0.12.0.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/release_notes/release_notes_0.19.0.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -494,26 +494,33 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="id1">
-<h1>0.12.0 - 2025-11-03<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1>0.19.0 - 2026-05-19<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="removed">
+<h2>Removed<a class="headerlink" href="#removed" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Removed the warn-on-import about beta versions. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/353">#353</a>)</p></li>
+</ul>
+</section>
 <section id="added">
 <h2>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Added a new serialization versioning system, the Samplex Serialization Version (SSV), that decouples the
-serialization version from the package version. The current version is stored in <code class="docutils literal notranslate"><span class="pre">samplomatic.ssv.SSV</span></code>.
-See the <code class="docutils literal notranslate"><span class="pre">samplomatic.serialization</span></code> module for details. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
-<li><p>Added a <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> metaclass to record which classes should be serializable. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
-<li><p>Added <code class="docutils literal notranslate"><span class="pre">DataSerializer</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeSerializer</span></code>, and <code class="docutils literal notranslate"><span class="pre">TypeSerializerMeta</span></code> to provide serialization for objects
-inheriting from <code class="docutils literal notranslate"><span class="pre">Serializable</span></code>. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
+<li><p>Added support for <code class="docutils literal notranslate"><span class="pre">delay</span></code> instructions inside of <code class="docutils literal notranslate"><span class="pre">utils.BoxKey</span></code> objects. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/350">#350</a>)</p></li>
+<li><p>Added Pauli twirling for <code class="docutils literal notranslate"><span class="pre">rzz</span></code> instructions for non-zero Clifford angles. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/356">#356</a>)</p></li>
+<li><p>Added local C1 twirling support for <code class="docutils literal notranslate"><span class="pre">rzz</span></code> instructions for non-zero Clifford angles.
+Added the <code class="docutils literal notranslate"><span class="pre">local_pauli</span></code> twirling group mode. This group mode will twirl gates with the subgroup of Paulis that remain local Paulis under conjugation. In particular, this allows for twirling of parametric and non-Clifford <code class="docutils literal notranslate"><span class="pre">rzz</span></code> instructions. When an <code class="docutils literal notranslate"><span class="pre">rzz</span></code> is encountered, the samples are drawn from the Pauli subgroup that commutes with <code class="docutils literal notranslate"><span class="pre">rzz</span></code>. For Cliffords, it defaults back to the Pauli group. This mode is set by annotating a box with a <code class="docutils literal notranslate"><span class="pre">Twirl</span></code> that has <code class="docutils literal notranslate"><span class="pre">Twirl.group_mode</span> <span class="pre">=</span> <span class="pre">local_pauli</span></code> or by using a boxing pass manager with <code class="docutils literal notranslate"><span class="pre">twirling_group</span> <span class="pre">=</span> <span class="pre">local_pauli</span></code>.
+Added the <code class="docutils literal notranslate"><span class="pre">phase</span></code> group mode that samples uniformly from Paulis I and Z. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/357">#357</a>)</p></li>
 </ul>
 </section>
 <section id="changed">
 <h2>Changed<a class="headerlink" href="#changed" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The samplex serialization functions <code class="docutils literal notranslate"><span class="pre">samplex_to_json</span></code> and <code class="docutils literal notranslate"><span class="pre">samplex_from_json</span></code> were moved to the
-<code class="docutils literal notranslate"><span class="pre">samplomatic.serialization</span></code> module. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
-<li><p>Classes that are serializable now inherit from <code class="docutils literal notranslate"><span class="pre">Serializable</span></code> rather than implementing <code class="docutils literal notranslate"><span class="pre">to_json</span></code>/<code class="docutils literal notranslate"><span class="pre">from_json</span></code>
-methods. A <code class="docutils literal notranslate"><span class="pre">TypeSerializer</span></code> with the corresponding type will then contain methods to serialize and deserialize
-the object. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/216">#216</a>)</p></li>
+<li><p>Increased the SSV from 3 to 4. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/357">#357</a>)</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h2>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed a per-sample sign error in samplex sampling that occurred when an <code class="docutils literal notranslate"><span class="pre">InjectLocalClifford</span></code>-annotated box body contained multiple parallel multi-qubit gates (e.g. <code class="docutils literal notranslate"><span class="pre">cz(0,1)</span></code> and <code class="docutils literal notranslate"><span class="pre">cz(2,3)</span></code> in the same box). The parallel-propagate merge optimization in <code class="docutils literal notranslate"><span class="pre">PreSamplex</span></code> re-created the merged node with a fresh high graph index, which caused the lowered <code class="docutils literal notranslate"><span class="pre">CombineRegistersNode</span></code> to receive its operands in the wrong order and silently apply the basis-change Clifford in the wrong position of the matrix product. (<a class="reference external" href="https://github.com/Qiskit/samplomatic/issues/356">#356</a>)</p></li>
 </ul>
 </section>
 </section>
@@ -523,23 +530,23 @@ the object. (<a class="reference external" href="https://github.com/Qiskit/sampl
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="release_notes_0.11.0.html">
+          <a class="next-page" href="release_notes_0.18.0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">0.11.0 - 2025-10-28</div>
+                <div class="title">0.18.0 - 2026-04-09</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="release_notes_0.13.0.html">
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0.13.0 - 2025-11-06</div>
+                <div class="title">Release Notes</div>
                 
               </div>
             </a>
@@ -574,9 +581,11 @@ the object. (<a class="reference external" href="https://github.com/Qiskit/sampl
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0.12.0 - 2025-11-03</a><ul>
+<li><a class="reference internal" href="#">0.19.0 - 2026-05-19</a><ul>
+<li><a class="reference internal" href="#removed">Removed</a></li>
 <li><a class="reference internal" href="#added">Added</a></li>
 <li><a class="reference internal" href="#changed">Changed</a></li>
+<li><a class="reference internal" href="#fixed">Fixed</a></li>
 </ul>
 </li>
 </ul>
