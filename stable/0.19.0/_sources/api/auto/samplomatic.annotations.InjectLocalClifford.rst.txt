@@ -1,0 +1,23 @@
+InjectLocalClifford
+===================
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: InjectLocalClifford
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~InjectLocalClifford.decomposition
+      ~InjectLocalClifford.dressing
+      ~InjectLocalClifford.namespace
+      ~InjectLocalClifford.ref
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: decomposition
+   .. autoattribute:: dressing
+   .. autoattribute:: namespace
+   .. autoattribute:: ref

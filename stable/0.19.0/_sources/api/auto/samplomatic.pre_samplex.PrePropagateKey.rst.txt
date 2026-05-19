@@ -1,0 +1,25 @@
+PrePropagateKey
+===============
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PrePropagateKey
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PrePropagateKey.commutant_twirl
+      ~PrePropagateKey.direction
+      ~PrePropagateKey.is_parameterized
+      ~PrePropagateKey.mode
+      ~PrePropagateKey.operation_name
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: commutant_twirl
+   .. autoattribute:: direction
+   .. autoattribute:: is_parameterized
+   .. autoattribute:: mode
+   .. autoattribute:: operation_name

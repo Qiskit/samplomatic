@@ -1,0 +1,37 @@
+PauliLindbladMapSpecification
+=============================
+
+.. currentmodule:: samplomatic.tensor_interface
+
+.. autoclass:: PauliLindbladMapSpecification
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PauliLindbladMapSpecification.description
+      ~PauliLindbladMapSpecification.free_dimensions
+      ~PauliLindbladMapSpecification.name
+      ~PauliLindbladMapSpecification.num_bytes
+      ~PauliLindbladMapSpecification.optional
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PauliLindbladMapSpecification.describe
+      ~PauliLindbladMapSpecification.validate_and_coerce
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: description
+   .. autoattribute:: free_dimensions
+   .. autoattribute:: name
+   .. autoattribute:: num_bytes
+   .. autoattribute:: optional
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: describe
+   .. automethod:: validate_and_coerce

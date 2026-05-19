@@ -1,0 +1,6 @@
+TemplateBuildError
+==================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: TemplateBuildError

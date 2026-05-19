@@ -1,0 +1,6 @@
+SerializationError
+==================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: SerializationError

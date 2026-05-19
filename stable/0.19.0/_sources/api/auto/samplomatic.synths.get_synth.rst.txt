@@ -1,0 +1,6 @@
+get_synth
+=========
+
+.. currentmodule:: samplomatic.synths
+
+.. autofunction:: get_synth

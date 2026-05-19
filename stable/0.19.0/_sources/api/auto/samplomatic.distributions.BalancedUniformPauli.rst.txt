@@ -1,0 +1,27 @@
+BalancedUniformPauli
+====================
+
+.. currentmodule:: samplomatic.distributions
+
+.. autoclass:: BalancedUniformPauli
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~BalancedUniformPauli.register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~BalancedUniformPauli.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: sample

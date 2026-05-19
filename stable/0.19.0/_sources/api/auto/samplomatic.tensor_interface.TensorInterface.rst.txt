@@ -1,0 +1,47 @@
+TensorInterface
+===============
+
+.. currentmodule:: samplomatic.tensor_interface
+
+.. autoclass:: TensorInterface
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~TensorInterface.bound_dimensions
+      ~TensorInterface.free_dimensions
+      ~TensorInterface.fully_bound
+      ~TensorInterface.ndim
+      ~TensorInterface.shape
+      ~TensorInterface.size
+      ~TensorInterface.specs
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~TensorInterface.bind
+      ~TensorInterface.describe
+      ~TensorInterface.get_specs
+      ~TensorInterface.make_broadcastable
+      ~TensorInterface.num_bytes
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: bound_dimensions
+   .. autoattribute:: free_dimensions
+   .. autoattribute:: fully_bound
+   .. autoattribute:: ndim
+   .. autoattribute:: shape
+   .. autoattribute:: size
+   .. autoattribute:: specs
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: bind
+   .. automethod:: describe
+   .. automethod:: get_specs
+   .. automethod:: make_broadcastable
+   .. automethod:: num_bytes

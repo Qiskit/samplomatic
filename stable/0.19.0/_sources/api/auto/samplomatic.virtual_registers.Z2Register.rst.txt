@@ -1,0 +1,39 @@
+Z2Register
+==========
+
+.. currentmodule:: samplomatic.virtual_registers
+
+.. autoclass:: Z2Register
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Z2Register.CONVERTABLE_TYPES
+      ~Z2Register.GATE_SHAPE
+      ~Z2Register.SUBSYSTEM_SIZE
+      ~Z2Register.TYPE
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Z2Register.identity
+      ~Z2Register.inplace_multiply
+      ~Z2Register.invert
+      ~Z2Register.multiply
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: CONVERTABLE_TYPES
+   .. autoattribute:: GATE_SHAPE
+   .. autoattribute:: SUBSYSTEM_SIZE
+   .. autoattribute:: TYPE
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: identity
+   .. automethod:: inplace_multiply
+   .. automethod:: invert
+   .. automethod:: multiply

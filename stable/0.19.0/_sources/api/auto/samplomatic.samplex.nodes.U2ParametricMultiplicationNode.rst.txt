@@ -1,0 +1,31 @@
+U2ParametricMultiplicationNode
+==============================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: U2ParametricMultiplicationNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~U2ParametricMultiplicationNode.outgoing_register_type
+      ~U2ParametricMultiplicationNode.parameter_idxs
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~U2ParametricMultiplicationNode.get_style
+      ~U2ParametricMultiplicationNode.writes_to
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+   .. autoattribute:: parameter_idxs
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: writes_to

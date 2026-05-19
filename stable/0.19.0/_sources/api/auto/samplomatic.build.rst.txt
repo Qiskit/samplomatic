@@ -1,0 +1,6 @@
+﻿samplomatic.build
+=================
+
+.. currentmodule:: samplomatic
+
+.. autofunction:: build

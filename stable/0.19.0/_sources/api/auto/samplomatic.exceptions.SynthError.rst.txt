@@ -1,0 +1,6 @@
+SynthError
+==========
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: SynthError

@@ -1,0 +1,31 @@
+DistributionSamplingNode
+========================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: DistributionSamplingNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~DistributionSamplingNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~DistributionSamplingNode.get_style
+      ~DistributionSamplingNode.instantiates
+      ~DistributionSamplingNode.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: instantiates
+   .. automethod:: sample

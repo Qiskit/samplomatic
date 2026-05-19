@@ -1,0 +1,17 @@
+InlineBoxes
+===========
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: InlineBoxes
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~InlineBoxes.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

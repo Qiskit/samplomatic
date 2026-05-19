@@ -1,0 +1,6 @@
+map_annotations
+===============
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: map_annotations
