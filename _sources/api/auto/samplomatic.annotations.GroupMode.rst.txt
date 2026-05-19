@@ -12,10 +12,14 @@ GroupMode
 
       ~GroupMode.BALANCED
       ~GroupMode.LOCAL_C1
+      ~GroupMode.LOCAL_PAULI
       ~GroupMode.PAULI
+      ~GroupMode.PHASE
 
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: BALANCED
    .. autoattribute:: LOCAL_C1
+   .. autoattribute:: LOCAL_PAULI
    .. autoattribute:: PAULI
+   .. autoattribute:: PHASE
