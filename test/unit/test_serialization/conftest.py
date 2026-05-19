@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025-2026.
+# (C) Copyright IBM 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -10,13 +10,15 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Distributions"""
+"""Pytest fixtures for serialization tests"""
 
-from .balanced_uniform_pauli import BalancedUniformPauli
-from .distribution import Distribution
-from .group_to_distribution import GROUP_TO_DISTRIBUTION
-from .haar_u2 import HaarU2
-from .uniform_c1 import UniformC1
-from .uniform_local_c1 import UniformLocalC1
-from .uniform_pauli import UniformPauli
-from .uniform_pauli_subset import UniformPauliSubset
+import pytest
+
+from samplomatic.serialization.lookup_table_store import LookupTableStore, active_lookup_table_store
+
+
+@pytest.fixture
+def lookup_table_store():
+    """Activate and yield an empty LookupTableStore for the duration of a test."""
+    with active_lookup_table_store(store := LookupTableStore()):
+        yield store

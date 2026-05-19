@@ -124,8 +124,10 @@ def render_bezier_spline(
     segments[:, 0, :] = control_points[:-1:3]
     segments[:, 1:, :] = control_points[1:].reshape(num_segments, 3, 2)
 
-    # define the bezier transformation
-    steps = np.linspace(0, 1, steps_per_segment, endpoint=True)
+    # define the bezier transformation; endpoint=False avoids duplicate points at segment
+    # boundaries (the endpoint of segment k equals the startpoint of segment k+1), which
+    # would cause angleref="previous" to compute a zero-length direction at those positions
+    steps = np.linspace(0, 1, steps_per_segment, endpoint=False)
     basis = np.stack(
         [
             (1 - steps) ** 3,
@@ -136,5 +138,6 @@ def render_bezier_spline(
         axis=1,
     )
 
-    # perform the rendering
-    return np.einsum("sf,nfd->nsd", basis, segments).reshape(-1, 2)
+    # perform the rendering and append the final endpoint of the last segment
+    rendered = np.einsum("sf,nfd->nsd", basis, segments).reshape(-1, 2)
+    return np.vstack([rendered, control_points[-1]])

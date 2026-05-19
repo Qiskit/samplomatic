@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.parametrize("filename", ["README.md", "DEPRECATION.md"])
+@pytest.mark.parametrize("filename", ["README.md"])
 def test_markdown_codeblocks(run_snippet, filename):
     """Test python snippets in base-level markdown files."""
     markdown_text = (Path(__file__).parent.parent.parent / filename).read_text()

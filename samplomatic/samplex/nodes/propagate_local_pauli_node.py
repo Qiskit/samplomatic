@@ -10,78 +10,88 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""PropagateLocalC1Node"""
+"""PropagateLocalPauliNode"""
 
 from collections.abc import Sequence
 
 import numpy as np
 
-from ...aliases import OperationName, RegisterName, SubsystemIndex
-from ...exceptions import SamplexBuildError, SamplexRuntimeError
-from ...tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
+from ...aliases import RegisterName, SubsystemIndex
+from ...exceptions import SamplexRuntimeError
 from ...virtual_registers import VirtualType
 from .evaluation_node import EvaluationNode
 
-LOCAL_C1_PROPAGATE_INVARIANTS = frozenset({"id"})
-"""Set of gates which a C1 element is invariant under conjugation with."""
+_COMMUTANT_TABLES = {
+    "rzz": np.array(
+        [
+            [[0, 0], [0, 1], [-1, -1], [-1, -1]],
+            [[1, 0], [1, 1], [-1, -1], [-1, -1]],
+            [[-1, -1], [-1, -1], [2, 2], [2, 3]],
+            [[-1, -1], [-1, -1], [3, 2], [3, 3]],
+        ],
+        dtype=np.intp,
+    ),
+}
 
 
-class PropagateLocalC1Node(EvaluationNode):
-    """A node that propagates a C1 register past a gate.
+class PropagateLocalPauliNode(EvaluationNode):
+    """A node that propagates a Pauli register past a gate.
+
+    Only Paulis from the commutant of the gate generators (those that commute
+    with the gate for any angle) are allowed through. Non-commutant Paulis
+    trigger a runtime error.
 
     Args:
-        op_name: The name of the gate.
-        register_name: The name of the C1 register to propagate.
-        subsystem_idxs: The subsystems in the register. The expected format is
-            that of a collection of subsystems of the same size, i.e., that
-            of a 2D array where the left-most axes is over subsystems and
-            the right-most axes is over qubits.
+        register_name: The name of the Pauli register to propagate.
+        subsystem_idxs: The subsystems in the register specified as a 2D array where the left-most
+            axes is over subsystems and the right-most axes is over indices in the subsystem.
+        op_name: The name of the gate operation.
     """
 
     def __init__(
         self,
-        op_name: OperationName,
+        op_name: str,
         register_name: RegisterName,
         subsystem_idxs: Sequence[Sequence[SubsystemIndex]],
         *,
         lookup_table: np.ndarray | None = None,
     ):
         if lookup_table is not None:
-            self._lookup_table = lookup_table
+            self._table = lookup_table
         else:
-            try:
-                self._lookup_table = LOCAL_C1_PROPAGATE_LOOKUP_TABLES[op_name]
-            except KeyError:
-                supported_gates = list(LOCAL_C1_PROPAGATE_LOOKUP_TABLES)
-                raise SamplexBuildError(f"Expected one of {supported_gates}, found {op_name}.")
-
-        self._op_name = op_name
+            if op_name not in _COMMUTANT_TABLES:
+                raise ValueError(
+                    f"Unsupported operation {op_name!r}. "
+                    f"Supported operations: {sorted(_COMMUTANT_TABLES)}."
+                )
+            self._table = _COMMUTANT_TABLES[op_name]
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.intp)
         self._register_name = register_name
+        self._op_name = op_name
 
     @property
     def outgoing_register_type(self) -> VirtualType:
-        return VirtualType.C1
+        return VirtualType.PAULI
 
     def evaluate(self, registers, *_):
         reg = registers[self._register_name]
         subsys = self._subsystem_idxs
 
-        c1_in = reg.virtual_gates[subsys]
-        c1_out = self._lookup_table[tuple(c1_in[:, i] for i in range(subsys.shape[-1]))]
+        paulis_in = reg.virtual_gates[subsys]
+        paulis_out = self._table[tuple(paulis_in[:, i] for i in range(subsys.shape[-1]))]
 
-        if np.any(c1_out < 0):
+        if np.any(paulis_out < 0):
             raise SamplexRuntimeError(
-                f"C1 values did not remain local after conjugation by {self._op_name!r}."
+                f"Pauli values not in the commutant of {self._op_name!r} cannot be propagated."
             )
 
-        reg.virtual_gates[subsys] = np.transpose(c1_out, (0, 2, 1))
+        reg.virtual_gates[subsys] = np.transpose(paulis_out, (0, 2, 1))
 
     def reads_from(self):
         return {
             self._register_name: (
                 set(s for tup in self._subsystem_idxs for s in tup),
-                VirtualType.C1,
+                VirtualType.PAULI,
             )
         }
 
@@ -89,13 +99,13 @@ class PropagateLocalC1Node(EvaluationNode):
         return {
             self._register_name: (
                 set(s for tup in self._subsystem_idxs for s in tup),
-                VirtualType.C1,
+                VirtualType.PAULI,
             )
         }
 
     def __eq__(self, other):
         return (
-            isinstance(other, PropagateLocalC1Node)
+            isinstance(other, PropagateLocalPauliNode)
             and self._op_name == other._op_name
             and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
             and self._register_name == other._register_name
@@ -105,7 +115,7 @@ class PropagateLocalC1Node(EvaluationNode):
         return (
             super()
             .get_style()
-            .append_data("Operation", repr(self._op_name))
+            .append_data("Operation", f"{self._op_name!r}")
             .append_data("Register Name", repr(self._register_name))
             .append_list_data("Subsystem Indices", self._subsystem_idxs.tolist())
         )

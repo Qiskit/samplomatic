@@ -55,7 +55,11 @@ from ..aliases import (
 )
 from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
-from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
+from ..constants import (
+    SUPPORTED_1Q_FRACTIONAL_GATES,
+    SUPPORTED_FRACTIONAL_GATES,
+    Direction,
+)
 from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
@@ -96,6 +100,7 @@ from ..samplex.nodes.propagate_local_c1_node import (
     LOCAL_C1_PROPAGATE_LOOKUP_TABLES,
     PropagateLocalC1Node,
 )
+from ..samplex.nodes.propagate_local_pauli_node import PropagateLocalPauliNode
 from ..samplex.nodes.utils import get_fractional_gate_register
 from ..synths import Synth
 from ..tensor_interface import PauliLindbladMapSpecification, TensorSpecification
@@ -933,6 +938,7 @@ class PreSamplex:
         mode: InstructionMode,
         params: ParamSpec,
         trace_info: TraceInfo | None = None,
+        commutant_twirl: bool = False,
     ):
         """Add a node that propagates virtual gates through an operation.
 
@@ -944,6 +950,7 @@ class PreSamplex:
             mode: What mode to use for propagation.
             params: The parameters of the instruction.
             trace_info: Optional debug trace info to attach to the node.
+            commutant_twirl: Whether to twirl fractional gates with their commutants.
 
         Raises:
             SamplexBuildError: If the qubits of ``instr`` have partial overlap with dangling qubits
@@ -989,7 +996,14 @@ class PreSamplex:
         rightward_node_candidate = NodeCandidate(
             self.graph,
             PrePropagate(
-                subsystems, Direction.RIGHT, op, partition, mode, params, trace_info=trace_info
+                subsystems,
+                Direction.RIGHT,
+                op,
+                partition,
+                mode,
+                params,
+                commutant_twirl=commutant_twirl,
+                trace_info=trace_info,
             ),
         )
         match = DanglerMatch(node_types=(PreEmit, PrePropagate), direction=Direction.RIGHT)
@@ -1013,7 +1027,14 @@ class PreSamplex:
         leftward_node_candidate = NodeCandidate(
             self.graph,
             PrePropagate(
-                subsystems, Direction.LEFT, op, partition, mode, params, trace_info=trace_info
+                subsystems,
+                Direction.LEFT,
+                op,
+                partition,
+                mode,
+                params,
+                commutant_twirl=commutant_twirl,
+                trace_info=trace_info,
             ),
         )
         all_found_qubit_idxs = set()
@@ -1059,6 +1080,7 @@ class PreSamplex:
                     *(node.subsystems for node in nodes)
                 )
                 num_elements = nodes[0].partition.num_elements_per_part
+                commutant_twirl = nodes[0].commutant_twirl
                 num_parts = len(combined_subsystems) // num_elements
                 combined_partition = SubsystemIndicesPartition(
                     num_elements,
@@ -1080,7 +1102,7 @@ class PreSamplex:
                             merged_trace_info.merge(node.trace_info)
 
                 if any(
-                    node.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+                    node.operation.name in SUPPORTED_FRACTIONAL_GATES
                     and not node.operation.is_parameterized()
                     for node in nodes
                 ):
@@ -1098,6 +1120,7 @@ class PreSamplex:
                             nodes[0].mode,  # all nodes have same spec
                             params=[],
                             bounded_params=params,
+                            commutant_twirl=commutant_twirl,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1116,6 +1139,7 @@ class PreSamplex:
                             combined_partition,
                             mode=nodes[0].mode,
                             params=params,
+                            commutant_twirl=commutant_twirl,
                             trace_info=merged_trace_info,
                         ),
                     )
@@ -1140,6 +1164,7 @@ class PreSamplex:
                     operation_name=node.operation.name,
                     direction=node.direction,
                     is_parameterized=node.operation.is_parameterized(),
+                    commutant_twirl=node.commutant_twirl,
                 )
                 for cluster in clusters[cluster_type_key]:
                     if not cluster["subsystems"].overlaps_with(
@@ -1175,13 +1200,23 @@ class PreSamplex:
            :class:`~.Direction.RIGHT` edges, and
          * the :class:`~.Direction.LEFT` edges connected to twirl emissions before other emissions,
             * the twirl emissions sorted according to reverse ``order``,
-            * the others according to ``order``,
-         * while the :class:`~.Direction.RIGHT` place twirl emissions after other emissions, both
-           individually sorted according to ``order``.
+            * among the others, :class:`~.PrePropagate` nodes before other non-twirl nodes,
+              each group sorted according to ``order``,
+         * while the :class:`~.Direction.RIGHT` place twirl emissions after other emissions, with
+           :class:`~.PrePropagate` nodes before other non-twirl nodes among the latter, both
+           groups individually sorted according to ``order``.
 
         This order scheme is designed so that it corresponds to circuit-temporal precedence of
         predecessors. For example, a pre-collector will have inbound edges marked both left and
         right. We need to know in which order to multiply them together. This method is that order.
+
+        The :class:`~.PrePropagate`-vs-other-non-twirl tie-breaker is required because
+        :meth:`merge_parallel_pre_propagate_nodes` re-creates the merged node via
+        :func:`~.replace_nodes_with_one_node`, which assigns a fresh (high) graph index. The
+        topological sort then places the merged node late, which would otherwise reverse the
+        relative order of :class:`~.PrePropagate` and emit-style non-twirl predecessors (e.g.
+        :class:`~.PreChangeBasis`), silently breaking the operand order of the downstream
+        :class:`~.CombineRegistersNode`.
 
         Args:
             pre_node_idx: The pre-node to get the predecessors of.
@@ -1193,13 +1228,17 @@ class PreSamplex:
         """
         edge_sort_keys = {}
         for pred_idx in self.graph.predecessor_indices(pre_node_idx):
+            pred_node = self.graph.get_node_data(pred_idx)
             direction = self.graph.get_edge_data(pred_idx, pre_node_idx).direction
-            from_twirl = type(self.graph.get_node_data(pred_idx)) is PreEmit
+            from_twirl = type(pred_node) is PreEmit
+            # Among non-twirl predecessors, PrePropagate must sort before emit-style nodes
+            # (PreChangeBasis, PreInjectNoise) regardless of topological position.
+            type_priority = 0 if isinstance(pred_node, PrePropagate) else 1
             pred_order = order[pred_idx]
             if direction is Direction.LEFT:
                 pred_order = -pred_order if from_twirl else pred_order
                 from_twirl = not from_twirl
-            edge_sort_keys[pred_idx] = (direction, from_twirl, pred_order)
+            edge_sort_keys[pred_idx] = (direction, from_twirl, type_priority, pred_order)
 
         return sorted(edge_sort_keys.keys(), key=lambda x: edge_sort_keys[x])
 
@@ -1743,7 +1782,12 @@ class PreSamplex:
             if op_name in propagate_group.invariants:
                 propagate_node = None
             else:
-                propagate_node = propagate_group.node_class(
+                node_class = (
+                    PropagateLocalPauliNode
+                    if pre_propagate.commutant_twirl
+                    else propagate_group.node_class
+                )
+                propagate_node = node_class(
                     op_name,
                     actual_register_name,
                     np.array(list(pre_propagate.partition), dtype=np.intp),

@@ -22,6 +22,7 @@ from samplomatic.distributions import (
     UniformPauli,
     UniformPauliSubset,
 )
+from samplomatic.exceptions import SerializationError
 from samplomatic.serialization.distribution_serializers import (
     BalancedUniformPauliSerializer,
     HaarU2Serializer,
@@ -31,6 +32,14 @@ from samplomatic.serialization.distribution_serializers import (
     UniformPauliSubsetSerializer,
 )
 from samplomatic.serialization.type_serializer import TypeSerializer
+from samplomatic.tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
+
+
+def test_local_c1_distribution_rzz_error():
+    """Test that rzz is not supported before SSV 4."""
+    distribution = UniformLocalC1(12, "rzz")
+    with pytest.raises(SerializationError, match="rzz"):
+        UniformLocalC1Serializer.serialize(distribution, 3)
 
 
 @pytest.mark.parametrize("ssv", UniformPauliSerializer.SSVS)
@@ -66,7 +75,7 @@ def test_balanced_pauli_distribution_serializer_round_trip(ssv):
 
 
 @pytest.mark.parametrize("ssv", UniformLocalC1Serializer.SSVS)
-def test_local_c1_distribution_serializer_round_trip(ssv):
+def test_local_c1_distribution_serializer_round_trip(ssv, lookup_table_store):
     distribution = UniformLocalC1(12, "cx")
     data = UniformLocalC1Serializer.serialize(distribution, ssv)
     orjson.dumps(data)
@@ -79,3 +88,11 @@ def test_pauli_subset_distribution_serializer_round_trip(ssv):
     data = UniformPauliSubsetSerializer.serialize(distribution, ssv)
     orjson.dumps(data)
     assert distribution == TypeSerializer.deserialize(data)
+
+
+def test_local_c1_distribution_registers_lookup_table_in_store(lookup_table_store):
+    distribution = UniformLocalC1(12, "cx")
+    UniformLocalC1Serializer.serialize(distribution, 4)
+    assert np.array_equal(
+        lookup_table_store.lookup("D4:cx"), LOCAL_C1_PROPAGATE_LOOKUP_TABLES["cx"]
+    )

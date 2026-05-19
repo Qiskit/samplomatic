@@ -16,6 +16,7 @@ import numpy as np
 import pytest
 
 from samplomatic.distributions import HaarU2, UniformPauliSubset
+from samplomatic.distributions.uniform_pauli_subset import LOOKUP_TABLES
 from samplomatic.virtual_registers import PauliRegister, VirtualType
 
 
@@ -46,6 +47,13 @@ def test_equality():
     assert distribution != UniformPauliSubset(17, np.array([[1]]))
     assert distribution != UniformPauliSubset(13, np.array([[2]]))
     assert distribution != HaarU2(13)
+
+
+@pytest.mark.parametrize("name", ["rzz", "phase"])
+def test_from_name(name):
+    """Test that initialization with the from_name method behaves as expected."""
+    distribution = UniformPauliSubset.from_name(4, name)
+    assert distribution == UniformPauliSubset(4, LOOKUP_TABLES[name])
 
 
 def test_sample(rng):

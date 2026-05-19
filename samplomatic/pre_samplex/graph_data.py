@@ -12,7 +12,6 @@
 
 """Graph Data"""
 
-from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -22,7 +21,7 @@ from qiskit.circuit.gate import Gate
 from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
 from ..annotations import GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
-from ..constants import SUPPORTED_1Q_FRACTIONAL_GATES, Direction
+from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
 from ..exceptions import SamplexBuildError
 from ..partition import QubitIndicesPartition, SubsystemIndicesPartition
 from ..synths import Synth
@@ -161,7 +160,7 @@ class PreEmit(PreNode):
     """The type and distribution of virtual gates to emit."""
 
     twirl_gate: str | None = field(default=None, kw_only=True)
-    """The gate name used for ``UniformLocalC1`` sampling, or ``None``."""
+    """The gate name used for gate-dependent sampling, or ``None``."""
 
     def get_style(self):
         style = (
@@ -209,17 +208,25 @@ class PrePropagate(PreNode):
     params: ParamSpec
     """The parameters required by the node."""
 
-    bounded_params: Iterable[float] | None = None
+    bounded_params: list[float] | None = None
     """List of bounded params if ``operation`` is a fractional gate with a bounded parameter.
 
     If the node involves a relevant operation with a single subsystem, the parameter is
     automatically extracted from the operation.
     """
 
+    commutant_twirl: bool = False
+    """Whether this operation should be twirled with its commutant.
+
+    If the operation is not a fractional gate, this value will be ``False``. If it is a
+    fractional gate, ``True`` signals that it should be twirled by its commutant, while
+    ``False`` signals that its angle has been bound to a Clifford.
+    """
+
     def __post_init__(self):
         # Current construction assumes one parameter per gate.
         if (
-            self.operation.name in SUPPORTED_1Q_FRACTIONAL_GATES
+            self.operation.name in SUPPORTED_FRACTIONAL_GATES
             and not self.operation.is_parameterized()
         ):
             if self.bounded_params is None:
@@ -269,6 +276,9 @@ class PrePropagateKey:
     is_parameterized: bool
     """Whether or not the operation is parameterized."""
 
+    commutant_twirl: bool = False
+    """Whether this operation should be twirled with its commutant."""
+
     def __eq__(self, other: Any) -> bool:
         return (
             isinstance(other, PrePropagateKey)
@@ -276,10 +286,19 @@ class PrePropagateKey:
             and self.operation_name == other.operation_name
             and self.direction == other.direction
             and self.is_parameterized == other.is_parameterized
+            and self.commutant_twirl == other.commutant_twirl
         )
 
     def __hash__(self):
-        return hash((self.mode, self.operation_name, self.direction, self.is_parameterized))
+        return hash(
+            (
+                self.mode,
+                self.operation_name,
+                self.direction,
+                self.is_parameterized,
+                self.commutant_twirl,
+            )
+        )
 
 
 @dataclass

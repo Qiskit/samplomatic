@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -66,6 +66,32 @@ def make_circuits():
     # inserting IH on every layer transforms all even indexed CXs to CZs
     local_cliffords = {f"c{i}": np.array([0, 4]) for i in range(num_layers)}
     yield (circuit, expected, local_cliffords), "pauli_lindblad_like_cx_to_cz"
+
+    # Regression test for #364: parallel multi-qubit gates inside an InjectLocalClifford
+    # box trigger merge_parallel_pre_propagate_nodes
+    circuit = QuantumCircuit(4)
+    for i in range(2):
+        with circuit.box([InjectLocalClifford(f"c{i}"), Twirl()]):
+            circuit.cz(0, 1)
+            circuit.cz(2, 3)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(range(4))
+
+    # c0=[2,0,0,0]: X on q0; c1=[4,0,0,0]: H on q0. Left-dressing applies the
+    # Clifford before the body in time order, so the ideal circuit is:
+    expected = QuantumCircuit(4)
+    expected.x(0)
+    expected.cz(0, 1)
+    expected.cz(2, 3)
+    expected.h(0)
+    expected.cz(0, 1)
+    expected.cz(2, 3)
+
+    local_cliffords = {
+        "c0": np.array([2, 0, 0, 0], dtype=np.uint8),
+        "c1": np.array([4, 0, 0, 0], dtype=np.uint8),
+    }
+    yield (circuit, expected, local_cliffords), "parallel_cz_in_inject_box"
 
 
 def pytest_generate_tests(metafunc):

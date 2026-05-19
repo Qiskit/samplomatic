@@ -23,6 +23,7 @@ from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
 from .propagate_local_c1_node import PropagateLocalC1Node
+from .propagate_local_pauli_node import PropagateLocalPauliNode
 from .sampling_node import SamplingNode
 from .slice_register_node import SliceRegisterNode
 from .twirl_sampling_node import TwirlSamplingNode

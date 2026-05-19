@@ -20,7 +20,10 @@ from ..distributions import (
     UniformPauli,
     UniformPauliSubset,
 )
+from ..exceptions import SerializationError
+from ..tables.local_c1_tables import LOCAL_C1_PROPAGATE_LOOKUP_TABLES
 from ..utils.serialization import array_from_json, array_to_json
+from .lookup_table_store import get_lookup_table_store
 from .type_serializer import DataSerializer, TypeSerializer
 
 
@@ -104,14 +107,39 @@ class UniformLocalC1Serializer(TypeSerializer[UniformLocalC1]):
 
     class SSV3(DataSerializer[UniformLocalC1]):
         MIN_SSV = 3
+        MAX_SSV = 3
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if obj.gate_name == "rzz":
+                raise SerializationError(
+                    f"Encountered a UniformLocalC1 distribution with operation rzz and SSV {ssv}, "
+                    "but require SSV at least 4."
+                )
             return {"num_subsystems": obj.num_subsystems, "gate_name": obj.gate_name}
 
         @classmethod
         def deserialize(cls, data):
             return UniformLocalC1(data["num_subsystems"], data["gate_name"])
+
+    class SSV4(DataSerializer[UniformLocalC1]):
+        MIN_SSV = 4
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            get_lookup_table_store().register(
+                "D4", obj.gate_name, LOCAL_C1_PROPAGATE_LOOKUP_TABLES[obj.gate_name]
+            )
+            return {"num_subsystems": obj.num_subsystems, "gate_name": obj.gate_name}
+
+        @classmethod
+        def deserialize(cls, data):
+            gate_name = data["gate_name"]
+            return UniformLocalC1(
+                data["num_subsystems"],
+                gate_name,
+                lookup_table=get_lookup_table_store().lookup(f"D4:{gate_name}"),
+            )
 
 
 class UniformPauliSubsetSerializer(TypeSerializer[UniformPauliSubset]):

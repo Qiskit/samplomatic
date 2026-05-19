@@ -43,6 +43,7 @@ from ..samplex import Samplex
 from ..samplex.nodes import Node
 from ..ssv import SSV
 from .distribution_serializers import *  # noqa: F403
+from .lookup_table_store import LookupTableStore, active_lookup_table_store
 from .node_serializers import *  # noqa: F403
 from .parameter_expression_serializer import ParameterExpressionTableSerializer
 from .specification_serializers import deserialize_specifications, serialize_specifications
@@ -79,6 +80,16 @@ class HeaderV1(Header):
         )
 
 
+class HeaderV2(HeaderV1):
+    lookup_tables: str
+
+    def from_samplex(samplex: Samplex, ssv: int = SSV, store: LookupTableStore | None = None):
+        return HeaderV2(
+            **HeaderV1.from_samplex(samplex, ssv=ssv),
+            lookup_tables=(store.to_json() if store is not None else LookupTableStore().to_json()),
+        )
+
+
 def serialize_passthrough_params(data: tuple[list[int], list[int]] | None) -> str:
     if data is None:
         return "None"
@@ -112,7 +123,6 @@ def samplex_to_json(samplex, filename=None, ssv=SSV):
     Raises:
         SerializationError: If ``ssv`` is incompatible.
     """
-    header = HeaderV1.from_samplex(samplex, ssv=ssv)
 
     def serialize_node(node: Node):
         try:
@@ -121,6 +131,18 @@ def samplex_to_json(samplex, filename=None, ssv=SSV):
             raise SerializationError(f"Node type {type(node)} cannot be serialized.") from exc
         return TypeSerializer.TYPE_ID_REGISTRY[type_id].serialize(node, ssv)
 
+    if ssv >= 4:
+        # rustworkx calls node_attrs before graph_attrs, so the store is fully
+        # populated by the time the lambda fires.
+        with active_lookup_table_store(LookupTableStore()) as store:
+            return node_link_json(
+                samplex.graph,
+                path=filename,
+                graph_attrs=lambda _: HeaderV2.from_samplex(samplex, ssv=ssv, store=store),
+                node_attrs=serialize_node,
+            )
+
+    header = HeaderV1.from_samplex(samplex, ssv=ssv)
     return node_link_json(
         samplex.graph,
         path=filename,
@@ -156,5 +178,12 @@ def samplex_from_json(json_data: str) -> Samplex:
     Raises:
         SerializationError: If the SSV specified in the json string is unsupported.
     """
-    samplex_graph = parse_node_link_json(json_data, node_attrs=TypeSerializer.deserialize)
-    return _samplex_from_graph(samplex_graph)
+    raw_attrs = orjson.loads(json_data).get("attrs", {})
+    ssv = int(raw_attrs.get("ssv", 1))
+    if ssv >= 4:
+        store = LookupTableStore.from_json(raw_attrs["lookup_tables"])
+    else:
+        store = LookupTableStore()
+    with active_lookup_table_store(store):
+        samplex_graph = parse_node_link_json(json_data, node_attrs=TypeSerializer.deserialize)
+        return _samplex_from_graph(samplex_graph)
