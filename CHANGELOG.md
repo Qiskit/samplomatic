@@ -16,6 +16,10 @@
 
 - Increased the SSV from 3 to 4. ([#357](https://github.com/Qiskit/samplomatic/issues/357))
 
+### Fixed
+
+- Fixed a per-sample sign error in samplex sampling that occurred when an `InjectLocalClifford`-annotated box body contained multiple parallel multi-qubit gates (e.g. `cz(0,1)` and `cz(2,3)` in the same box). The parallel-propagate merge optimization in `PreSamplex` re-created the merged node with a fresh high graph index, which caused the lowered `CombineRegistersNode` to receive its operands in the wrong order and silently apply the basis-change Clifford in the wrong position of the matrix product. ([#356](https://github.com/Qiskit/samplomatic/issues/356))
+
 
 ## [0.18.0](https://github.com/Qiskit/samplomatic/tree/0.18.0) - 2026-04-09
 
