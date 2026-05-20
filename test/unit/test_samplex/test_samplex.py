@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,7 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import Samplex
+from samplomatic.samplex import ParameterExpressionTable, Samplex
 from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
@@ -82,6 +82,75 @@ class TestBasic:
         assert samplex.append_parameter_expression(a + b + Parameter("c")) == 3
 
         assert samplex.num_parameters == 3
+
+    def test_param_table_property(self):
+        """Test that the public ``param_table`` property exposes the underlying table."""
+        samplex = Samplex()
+        table = samplex.param_table
+        assert isinstance(table, ParameterExpressionTable)
+        assert table.num_expressions == 0
+
+        a = Parameter("a")
+        b = Parameter("b")
+        samplex.append_parameter_expression(a)
+        samplex.append_parameter_expression(a + b)
+
+        # The property returns the same instance and reflects mutations.
+        assert samplex.param_table is table
+        assert table.num_expressions == 2
+        assert samplex.param_table.parameters == samplex.parameters
+
+    def test_passthrough_params_property(self):
+        """Test that ``passthrough_params`` reports the (template, expression) index mapping."""
+        # Unset case returns two empty integer arrays.
+        empty = Samplex()
+        template_idxs, expression_idxs = empty.passthrough_params
+        assert template_idxs.shape == (0,) and np.issubdtype(template_idxs.dtype, np.integer)
+        assert expression_idxs.shape == (0,) and np.issubdtype(expression_idxs.dtype, np.integer)
+
+        a = Parameter("a")
+        b = Parameter("b")
+        samplex = Samplex()
+        # Append an unrelated expression first so expression indices != template indices.
+        samplex.append_parameter_expression(a + b)  # expression index 0 (not passthrough)
+        samplex.set_passthrough_params([(4, a), (7, 2 * a + b)])
+
+        template_idxs, expression_idxs = samplex.passthrough_params
+        np.testing.assert_array_equal(template_idxs, [4, 7])
+        np.testing.assert_array_equal(expression_idxs, [1, 2])
+
+        # Returned arrays are independent copies — mutating them is harmless.
+        template_idxs[0] = 99
+        expression_idxs[:] = 0
+        again_template_idxs, again_expression_idxs = samplex.passthrough_params
+        np.testing.assert_array_equal(again_template_idxs, [4, 7])
+        np.testing.assert_array_equal(again_expression_idxs, [1, 2])
+
+    def test_passthrough_workflow_for_rzz_validation(self):
+        """End-to-end: evaluate only the RZZ-controlling expressions via the new primitives."""
+        from qiskit import QuantumCircuit
+
+        from samplomatic import build
+
+        theta = Parameter("theta")
+        phi = Parameter("phi")
+        circuit = QuantumCircuit(2)
+        circuit.rzz(theta, 0, 1)
+        circuit.rx(phi, 0)
+        template, samplex = build(circuit)
+
+        template_parameters = list(template.parameters)
+        rzz_template_idxs = [
+            template_parameters.index(instr.operation.params[0])
+            for instr in template.data
+            if instr.operation.name == "rzz"
+        ]
+        template_idxs, expression_idxs = samplex.passthrough_params
+        lookup = dict(zip(template_idxs, expression_idxs))
+        rzz_expression_idxs = [lookup[t] for t in rzz_template_idxs]
+
+        angles = samplex.param_table.evaluate({theta: 0.5, phi: 1.2}, indices=rzz_expression_idxs)
+        np.testing.assert_allclose(angles, [0.5])
 
     def test_add_output(self):
         """Test that we can add an output."""
