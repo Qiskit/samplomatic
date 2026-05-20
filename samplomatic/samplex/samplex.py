@@ -143,6 +143,16 @@ class Samplex:
         return f"Samplex(<{len(self.graph)} nodes>)\n  Inputs:\n{inputs}\n  Outputs:\n{outputs}"
 
     @property
+    def param_table(self) -> ParameterExpressionTable:
+        """The :class:`~.ParameterExpressionTable` owning this samplex's parameter expressions.
+
+        Parametric nodes added to the samplex reference entries of this table by index, and
+        :meth:`~.sample` evaluates the table at sampling time. See also :attr:`~.parameters`
+        and :meth:`~.append_parameter_expression`.
+        """
+        return self._param_table
+
+    @property
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
         return self._param_table.parameters

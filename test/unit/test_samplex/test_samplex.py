@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -21,7 +21,7 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import Samplex
+from samplomatic.samplex import ParameterExpressionTable, Samplex
 from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
@@ -82,6 +82,24 @@ class TestBasic:
         assert samplex.append_parameter_expression(a + b + Parameter("c")) == 3
 
         assert samplex.num_parameters == 3
+
+    def test_param_table_property(self):
+        """Test that the public ``param_table`` property exposes the underlying table."""
+        samplex = Samplex()
+        table = samplex.param_table
+        assert isinstance(table, ParameterExpressionTable)
+        assert table.num_expressions == 0
+
+        a = Parameter("a")
+        b = Parameter("b")
+        samplex.append_parameter_expression(a)
+        samplex.append_parameter_expression(a + b)
+
+        assert samplex.param_table is table
+        assert table.num_expressions == 2
+        assert samplex.param_table.parameters == samplex.parameters
+
+        np.testing.assert_array_equal(samplex.param_table.evaluate([1.0, 2.0]), [1.0, 3.0])
 
     def test_add_output(self):
         """Test that we can add an output."""
