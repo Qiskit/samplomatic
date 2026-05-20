@@ -32,6 +32,7 @@ from ..aliases import (
     ParameterExpression,
     ParamIndex,
     ParamSpec,
+    ParamValues,
     RegisterName,
     Self,
 )
@@ -143,16 +144,6 @@ class Samplex:
         return f"Samplex(<{len(self.graph)} nodes>)\n  Inputs:\n{inputs}\n  Outputs:\n{outputs}"
 
     @property
-    def param_table(self) -> ParameterExpressionTable:
-        """The :class:`~.ParameterExpressionTable` owning this samplex's parameter expressions.
-
-        Parametric nodes added to the samplex reference entries of this table by index, and
-        :meth:`~.sample` evaluates the table at sampling time. See also :attr:`~.parameters`
-        and :meth:`~.append_parameter_expression`.
-        """
-        return self._param_table
-
-    @property
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
         return self._param_table.parameters
@@ -197,6 +188,34 @@ class Samplex:
             param_exp_idxs.append(self.append_parameter_expression(exp))
         self._passthrough_params = (param_idxs, param_exp_idxs)
         return max(param_idxs)
+
+    def evaluate_passthrough_parameters(
+        self, parameter_values: ParamValues
+    ) -> tuple[np.ndarray, np.ndarray]:
+        r"""Evaluate the input expressions controlling passthrough template parameters.
+
+        Some template circuit parameters are deterministic functions of the input parameters: those
+        whose values flow directly through this samplex without being touched by virtual gate
+        propagation or sampling (see :meth:`~.set_passthrough_params`). This method evaluates
+        the controlling expressions for those template parameters only, without invoking
+        :meth:`~.sample`.
+
+        Args:
+            parameter_values: Values for the input parameters, in the same form accepted by
+                :meth:`~.sample`: either a sequence in :attr:`~.parameters` order, or a
+                mapping from :class:`~qiskit.circuit.Parameter` to value.
+
+        Returns:
+            A pair ``(template_idxs, values)`` of equal-length arrays.
+            ``template_idxs`` (integer dtype) holds the template parameter indices and
+            ``values`` (float dtype) holds the corresponding evaluated expression values.
+            Both arrays are empty if no passthrough parameters are registered.
+        """
+        if self._passthrough_params is None:
+            return np.empty(0, dtype=int), np.empty(0, dtype=float)
+        template_idxs, expression_idxs = self._passthrough_params
+        evaluated = self._param_table.evaluate(parameter_values)
+        return np.asarray(template_idxs, dtype=int), evaluated[expression_idxs]
 
     def add_input(self, specification: Specification):
         """Add a sampling input to this samplex.

@@ -21,7 +21,7 @@ from qiskit.circuit import Parameter
 
 from samplomatic.exceptions import SamplexConstructionError, SamplexRuntimeError
 from samplomatic.optionals import HAS_PLOTLY
-from samplomatic.samplex import ParameterExpressionTable, Samplex
+from samplomatic.samplex import Samplex
 from samplomatic.samplex.samplex import wait_with_raise
 from samplomatic.tensor_interface import PauliLindbladMapSpecification, TensorSpecification
 from samplomatic.virtual_registers import PauliRegister, U2Register
@@ -83,23 +83,35 @@ class TestBasic:
 
         assert samplex.num_parameters == 3
 
-    def test_param_table_property(self):
-        """Test that the public ``param_table`` property exposes the underlying table."""
-        samplex = Samplex()
-        table = samplex.param_table
-        assert isinstance(table, ParameterExpressionTable)
-        assert table.num_expressions == 0
+    def test_evaluate_passthrough_parameters(self):
+        """Test the public introspection method for passthrough parameter values."""
+        from samplomatic.exceptions import ParameterError
 
+        # Empty samplex returns two zero-length arrays of the documented dtypes.
+        empty = Samplex()
+        idxs, values = empty.evaluate_passthrough_parameters({})
+        assert idxs.shape == (0,) and idxs.dtype == np.int64
+        assert values.shape == (0,) and values.dtype == np.float64
+
+        # Wire up two passthrough template parameters: index 4 <- a, index 7 <- 2*a + b.
+        samplex = Samplex()
         a = Parameter("a")
         b = Parameter("b")
-        samplex.append_parameter_expression(a)
-        samplex.append_parameter_expression(a + b)
+        samplex.set_passthrough_params([(4, a), (7, 2 * a + b)])
 
-        assert samplex.param_table is table
-        assert table.num_expressions == 2
-        assert samplex.param_table.parameters == samplex.parameters
+        # Mapping form (dict from Parameter to value).
+        idxs, values = samplex.evaluate_passthrough_parameters({a: 1.0, b: 3.0})
+        np.testing.assert_array_equal(idxs, [4, 7])
+        np.testing.assert_allclose(values, [1.0, 5.0])
 
-        np.testing.assert_array_equal(samplex.param_table.evaluate([1.0, 2.0]), [1.0, 3.0])
+        # Sequence form (values in samplex.parameters order — sorted: [a, b]).
+        idxs, values = samplex.evaluate_passthrough_parameters([1.0, 3.0])
+        np.testing.assert_array_equal(idxs, [4, 7])
+        np.testing.assert_allclose(values, [1.0, 5.0])
+
+        # Wrong-length input is rejected via ParameterExpressionTable.evaluate.
+        with pytest.raises(ParameterError):
+            samplex.evaluate_passthrough_parameters([1.0])
 
     def test_add_output(self):
         """Test that we can add an output."""

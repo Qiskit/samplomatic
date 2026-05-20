@@ -72,7 +72,7 @@ class HeaderV1(Header):
             ssv=str(ssv),
             samplomatic_version=samplomatic_version,
             param_table=orjson.dumps(
-                ParameterExpressionTableSerializer.serialize(samplex.param_table, ssv=ssv)
+                ParameterExpressionTableSerializer.serialize(samplex._param_table, ssv=ssv)  # noqa: SLF001
             ).decode("utf-8"),
             input_specification=serialize_specifications(samplex._input_specifications, ssv=ssv),  # noqa: SLF001
             output_specification=serialize_specifications(samplex._output_specifications, ssv=ssv),  # noqa: SLF001
