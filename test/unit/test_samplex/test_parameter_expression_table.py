@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -84,6 +84,40 @@ def test_evaluate():
 
     assert np.array_equal(table.evaluate([1, 2, 3]), np.array([3.0, 5, 1, 2, 1, 6]))
     assert np.array_equal(table.evaluate({a: 2, b: 3, c: 4}), np.array([5.0, 7, 2, 3, 2, 24]))
+
+
+def test_evaluate_with_indices():
+    """Test the evaluate method's optional ``indices`` argument."""
+    a = Parameter("a")
+    b = Parameter("b")
+    c = Parameter("c")
+    table = ParameterExpressionTable()
+
+    table.append(a + b)
+    table.append(b + c)
+    table.append(a)
+    table.append(b)
+    table.append(a)
+    table.append(a * b * c)
+
+    full = table.evaluate([1, 2, 3])
+
+    # Subset selection preserves caller-supplied order.
+    np.testing.assert_array_equal(table.evaluate([1, 2, 3], indices=[5, 0, 2]), full[[5, 0, 2]])
+
+    # Dict-form values produce identical results.
+    np.testing.assert_array_equal(
+        table.evaluate({a: 1, b: 2, c: 3}, indices=[5, 0, 2]),
+        full[[5, 0, 2]],
+    )
+
+    # Empty indices yields a length-0 float array (not ``None``).
+    empty = table.evaluate([1, 2, 3], indices=[])
+    assert empty.shape == (0,) and empty.dtype == np.float64
+
+    # Out-of-range indices propagate as IndexError (caller's responsibility).
+    with pytest.raises(IndexError):
+        table.evaluate([1, 2, 3], indices=[99])
 
 
 def test_evaluate_fails():
