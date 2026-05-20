@@ -357,8 +357,8 @@ class TestHelpersAttributes:
             emit_idx10,
             emit_idx11,
             meas_idx0,
-            prep_idx0,
             emit_idx0,
+            prep_idx0,
         ]
 
         order = {emit_idx0: 50, emit_idx10: 4, emit_idx11: 2}

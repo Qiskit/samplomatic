@@ -161,6 +161,9 @@ class LeftBoxBuilder(BoxBuilder):
                     self.emission.noise_modifier_ref,
                     trace_info=trace_info,
                 )
+            if self.emission.twirl_type:
+                self._emit_twirl(self.emission.twirl_type)
+
             self._mode = InstructionMode.PROPAGATE
             return
 
@@ -238,7 +241,6 @@ class LeftBoxBuilder(BoxBuilder):
                 trace_info=trace_info,
             )
         if twirl_type := self.emission.twirl_type:
-            self._emit_twirl(twirl_type)
             if len(self.measured_qubits) != 0:
                 if twirl_type is GroupMode.LOCAL_C1 or (
                     twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS

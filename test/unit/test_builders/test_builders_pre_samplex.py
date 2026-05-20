@@ -68,6 +68,7 @@ class TestBoxBuilder:
         builder = self.get_builder(qreg, creg)
         builder.lhs()
         builder.parse(DAGOpNode(Measure(), qreg, [creg[0], creg[2]]))
+        builder.parse(None)
         builder.rhs()
         idxs = QubitIndicesPartition.from_elements(builder.samplex_state.qubit_map.values())
 
@@ -87,6 +88,7 @@ class TestBoxBuilder:
         qreg = QuantumRegister(2)
         builder = self.get_builder(qreg)
         builder.lhs()
+        builder.parse(None)
         builder.rhs()
         idxs = QubitIndicesPartition.from_elements(builder.samplex_state.qubit_map.values())
         assert builder.samplex_state.graph.num_nodes() == 2
