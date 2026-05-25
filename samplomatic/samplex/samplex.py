@@ -143,6 +143,18 @@ class Samplex:
         return f"Samplex(<{len(self.graph)} nodes>)\n  Inputs:\n{inputs}\n  Outputs:\n{outputs}"
 
     @property
+    def param_table(self) -> ParameterExpressionTable:
+        """The :class:`~.ParameterExpressionTable` owning this samplex's parameter expressions.
+
+        Parametric nodes added to the samplex reference entries of this table by index, and
+        :meth:`~.sample` evaluates the table at sampling time. Combined with
+        :attr:`~.passthrough_params`, callers can evaluate just the deterministic subset of template
+        parameters (e.g., :class:`~qiskit.circuit.library.RZZGate` angles) without invoking
+        :meth:`~.sample`. See also :attr:`~.parameters` and :meth:`~.append_parameter_expression`.
+        """
+        return self._param_table
+
+    @property
     def parameters(self) -> list[Parameter]:
         """The sorted parameters expecting values at sampling time."""
         return self._param_table.parameters
@@ -151,6 +163,24 @@ class Samplex:
     def num_parameters(self) -> int:
         """The number of parameters expected at sampling time."""
         return self._param_table.num_parameters
+
+    @property
+    def passthrough_params(self) -> tuple[np.ndarray, np.ndarray]:
+        r"""The index mapping that drives passthrough template parameters.
+
+        Returns a pair of equal-length, positionally aligned integer arrays
+        ``(template_idxs, expression_idxs)``: the value at template parameter index
+        ``template_idxs[i]`` is set during :meth:`~.sample` from the value of the
+        :attr:`~.param_table` expression at index ``expression_idxs[i]`` (see
+        :meth:`~.set_passthrough_params`).
+
+        Both arrays are empty if no passthrough parameters are registered. The returned
+        arrays are independent copies of the internal state.
+        """
+        if self._passthrough_params is None:
+            return np.empty(0, dtype=int), np.empty(0, dtype=int)
+        template_idxs, expression_idxs = self._passthrough_params
+        return np.asarray(template_idxs, dtype=int), np.asarray(expression_idxs, dtype=int)
 
     def append_parameter_expression(self, expression: ParameterExpression) -> ParamIndex:
         """Add a parameter expression to the samplex.
