@@ -336,6 +336,10 @@ class RightMultiplicationNodeSerializer(TypeSerializer[RightMultiplicationNode])
             )
 
 
+_SSV1_PAULI_PAST_CLIFFORD_OP_NAMES = frozenset({"h", "cx", "cz", "ecr"})
+"""All allowed op names for :class:`~.PauliPastCliffordNode` in SSVs 1-3."""
+
+
 class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
     """Serializer for :class:`~.PauliPastCliffordNode`."""
 
@@ -348,10 +352,10 @@ class PauliPastCliffordNodeSerializer(TypeSerializer[PauliPastCliffordNode]):
 
         @classmethod
         def serialize(cls, obj, ssv):
-            if (op_name := obj._op_name) == "rzz":  # noqa: SLF001
+            op_name = obj._op_name  # noqa: SLF001
+            if op_name not in _SSV1_PAULI_PAST_CLIFFORD_OP_NAMES:
                 raise SerializationError(
-                    f"Encountered a PauliPastCliffordNode with operation rzz and SSV {ssv}, but "
-                    "require SSV at least 4."
+                    f"Cannot serialize op_name '{op_name}' in SSV {ssv}; require SSV at least 4."
                 )
             return {
                 "op_name": op_name,

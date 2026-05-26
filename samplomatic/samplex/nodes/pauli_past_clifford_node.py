@@ -21,8 +21,38 @@ from ...exceptions import SamplexBuildError
 from ...virtual_registers import VirtualType
 from .evaluation_node import EvaluationNode
 
+# The projective Pauli conjugation action of a 1Q Clifford is a permutation of {Z, X, Y}
+# (I is always fixed), i.e. an element of S_3. The 5 non-trivial elements are defined
+# below as named constants (the identity corresponds to PAULI_PAST_CLIFFORD_INVARIANTS).
+# Pauli encoding: I=0, Z=1, X=2, Y=3.
+
+# Order-2 elements (transpositions):
+_PAULI_SWAP_ZX = np.array([[0], [2], [1], [3]], dtype=np.intp)  # Z↔X  (e.g. h)
+_PAULI_SWAP_XY = np.array([[0], [1], [3], [2]], dtype=np.intp)  # X↔Y  (canonical: s)
+_PAULI_SWAP_ZY = np.array([[0], [3], [2], [1]], dtype=np.intp)  # Z↔Y  (canonical: sx)
+
+# Order-3 elements (3-cycles). Names use circuit-application order (left = applied first):
+_PAULI_CYCLE_ZXY = np.array([[0], [2], [3], [1]], dtype=np.intp)  # Z→X→Y→Z  (e.g. s@h)
+_PAULI_CYCLE_ZYX = np.array([[0], [3], [1], [2]], dtype=np.intp)  # Z→Y→X→Z  (e.g. h@s)
+
+PAULI_PAST_CLIFFORD_CANONICAL_NAMES: dict[str, str] = {
+    "sdg": "s",
+    "sxdg": "sx",
+}
+"""Mapping to canonical gate names for Pauli propagation.
+
+Gates with the same projective Pauli conjugation action are canonicalized to a single
+representative name so that :class:`~.PauliPastCliffordNode` instances acting identically
+share the same key and can be merged during optimization.
+"""
+
 PAULI_PAST_CLIFFORD_LOOKUP_TABLES = {
-    "h": np.array([[0], [2], [1], [3]], dtype=np.intp),
+    "h": _PAULI_SWAP_ZX,
+    "s": _PAULI_SWAP_XY,
+    "sx": _PAULI_SWAP_ZY,
+    "sh": _PAULI_CYCLE_ZXY,
+    "hs": _PAULI_CYCLE_ZYX,
+    # Two-qubit gates
     "cx": np.array(
         [
             [[0, 0], [1, 1], [0, 2], [1, 3]],

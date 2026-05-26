@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,6 +11,8 @@
 # that they have been altered from the originals.
 
 """ParameterExpressionTable"""
+
+from collections.abc import Sequence
 
 import numpy as np
 from qiskit.circuit import ParameterVectorElement
@@ -98,12 +100,20 @@ class ParameterExpressionTable(metaclass=Serializable):
         """The number of parameter expressions to evaluate; the return size of :meth:`~evaluate`."""
         return len(self._expressions)
 
-    def evaluate(self, parameter_values: ParamValues) -> np.ndarray:
-        r"""Return one numeric value for each expression.
+    def evaluate(
+        self,
+        parameter_values: ParamValues,
+        indices: Sequence[ParamIndex] | None = None,
+    ) -> np.ndarray:
+        r"""Return numeric values for the table's expressions.
 
         Args:
             parameter_values: The parameter values, either as a map from parameters to their values,
                 or just the values in parameter-sorted order (see :attr:`~parameters`\).
+            indices: An optional sequence of expression indices to evaluate. When ``None``, all
+                expressions are evaluated in order. When provided, only the expressions at the given
+                indices are evaluated, in the given order, so
+                ``len(returned_array) == len(indices)``.
 
         Returns:
             An array of evaluated expressions.
@@ -120,9 +130,13 @@ class ParameterExpressionTable(metaclass=Serializable):
         if not isinstance(parameter_values, dict):
             parameter_values = dict(zip(self.parameters, parameter_values))
 
+        expressions = (
+            self._expressions if indices is None else [self._expressions[i] for i in indices]
+        )
+
         try:
             return np.array(
-                [expression.bind_all(parameter_values) for expression in self._expressions],
+                [expression.bind_all(parameter_values) for expression in expressions],
                 dtype=float,
             )
         except KeyError as exc:
