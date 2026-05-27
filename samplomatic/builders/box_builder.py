@@ -161,6 +161,9 @@ class LeftBoxBuilder(BoxBuilder):
                     self.emission.noise_modifier_ref,
                     trace_info=trace_info,
                 )
+            if self.emission.twirl_type:
+                self._emit_twirl(self.emission.twirl_type)
+
             self._mode = InstructionMode.PROPAGATE
             return
 
@@ -237,20 +240,16 @@ class LeftBoxBuilder(BoxBuilder):
                 self.emission.noise_modifier_ref,
                 trace_info=trace_info,
             )
-        if twirl_type := self.emission.twirl_type:
-            self._emit_twirl(twirl_type)
-            if len(self.measured_qubits) != 0:
-                if twirl_type is GroupMode.LOCAL_C1 or (
-                    twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
-                    and GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
-                    != VirtualType.PAULI
-                ):
-                    raise BuildError(
-                        f"Cannot use {twirl_type.value} twirl in a box with measurements."
-                    )
-                self.samplex_state.add_z2_collect(
-                    self.measured_qubits, self.clbit_idxs, trace_info=trace_info
-                )
+        if (twirl_type := self.emission.twirl_type) and len(self.measured_qubits) != 0:
+            if twirl_type is GroupMode.LOCAL_C1 or (
+                twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
+                and GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
+                != VirtualType.PAULI
+            ):
+                raise BuildError(f"Cannot use {twirl_type.value} twirl in a box with measurements.")
+            self.samplex_state.add_z2_collect(
+                self.measured_qubits, self.clbit_idxs, trace_info=trace_info
+            )
 
     @staticmethod
     def yield_from_dag(dag):
