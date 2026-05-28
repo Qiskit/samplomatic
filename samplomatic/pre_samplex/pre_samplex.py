@@ -60,7 +60,7 @@ from ..constants import (
     SUPPORTED_FRACTIONAL_GATES,
     Direction,
 )
-from ..distributions import GROUP_TO_DISTRIBUTION
+from ..distributions import GROUP_TO_DISTRIBUTION, UniformPauliSubset
 from ..exceptions import SamplexBuildError
 from ..graph_utils import (
     NodeCandidate,
@@ -120,7 +120,6 @@ from .graph_data import (
     PreNode,
     PrePropagate,
     PrePropagateKey,
-    PreZ2Collect,
 )
 from .utils import merge_pre_edges
 
@@ -639,7 +638,7 @@ class PreSamplex:
         if not found_predecessors:
             return None
 
-        # cannot propagate left through a measure propagate
+        # cannot propagate left through a measure
         list(self.find_then_remove_danglers(DanglerMatch(direction=Direction.LEFT), subsystems))
 
         node = PreMeasurePropagate(subsystems, creg_name, creg_offset, trace_info=trace_info)
@@ -1316,16 +1315,8 @@ class PreSamplex:
                 self.add_collect_node(
                     samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
                 )
-            elif isinstance(pre_node, PreZ2Collect):
-                self.add_collect_z2_to_output_node(
-                    samplex,
-                    pre_node_idx,
-                    pre_nodes_to_nodes,
-                    order,
-                    register_names,
-                )
             elif isinstance(pre_node, PreMeasurePropagate):
-                self.add_measure_propagate_nodes(
+                self.add_measure_propagate_node(
                     samplex,
                     pre_node_idx,
                     pre_nodes_to_nodes,
@@ -1675,7 +1666,7 @@ class PreSamplex:
         order: dict[NodeIndex, int],
         register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
     ):
-        """Add evaluation nodes to a samplex, mutating it in place.
+        """Add propagation node to a samplex, mutating it in place.
 
         Args:
             samplex: The samplex to add nodes to.
@@ -1819,49 +1810,7 @@ class PreSamplex:
 
         samplex.add_edge(combine_node_idx, samplex.add_node(collect))
 
-    def add_collect_z2_to_output_node(
-        self,
-        samplex: Samplex,
-        pre_node_idx: NodeIndex,
-        pre_nodes_to_nodes: dict[NodeIndex, NodeIndex],
-        order: dict[NodeIndex, int],
-        register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
-    ):
-        """Add :class:`~.CollectZ2ToOutput` to the Samplex graph.
-
-        Args:
-            samplex: The samplex to add nodes to.
-            pre_node_idx: The index of the :class:`~.PreZ2Collect` node to turn into a collection
-                node in the samplex.
-            pre_nodes_to_nodes: A map from pre-node indices to node indices.
-            order: A map from pre-node indices to integers representing their position in a
-                topological sort of the pre-samplex graph.
-            register_names: A map such that ``register_names[a][b]`` is the name of the register
-                implied by the edge (a, b) in the pre-samplex graph.
-        """
-        pre_node = cast(PreZ2Collect, self.graph[pre_node_idx])
-        combined_name = f"z2_collect_{order[pre_node_idx]}"
-        combine_node_idx, actual_register_name = self.add_combine_node(
-            samplex,
-            pre_node_idx,
-            pre_nodes_to_nodes,
-            order,
-            register_names,
-            combined_name,
-            VirtualType.Z2,
-        )
-
-        for reg_name, clbit_idxs in pre_node.clbit_idxs.items():
-            z2collect = CollectZ2ToOutputNode(
-                actual_register_name,
-                np.array(pre_node.subsystems_idxs[reg_name]),
-                f"measurement_flips.{reg_name}",
-                clbit_idxs,
-            )
-
-            samplex.add_edge(combine_node_idx, samplex.add_node(z2collect))
-
-    def add_measure_propagate_nodes(
+    def add_measure_propagate_node(
         self,
         samplex: Samplex,
         pre_node_idx: NodeIndex,
@@ -1871,10 +1820,6 @@ class PreSamplex:
     ):
         """Lower a :class:`~.PreMeasurePropagate` node to samplex nodes.
 
-        Creates two parallel paths from the incoming Pauli register:
-        - Fork A: Pauli→Z2 conversion then CollectZ2ToOutputNode (measurement flip)
-        - Fork B: Pauli→Z2→Pauli conversion + phase sampling + combination (continued Pauli)
-
         Args:
             samplex: The samplex to add nodes to.
             pre_node_idx: The index of the PreMeasurePropagate node.
@@ -1882,8 +1827,6 @@ class PreSamplex:
             order: A map from pre-node indices to topological order.
             register_names: A map for register name tracking between nodes.
         """
-        from ..distributions import UniformPauliSubset
-
         pre_node = cast(PreMeasurePropagate, self.graph[pre_node_idx])
         reg_idx = order[pre_node_idx]
         num_subsystems = len(pre_node.subsystems)
@@ -1900,7 +1843,6 @@ class PreSamplex:
             VirtualType.PAULI,
         )
 
-        # Fork A: Pauli → Z2 → CollectZ2ToOutput (measurement flip)
         z2_name_a = f"meas_prop_z2a_{reg_idx}"
         pauli_to_z2_a = ConversionNode(
             existing_name=actual_register_name,
@@ -1921,7 +1863,6 @@ class PreSamplex:
         )
         samplex.add_edge(p2z_a_idx, samplex.add_node(z2_collect))
 
-        # Fork B: Pauli → Z2 → Pauli (X-only) + phase sampling → combined output
         z2_name_b = f"meas_prop_z2b_{reg_idx}"
         pauli_to_z2_b = ConversionNode(
             existing_name=actual_register_name,
@@ -1946,13 +1887,11 @@ class PreSamplex:
         z2p_idx = samplex.add_node(z2_to_pauli)
         samplex.add_edge(p2z_b_idx, z2p_idx)
 
-        # Sample random phase (I or Z)
         phase_name = f"meas_prop_phase_{reg_idx}"
         phase_dist = UniformPauliSubset.from_name(num_subsystems, "phase")
         phase_sampler = DistributionSamplingNode(phase_name, phase_dist)
         phase_idx = samplex.add_node(phase_sampler)
 
-        # Combine X-only Pauli with random phase
         output_name = f"meas_prop_out_{reg_idx}"
         idxs = list(range(num_subsystems))
         combine_output = CombineRegistersNode(
@@ -1968,7 +1907,6 @@ class PreSamplex:
         samplex.add_edge(z2p_idx, combine_out_idx)
         samplex.add_edge(phase_idx, combine_out_idx)
 
-        # Register output for successors
         pre_nodes_to_nodes[pre_node_idx] = combine_out_idx
         for pre_successor_idx in self.graph.successor_indices(pre_node_idx):
             register_names[pre_successor_idx][pre_node_idx] = output_name

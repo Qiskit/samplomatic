@@ -22,6 +22,5 @@ from .graph_data import (
     PreNode,
     PrePropagate,
     PrePropagateKey,
-    PreZ2Collect,
 )
 from .pre_samplex import DanglerMatch, PreSamplex

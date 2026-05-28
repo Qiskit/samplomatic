@@ -18,7 +18,7 @@ from typing import Any
 import numpy as np
 from qiskit.circuit.gate import Gate
 
-from ..aliases import ClbitIndex, OutputIndex, ParamIndices, ParamSpec, StrRef, SubsystemIndex
+from ..aliases import OutputIndex, ParamIndices, ParamSpec, StrRef
 from ..annotations import GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import SUPPORTED_FRACTIONAL_GATES, Direction
@@ -121,45 +121,8 @@ class PreCollect(PreNode):
 
 
 @dataclass
-class PreZ2Collect(PreNode):
-    """The Z2-collection node type used during samplex building."""
-
-    direction: Direction = field(init=False)
-
-    clbit_idxs: dict[str, list[ClbitIndex]]
-    """A dictionary from classical register names to indices this node writes to."""
-
-    subsystems_idxs: dict[str, list[SubsystemIndex]]
-    """A dictionary from classical register names to subsystem indices from which to collect."""
-
-    def __post_init__(self):
-        self.direction = Direction.RIGHT
-
-    def get_style(self):
-        style = super().get_style().append_data("Direction", self.direction.name)
-        style.marker = "bowtie"
-        style.color = "purple"
-        style.size = 30
-        return style
-
-    def __eq__(self, other):
-        return (
-            isinstance(other, PreZ2Collect)
-            and self.subsystems == other.subsystems
-            and self.direction == other.direction
-            and self.clbit_idxs == other.clbit_idxs
-            and self.subsystems_idxs == other.subsystems_idxs
-        )
-
-
-@dataclass
 class PreMeasurePropagate(PreNode):
-    """Propagation through a measurement: extracts X for Z2 flip, randomizes Z for continued Pauli.
-
-    During lowering, this node produces both:
-    - A Z2 output (measurement flip from the X component)
-    - A continued Pauli register (X preserved, Z randomized via phase distribution)
-    """
+    """The propagation node type used for measurements during samplex building."""
 
     creg_name: str
     """The classical register name this measurement writes to."""
