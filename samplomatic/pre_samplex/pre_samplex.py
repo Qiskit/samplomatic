@@ -600,89 +600,6 @@ class PreSamplex:
 
         return node_idx
 
-    def add_z2_collect(
-        self,
-        qubits: QubitPartition,
-        clbit_idxs: Sequence[ClbitIndex],
-        trace_info: TraceInfo | None = None,
-    ) -> int:
-        """Add a node to collect virtual gates to Z2 output.
-
-        Args:
-            qubits: The qubits to collect virtual gates on.
-            clbit_idxs: The indices of the clbits measured to (in the same order as qubits).
-            trace_info: Optional debug trace info to attach to the node.
-
-        Raises:
-            SamplexBuildError if number of qubits doesn't match number of clbits
-            SamplexBuildError if not all measured qubits receive emissions
-        Returns:
-            The index of the new node in the graph.
-        """
-        if len(qubits) != len(clbit_idxs):
-            raise SamplexBuildError("Number of qubits != number of clbits.")
-        if len(self._twirled_clbits.intersection(clbit_idxs)) != 0:
-            raise SamplexBuildError(
-                "Cannot twirl more than one measurement on the same classical bit"
-            )
-        self._twirled_clbits.update(clbit_idxs)
-        subsystems = self.qubits_to_indices(qubits)
-
-        clbit_dict = defaultdict(list)
-        subsystems_dict = defaultdict(list)
-        for idx, clbit_idx in enumerate(clbit_idxs):
-            val = 0
-            for reg in self._cregs:
-                if clbit_idx < val + len(reg):
-                    clbit_dict[reg.name].append(clbit_idx - val)
-                    subsystems_dict[reg.name].append(idx)
-                    break
-                val += len(reg)
-
-        node_idx = self.graph.add_node(
-            PreZ2Collect(subsystems, clbit_dict, subsystems_dict, trace_info=trace_info)
-        )
-
-        collected_subsystems = QubitIndicesPartition(1, [])
-        # Collect relevant nodes which are an optional dangler, and leave them optionally dangling
-        # This needs to happen first, so the new optional danglers created later won't be counted.
-        match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate),
-            direction=Direction.RIGHT,
-            dangler_type=DanglerType.OPTIONAL,
-        )
-        for found_idx, found_subsystems in self.find_danglers(match, subsystems):
-            self.graph.add_edge(found_idx, node_idx, PreEdge(found_subsystems, Direction.RIGHT))
-            for subsystem in found_subsystems.all_elements:
-                collected_subsystems.add((subsystem,))
-
-        # Collect every relevant node which is a required dangler,
-        # then convert it to an optional dangler.
-        match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate),
-            direction=Direction.RIGHT,
-            dangler_type=DanglerType.REQUIRED,
-        )
-        for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
-            self.graph.add_edge(found_idx, node_idx, PreEdge(found_subsystems, Direction.RIGHT))
-            for subsystem in found_subsystems.all_elements:
-                collected_subsystems.add((subsystem,))
-            self.add_dangler(found_subsystems.all_elements, found_idx, DanglerType.OPTIONAL)
-
-        # Remove previous Pre-Collects from the danglers. They can no longer be reached,
-        # because the measurement blocks the way.
-        match = DanglerMatch(node_types=(PreCollect,), direction=Direction.RIGHT)
-        all(self.find_then_remove_danglers(match, subsystems))
-
-        # Verify that all measurements were reached by an emission
-        if len(subsystems) != len(collected_subsystems.intersection(subsystems)):
-            raise SamplexBuildError(
-                f"Can not add PreZ2Collect on qubits {qubits}, as some qubits are missing "
-                "corresponding emissions."
-            )
-
-        return node_idx
-
     def add_measure_propagate(
         self,
         instr: DAGOpNode,
@@ -711,7 +628,7 @@ class PreSamplex:
 
         if clbit_idx in self._twirled_clbits:
             raise SamplexBuildError(
-                "Cannot twirl more than one measurement on the same classical bit"
+                "Cannot twirl more than one measurement on the same classical bit."
             )
 
         match = DanglerMatch(
@@ -721,6 +638,9 @@ class PreSamplex:
 
         if not found_predecessors:
             return None
+
+        # cannot propagate left through a measure propagate
+        list(self.find_then_remove_danglers(DanglerMatch(direction=Direction.LEFT), subsystems))
 
         node = PreMeasurePropagate(subsystems, creg_name, creg_offset, trace_info=trace_info)
         node_idx = self.graph.add_node(node)
@@ -742,7 +662,6 @@ class PreSamplex:
         register_type: GroupMode,
         twirl_gate: str | None = None,
         trace_info: TraceInfo | None = None,
-        skip_leftward: bool = False,
     ) -> NodeIndex:
         """Add a node that emits virtual gates left and right of the same type.
 
@@ -751,9 +670,6 @@ class PreSamplex:
             register_type: The type of virtual gate to emit.
             twirl_gate: The 2Q gate name for ``UniformLocalC1`` sampling, or ``None``.
             trace_info: Optional debug trace info to attach to the node.
-            skip_leftward: If True, skip leftward edge creation. Use
-                :meth:`connect_emit_leftward` later to complete the leftward connection
-                once hard gates have created their leftward propagation chain.
 
         Raises:
             SamplexBuildError: When `qubits` has overlap with a hanging emit node with a different
@@ -774,36 +690,10 @@ class PreSamplex:
             )
         )
 
-        if not skip_leftward:
-            self._connect_emit_leftward(node_idx, subsystems)
-
-        # mark the new node as dangling
-        self.add_dangler(subsystems.all_elements, node_idx)
-
-        return node_idx
-
-    def connect_emit_leftward(self, node_idx: NodeIndex):
-        """Connect an existing emit node's leftward component to current leftward danglers.
-
-        This completes the deferred leftward connection for a node created with
-        ``skip_leftward=True``. Call after hard gates have created their leftward
-        propagation chain.
-
-        Args:
-            node_idx: The index of the PreEmit node to connect.
-
-        Raises:
-            SamplexBuildError: If no leftward collector is found for any subsystem.
-        """
-        subsystems = self.graph[node_idx].subsystems
-        self._connect_emit_leftward(node_idx, subsystems)
-
-    def _connect_emit_leftward(self, node_idx: NodeIndex, subsystems: QubitIndicesPartition):
-        """Connect an emit node leftward to collectors/propagators.
-
-        We do NOT remove them as dangling because they might need to be used again for
-        future emissions, for example, a Pauli twirl followed by a noise injection.
-        """
+        # find collectors (or propagators leading to collectors) for right-to-left emission and
+        # connect this emission there. we do NOT want to remove them as dangling because they
+        # might need to be used again for future emissions, for example, a Pauli twirl followed by
+        # a noise injection.
         match = DanglerMatch(node_types=(PreCollect, PrePropagate), direction=Direction.LEFT)
 
         aggregate_found_subsystems = set()
@@ -820,6 +710,11 @@ class PreSamplex:
             raise SamplexBuildError(
                 f"Found an emission without a collector on subsystems {without_collector}."
             )
+
+        # mark the new node as dangling
+        self.add_dangler(subsystems.all_elements, node_idx)
+
+        return node_idx
 
     def _add_emit_left(self, node: PreEmit):
         """Add a pre-emit with `Direction.LEFT`.

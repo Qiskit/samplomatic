@@ -14,8 +14,8 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import ClassicalRegister, Parameter, QuantumCircuit, QuantumRegister
-from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate, XGate
+from qiskit.circuit import Parameter, QuantumCircuit, QuantumRegister
+from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGOpNode
 from rustworkx import topological_sort
@@ -28,7 +28,7 @@ from samplomatic.exceptions import SamplexBuildError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from samplomatic.pre_samplex import PreSamplex
-from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate, PreZ2Collect
+from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate
 from samplomatic.pre_samplex.pre_samplex import DanglerMatch, DanglerType
 from samplomatic.samplex.nodes.pauli_past_clifford_node import PauliPastCliffordNode
 from samplomatic.samplex.nodes.slice_register_node import SliceRegisterNode
@@ -229,54 +229,6 @@ class TestBuildPreSamplex:
 
         assert len(pre_samplex.graph.edges()) == 1
         assert len(pre_samplex.graph.nodes()) == 3
-
-    def test_add_z2_collect(self):
-        """Test that adding a Z2 collect adds the node and edges to the graph."""
-        qreg = QuantumRegister(2)
-        creg = ClassicalRegister(2)
-
-        state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1}, cregs=[creg])
-        state.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        state.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
-        state.add_propagate(DAGOpNode(XGate(), [qreg[0]]), InstructionMode.NONE, [])
-        state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1])
-
-        subsys_idxs = QubitIndicesPartition.from_elements([0, 1])
-        assert state.graph.nodes()[-3] == PrePropagate(
-            QubitIndicesPartition.from_elements([0]),
-            Direction.RIGHT,
-            XGate(),
-            [[0]],
-            InstructionMode.NONE,
-            [],
-        )
-        assert state.graph.nodes()[-2] == PrePropagate(
-            QubitIndicesPartition.from_elements([0]),
-            Direction.LEFT,
-            XGate(),
-            [[0]],
-            InstructionMode.NONE,
-            [],
-        )
-        assert state.graph.nodes()[-1] == PreZ2Collect(
-            subsys_idxs, {creg.name: [0, 1]}, {creg.name: [0, 1]}
-        )
-
-    def test_add_z2_collect_errors(self):
-        """Test that adding a Z2 collect raises errors."""
-        qreg = QuantumRegister(2)
-        creg = ClassicalRegister(2)
-
-        state = PreSamplex(qubit_map={qreg[0]: 0, qreg[1]: 1}, cregs=[creg])
-        state.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        state.add_emit_twirl(QubitPartition.from_elements([qreg[0]]), PauliRegister)
-        with pytest.raises(
-            SamplexBuildError, match="some qubits are missing corresponding emissions"
-        ):
-            state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1])
-
-        with pytest.raises(SamplexBuildError, match="Number of qubits != number of clbits"):
-            state.add_z2_collect(QubitPartition.from_elements(qreg), [0, 1, 2])
 
     @pytest.mark.parametrize("gate", [RXGate, RZGate])
     def test_prepropagate_validation(self, gate):

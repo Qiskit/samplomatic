@@ -59,8 +59,6 @@ class TestBoxBuilder:
         builder.parse(None)
         builder.parse(DAGOpNode(Measure(), [qreg[0]], [creg[0]]))
 
-        assert len(builder.measured_qubits) == 1
-        assert builder.measured_qubits.overlaps_with([qreg[0]])
         measure_nodes = [
             n for n in builder.samplex_state.graph.nodes() if isinstance(n, PreMeasurePropagate)
         ]
@@ -74,7 +72,6 @@ class TestBoxBuilder:
         builder.lhs()
         builder.parse(None)
         builder.parse(DAGOpNode(Measure(), qreg, [creg[0], creg[2]]))
-        builder.parse(None)
         builder.rhs()
         idxs = QubitIndicesPartition.from_elements(builder.samplex_state.qubit_map.values())
 
@@ -113,7 +110,5 @@ class TestBoxBuilder:
         builder.parse(None)
         builder.parse(DAGOpNode(Measure(), qreg, creg))
 
-        with pytest.raises(
-            BuildError, match="Cannot measure the same qubit more than once in a dressed box"
-        ):
+        with pytest.raises(BuildError, match="Cannot twirl more than one measurement"):
             builder.parse(DAGOpNode(Measure(), qreg, creg))

@@ -23,7 +23,6 @@ from ..aliases import DAGOpNode, ParamIndices
 from ..annotations import GATE_DEPENDENT_TWIRLING_GROUPS, GroupMode, InjectionSite
 from ..distributions import GROUP_TO_DISTRIBUTION
 from ..exceptions import BuildError
-from ..partition import QubitPartition
 from ..pre_samplex import PreSamplex
 from ..trace_info import TraceInfo
 from ..virtual_registers import VirtualType
@@ -47,7 +46,6 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
 
         self.collection = collection
         self.emission = emission
-        self.measured_qubits = QubitPartition(1, [])
 
     @property
     def _trace_info(self) -> TraceInfo | None:
@@ -97,39 +95,28 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             Barrier(len(all_qubits), label), all_qubits
         )
 
-    def _emit_twirl(self, twirl_type: GroupMode, skip_leftward: bool = False) -> list[int]:
+    def _emit_twirl(self):
+        if (twirl_type := self.emission.twirl_type) is None:
+            return
         trace_info = self._trace_info
-        node_idxs = []
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
             if len(self.emission.gate_dependent_twirl_qubits):
-                node_idxs.append(
-                    self.samplex_state.add_emit_twirl(
-                        self.emission.gate_dependent_twirl_qubits,
-                        twirl_type,
-                        self.emission.twirl_gate,
-                        trace_info=trace_info,
-                        skip_leftward=skip_leftward,
-                    )
+                self.samplex_state.add_emit_twirl(
+                    self.emission.gate_dependent_twirl_qubits,
+                    twirl_type,
+                    self.emission.twirl_gate,
+                    trace_info=trace_info,
                 )
             if len(self.emission.fallback_twirl_qubits):
-                node_idxs.append(
-                    self.samplex_state.add_emit_twirl(
-                        self.emission.fallback_twirl_qubits,
-                        GroupMode.PAULI,
-                        trace_info=trace_info,
-                        skip_leftward=skip_leftward,
-                    )
+                self.samplex_state.add_emit_twirl(
+                    self.emission.fallback_twirl_qubits,
+                    GroupMode.PAULI,
+                    trace_info=trace_info,
                 )
         else:
-            node_idxs.append(
-                self.samplex_state.add_emit_twirl(
-                    self.emission.qubits,
-                    twirl_type,
-                    trace_info=trace_info,
-                    skip_leftward=skip_leftward,
-                )
+            self.samplex_state.add_emit_twirl(
+                self.emission.qubits, twirl_type, trace_info=trace_info
             )
-        return node_idxs
 
     def _validate_fractional_gate(self, instr: DAGOpNode):
         if instr.op.name not in SUPPORTED_2Q_FRACTIONAL_GATES:
@@ -157,8 +144,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
 
     def _validate_twirl_supports_measurement(self):
         """Validate that the current twirl type is compatible with measurements."""
-        twirl_type = self.emission.twirl_type
-        if not twirl_type:
+        if (twirl_type := self.emission.twirl_type) is None:
             return
         if twirl_type is GroupMode.LOCAL_C1 or (
             twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
@@ -174,9 +160,7 @@ class LeftBoxBuilder(BoxBuilder):
     def __init__(self, collection: CollectionSpec, emission: EmissionSpec):
         super().__init__(collection=collection, emission=emission)
 
-        self.measured_qubits = QubitPartition(1, [])
         self._mode = InstructionMode.MULTIPLY
-        self._deferred_emit_idxs: list[int] = []
 
     def parse(self, instr):
         if instr is None:
@@ -195,8 +179,7 @@ class LeftBoxBuilder(BoxBuilder):
                     self.emission.noise_modifier_ref,
                     trace_info=trace_info,
                 )
-            if self.emission.twirl_type:
-                self._emit_twirl(self.emission.twirl_type)
+            self._emit_twirl()
 
             self._mode = InstructionMode.PROPAGATE
             return
@@ -207,13 +190,6 @@ class LeftBoxBuilder(BoxBuilder):
 
         if name.startswith("meas"):
             self._validate_twirl_supports_measurement()
-            for qubit in instr.qargs:
-                if (qubit,) not in self.measured_qubits:
-                    self.measured_qubits.add((qubit,))
-                else:
-                    raise BuildError(
-                        "Cannot measure the same qubit more than once in a dressed box."
-                    )
             self.template_state.append_remapped_gate(instr)
             for clbit in instr.cargs:
                 clbit_idx = self.template_state.template.find_bit(clbit)[0]
@@ -268,16 +244,6 @@ class LeftBoxBuilder(BoxBuilder):
                 self.emission.noise_modifier_ref,
                 trace_info=trace_info,
             )
-        if (twirl_type := self.emission.twirl_type) and len(self.measured_qubits) != 0:
-            if twirl_type is GroupMode.LOCAL_C1 or (
-                twirl_type not in GATE_DEPENDENT_TWIRLING_GROUPS
-                and GROUP_TO_DISTRIBUTION[twirl_type](len(self.emission.qubits)).register_type
-                != VirtualType.PAULI
-            ):
-                raise BuildError(f"Cannot use {twirl_type.value} twirl in a box with measurements.")
-            self.samplex_state.add_z2_collect(
-                self.measured_qubits, self.clbit_idxs, trace_info=trace_info
-            )
 
     @staticmethod
     def yield_from_dag(dag):
@@ -305,7 +271,6 @@ class RightBoxBuilder(BoxBuilder):
     def __init__(self, collection: CollectionSpec, emission: EmissionSpec):
         super().__init__(collection=collection, emission=emission)
 
-        self.measured_qubits = QubitPartition(1, [])
         self._mode = InstructionMode.PROPAGATE
 
     def parse(self, instr):
@@ -335,13 +300,6 @@ class RightBoxBuilder(BoxBuilder):
         commutant_twirl = False
         if name.startswith("meas"):
             self._validate_twirl_supports_measurement()
-            for qubit in instr.qargs:
-                if (qubit,) not in self.measured_qubits:
-                    self.measured_qubits.add((qubit,))
-                else:
-                    raise BuildError(
-                        "Cannot measure the same qubit more than once in a dressed box."
-                    )
             self.template_state.append_remapped_gate(instr)
             for clbit in instr.cargs:
                 clbit_idx = self.template_state.template.find_bit(clbit)[0]
@@ -377,8 +335,7 @@ class RightBoxBuilder(BoxBuilder):
     def lhs(self):
         self._append_barrier("L")
         trace_info = self._trace_info
-        if twirl_type := self.emission.twirl_type:
-            self._emit_twirl(twirl_type)
+        self._emit_twirl()
         if self.emission.noise_ref and self.emission.noise_site is InjectionSite.BEFORE:
             self.samplex_state.add_emit_noise_right(
                 self.emission.qubits,
