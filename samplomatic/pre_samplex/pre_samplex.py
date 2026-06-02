@@ -57,7 +57,6 @@ from ..annotations import ChangeBasisMode, GroupMode
 from ..builders.specs import FrameChangeMode, InstructionMode
 from ..constants import (
     SUPPORTED_1Q_FRACTIONAL_GATES,
-    SUPPORTED_FRACTIONAL_GATES,
     Direction,
 )
 from ..distributions import GROUP_TO_DISTRIBUTION, UniformPauliSubset
@@ -116,10 +115,9 @@ from .graph_data import (
     PreEdge,
     PreEmit,
     PreInjectNoise,
-    PreMeasurePropagate,
+    PreMeasure,
     PreNode,
     PrePropagate,
-    PrePropagateKey,
 )
 from .utils import merge_pre_edges
 
@@ -571,7 +569,7 @@ class PreSamplex:
 
         # collect any nodes that need collecting and unmark them as dangling
         match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate, PreMeasurePropagate), direction=Direction.RIGHT
+            node_types=(PreEmit, PrePropagate, PreMeasure), direction=Direction.RIGHT
         )
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             if self.graph.has_edge(found_idx, node_idx):
@@ -609,7 +607,7 @@ class PreSamplex:
     ) -> int | None:
         """Add a node that propagates virtual Paulis through a measurement.
 
-        This creates a :class:`~.PreMeasurePropagate` node that, during lowering, produces
+        This creates a :class:`~.PreMeasure` node that, during lowering, produces
         both a Z2 measurement flip output and a continued Pauli register with preserved X
         component and randomized Z component.
 
@@ -631,7 +629,7 @@ class PreSamplex:
             )
 
         match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate, PreMeasurePropagate), direction=Direction.RIGHT
+            node_types=(PreEmit, PrePropagate, PreMeasure), direction=Direction.RIGHT
         )
         found_predecessors = list(self.find_then_remove_danglers(match, subsystems))
 
@@ -641,7 +639,7 @@ class PreSamplex:
         # cannot propagate left through a measure
         list(self.find_then_remove_danglers(DanglerMatch(direction=Direction.LEFT), subsystems))
 
-        node = PreMeasurePropagate(subsystems, creg_name, creg_offset, trace_info=trace_info)
+        node = PreMeasure(subsystems, [creg_name], [creg_offset], trace_info=trace_info)
         node_idx = self.graph.add_node(node)
 
         for pred_idx, pred_subsystems in found_predecessors:
@@ -984,7 +982,7 @@ class PreSamplex:
         )
         all_found_qubit_idxs = set()
         match = DanglerMatch(
-            node_types=(PreEmit, PrePropagate, PreMeasurePropagate), direction=Direction.RIGHT
+            node_types=(PreEmit, PrePropagate, PreMeasure), direction=Direction.RIGHT
         )
         for found_idx, found_subsystems in self.find_then_remove_danglers(match, subsystems):
             all_found_qubit_idxs.update(found_subsystems.all_elements)
@@ -1038,89 +1036,25 @@ class PreSamplex:
         if leftward_node_candidate.is_added:
             self.add_dangler(subsystems.all_elements, leftward_node_candidate.node_idx)
 
-    def merge_parallel_pre_propagate_nodes(self):
-        """Merge parallel pre-propagate nodes acting on disjoint subsystems with the same operation.
+    def merge_parallel_nodes(self, node_type: type[PrePropagate] | type[PreMeasure]):
+        """Merge parallel nodes of a given type acting on disjoint subsystems.
 
-        .. note ::
-            Given a list of topological generations of the nodes in a graph, a gate acting in
-            parallel on :math:`N` disjoint subsystems appears as :math:`N` pre-propagate nodes that
-            are part of the same generation, and have identical directions and operation names, and
-            have predecessors in common.
+        Nodes are merged when they belong to the same topological generation, share at least one
+        predecessor, have disjoint subsystems, and return the same clustering key from
+        ``to_key()``.
+
+        Args:
+            node_type: The pre-node type to merge. Must implement ``to_key()`` and
+                ``from_cluster()`` methods.
         """
         for generation in topological_generations(self.graph):
-            for node_idxs in self._cluster_pre_propagate_nodes(generation):
+            for node_idxs in self._cluster_nodes(generation, node_type):
                 if len(node_idxs) == 1:
-                    # Nothing to merge
                     continue
 
                 nodes = [self.graph[node_idx] for node_idx in node_idxs]
-                combined_subsystems = QubitIndicesPartition.union(
-                    *(node.subsystems for node in nodes)
-                )
-                num_elements = nodes[0].partition.num_elements_per_part
-                commutant_twirl = nodes[0].commutant_twirl
-                num_parts = len(combined_subsystems) // num_elements
-                combined_partition = SubsystemIndicesPartition(
-                    num_elements,
-                    [
-                        tuple(range(i * num_elements, (i + 1) * num_elements))
-                        for i in range(num_parts)
-                    ],
-                )
-
-                # Merge trace info from all contributing nodes (set union per key)
-                merged_trace_info: TraceInfo | None = None
-                for node in nodes:
-                    if node.trace_info is not None:
-                        if merged_trace_info is None:
-                            merged_trace_info = TraceInfo(
-                                {k: set(v) for k, v in node.trace_info.trace_refs.items()}
-                            )
-                        else:
-                            merged_trace_info.merge(node.trace_info)
-
-                if any(
-                    node.operation.name in SUPPORTED_FRACTIONAL_GATES
-                    and not node.operation.is_parameterized()
-                    for node in nodes
-                ):
-                    # We rely on the clustering function to not mix parameterized and bounded gates.
-                    params = [param for node in nodes for param in node.operation.params]
-                    # This merges the node but not the edges
-                    new_node_idx = replace_nodes_with_one_node(
-                        self.graph,
-                        node_idxs,
-                        PrePropagate(
-                            combined_subsystems,
-                            nodes[0].direction,  # all nodes have same direction
-                            nodes[0].operation,  # Besides parameters, all nodes have same operation
-                            combined_partition,
-                            nodes[0].mode,  # all nodes have same spec
-                            params=[],
-                            bounded_params=params,
-                            commutant_twirl=commutant_twirl,
-                            trace_info=merged_trace_info,
-                        ),
-                    )
-
-                else:
-                    params = [param for node in nodes for param in node.params]
-                    # This merges the node but not the edges
-                    new_node_idx = replace_nodes_with_one_node(
-                        self.graph,
-                        node_idxs,
-                        PrePropagate(
-                            combined_subsystems,
-                            nodes[0].direction,  # all nodes have same direction
-                            nodes[0].operation,  # all nodes have same operation, up to the
-                            # parameters which are handled separately
-                            combined_partition,
-                            mode=nodes[0].mode,
-                            params=params,
-                            commutant_twirl=commutant_twirl,
-                            trace_info=merged_trace_info,
-                        ),
-                    )
+                merged_node = node_type.from_cluster(nodes)
+                new_node_idx = replace_nodes_with_one_node(self.graph, node_idxs, merged_node)
 
                 for successor_idx in set(self.graph.successor_indices(new_node_idx)):
                     new_edge = merge_pre_edges(self.graph, new_node_idx, successor_idx)
@@ -1130,43 +1064,37 @@ class PreSamplex:
                     new_edge = merge_pre_edges(self.graph, predecessor_idx, new_node_idx)
                     replace_edges_with_one_edge(self.graph, predecessor_idx, new_node_idx, new_edge)
 
-    def _cluster_pre_propagate_nodes(self, generation: list[NodeIndex]) -> list[list[NodeIndex]]:
-        """Cluster ``PrePropagate`` nodes within a topological generation."""
-        clusters: dict[PrePropagateKey, list[dict[str, Any]]] = defaultdict(list)
+    def _cluster_nodes(self, generation: list[NodeIndex], node_type: type) -> list[list[NodeIndex]]:
+        """Cluster nodes of ``node_type`` within a topological generation."""
+        clusters: dict[Any, list[dict[str, Any]]] = defaultdict(list)
 
         for node_idx in generation:
             node = self.graph[node_idx]
-            if isinstance(node, PrePropagate):
-                cluster_type_key = PrePropagateKey(
-                    mode=node.mode,
-                    operation_name=node.operation.name,
-                    direction=node.direction,
-                    is_parameterized=node.operation.is_parameterized(),
-                    commutant_twirl=node.commutant_twirl,
+            if not isinstance(node, node_type):
+                continue
+            key = node.to_key()
+            for cluster in clusters[key]:
+                if not cluster["subsystems"].overlaps_with(
+                    node.subsystems.all_elements
+                ) and not cluster["predecessors"].isdisjoint(
+                    self.graph.predecessor_indices(node_idx)
+                ):
+                    cluster["nodes"].append(node_idx)
+                    for subsystem in node.subsystems:
+                        cluster["subsystems"].add(subsystem)
+                    cluster["predecessors"].update(self.graph.predecessor_indices(node_idx))
+                    break
+            else:
+                clusters[key].append(
+                    {
+                        "nodes": [node_idx],
+                        "subsystems": QubitIndicesPartition.from_elements(
+                            node.subsystems.all_elements
+                        ),
+                        "predecessors": set(self.graph.predecessor_indices(node_idx)),
+                    }
                 )
-                for cluster in clusters[cluster_type_key]:
-                    if not cluster["subsystems"].overlaps_with(
-                        node.subsystems.all_elements
-                    ) and not cluster["predecessors"].isdisjoint(
-                        self.graph.predecessor_indices(node_idx)
-                    ):
-                        # Add to existing cluster
-                        cluster["nodes"].append(node_idx)
-                        for subsystem in node.subsystems:
-                            cluster["subsystems"].add(subsystem)
-                        cluster["predecessors"].update(self.graph.predecessor_indices(node_idx))
-                        break
-                else:
-                    clusters[cluster_type_key].append(
-                        {
-                            "nodes": [node_idx],
-                            "subsystems": QubitIndicesPartition.from_elements(
-                                node.subsystems.all_elements
-                            ),
-                            "predecessors": set(self.graph.predecessor_indices(node_idx)),
-                        }
-                    )
-        return [cluster["nodes"] for cluster_type in clusters.values() for cluster in cluster_type]
+        return [c["nodes"] for key_clusters in clusters.values() for c in key_clusters]
 
     def sorted_predecessor_idxs(
         self, pre_node_idx: NodeIndex, order: dict[NodeIndex, int]
@@ -1272,7 +1200,8 @@ class PreSamplex:
 
         # Optimization
         self.prune_prenodes_unreachable_from_emission()
-        self.merge_parallel_pre_propagate_nodes()
+        self.merge_parallel_nodes(PrePropagate)
+        self.merge_parallel_nodes(PreMeasure)
 
         samplex = Samplex()
 
@@ -1315,7 +1244,7 @@ class PreSamplex:
                 self.add_collect_node(
                     samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
                 )
-            elif isinstance(pre_node, PreMeasurePropagate):
+            elif isinstance(pre_node, PreMeasure):
                 self.add_measure_propagate_node(
                     samplex,
                     pre_node_idx,
@@ -1818,16 +1747,16 @@ class PreSamplex:
         order: dict[NodeIndex, int],
         register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
     ):
-        """Lower a :class:`~.PreMeasurePropagate` node to samplex nodes.
+        """Lower a :class:`~.PreMeasure` node to samplex nodes.
 
         Args:
             samplex: The samplex to add nodes to.
-            pre_node_idx: The index of the PreMeasurePropagate node.
+            pre_node_idx: The index of the PreMeasure node.
             pre_nodes_to_nodes: A map from pre-node indices to node indices.
             order: A map from pre-node indices to topological order.
             register_names: A map for register name tracking between nodes.
         """
-        pre_node = cast(PreMeasurePropagate, self.graph[pre_node_idx])
+        pre_node = cast(PreMeasure, self.graph[pre_node_idx])
         reg_idx = order[pre_node_idx]
         num_subsystems = len(pre_node.subsystems)
 
@@ -1855,13 +1784,19 @@ class PreSamplex:
         p2z_a_idx = samplex.add_node(pauli_to_z2_a)
         samplex.add_edge(combine_node_idx, p2z_a_idx)
 
-        z2_collect = CollectZ2ToOutputNode(
-            z2_name_a,
-            np.arange(num_subsystems, dtype=np.uint32),
-            f"measurement_flips.{pre_node.creg_name}",
-            [pre_node.creg_offset],
-        )
-        samplex.add_edge(p2z_a_idx, samplex.add_node(z2_collect))
+        creg_groups: dict[str, tuple[list[int], list[int]]] = {}
+        for i, (name, offset) in enumerate(zip(pre_node.creg_names, pre_node.creg_offsets)):
+            creg_groups.setdefault(name, ([], []))[0].append(i)
+            creg_groups[name][1].append(offset)
+
+        for creg_name, (sub_idxs, out_idxs) in creg_groups.items():
+            z2_collect = CollectZ2ToOutputNode(
+                z2_name_a,
+                np.array(sub_idxs, dtype=np.uint32),
+                f"measurement_flips.{creg_name}",
+                out_idxs,
+            )
+            samplex.add_edge(p2z_a_idx, samplex.add_node(z2_collect))
 
         z2_name_b = f"meas_prop_z2b_{reg_idx}"
         pauli_to_z2_b = ConversionNode(

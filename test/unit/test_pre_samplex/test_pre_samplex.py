@@ -360,7 +360,7 @@ class TestFinalize:
 
 
 class TestPrePropagateClustering:
-    """Test the `_cluster_pre_propagate_nodes` function."""
+    """Test the `_cluster_nodes` function."""
 
     def test_nodes_clustered(self):
         """Test that nodes are clustered"""
@@ -377,7 +377,7 @@ class TestPrePropagateClustering:
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
-        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3, 4, 5])  # noqa: SLF001
+        clusters = pre_samplex._cluster_nodes([0, 1, 2, 3, 4, 5], PrePropagate)  # noqa: SLF001
         assert clusters == [[1, 2], [3, 4]]
 
     def test_nodes_different_modes(self):
@@ -394,7 +394,7 @@ class TestPrePropagateClustering:
             pre_samplex.add_propagate(n, m, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
-        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        clusters = pre_samplex._cluster_nodes([0, 1, 2, 3], PrePropagate)  # noqa: SLF001
         assert clusters == [[1], [2]]
 
     def test_nodes_different_predecessors(self):
@@ -419,7 +419,7 @@ class TestPrePropagateClustering:
             QubitPartition(1, ((circ.qubits[2],), (circ.qubits[3],))), PauliRegister
         )
 
-        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        clusters = pre_samplex._cluster_nodes([0, 1, 2, 3], PrePropagate)  # noqa: SLF001
         assert clusters == [[2], [3]]
 
     def test_nodes_different_operation(self):
@@ -436,7 +436,7 @@ class TestPrePropagateClustering:
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
-        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        clusters = pre_samplex._cluster_nodes([0, 1, 2, 3], PrePropagate)  # noqa: SLF001
         assert clusters == [[1], [2]]
 
     def test_nodes_overlaping_qubits(self):
@@ -453,7 +453,7 @@ class TestPrePropagateClustering:
             pre_samplex.add_propagate(instr, InstructionMode.NONE, [])
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
-        clusters = pre_samplex._cluster_pre_propagate_nodes([0, 1, 2, 3])  # noqa: SLF001
+        clusters = pre_samplex._cluster_nodes([0, 1, 2, 3], PrePropagate)  # noqa: SLF001
         assert clusters == [[1], [2]]
 
 
@@ -480,7 +480,7 @@ class TestMergeParallelPrePropagateNodes:
 
         assert len(pre_samplex.graph.nodes()) == 7
 
-        pre_samplex.merge_parallel_pre_propagate_nodes()
+        pre_samplex.merge_parallel_nodes(PrePropagate)
         assert len(pre_samplex.graph.nodes()) == 5
 
         node_idxs = topological_sort(pre_samplex.graph)
@@ -514,7 +514,7 @@ class TestMergeParallelPrePropagateNodes:
         pre_samplex.prune_prenodes_unreachable_from_emission()
 
         assert len(pre_samplex.graph.nodes()) == 7
-        pre_samplex.merge_parallel_pre_propagate_nodes()
+        pre_samplex.merge_parallel_nodes(PrePropagate)
         # The two parametric gates are merged, and the non-parameteric gates are merged
         assert len(pre_samplex.graph.nodes()) == 5
 
@@ -538,7 +538,7 @@ class TestMergeParallelPrePropagateNodes:
 
         assert len(pre_samplex.graph.nodes()) == 7
 
-        pre_samplex.merge_parallel_pre_propagate_nodes()
+        pre_samplex.merge_parallel_nodes(PrePropagate)
         assert len(pre_samplex.graph.nodes()) == 7
 
         node_idxs = topological_sort(pre_samplex.graph)
@@ -582,7 +582,7 @@ class TestMergeParallelPrePropagateNodes:
 
         assert len(pre_samplex.graph.nodes()) == 8
 
-        pre_samplex.merge_parallel_pre_propagate_nodes()
+        pre_samplex.merge_parallel_nodes(PrePropagate)
         assert len(pre_samplex.graph.nodes()) == 5
 
         node_idxs = topological_sort(pre_samplex.graph)
@@ -617,7 +617,7 @@ class TestMergeParallelPrePropagateNodes:
         pre_samplex.add_emit_twirl(subsystems, PauliRegister)
 
         pre_samplex.prune_prenodes_unreachable_from_emission()
-        pre_samplex.merge_parallel_pre_propagate_nodes()
+        pre_samplex.merge_parallel_nodes(PrePropagate)
 
         node_idxs = topological_sort(pre_samplex.graph)
         assert isinstance(pre_samplex.graph[node_idxs[1]], PrePropagate)
@@ -665,7 +665,7 @@ class TestMergeParallelPrePropagateNodes:
         #     circuit.noop(0, 1)
 
         # _, pre_samplex = pre_build(circuit)
-        # pre_samplex.merge_parallel_pre_propagate_nodes()
+        # pre_samplex.merge_parallel_nodes(PrePropagate)
         # graph = pre_samplex.graph
         # for emit_node in [6, 7]:
         #     assert not graph.get_edge_data(emit_node, 4).force_register_copy

@@ -12,6 +12,7 @@
 
 """Graph Data"""
 
+from collections.abc import Hashable
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -28,6 +29,18 @@ from ..synths import Synth
 from ..trace_info import TraceInfo
 from ..virtual_registers import VirtualType
 from ..visualization.hover_style import EdgeStyle, NodeStyle
+
+
+def _merge_trace_info(nodes: list["PreNode"]) -> "TraceInfo | None":
+    """Merge trace info from a list of nodes into a single TraceInfo, or None."""
+    merged: TraceInfo | None = None
+    for node in nodes:
+        if node.trace_info is not None:
+            if merged is None:
+                merged = TraceInfo({k: set(v) for k, v in node.trace_info.trace_refs.items()})
+            else:
+                merged.merge(node.trace_info)
+    return merged
 
 
 @dataclass
@@ -121,26 +134,40 @@ class PreCollect(PreNode):
 
 
 @dataclass
-class PreMeasurePropagate(PreNode):
+class PreMeasure(PreNode):
     """The propagation node type used for measurements during samplex building."""
 
-    creg_name: str
-    """The classical register name this measurement writes to."""
+    creg_names: list[str]
+    """The classical register names this measurement writes to, one per subsystem."""
 
-    creg_offset: int
-    """The index within the classical register."""
+    creg_offsets: list[int]
+    """The indices within the classical registers, one per subsystem."""
 
     direction: Direction = field(init=False)
 
     def __post_init__(self):
         self.direction = Direction.RIGHT
 
+    def to_key(self) -> Hashable:
+        return "measure"
+
+    @classmethod
+    def from_cluster(cls, nodes: list["PreMeasure"]) -> "PreMeasure":
+        combined_subsystems = QubitIndicesPartition.union(*(n.subsystems for n in nodes))
+        creg_names = [name for node in nodes for name in node.creg_names]
+        creg_offsets = [off for node in nodes for off in node.creg_offsets]
+        merged_trace_info = _merge_trace_info(nodes)
+        return cls(combined_subsystems, creg_names, creg_offsets, trace_info=merged_trace_info)
+
     def get_style(self) -> NodeStyle:
+        creg_str = ", ".join(
+            f"{name}[{off}]" for name, off in zip(self.creg_names, self.creg_offsets)
+        )
         style = (
             super()
             .get_style()
             .append_data("Direction", self.direction.name)
-            .append_data("Classical Register", f"{self.creg_name}[{self.creg_offset}]")
+            .append_data("Classical Registers", creg_str)
         )
         style.marker = "diamond"
         style.color = "green"
@@ -149,10 +176,10 @@ class PreMeasurePropagate(PreNode):
 
     def __eq__(self, other: Any) -> bool:
         return (
-            isinstance(other, PreMeasurePropagate)
+            isinstance(other, PreMeasure)
             and self.subsystems == other.subsystems
-            and self.creg_name == other.creg_name
-            and self.creg_offset == other.creg_offset
+            and self.creg_names == other.creg_names
+            and self.creg_offsets == other.creg_offsets
         )
 
 
@@ -248,6 +275,55 @@ class PrePropagate(PreNode):
             .append_data("Operation", self.operation.name)
             .append_data("Partition", str(self.partition))
         )
+
+    def to_key(self) -> "PrePropagateKey":
+        return PrePropagateKey(
+            mode=self.mode,
+            operation_name=self.operation.name,
+            direction=self.direction,
+            is_parameterized=self.operation.is_parameterized(),
+            commutant_twirl=self.commutant_twirl,
+        )
+
+    @classmethod
+    def from_cluster(cls, nodes: list["PrePropagate"]) -> "PrePropagate":
+        combined_subsystems = QubitIndicesPartition.union(*(n.subsystems for n in nodes))
+        num_elements = nodes[0].partition.num_elements_per_part
+        num_parts = len(combined_subsystems) // num_elements
+        combined_partition = SubsystemIndicesPartition(
+            num_elements,
+            [tuple(range(i * num_elements, (i + 1) * num_elements)) for i in range(num_parts)],
+        )
+        merged_trace_info = _merge_trace_info(nodes)
+
+        if any(
+            n.operation.name in SUPPORTED_FRACTIONAL_GATES and not n.operation.is_parameterized()
+            for n in nodes
+        ):
+            params = [p for node in nodes for p in node.operation.params]
+            return cls(
+                combined_subsystems,
+                nodes[0].direction,
+                nodes[0].operation,
+                combined_partition,
+                nodes[0].mode,
+                params=[],
+                bounded_params=params,
+                commutant_twirl=nodes[0].commutant_twirl,
+                trace_info=merged_trace_info,
+            )
+        else:
+            params = [p for node in nodes for p in node.params]
+            return cls(
+                combined_subsystems,
+                nodes[0].direction,
+                nodes[0].operation,
+                combined_partition,
+                nodes[0].mode,
+                params=params,
+                commutant_twirl=nodes[0].commutant_twirl,
+                trace_info=merged_trace_info,
+            )
 
     def __eq__(self, other: Any) -> bool:
         return (

@@ -25,7 +25,7 @@ from samplomatic.constants import Direction
 from samplomatic.exceptions import BuildError
 from samplomatic.partition import QubitIndicesPartition, QubitPartition
 from samplomatic.pre_samplex import PreSamplex
-from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PreMeasurePropagate
+from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PreMeasure
 from samplomatic.synths.rzsx_synth import RzSxSynth
 from samplomatic.virtual_registers import VirtualType
 
@@ -51,7 +51,7 @@ class TestBoxBuilder:
         return builder
 
     def test_parse_measurement(self):
-        """Test parsing of measurement records the qubit and creates PreMeasurePropagate."""
+        """Test parsing of measurement records the qubit and creates PreMeasure."""
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(2)
         builder = self.get_builder(qreg, creg)
@@ -60,12 +60,12 @@ class TestBoxBuilder:
         builder.parse(DAGOpNode(Measure(), [qreg[0]], [creg[0]]))
 
         measure_nodes = [
-            n for n in builder.samplex_state.graph.nodes() if isinstance(n, PreMeasurePropagate)
+            n for n in builder.samplex_state.graph.nodes() if isinstance(n, PreMeasure)
         ]
         assert len(measure_nodes) == 1
 
     def test_measurement_propagation(self):
-        """Test left box with measurements creates PreMeasurePropagate nodes during parse."""
+        """Test left box with measurements creates PreMeasure nodes during parse."""
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(3)
         builder = self.get_builder(qreg, creg)
@@ -78,12 +78,12 @@ class TestBoxBuilder:
         nodes = builder.samplex_state.graph.nodes()
         assert nodes[0] == PreCollect(idxs, Direction.BOTH, RzSxSynth(), [[0, 1, 2], [3, 4, 5]])
         assert nodes[1] == PreEmit(idxs, Direction.BOTH, VirtualType.PAULI)
-        measure_nodes = [n for n in nodes if isinstance(n, PreMeasurePropagate)]
+        measure_nodes = [n for n in nodes if isinstance(n, PreMeasure)]
         assert len(measure_nodes) == 2
-        assert measure_nodes[0].creg_name == creg.name
-        assert measure_nodes[0].creg_offset == 0
-        assert measure_nodes[1].creg_name == creg.name
-        assert measure_nodes[1].creg_offset == 2
+        assert measure_nodes[0].creg_names == [creg.name]
+        assert measure_nodes[0].creg_offsets == [0]
+        assert measure_nodes[1].creg_names == [creg.name]
+        assert measure_nodes[1].creg_offsets == [2]
 
     def test_rhs_no_measurements(self):
         """Test rhs of left box with no measurements"""

@@ -68,7 +68,7 @@ def make_circuits():
     yield (circuit, expected, local_cliffords), "pauli_lindblad_like_cx_to_cz"
 
     # Regression test for #364: parallel multi-qubit gates inside an InjectLocalClifford
-    # box trigger merge_parallel_pre_propagate_nodes
+    # box trigger merge_parallel_nodes
     circuit = QuantumCircuit(4)
     for i in range(2):
         with circuit.box([InjectLocalClifford(f"c{i}"), Twirl()]):

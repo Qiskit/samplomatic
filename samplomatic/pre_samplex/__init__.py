@@ -18,7 +18,7 @@ from .graph_data import (
     PreEdge,
     PreEmit,
     PreInjectNoise,
-    PreMeasurePropagate,
+    PreMeasure,
     PreNode,
     PrePropagate,
     PrePropagateKey,
