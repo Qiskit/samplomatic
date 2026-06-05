@@ -100,13 +100,14 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             return
         trace_info = self._trace_info
         if twirl_type in GATE_DEPENDENT_TWIRLING_GROUPS:
-            if len(self.emission.gate_dependent_twirl_qubits):
-                self.samplex_state.add_emit_twirl(
-                    self.emission.gate_dependent_twirl_qubits,
-                    twirl_type,
-                    self.emission.twirl_gate,
-                    trace_info=trace_info,
-                )
+            if len(self.emission.gate_dependent_twirls):
+                for gate_name, qubits in self.emission.gate_dependent_twirls.items():
+                    self.samplex_state.add_emit_twirl(
+                        qubits,
+                        twirl_type,
+                        gate_name,
+                        trace_info=trace_info,
+                    )
             if len(self.emission.fallback_twirl_qubits):
                 self.samplex_state.add_emit_twirl(
                     self.emission.fallback_twirl_qubits,
