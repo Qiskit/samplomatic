@@ -43,7 +43,7 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     """Classify qubits in a gate-dependent twirl box into entangling and fallback qubits.
 
     Inspects the box body DAG for two-qubit gates and splits qubits accordingly.
-    Mutates ``emission`` in place to set ``gate_dependent_twirl_qubits``, ``fallback_twirl_qubits``,
+    Mutates ``emission`` in place to set ``gate_dependent_twirls``, ``fallback_twirl_qubits``,
     and ``twirl_gate``. If no two-qubit gates are found, sets ``twirl_type`` to PAULI.
 
     Raises:
@@ -53,7 +53,7 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     """
     dag = circuit_to_dag(body)
     seen_pairs = QubitPartition(2, [])
-    gate_names: set[str] = set()
+    gate_pairs: dict[str, QubitPartition] = {}
 
     for node in dag.topological_op_nodes():
         if node.is_standard_gate() and node.op.num_qubits == 2:
@@ -63,38 +63,33 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
                     f"Cannot use gate-dependent twirling with duplicate 2Q gates on qubits {pair}."
                 )
             # QubitPartition.add rejects partial overlaps automatically
+            gate_pairs.setdefault(node.op.name, QubitPartition(2, [])).add(pair)
             seen_pairs.add(pair)
-            gate_names.add(node.op.name)
 
     if emission.twirl_type == GroupMode.LOCAL_PAULI:
-        gate_names = gate_names.intersection(SUPPORTED_2Q_FRACTIONAL_GATES)
+        gate_pairs = {k: v for k, v in gate_pairs.items() if k in SUPPORTED_2Q_FRACTIONAL_GATES}
 
-    if not gate_names:
+    if not gate_pairs:
         emission.twirl_type = GroupMode.PAULI
         return
 
-    if len(gate_names) > 1:
-        raise BuildError(
-            f"Cannot use {emission.twirl_type} twirling with multiple 2Q gate types: {gate_names}."
-        )
-
-    (gate,) = gate_names
-    emission.twirl_gate = gate
-
-    # Gate-dependent qubits: flatten pairs preserving operand order
-    gate_dependent_qubit_list = []
+    gate_dependent_twirls = {}
     seen_qubits = set()
-    for pair in seen_pairs:
-        for q in pair:
-            if q not in seen_qubits:
-                seen_qubits.add(q)
-                gate_dependent_qubit_list.append((q,))
+    for gate, pairs in gate_pairs.items():
+        # Gate-dependent qubits: flatten pairs preserving operand order
+        gate_dependent_qubit_list = []
+        for pair in pairs:
+            for q in pair:
+                if q not in seen_qubits:
+                    seen_qubits.add(q)
+                    gate_dependent_qubit_list.append((q,))
+        gate_dependent_twirls[gate] = QubitPartition(1, gate_dependent_qubit_list)
 
-    emission.gate_dependent_twirl_qubits = QubitPartition(1, gate_dependent_qubit_list)
+    emission.gate_dependent_twirls = gate_dependent_twirls
 
     # Pauli qubits: remainder
     all_qubits = {q for subsys in emission.qubits for q in subsys}
-    fallback_only = all_qubits - emission.gate_dependent_twirl_qubits.all_elements
+    fallback_only = all_qubits - seen_qubits
     emission.fallback_twirl_qubits = QubitPartition(1, [(q,) for q in fallback_only])
 
 
