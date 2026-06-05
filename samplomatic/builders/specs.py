@@ -65,7 +65,7 @@ class EmissionSpec:
     """What type and distribution of virtual gates to emit for twirling."""
 
     gate_dependent_twirls: dict[str, QubitPartition] | None = None
-    """The qubits with entanglers when using gate-dependent twirling."""
+    """A map from gate names that require gate-dependent twirling to subsystems to twirl."""
 
     fallback_twirl_qubits: QubitPartition | None = None
     """The qubits without entanglers when using gate-dependent twirling."""

@@ -10,19 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test error cases for local_c1 twirling."""
+"""Test gate-dependent twirl buidling."""
 
 import pytest
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic import Twirl
 from samplomatic.builders import pre_build
 from samplomatic.exceptions import BuildError
+from samplomatic.pre_samplex import PreEmit
 
 
-class TestLocalC1BuildErrors:
-    def test_multiple_2q_gate_types_left(self):
-        """Error when a left-dressed local_c1 box has multiple 2Q gate types."""
+class TestGateDependetTwirling:
+    def test_multiple_2q_gates_local_c1(self):
+        """Test left-dressed local_c1 box has multiple 2Q gate emissions."""
         circuit = QuantumCircuit(4)
         with circuit.box([Twirl(group="local_c1", dressing="left")]):
             circuit.cx(0, 1)
@@ -31,21 +32,28 @@ class TestLocalC1BuildErrors:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1, 2, 3)
 
-        with pytest.raises(BuildError, match="multiple 2Q gate types"):
-            pre_build(circuit)
+        _, pre_samplex = pre_build(circuit)
+        pre_emits = [node for node in pre_samplex.graph.nodes() if isinstance(node, PreEmit)]
 
-    def test_multiple_2q_gate_types_right(self):
-        """Error when a right-dressed local_c1 box has multiple 2Q gate types."""
+        assert len(pre_emits) == 3
+        assert any(n.twirl_gate == "cz" and n.register_type == "local_c1" for n in pre_emits)
+        assert any(n.twirl_gate == "cx" and n.register_type == "local_c1" for n in pre_emits)
+        assert any(n.twirl_gate is None and n.register_type == "pauli" for n in pre_emits)
+
+    def test_multiple_2q_gate_local_pauli(self):
+        """Test left-dressed local_pauli box has multiple 2Q gate emissions."""
         circuit = QuantumCircuit(4)
-        with circuit.box([Twirl(group="local_c1", dressing="left")]):
-            circuit.noop(0, 1, 2, 3)
-
-        with circuit.box([Twirl(group="local_c1", dressing="right")]):
-            circuit.cx(0, 1)
+        with circuit.box([Twirl(group="local_pauli", dressing="left")]):
+            circuit.rzz(Parameter("a"), 0, 1)
             circuit.cz(2, 3)
+            circuit.measure_all()
 
-        with pytest.raises(BuildError, match="multiple 2Q gate types"):
-            pre_build(circuit)
+        _, pre_samplex = pre_build(circuit)
+        pre_emits = [node for node in pre_samplex.graph.nodes() if isinstance(node, PreEmit)]
+
+        assert len(pre_emits) == 2
+        assert any(n.twirl_gate == "rzz" and n.register_type == "local_pauli" for n in pre_emits)
+        assert any(n.twirl_gate is None and n.register_type == "pauli" for n in pre_emits)
 
     def test_overlapping_2q_gates_same_pair(self):
         """Error when a local_c1 box has duplicate 2Q gates on the same qubits."""
