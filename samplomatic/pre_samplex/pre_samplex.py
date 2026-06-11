@@ -317,7 +317,7 @@ class PreSamplex:
     ):
         self.graph = PyDiGraph[PreNode, PreEdge](multigraph=True) if graph is None else graph
         self.qubit_map: dict[Qubit, QubitIndex] = {} if qubit_map is None else qubit_map
-        self.cregs = cregs
+        self._cregs = cregs
         self._dangling: dict[QubitIndex, set[NodeIndex]] = (
             defaultdict(set) if dangling is None else dangling
         )
@@ -353,7 +353,7 @@ class PreSamplex:
             qubit_map,
             self._dangling,
             self._optional_dangling,
-            self.cregs,
+            self._cregs,
             self._pauli_lindblad_map_count,
             self._pauli_lindblad_maps,
             self._noise_modifiers,
@@ -600,8 +600,6 @@ class PreSamplex:
         self,
         instr: DAGOpNode,
         clbit_idx: ClbitIndex,
-        creg_name: str,
-        creg_offset: int,
         trace_info: TraceInfo | None = None,
     ) -> int | None:
         """Add a node that propagates virtual Paulis through a measurement.
@@ -625,6 +623,18 @@ class PreSamplex:
         if clbit_idx in self._twirled_clbits:
             raise SamplexBuildError(
                 "Cannot twirl more than one measurement on the same classical bit."
+            )
+
+        val = 0
+        creg_name, creg_offset = None, None
+        for reg in self._cregs:
+            if clbit_idx < val + len(reg):
+                creg_name, creg_offset = reg.name, clbit_idx - val
+                break
+            val += len(reg)
+        else:
+            raise SamplexBuildError(
+                f"Could not resolve clbit index {clbit_idx} to a classical register."
             )
 
         match = DanglerMatch(
@@ -1348,7 +1358,7 @@ class PreSamplex:
         )
 
         if self._twirled_clbits:
-            for reg in self.cregs:
+            for reg in self._cregs:
                 samplex.add_output(
                     TensorSpecification(
                         f"measurement_flips.{reg.name}",

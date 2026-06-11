@@ -134,15 +134,6 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
 
         return False
 
-    def _resolve_clbit(self, clbit_idx: int) -> tuple[str, int]:
-        """Resolve a global clbit index to (classical register name, offset within register)."""
-        val = 0
-        for reg in self.samplex_state.cregs:  # noqa: SLF001
-            if clbit_idx < val + len(reg):
-                return reg.name, clbit_idx - val
-            val += len(reg)
-        raise BuildError(f"Could not resolve clbit index {clbit_idx} to a classical register.")
-
     def _validate_twirl_supports_measurement(self):
         """Validate that the current twirl type is compatible with measurements."""
         if (twirl_type := self.emission.twirl_type) is None:
@@ -194,10 +185,7 @@ class LeftBoxBuilder(BoxBuilder):
             self.template_state.append_remapped_gate(instr)
             for clbit in instr.cargs:
                 clbit_idx = self.template_state.template.find_bit(clbit)[0]
-                creg_name, creg_offset = self._resolve_clbit(clbit_idx)
-                self.samplex_state.add_measure_propagate(
-                    instr, clbit_idx, creg_name, creg_offset, trace_info=self._trace_info
-                )
+                self.samplex_state.add_measure_propagate(instr, clbit_idx, self._trace_info)
             return
 
         commutant_twirl = False
@@ -304,10 +292,7 @@ class RightBoxBuilder(BoxBuilder):
             self.template_state.append_remapped_gate(instr)
             for clbit in instr.cargs:
                 clbit_idx = self.template_state.template.find_bit(clbit)[0]
-                creg_name, creg_offset = self._resolve_clbit(clbit_idx)
-                self.samplex_state.add_measure_propagate(
-                    instr, clbit_idx, creg_name, creg_offset, trace_info=self._trace_info
-                )
+                self.samplex_state.add_measure_propagate(instr, clbit_idx, self._trace_info)
             return
 
         elif (num_qubits := instr.num_qubits) == 1:
