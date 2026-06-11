@@ -74,7 +74,6 @@ from ..samplex.nodes import (
     CollectTemplateValues,
     CollectZ2ToOutputNode,
     CombineRegistersNode,
-    ConversionNode,
     DistributionSamplingNode,
     InjectNoiseNode,
     LeftMultiplicationNode,
@@ -318,13 +317,13 @@ class PreSamplex:
     ):
         self.graph = PyDiGraph[PreNode, PreEdge](multigraph=True) if graph is None else graph
         self.qubit_map: dict[Qubit, QubitIndex] = {} if qubit_map is None else qubit_map
+        self.cregs = cregs
         self._dangling: dict[QubitIndex, set[NodeIndex]] = (
             defaultdict(set) if dangling is None else dangling
         )
         self._optional_dangling: dict[QubitIndex, set[NodeIndex]] = (
             defaultdict(set) if optional_dangling is None else optional_dangling
         )
-        self._cregs = cregs
         self._pauli_lindblad_map_count = (
             count() if pauli_lindblad_map_count is None else pauli_lindblad_map_count
         )
@@ -354,7 +353,7 @@ class PreSamplex:
             qubit_map,
             self._dangling,
             self._optional_dangling,
-            self._cregs,
+            self.cregs,
             self._pauli_lindblad_map_count,
             self._pauli_lindblad_maps,
             self._noise_modifiers,
@@ -1349,7 +1348,7 @@ class PreSamplex:
         )
 
         if self._twirled_clbits:
-            for reg in self._cregs:
+            for reg in self.cregs:
                 samplex.add_output(
                     TensorSpecification(
                         f"measurement_flips.{reg.name}",
@@ -1773,13 +1772,12 @@ class PreSamplex:
         )
 
         z2_name_a = f"meas_prop_z2a_{reg_idx}"
-        pauli_to_z2_a = ConversionNode(
-            existing_name=actual_register_name,
-            existing_type=VirtualType.PAULI,
-            new_name=z2_name_a,
-            new_type=VirtualType.Z2,
-            num_subsystems=num_subsystems,
-            remove_existing=False,
+        pauli_to_z2_a = SliceRegisterNode(
+            VirtualType.PAULI,
+            VirtualType.Z2,
+            actual_register_name,
+            z2_name_a,
+            np.arange(num_subsystems),
         )
         p2z_a_idx = samplex.add_node(pauli_to_z2_a)
         samplex.add_edge(combine_node_idx, p2z_a_idx)
@@ -1799,25 +1797,20 @@ class PreSamplex:
             samplex.add_edge(p2z_a_idx, samplex.add_node(z2_collect))
 
         z2_name_b = f"meas_prop_z2b_{reg_idx}"
-        pauli_to_z2_b = ConversionNode(
-            existing_name=actual_register_name,
-            existing_type=VirtualType.PAULI,
-            new_name=z2_name_b,
-            new_type=VirtualType.Z2,
-            num_subsystems=num_subsystems,
-            remove_existing=True,
+
+        pauli_to_z2_b = SliceRegisterNode(
+            VirtualType.PAULI,
+            VirtualType.Z2,
+            actual_register_name,
+            z2_name_b,
+            np.arange(num_subsystems),
         )
         p2z_b_idx = samplex.add_node(pauli_to_z2_b)
         samplex.add_edge(p2z_a_idx, p2z_b_idx)
 
         x_only_name = f"meas_prop_x_{reg_idx}"
-        z2_to_pauli = ConversionNode(
-            existing_name=z2_name_b,
-            existing_type=VirtualType.Z2,
-            new_name=x_only_name,
-            new_type=VirtualType.PAULI,
-            num_subsystems=num_subsystems,
-            remove_existing=True,
+        z2_to_pauli = SliceRegisterNode(
+            VirtualType.Z2, VirtualType.PAULI, z2_name_b, x_only_name, np.arange(num_subsystems)
         )
         z2p_idx = samplex.add_node(z2_to_pauli)
         samplex.add_edge(p2z_b_idx, z2p_idx)

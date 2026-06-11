@@ -14,7 +14,7 @@
 
 import numpy as np
 
-from samplomatic.virtual_registers import VirtualRegister, VirtualType, Z2Register
+from samplomatic.virtual_registers import PauliRegister, VirtualRegister, VirtualType, Z2Register
 
 
 def test_select():
@@ -33,6 +33,13 @@ def test_mod_on_set():
     reg = Z2Register([[0], [1], [0], [1]])
     reg[[1, 2]] = [[6], [7]]
     assert np.array_equal(reg.virtual_gates, [[0], [0], [1], [1]])
+
+
+def test_convert_to():
+    """Test the convert_to() method."""
+    reg = Z2Register([[0, 1, 1], [0, 0, 1]])
+    assert reg.convert_to(VirtualType.Z2) is reg
+    assert reg.convert_to(VirtualType.PAULI) == PauliRegister([[0, 2, 2], [0, 0, 2]])
 
 
 def test_multiply():

@@ -137,7 +137,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
     def _resolve_clbit(self, clbit_idx: int) -> tuple[str, int]:
         """Resolve a global clbit index to (classical register name, offset within register)."""
         val = 0
-        for reg in self.samplex_state._cregs:  # noqa: SLF001
+        for reg in self.samplex_state.cregs:  # noqa: SLF001
             if clbit_idx < val + len(reg):
                 return reg.name, clbit_idx - val
             val += len(reg)
