@@ -200,6 +200,11 @@ class LeftBoxBuilder(BoxBuilder):
                 )
             return
 
+        if name.startswith("reset"):
+            self.template_state.append_remapped_gate(instr)
+            self.samplex_state.add_reset_propagate(instr, trace_info=self._trace_info)
+            return
+
         commutant_twirl = False
         if (num_qubits := instr.num_qubits) == 1:
             if self._mode is InstructionMode.PROPAGATE:
