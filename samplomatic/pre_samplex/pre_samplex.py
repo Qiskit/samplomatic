@@ -686,8 +686,11 @@ class PreSamplex:
         # cannot propagate left through a reset
         list(self.find_then_remove_danglers(DanglerMatch(direction=Direction.LEFT), subsystems))
 
-        pre_emit = PreReset(subsystems, trace_info=trace_info)
-        return self._add_emit_right(pre_emit)
+        pre_reset = PreReset(subsystems, trace_info=trace_info)
+        node_idx = self.graph.add_node(pre_reset)
+        self.add_dangler(pre_reset.subsystems.all_elements, node_idx, DanglerType.OPTIONAL)
+
+        return node_idx
 
     def add_emit_twirl(
         self,
