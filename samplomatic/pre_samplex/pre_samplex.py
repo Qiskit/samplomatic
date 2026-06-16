@@ -664,6 +664,15 @@ class PreSamplex:
         return node_idx
 
     def add_reset_propagate(self, instr, trace_info: TraceInfo | None = None):
+        """Add a node that propagates virtual Paulis through a reset.
+
+        Args:
+            instr: The reset instruction.
+            trace_info: Optional debug trace info to attach to the node.
+
+        Returns:
+            The index of the new node, or None if no rightward danglers were found.
+        """
         subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
 
         match = DanglerMatch(
@@ -1884,7 +1893,7 @@ class PreSamplex:
 
         Args:
             samplex: The samplex to add nodes to.
-            pre_node_idx: The index of the PreMeasure node.
+            pre_node_idx: The index of the PreReset node.
             pre_nodes_to_nodes: A map from pre-node indices to node indices.
             order: A map from pre-node indices to topological order.
             register_names: A map for register name tracking between nodes.
@@ -1892,11 +1901,9 @@ class PreSamplex:
         pre_reset = cast(PreReset, self.graph[pre_reset_idx])
         reg_idx = order[pre_reset_idx]
 
-        phase_dist = UniformPauliSubset.from_name(len(pre_reset.subsystems), "phase")
-
         node = DistributionSamplingNode(
             reg_name := f"reset_prop_phase_{reg_idx}",
-            phase_dist,
+            UniformPauliSubset.from_name(len(pre_reset.subsystems), "phase"),
         )
         node_idx = samplex.add_node(node)
 
