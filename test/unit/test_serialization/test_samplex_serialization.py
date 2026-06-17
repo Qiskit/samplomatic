@@ -22,7 +22,7 @@ from samplomatic.exceptions import SerializationError
 from samplomatic.serialization import samplex_from_json, samplex_to_json
 from samplomatic.ssv import SSV
 
-SUPPORTED_SSVS = set(range(1, SSV))
+SUPPORTED_SSVS = set(range(1, SSV + 1))
 
 
 class TestSamplexSerialization:
@@ -98,9 +98,6 @@ class TestSamplexSerialization:
         """Test a circuit with basis change annotations."""
         circuit = QuantumCircuit(2)
         with circuit.box([ChangeBasis()]):
-            circuit.noop(range(2))
-
-        with circuit.box([Twirl()]):
             circuit.measure_all()
 
         _, samplex = build(circuit)

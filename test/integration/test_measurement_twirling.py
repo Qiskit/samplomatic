@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,6 @@
 """Tests measurement twirling by simulating the circuits"""
 
 import numpy as np
-import pytest
 from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 from samplomatic.annotations import Twirl
@@ -54,6 +53,16 @@ class TestWithSimulation:
             circuit.measure_all()
         sample_simulate_and_compare_counts(circuit, save_plot)
 
+    def test_measure_all_right(self, save_plot):
+        circuit = QuantumCircuit(3)
+        circuit.x(0)
+        circuit.h(1)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.noop(0, 1, 2)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.measure_all()
+        sample_simulate_and_compare_counts(circuit, save_plot)
+
     def test_gates_and_measure_all(self, save_plot):
         circuit = QuantumCircuit(3)
         with circuit.box([Twirl(dressing="left")]):
@@ -75,7 +84,6 @@ class TestWithSimulation:
 
         sample_simulate_and_compare_counts(circuit, save_plot)
 
-    @pytest.mark.skip(reason="QiskitAer bug #2367")
     def test_separate_measure_boxes(self, save_plot):
         """Test separate measurement boxes, with non-standard cbit associations"""
         circuit = QuantumCircuit(QuantumRegister(size=3), ClassicalRegister(name="meas", size=3))
@@ -117,18 +125,15 @@ class TestWithSimulation:
 
         sample_simulate_and_compare_counts(circuit, save_plot)
 
-    @pytest.mark.skip(
-        reason="Mid-circuit measurements followed by non twirled measurements are not supported yet"
-    )
     def test_mid_circuit_measurements_followed_by_non_twirled_measurement(self, save_plot):
         """Test a twirled measurement followed by a non twirled measurement on the same qubit"""
         circuit = QuantumCircuit(1, 3)
         circuit.x(0)
         circuit.h(0)
         with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, 0)
-        with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0)
+        with circuit.box([Twirl(dressing="right")]):
+            circuit.measure(0, 0)
         circuit.measure_all()
 
         sample_simulate_and_compare_counts(circuit, save_plot)
