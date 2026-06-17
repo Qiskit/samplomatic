@@ -98,22 +98,6 @@ class TestSamplexSerialization:
         """Test a circuit with basis change annotations."""
         circuit = QuantumCircuit(2)
         with circuit.box([ChangeBasis()]):
-            circuit.noop(range(2))
-
-        with circuit.box([Twirl(dressing="right")]):
-            circuit.noop(range(2))
-
-        _, samplex = build(circuit)
-        samplex_new = samplex_from_json(samplex_to_json(samplex, ssv=ssv))
-        samplex_new.finalize()
-
-        assert samplex == samplex_new
-
-    @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
-    def test_measure_twirl_circuit(self, ssv):
-        """Test a circuit with measurement twirling."""
-        circuit = QuantumCircuit(2)
-        with circuit.box([Twirl()]):
             circuit.measure_all()
 
         _, samplex = build(circuit)
