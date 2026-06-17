@@ -69,7 +69,7 @@ class AddInjectNoise(TransformationPass):
         strategy: Literal[
             "no_modification", "uniform_modification", "individual_modification"
         ] = "no_modification",
-        site: Literal["before", "after"] = "before",
+        site: Literal["before", "after"] = "after",
         overwrite: bool = False,
         prefix_ref: str = "r",
         prefix_modifier_ref: str = "m",

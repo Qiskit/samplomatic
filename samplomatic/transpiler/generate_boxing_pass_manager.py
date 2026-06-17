@@ -63,7 +63,7 @@ def generate_boxing_pass_manager(
     inject_noise_strategy: Literal[
         "no_modification", "uniform_modification", "individual_modification"
     ] = "no_modification",
-    inject_noise_site: Literal["before", "after"] = "before",
+    inject_noise_site: Literal["before", "after"] = "after",
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
