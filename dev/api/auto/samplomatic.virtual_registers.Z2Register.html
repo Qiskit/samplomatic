@@ -279,11 +279,11 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEdge.html">PreEdge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEmit.html">PreEmit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreInjectNoise.html">PreInjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreMeasure.html">PreMeasure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreNode.html">PreNode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PrePropagate.html">PrePropagate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PrePropagateKey.html">PrePropagateKey</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreSamplex.html">PreSamplex</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreZ2Collect.html">PreZ2Collect</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.samplex.html">samplomatic.samplex</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of samplomatic.samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -499,7 +499,7 @@
 <h1>Z2Register<a class="headerlink" href="#z2register" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.virtual_registers.</span></span><span class="sig-name descname"><span class="pre">Z2Register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_gates</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L23-L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.virtual_registers.</span></span><span class="sig-name descname"><span class="pre">Z2Register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_gates</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L23-L78"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="samplomatic.virtual_registers.GroupRegister.html#samplomatic.virtual_registers.GroupRegister" title="samplomatic.virtual_registers.group_register.GroupRegister"><code class="xref py py-class docutils literal notranslate"><span class="pre">GroupRegister</span></code></a></p>
 <p>Virtual register of elements of Z2, the cyclic group of order 2.</p>
 <p>Z2 is a group that contains two elements, which can be represented by <span class="math notranslate nohighlight">\(0\)</span>
@@ -511,7 +511,7 @@ satisfied.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.CONVERTABLE_TYPES" title="samplomatic.virtual_registers.Z2Register.CONVERTABLE_TYPES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONVERTABLE_TYPES</span></code></a></p></td>
-<td><p>Valid arguments for <code class="xref py py-func docutils literal notranslate"><span class="pre">convert_to()</span></code>.</p></td>
+<td><p>Valid arguments for <a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.convert_to" title="samplomatic.virtual_registers.Z2Register.convert_to"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_to()</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.GATE_SHAPE" title="samplomatic.virtual_registers.Z2Register.GATE_SHAPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GATE_SHAPE</span></code></a></p></td>
 <td><p>The array shape of any single virtual gate.</p></td>
@@ -529,16 +529,19 @@ satisfied.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.identity" title="samplomatic.virtual_registers.Z2Register.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a>(num_subsystems, num_samples)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.convert_to" title="samplomatic.virtual_registers.Z2Register.convert_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to</span></code></a>(register_type)</p></td>
+<td><p>Convert this register type to some other type, if possible.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.identity" title="samplomatic.virtual_registers.Z2Register.identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identity</span></code></a>(num_subsystems, num_samples)</p></td>
 <td><p>Instantiate a new register of identity virtual gates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.inplace_multiply" title="samplomatic.virtual_registers.Z2Register.inplace_multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inplace_multiply</span></code></a>(other[, subsystem_idxs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.inplace_multiply" title="samplomatic.virtual_registers.Z2Register.inplace_multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inplace_multiply</span></code></a>(other[, subsystem_idxs])</p></td>
 <td><p>Inplace-multiply each virtual gate with the corresponding element of <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.invert" title="samplomatic.virtual_registers.Z2Register.invert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.invert" title="samplomatic.virtual_registers.Z2Register.invert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert</span></code></a>()</p></td>
 <td><p>Return a new virtual register that inverts each virtual gate.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.multiply" title="samplomatic.virtual_registers.Z2Register.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiply</span></code></a>(other[, subsystem_idxs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.multiply" title="samplomatic.virtual_registers.Z2Register.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiply</span></code></a>(other[, subsystem_idxs])</p></td>
 <td><p>Multiply each virtual gate with the corresponding element of <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p></td>
 </tr>
 </tbody>
@@ -547,8 +550,8 @@ satisfied.</p>
 <p class="rubric">Attributes Documentation</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register.CONVERTABLE_TYPES">
-<span class="sig-name descname"><span class="pre">CONVERTABLE_TYPES</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#frozenset" title="(in Python v3.14)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="samplomatic.virtual_registers.VirtualType.html#samplomatic.virtual_registers.VirtualType" title="samplomatic.virtual_registers.virtual_type.VirtualType"><span class="pre">VirtualType</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({VirtualType.Z2})</span></em><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.CONVERTABLE_TYPES" title="Link to this definition">¶</a></dt>
-<dd><p>Valid arguments for <code class="xref py py-func docutils literal notranslate"><span class="pre">convert_to()</span></code>.</p>
+<span class="sig-name descname"><span class="pre">CONVERTABLE_TYPES</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#frozenset" title="(in Python v3.14)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="samplomatic.virtual_registers.VirtualType.html#samplomatic.virtual_registers.VirtualType" title="samplomatic.virtual_registers.virtual_type.VirtualType"><span class="pre">VirtualType</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({VirtualType.PAULI,</span> <span class="pre">VirtualType.Z2})</span></em><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.CONVERTABLE_TYPES" title="Link to this definition">¶</a></dt>
+<dd><p>Valid arguments for <a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.convert_to" title="samplomatic.virtual_registers.Z2Register.convert_to"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_to()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -571,6 +574,24 @@ satisfied.</p>
 
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register.convert_to">
+<span class="sig-name descname"><span class="pre">convert_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">register_type</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L46-L51"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.convert_to" title="Link to this definition">¶</a></dt>
+<dd><p>Convert this register type to some other type, if possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>register_type</strong> – The type of register to convert to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new register of the specified output type, or this instance if its type is
+<code class="docutils literal notranslate"><span class="pre">register_type</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="samplomatic.exceptions.VirtualGateError.html#samplomatic.exceptions.VirtualGateError" title="samplomatic.exceptions.VirtualGateError"><strong>VirtualGateError</strong></a> – If this type cannot be converted to the specified type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register.identity">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">identity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_subsystems</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L42-L44"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.identity" title="Link to this definition">¶</a></dt>
 <dd><p>Instantiate a new register of identity virtual gates.</p>
@@ -578,7 +599,7 @@ satisfied.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register.inplace_multiply">
-<span class="sig-name descname"><span class="pre">inplace_multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystem_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><span class="pre">slice</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None,</span> <span class="pre">None,</span> <span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L55-L64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.inplace_multiply" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">inplace_multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystem_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><span class="pre">slice</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None,</span> <span class="pre">None,</span> <span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L62-L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.inplace_multiply" title="Link to this definition">¶</a></dt>
 <dd><p>Inplace-multiply each virtual gate with the corresponding element of <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -595,13 +616,13 @@ satisfied.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register.invert">
-<span class="sig-name descname"><span class="pre">invert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L66-L67"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.invert" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">invert</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L73-L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.invert" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new virtual register that inverts each virtual gate.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.virtual_registers.Z2Register.multiply">
-<span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystem_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><span class="pre">slice</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None,</span> <span class="pre">None,</span> <span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L46-L53"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.multiply" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsystem_idxs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><span class="pre">slice</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">slice(None,</span> <span class="pre">None,</span> <span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/virtual_registers/z2_register.py#L53-L60"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.virtual_registers.Z2Register.multiply" title="Link to this definition">¶</a></dt>
 <dd><p>Multiply each virtual gate with the corresponding element of <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -658,7 +679,7 @@ satisfied.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/06/05</div>
+              Last updated on 2026/06/17</div>
           </div>
           <div class="right-details">
             
@@ -685,6 +706,7 @@ satisfied.</p>
 <li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.GATE_SHAPE"><code class="docutils literal notranslate"><span class="pre">Z2Register.GATE_SHAPE</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.SUBSYSTEM_SIZE"><code class="docutils literal notranslate"><span class="pre">Z2Register.SUBSYSTEM_SIZE</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.TYPE"><code class="docutils literal notranslate"><span class="pre">Z2Register.TYPE</span></code></a></li>
+<li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.convert_to"><code class="docutils literal notranslate"><span class="pre">Z2Register.convert_to()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.identity"><code class="docutils literal notranslate"><span class="pre">Z2Register.identity()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.inplace_multiply"><code class="docutils literal notranslate"><span class="pre">Z2Register.inplace_multiply()</span></code></a></li>
 <li><a class="reference internal" href="#samplomatic.virtual_registers.Z2Register.invert"><code class="docutils literal notranslate"><span class="pre">Z2Register.invert()</span></code></a></li>

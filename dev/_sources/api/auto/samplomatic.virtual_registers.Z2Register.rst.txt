@@ -19,6 +19,7 @@ Z2Register
 
    .. autosummary::
 
+      ~Z2Register.convert_to
       ~Z2Register.identity
       ~Z2Register.inplace_multiply
       ~Z2Register.invert
@@ -33,6 +34,7 @@ Z2Register
 
    .. rubric:: Methods Documentation
 
+   .. automethod:: convert_to
    .. automethod:: identity
    .. automethod:: inplace_multiply
    .. automethod:: invert

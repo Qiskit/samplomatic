@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="PrePropagate" href="samplomatic.pre_samplex.PrePropagate.html" /><link rel="prev" title="PreInjectNoise" href="samplomatic.pre_samplex.PreInjectNoise.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="PrePropagate" href="samplomatic.pre_samplex.PrePropagate.html" /><link rel="prev" title="PreMeasure" href="samplomatic.pre_samplex.PreMeasure.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>PreNode - samplomatic 0.1.dev1</title>
@@ -279,11 +279,11 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEdge.html">PreEdge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreEmit.html">PreEmit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreInjectNoise.html">PreInjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreMeasure.html">PreMeasure</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">PreNode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PrePropagate.html">PrePropagate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PrePropagateKey.html">PrePropagateKey</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreSamplex.html">PreSamplex</a></li>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.pre_samplex.PreZ2Collect.html">PreZ2Collect</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.samplex.html">samplomatic.samplex</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of samplomatic.samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -499,7 +499,7 @@
 <h1>PreNode<a class="headerlink" href="#prenode" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.pre_samplex.PreNode">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.pre_samplex.</span></span><span class="sig-name descname"><span class="pre">PreNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.constants.Direction.html#samplomatic.constants.Direction" title="samplomatic.constants.Direction"><span class="pre">Direction</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TraceInfo</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/graph_data.py#L33-L53"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.pre_samplex.</span></span><span class="sig-name descname"><span class="pre">PreNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subsystems</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.partition.Partition.html#samplomatic.partition.Partition" title="samplomatic.partition.Partition"><span class="pre">Partition</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="samplomatic.constants.Direction.html#samplomatic.constants.Direction" title="samplomatic.constants.Direction"><span class="pre">Direction</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TraceInfo</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/graph_data.py#L46-L66"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreNode" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The node type used during samplex building, different than the type in the final samplex.</p>
 <p class="rubric">Attributes Summary</p>
@@ -550,7 +550,7 @@
 <p class="rubric">Methods Documentation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="samplomatic.pre_samplex.PreNode.get_style">
-<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NodeStyle</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/graph_data.py#L46-L53"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreNode.get_style" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NodeStyle</span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/pre_samplex/graph_data.py#L59-L66"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.pre_samplex.PreNode.get_style" title="Link to this definition">¶</a></dt>
 <dd><p>Summarizes the style of this node when plotted via <a class="reference internal" href="samplomatic.visualization.plot_graph.html#samplomatic.visualization.plot_graph" title="samplomatic.visualization.plot_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_graph()</span></code></a>.</p>
 </dd></dl>
 
@@ -572,14 +572,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.pre_samplex.PreInjectNoise.html">
+          <a class="prev-page" href="samplomatic.pre_samplex.PreMeasure.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">PreInjectNoise</div>
+                <div class="title">PreMeasure</div>
                 
               </div>
             </a>
@@ -593,7 +593,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/06/05</div>
+              Last updated on 2026/06/17</div>
           </div>
           <div class="right-details">
             
