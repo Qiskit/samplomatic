@@ -1841,6 +1841,9 @@ class PreSamplex:
             )
             samplex.add_edge(p2z_a_idx, samplex.add_node(z2_collect))
 
+        if not self.graph.successors(pre_node_idx):
+            return
+
         z2_name_b = f"meas_prop_z2b_{reg_idx}"
 
         pauli_to_z2_b = SliceRegisterNode(

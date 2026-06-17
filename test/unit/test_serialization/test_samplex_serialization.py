@@ -22,7 +22,6 @@ from samplomatic.exceptions import SerializationError
 from samplomatic.serialization import samplex_from_json, samplex_to_json
 from samplomatic.ssv import SSV
 
-MEASURE_SUPPORTED_SSVS = set(range(3, SSV + 1))
 SUPPORTED_SSVS = set(range(1, SSV + 1))
 
 
@@ -110,7 +109,7 @@ class TestSamplexSerialization:
 
         assert samplex == samplex_new
 
-    @pytest.mark.parametrize("ssv", MEASURE_SUPPORTED_SSVS)
+    @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
     def test_measure_twirl_circuit(self, ssv):
         """Test a circuit with measurement twirling."""
         circuit = QuantumCircuit(2)
@@ -170,7 +169,7 @@ class TestSamplexSerialization:
 
         assert samplex == samplex_new
 
-    @pytest.mark.parametrize("ssv", MEASURE_SUPPORTED_SSVS)
+    @pytest.mark.parametrize("ssv", SUPPORTED_SSVS)
     def test_ssv_version_is_obeyed(self, ssv):
         """Scan through the JSON and ensure every occurrence of an SSV key has correct value."""
         circuit = QuantumCircuit(2)
