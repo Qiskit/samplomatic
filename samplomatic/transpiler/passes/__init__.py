@@ -19,3 +19,4 @@ from .add_terminal_right_dressed_boxes import AddTerminalRightDressedBoxes
 from .group_gates_into_boxes import GroupGatesIntoBoxes
 from .group_meas_into_boxes import GroupMeasIntoBoxes
 from .inline_boxes import InlineBoxes
+from .insert_layer_barriers import InsertLayerBarriers

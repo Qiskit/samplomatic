@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,3 +13,10 @@
 """Transpiler"""
 
 from .generate_boxing_pass_manager import generate_boxing_pass_manager
+from .layer_inference import (
+    LayerInferenceError,
+    _InferredLayer,
+    infer_layers,
+    insert_layer_barriers,
+)
+from .passes import InsertLayerBarriers
