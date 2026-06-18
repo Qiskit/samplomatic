@@ -52,7 +52,7 @@ def test_inject_noise_site_deprecation():
     circuit.cx(0, 1)
     circuit.cx(0, 1)
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns(FutureWarning):
         pm_none = generate_boxing_pass_manager()
 
     pm_before = generate_boxing_pass_manager(

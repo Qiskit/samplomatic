@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -9,8 +9,15 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+import pytest
 
 from samplomatic.annotations import InjectionSite, InjectNoise
+
+
+def test_site_future_warning():
+    """Test default value of the ``site`` argument raises a futures warning."""
+    with pytest.warns(FutureWarning):
+        InjectNoise("my_ref")
 
 
 def test_construction():
