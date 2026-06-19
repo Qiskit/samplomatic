@@ -1184,13 +1184,17 @@ class PreSamplex:
         if not self.graph.filter_nodes(lambda node: isinstance(node, PreReset)):
             return
 
-        nodes = self.graph.filter_nodes(lambda node: isinstance(node, PreCollect | PreMeasure))
+        collected = set()
+        for node_idx in reversed(topological_sort(self.graph)):
+            node = self.graph[node_idx]
+            if isinstance(node, PreCollect | PreMeasure):
+                collected.add(node_idx)
+            elif any(s in collected for s in self.graph.successor_indices(node_idx)):
+                collected.add(node_idx)
 
-        self.graph.reverse()
-        unreachable = find_unreachable_nodes(self.graph, nodes)
-        self.graph.reverse()
-
-        self.graph.remove_nodes_from(unreachable)
+        uncollected = set(self.graph.node_indices()) - collected
+        if uncollected:
+            self.graph.remove_nodes_from(list(uncollected))
 
     def validate_no_rightward_danglers(self):
         """Validate that there are no nodes that require termination but are still dangling.
