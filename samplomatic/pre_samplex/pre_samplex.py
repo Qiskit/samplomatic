@@ -1179,6 +1179,19 @@ class PreSamplex:
 
         self.graph.remove_nodes_from(unreachable)
 
+    def prune_uncollected_prenodes(self):
+        """Prune all pre-nodes that are not collected by pre-measure or pre-collect nodes."""
+        if not self.graph.filter_nodes(lambda node: isinstance(node, PreReset)):
+            return
+
+        nodes = self.graph.filter_nodes(lambda node: isinstance(node, PreCollect | PreMeasure))
+
+        self.graph.reverse()
+        unreachable = find_unreachable_nodes(self.graph, nodes)
+        self.graph.reverse()
+
+        self.graph.remove_nodes_from(unreachable)
+
     def validate_no_rightward_danglers(self):
         """Validate that there are no nodes that require termination but are still dangling.
 
@@ -1240,6 +1253,7 @@ class PreSamplex:
 
         # Optimization
         self.prune_prenodes_unreachable_from_emission()
+        self.prune_uncollected_prenodes()
         for mergeable_type in [PrePropagate, PreMeasure, PreReset]:
             self.merge_parallel_nodes(mergeable_type)
 

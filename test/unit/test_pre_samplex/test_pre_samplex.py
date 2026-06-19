@@ -28,7 +28,7 @@ from samplomatic.exceptions import SamplexBuildError
 from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.partition import QubitIndicesPartition, QubitPartition, SubsystemIndicesPartition
 from samplomatic.pre_samplex import PreSamplex
-from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate
+from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PrePropagate, PreReset
 from samplomatic.pre_samplex.pre_samplex import DanglerMatch, DanglerType
 from samplomatic.samplex.nodes.pauli_past_clifford_node import PauliPastCliffordNode
 from samplomatic.samplex.nodes.slice_register_node import SliceRegisterNode
@@ -493,6 +493,37 @@ class TestMergeParallelPrePropagateNodes:
 
         assert pre_samplex.graph[node_idxs[1]].subsystems.all_elements == {0, 1, 2, 3}
         assert pre_samplex.graph[node_idxs[2]].subsystems.all_elements == {0, 1, 2, 3}
+
+    def test_pre_samplex_with_reset(self):
+        """Test propagating through resets acts as expected."""
+        box = QuantumCircuit(2)
+        box.cx(0, 1)
+        box.reset(0)
+        box.reset(1)
+        box.cx(0, 1)
+
+        dag = circuit_to_dag(box)
+        ops = dag.topological_op_nodes()
+        subsystems = QubitPartition(1, ((q,) for q in box.qregs[0]))
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(box.qregs[0])})
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.add_emit_twirl(subsystems, PauliRegister)
+        pre_samplex.add_propagate(next(ops), InstructionMode.PROPAGATE, [])
+        pre_samplex.add_reset_propagate(next(ops))
+        pre_samplex.add_reset_propagate(next(ops))
+        pre_samplex.add_propagate(next(ops), InstructionMode.PROPAGATE, [])
+        pre_samplex.add_collect(subsystems, RzSxSynth(), [])
+        pre_samplex.prune_prenodes_unreachable_from_emission()
+
+        assert len(pre_samplex.graph.nodes()) == 7
+
+        pre_samplex.merge_parallel_nodes(PreReset)
+        assert len(pre_samplex.graph.nodes()) == 6
+
+        # the CX before the resets do not get propagated so we remove the node
+        pre_samplex.prune_uncollected_prenodes()
+        assert len(pre_samplex.graph.nodes()) == 5
 
     @pytest.mark.parametrize("gate_type", ["rz", "rx"])
     def test_merging_of_fractional_gates(self, gate_type):
