@@ -23,6 +23,12 @@ from samplomatic.transpiler.passes import AddInjectNoise
 from samplomatic.utils import get_annotation
 
 
+def test_site_future_warning():
+    """Test default value of the ``site`` argument raises a futures warning."""
+    with pytest.warns(FutureWarning):
+        AddInjectNoise()
+
+
 def test_no_modification_strategy():
     """Test `AddInjectNoise` with the ``"no_modification"`` strategy."""
     circuit = QuantumCircuit(2)

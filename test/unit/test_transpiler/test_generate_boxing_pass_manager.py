@@ -46,6 +46,21 @@ def test_remove_barriers_deprecation():
     assert pm_false.run(circuit) == pm_never.run(circuit)
 
 
+def test_inject_noise_site_deprecation():
+    """Test deprecated default values of the ``inject_noise_site`` option."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.cx(0, 1)
+
+    with pytest.warns(FutureWarning):
+        pm_none = generate_boxing_pass_manager()
+
+    pm_before = generate_boxing_pass_manager(
+        inject_noise_strategy="uniform_modification", inject_noise_site="before"
+    )
+    assert pm_none.run(circuit) == pm_before.run(circuit)
+
+
 @pytest.mark.parametrize(
     "decomposition,measure_annotations", [("rzrx", "all"), ("rzsx", "change_basis")]
 )
