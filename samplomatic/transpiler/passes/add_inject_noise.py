@@ -86,7 +86,7 @@ class AddInjectNoise(TransformationPass):
         if site is None:
             warnings.warn(
                 "The default of the 'inject_noise_site' argument will be changed from "
-                "`'before'` to after in version 0.21.0.",
+                "'before' to 'after' no sooner than version 0.21.0.",
                 FutureWarning,
                 stacklevel=1,
             )
