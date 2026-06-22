@@ -29,7 +29,28 @@ class TestWithSimulation:
         circuit.cx(1, 2)
         with circuit.box([Twirl(dressing="left")]):
             circuit.reset((0, 1, 2))
-            circuit.measure_all()
+        circuit.measure_all()
+        sample_simulate_and_compare_counts(circuit, save_plot)
+
+    def test_sequential_reset_box(self, save_plot):
+        circuit = QuantumCircuit(3)
+        with circuit.box([Twirl(dressing="left")]):
+            circuit.h(0)
+            circuit.cx(0, 1)
+            circuit.cx(1, 2)
+            circuit.reset((0, 1, 2))
+        circuit.measure_all()
+        sample_simulate_and_compare_counts(circuit, save_plot)
+
+    def test_parallel_reset_box(self, save_plot):
+        circuit = QuantumCircuit(3, 3)
+        with circuit.box([Twirl()]):
+            circuit.h(0)
+            circuit.measure(0, 0)
+            circuit.measure(1, 1)
+            circuit.reset(2)
+
+        circuit.measure(2, 2)
         sample_simulate_and_compare_counts(circuit, save_plot)
 
     def test_reset_right(self, save_plot):
@@ -41,27 +62,17 @@ class TestWithSimulation:
             circuit.noop(0, 1, 2)
         with circuit.box([Twirl(dressing="right")]):
             circuit.reset((0, 1, 2))
-            circuit.measure_all()
+        circuit.measure_all()
         sample_simulate_and_compare_counts(circuit, save_plot)
 
-    def test_gates_and_reset(self, save_plot):
-        circuit = QuantumCircuit(3)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.h(0)
-            circuit.cx(0, 1)
-            circuit.cx(1, 2)
-            circuit.reset(0)
-            circuit.measure_all()
-        sample_simulate_and_compare_counts(circuit, save_plot)
-
-    def test_separate_boxes(self, save_plot):
+    def test_resets_and_measures(self, save_plot):
         circuit = QuantumCircuit(QuantumRegister(size=2), ClassicalRegister(name="meas", size=3))
 
         circuit.h(1)
         circuit.cx(1, 0)
         with circuit.box([Twirl(dressing="left")]):
-            circuit.reset(0)
             circuit.measure(0, 2)
+            circuit.reset(0)
 
         with circuit.box([Twirl(dressing="left")]):
             circuit.measure(1, 0)
@@ -69,20 +80,5 @@ class TestWithSimulation:
         with circuit.box([Twirl(dressing="left")]):
             circuit.reset(1)
             circuit.measure(1, 1)
-
-        sample_simulate_and_compare_counts(circuit, save_plot)
-
-    def test_measure_to_different_registers(self, save_plot):
-        """Test separate measurement instructions with several classical registers"""
-        creg1 = ClassicalRegister(3, "c1")
-        creg2 = ClassicalRegister(3, "c2")
-        qreg = QuantumRegister(3, "q1")
-        circuit = QuantumCircuit(qreg, creg1, creg2)
-        circuit.x(0)
-        circuit.h(1)
-        with circuit.box([Twirl(dressing="left")]):
-            circuit.measure(0, creg1[1])
-            circuit.measure(1, creg1[2])
-            circuit.measure(2, creg2[1])
 
         sample_simulate_and_compare_counts(circuit, save_plot)

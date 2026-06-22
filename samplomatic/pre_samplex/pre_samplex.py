@@ -663,7 +663,7 @@ class PreSamplex:
 
         return node_idx
 
-    def add_reset_propagate(self, instr, trace_info: TraceInfo | None = None):
+    def add_reset_propagate(self, instr: DAGOpNode, trace_info: TraceInfo | None = None):
         """Add a node that propagates virtual Paulis through a reset.
 
         Args:
@@ -1117,6 +1117,7 @@ class PreSamplex:
             for cluster in clusters[key]:
                 if not cluster["subsystems"].overlaps_with(node.subsystems.all_elements) and (
                     not (pred_idxs := self.graph.predecessor_indices(node_idx))
+                    and node_type is PreReset
                     or not cluster["predecessors"].isdisjoint(pred_idxs)
                 ):
                     cluster["nodes"].append(node_idx)
