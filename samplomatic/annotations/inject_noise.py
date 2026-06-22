@@ -12,6 +12,7 @@
 
 """InjectNoise"""
 
+import warnings
 from enum import Enum
 from typing import Literal, TypeAlias
 
@@ -53,10 +54,19 @@ class InjectNoise(Annotation):
         self,
         ref: StrRef,
         modifier_ref: StrRef = "",
-        site: InjectionSiteLiteral = "before",
+        site: InjectionSiteLiteral | None = None,
     ):
         self.ref = ref
         self.modifier_ref = modifier_ref
+
+        if site is None:
+            warnings.warn(
+                "The default of the 'inject_noise_site' argument will be changed from "
+                "'before' to 'after' no sooner than version 0.21.0.",
+                FutureWarning,
+                stacklevel=1,
+            )
+            site = "before"
         self.site = InjectionSite(site)
 
     def __eq__(self, other):
