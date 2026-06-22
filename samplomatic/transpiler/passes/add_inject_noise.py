@@ -13,6 +13,7 @@
 """AddInjectNoise"""
 
 import itertools
+import warnings
 from collections.abc import Callable
 from typing import Literal
 
@@ -69,7 +70,7 @@ class AddInjectNoise(TransformationPass):
         strategy: Literal[
             "no_modification", "uniform_modification", "individual_modification"
         ] = "no_modification",
-        site: Literal["before", "after"] = "before",
+        site: Literal["before", "after", None] = None,
         overwrite: bool = False,
         prefix_ref: str = "r",
         prefix_modifier_ref: str = "m",
@@ -77,11 +78,20 @@ class AddInjectNoise(TransformationPass):
     ):
         super().__init__()
         self.strategy = strategy
-        self.site = site
         self.overwrite = overwrite
         self.prefix_ref = prefix_ref
         self.prefix_modifier_ref = prefix_modifier_ref
         self.targets = targets
+
+        if site is None:
+            warnings.warn(
+                "The default of the 'inject_noise_site' argument will be changed from "
+                "'before' to 'after' no sooner than version 0.21.0.",
+                FutureWarning,
+                stacklevel=1,
+            )
+            site = "before"
+        self.site = site
 
     def _get_ref(self, box_key: BoxKey) -> str:
         pair = (box_key, self.site)
