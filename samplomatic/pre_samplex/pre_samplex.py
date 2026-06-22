@@ -642,11 +642,11 @@ class PreSamplex:
         )
         found_predecessors = list(self.find_then_remove_danglers(match, subsystems))
 
-        if not found_predecessors:
-            return None
-
         # cannot propagate left through a measure
         list(self.find_then_remove_danglers(DanglerMatch(direction=Direction.LEFT), subsystems))
+
+        if not found_predecessors:
+            return None
 
         node = PreMeasure(subsystems, [creg_name], [creg_offset], trace_info=trace_info)
         node_idx = self.graph.add_node(node)
