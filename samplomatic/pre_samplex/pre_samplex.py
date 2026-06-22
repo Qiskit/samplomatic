@@ -597,10 +597,7 @@ class PreSamplex:
         return node_idx
 
     def add_measure_propagate(
-        self,
-        instr: DAGOpNode,
-        clbit_idx: ClbitIndex,
-        trace_info: TraceInfo | None = None,
+        self, instr: DAGOpNode, clbit_idx: ClbitIndex, trace_info: TraceInfo | None = None
     ) -> int | None:
         """Add a node that propagates virtual Paulis through a measurement.
 
@@ -611,8 +608,6 @@ class PreSamplex:
         Args:
             instr: The measurement instruction.
             clbit_idx: The global classical bit index.
-            creg_name: The classical register name.
-            creg_offset: The index within the classical register.
             trace_info: Optional debug trace info to attach to the node.
 
         Returns:
