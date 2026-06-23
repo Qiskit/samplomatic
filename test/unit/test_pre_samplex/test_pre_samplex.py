@@ -14,7 +14,7 @@
 
 import numpy as np
 import pytest
-from qiskit.circuit import Parameter, QuantumCircuit, QuantumRegister
+from qiskit.circuit import ClassicalRegister, Parameter, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import CXGate, Measure, RXGate, RZGate
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGOpNode
@@ -205,30 +205,35 @@ class TestBuildPreSamplex:
         with pytest.raises(SamplexBuildError, match="overlaps partially with .* collectors.* left"):
             pre_samplex.add_propagate(DAGOpNode(CXGate(), qreg), InstructionMode.NONE, [])
 
-    def test_propagate_through_measurement_is_noop(self):
-        """Test that add_propagate on a measurement is a no-op."""
+    def test_add_measure_propagate(self):
+        """Test add_measure_propagate."""
+        qreg = QuantumRegister(2)
+        creg = ClassicalRegister(1)
+
+        pre_samplex = PreSamplex(qubit_map={q: idx for idx, q in enumerate(qreg)}, cregs=[creg])
+        pre_samplex.add_collect(QubitPartition.from_elements([qreg[0], qreg[1]]), RzSxSynth(), [])
+        pre_samplex.add_emit_twirl(QubitPartition.from_elements([qreg[0], qreg[1]]), PauliRegister)
+        pre_samplex.add_measure_propagate(DAGOpNode(Measure(), [qreg[0]]), 0, [])
+        pre_samplex.add_collect(QubitPartition.from_elements([qreg[0], qreg[1]]), RzSxSynth(), [])
+
+        # edges: collect0 to emit, emit to measure, emit to collect1, measure to collect1
+        assert len(pre_samplex.graph.edges()) == 4
+        assert len(pre_samplex.graph.nodes()) == 4
+
+    def test_add_measure_propagate_removes_left_danglers(self):
+        """Test that add_measure_propagate removes left danglers."""
         qreg = QuantumRegister(1)
+        creg = ClassicalRegister(1)
 
-        pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
+        left_match = DanglerMatch(direction=Direction.LEFT)
+        subsystems = QubitIndicesPartition.from_elements([0])
+
+        pre_samplex = PreSamplex(qubit_map={qreg[0]: 0}, cregs=[creg])
         pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
-        pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
+        assert len(list(pre_samplex.find_danglers(left_match, subsystems))) == 1
 
-        assert len(pre_samplex.graph.nodes()) == 2
-        assert len(pre_samplex.graph.edges()) == 1
-
-    def test_add_propagate_measurement(self):
-        """Test that add_propagate on a measurement works when no virtual gate is met."""
-        qreg = QuantumRegister(1)
-
-        pre_samplex = PreSamplex(qubit_map={qreg[0]: 0})
-        pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        pre_samplex.add_propagate(DAGOpNode(Measure(), qreg), InstructionMode.NONE, [])
-        pre_samplex.add_collect(QubitPartition.from_elements(qreg), RzSxSynth(), [])
-        pre_samplex.add_emit_twirl(QubitPartition.from_elements(qreg), PauliRegister)
-
-        assert len(pre_samplex.graph.edges()) == 1
-        assert len(pre_samplex.graph.nodes()) == 3
+        pre_samplex.add_measure_propagate(DAGOpNode(Measure(), qreg), 0, [])
+        assert len(list(pre_samplex.find_danglers(left_match, subsystems))) == 0
 
     @pytest.mark.parametrize("gate", [RXGate, RZGate])
     def test_prepropagate_validation(self, gate):
