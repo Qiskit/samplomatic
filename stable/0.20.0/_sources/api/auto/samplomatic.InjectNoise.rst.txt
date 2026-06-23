@@ -1,0 +1,31 @@
+﻿samplomatic.InjectNoise
+=======================
+
+.. currentmodule:: samplomatic
+
+.. autoclass:: InjectNoise
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~InjectNoise.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~InjectNoise.ref
+      ~InjectNoise.modifier_ref
+      ~InjectNoise.site
+      ~InjectNoise.namespace
+   
+   

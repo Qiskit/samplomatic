@@ -1,0 +1,6 @@
+deprecate_arg
+=============
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: deprecate_arg

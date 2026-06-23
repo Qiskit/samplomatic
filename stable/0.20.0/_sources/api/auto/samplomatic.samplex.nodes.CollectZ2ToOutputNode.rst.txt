@@ -1,0 +1,25 @@
+CollectZ2ToOutputNode
+=====================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: CollectZ2ToOutputNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~CollectZ2ToOutputNode.collect
+      ~CollectZ2ToOutputNode.get_style
+      ~CollectZ2ToOutputNode.outputs_to
+      ~CollectZ2ToOutputNode.reads_from
+      ~CollectZ2ToOutputNode.validate_and_update
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: collect
+   .. automethod:: get_style
+   .. automethod:: outputs_to
+   .. automethod:: reads_from
+   .. automethod:: validate_and_update

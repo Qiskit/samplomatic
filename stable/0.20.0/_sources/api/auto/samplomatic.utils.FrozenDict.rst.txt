@@ -1,0 +1,25 @@
+FrozenDict
+==========
+
+.. currentmodule:: samplomatic.utils
+
+.. autoclass:: FrozenDict
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~FrozenDict.copy
+      ~FrozenDict.get
+      ~FrozenDict.items
+      ~FrozenDict.keys
+      ~FrozenDict.values
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: copy
+   .. automethod:: get
+   .. automethod:: items
+   .. automethod:: keys
+   .. automethod:: values

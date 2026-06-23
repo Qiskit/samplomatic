@@ -1,0 +1,33 @@
+PropagateLocalPauliNode
+=======================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: PropagateLocalPauliNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PropagateLocalPauliNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PropagateLocalPauliNode.evaluate
+      ~PropagateLocalPauliNode.get_style
+      ~PropagateLocalPauliNode.reads_from
+      ~PropagateLocalPauliNode.writes_to
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate
+   .. automethod:: get_style
+   .. automethod:: reads_from
+   .. automethod:: writes_to

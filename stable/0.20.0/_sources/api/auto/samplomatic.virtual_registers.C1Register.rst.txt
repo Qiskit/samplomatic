@@ -1,0 +1,43 @@
+C1Register
+==========
+
+.. currentmodule:: samplomatic.virtual_registers
+
+.. autoclass:: C1Register
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~C1Register.CONVERTABLE_TYPES
+      ~C1Register.GATE_SHAPE
+      ~C1Register.SUBSYSTEM_SIZE
+      ~C1Register.TYPE
+      ~C1Register.inverse_table
+      ~C1Register.lookup_table
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~C1Register.convert_to
+      ~C1Register.from_tableau
+      ~C1Register.identity
+      ~C1Register.to_tableau
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: CONVERTABLE_TYPES
+   .. autoattribute:: GATE_SHAPE
+   .. autoattribute:: SUBSYSTEM_SIZE
+   .. autoattribute:: TYPE
+   .. autoattribute:: inverse_table
+   .. autoattribute:: lookup_table
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: convert_to
+   .. automethod:: from_tableau
+   .. automethod:: identity
+   .. automethod:: to_tableau

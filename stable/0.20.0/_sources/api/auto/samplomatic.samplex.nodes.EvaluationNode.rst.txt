@@ -1,0 +1,17 @@
+EvaluationNode
+==============
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: EvaluationNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~EvaluationNode.evaluate
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate

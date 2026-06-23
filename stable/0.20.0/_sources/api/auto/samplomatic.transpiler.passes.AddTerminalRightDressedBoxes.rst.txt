@@ -1,0 +1,17 @@
+AddTerminalRightDressedBoxes
+============================
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: AddTerminalRightDressedBoxes
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AddTerminalRightDressedBoxes.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

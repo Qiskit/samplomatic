@@ -1,0 +1,6 @@
+replace_annotations
+===================
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: replace_annotations

@@ -1,0 +1,453 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc001",
+   "metadata": {},
+   "source": [
+    "(debug-tracing)="
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc002",
+   "metadata": {},
+   "source": [
+    "# Debugging and Tracing\n",
+    "\n",
+    "The {func}`~.build` function transforms an annotated circuit into a template circuit and samplex pair.\n",
+    "In a complex circuit it can be hard to tell which box in the original circuit corresponds to which\n",
+    "barriers in the template, or which nodes in the samplex DAG.\n",
+    "\n",
+    "Samplomatic provides two complementary tracing tools:\n",
+    "\n",
+    "- **Barrier labels**: every barrier in the template circuit carries a label encoding its origin.\n",
+    "  These are always present regardless of whether `debug=True` is set.\n",
+    "- **Trace info on samplex nodes**: when {func}`~.build` is called with `debug=True`, every samplex\n",
+    "  node carries a {class}`~.TraceInfo` object linking it back to the box or boxes that produced it.\n",
+    "\n",
+    "Both tools are most useful when boxes carry a {class}`~.Tag` annotation, which attaches a `ref` \n",
+    "string to the box. Alternatively, {class}`~.InjectNoise` references are also attached."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc003",
+   "metadata": {
+    "tags": [
+     "remove-input",
+     "remove-output"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Without this cell, plotly outputs do not appear in the docs. We hide this cell from itself being\n",
+    "# rendered in the docs by editing its metadata to contain the tags [\"remove-input\", \"remove-output\"]\n",
+    "import plotly.io as pio\n",
+    "\n",
+    "pio.renderers.default = \"sphinx_gallery\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc004",
+   "metadata": {},
+   "source": [
+    "## Tagging boxes\n",
+    "\n",
+    "A {class}`~.Tag` annotation attaches a `ref` string to a box. The `ref` then appears in barrier\n",
+    "labels and in trace info on samplex nodes.\n",
+    "\n",
+    "The example circuit below has three boxes: two tagged CX boxes on disjoint qubit pairs, and an\n",
+    "untagged right-dressed measurement box. The second CX box also carries an {class}`~.InjectNoise`\n",
+    "annotation — both its `tag` ref and its noise `ref` will appear in the barrier labels. The two CX\n",
+    "boxes cover different qubits, which enables the samplex optimizer to merge their propagation nodes\n",
+    "into shared nodes — as we will see in the trace info section."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc005",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qiskit.circuit import QuantumCircuit\n",
+    "\n",
+    "from samplomatic import InjectNoise, Tag, Twirl, build\n",
+    "\n",
+    "circuit = QuantumCircuit(4, 4)\n",
+    "\n",
+    "with circuit.box([Twirl(), Tag(\"cx_ab\")]):\n",
+    "    circuit.cx(0, 1)\n",
+    "\n",
+    "with circuit.box([Twirl(), InjectNoise(\"cx_noise\"), Tag(\"cx_cd\")]):\n",
+    "    circuit.cx(2, 3)\n",
+    "\n",
+    "with circuit.box([Twirl(), Tag(\"meas_box\")]):\n",
+    "    circuit.measure(range(4), range(4))\n",
+    "\n",
+    "circuit.draw(\"mpl\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc006",
+   "metadata": {},
+   "source": [
+    "## Barrier labels in the template circuit\n",
+    "\n",
+    "Calling {func}`~.build` on the circuit above produces a template whose barriers carry identifying\n",
+    "labels. Each label has the form `{side}{scope}@{key=value&...}` where:\n",
+    "\n",
+    "- **Side**: `L` = left-dressing boundary, `M` = inner box content boundary, `R` = right-dressing\n",
+    "  boundary.\n",
+    "- **Scope**: an integer index (or underscore-separated list for nested boxes) distinguishing multiple\n",
+    "  boxes at the same nesting level.\n",
+    "- **Annotations**: a `@`-prefixed, `&`-separated list of `key=value` pairs derived from the box's\n",
+    "  annotations. The `tag` key comes from a {class}`~.Tag` annotation and `inject_noise` from an\n",
+    "  {class}`~.InjectNoise` annotation.\n",
+    "\n",
+    "Barriers from untagged boxes carry only the side and scope (e.g. `L2`), with no `@` suffix."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc007",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "template, samplex = build(circuit)\n",
+    "template.draw(\"mpl\", fold=100)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc008",
+   "metadata": {},
+   "source": [
+    "The barrier labels can also be extracted programmatically:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc009",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "barrier_labels = [instr.operation.label for instr in template if instr.operation.name == \"barrier\"]\n",
+    "barrier_labels"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc010",
+   "metadata": {},
+   "source": [
+    "## Trace info on samplex nodes\n",
+    "\n",
+    "Passing `debug=True` to {func}`~.build` attaches trace information to every samplex node. Each\n",
+    "node's {attr}`~.Node.trace_info` attribute is a {class}`~.TraceInfo` object whose `trace_refs`\n",
+    "dictionary maps annotation keys (e.g. `\"tag\"`, `\"inject_noise\"`) to sets of ref strings. Nodes\n",
+    "without a corresponding box annotation have `trace_info=None`.\n",
+    "\n",
+    "When {meth}`~.Samplex.draw` is called on a debug-built samplex, hovering over any node in the\n",
+    "interactive graph reveals its `trace_refs` inside of the hover tooltip."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc011",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "template, samplex = build(circuit, debug=True)\n",
+    "samplex.draw()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc012",
+   "metadata": {},
+   "source": [
+    "Trace info can also be inspected programmatically. Notice that some nodes carry refs from both\n",
+    "`'cx_ab'` and `'cx_cd'` — the samplex optimizer merged their parallel propagation nodes because\n",
+    "the two boxes cover disjoint qubits and share a common predecessor from the right-dressed\n",
+    "measurement box's emission."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc013",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for node in samplex.graph.nodes():\n",
+    "    if node.trace_info is not None:\n",
+    "        tags = node.trace_info.trace_refs.get(\"tag\", set())\n",
+    "        merged = \" ← merged\" if len(tags) > 1 else \"\"\n",
+    "        print(f\"{type(node).__name__:40s}  tags={tags}{merged}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc014",
+   "metadata": {},
+   "source": [
+    "To find all nodes that originate from a specific box, filter by the `\"tag\"` key:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc015",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "tag_ref = \"cx_ab\"\n",
+    "matching_nodes = [\n",
+    "    node\n",
+    "    for node in samplex.graph.nodes()\n",
+    "    if node.trace_info is not None and tag_ref in node.trace_info.trace_refs.get(\"tag\", set())\n",
+    "]\n",
+    "\n",
+    "print(f\"Nodes originating from box '{tag_ref}':\")\n",
+    "for node in matching_nodes:\n",
+    "    print(f\"  {type(node).__name__}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3ud115ryesy",
+   "metadata": {},
+   "source": [
+    "## Understanding the samplex DAG\n",
+    "\n",
+    "The samplex returned by {func}`~.build` is a directed acyclic graph (DAG) where **edges denote\n",
+    "register dependency**: an edge from node A to node B means B must wait for A to have acted on\n",
+    "the shared virtual registers before B is allowed to act. This is not a temporal ordering like\n",
+    "the DAG of a quantum circuit — instead the graph flows from nodes responsible for generating\n",
+    "randomizations to nodes responsible for synthesizing them as outputs.\n",
+    "\n",
+    "There are three node types, each with a distinct visual style in the interactive plot:\n",
+    "\n",
+    "| Shape | Color | Type | Role |\n",
+    "|---|---|---|---|\n",
+    "| Star | Red | {class}`~.SamplingNode` | Instantiates new virtual registers from a distribution or input |\n",
+    "| Circle | Green | {class}`~.EvaluationNode` | Transforms, combines, or propagates virtual registers |\n",
+    "| Bowtie | Blue / Purple | {class}`~.CollectionNode` | Reads registers and writes to `sample()` outputs |\n",
+    "\n",
+    "Execution proceeds in three phases: all sampling nodes run first (in parallel), evaluation nodes\n",
+    "run next in topological order (parallel within each generation), and collection nodes run last\n",
+    "(in parallel). The graphviz layout reflects this — sampling nodes appear at the top, collection\n",
+    "nodes at the bottom."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "n3iv2b0oct",
+   "metadata": {},
+   "source": [
+    "## Reading hover tooltips\n",
+    "\n",
+    "Every node in the interactive visualization shows a tooltip when hovered. The tooltip contains:\n",
+    "\n",
+    "- **Node class name** and its integer graph index.\n",
+    "- **Register manifests**: which registers the node instantiates, reads from, writes to, and\n",
+    "  removes. These tell you how data flows between nodes.\n",
+    "- **Node-specific details**: the distribution type for sampling nodes, the operand for\n",
+    "  multiplication nodes, the template parameter indices for collection nodes, etc.\n",
+    "- **Trace refs** (only when `debug=True`): the annotation keys and ref strings linking the\n",
+    "  node back to its originating box(es).\n",
+    "\n",
+    "Clicking the plot and then hovering over individual nodes is the fastest way to understand what\n",
+    "a given node does without reading source code."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "niy0g8eq00l",
+   "metadata": {},
+   "source": [
+    "## Orienting in a samplex\n",
+    "\n",
+    "Before diving into the visualization, `print(samplex)` gives a quick text summary of the node\n",
+    "count, required inputs, and promised outputs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "jtmbwqb9a5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "template, samplex = build(circuit)\n",
+    "print(samplex)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8qamjzj64z",
+   "metadata": {},
+   "source": [
+    "## Inspecting registers with `keep_registers`\n",
+    "\n",
+    "Passing `keep_registers=True` to {meth}`~.Samplex.sample` retains the intermediate\n",
+    "{class}`~.VirtualRegister` objects that are live at the end of sampling, storing them in\n",
+    "`outputs.metadata[\"registers\"]`. Each register is a 2D array (shape\n",
+    "`(num_subsystems, num_randomizations)`, with possible trailing gate-shape dimensions) of virtual\n",
+    "group elements.\n",
+    "\n",
+    "This is useful for verifying that virtual gates were combined correctly, or for inspecting the\n",
+    "raw Pauli or unitary samples before they are synthesized into rotation angles."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ymdq1ctyajk",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qiskit.quantum_info import PauliLindbladMap\n",
+    "\n",
+    "outputs = samplex.sample(\n",
+    "    {\"pauli_lindblad_maps.cx_noise\": PauliLindbladMap.identity(2)},\n",
+    "    num_randomizations=3,\n",
+    "    keep_registers=True,\n",
+    ")\n",
+    "for name, reg in outputs.metadata[\"registers\"].items():\n",
+    "    print(f\"{name}: type={reg.TYPE.value}, shape={reg.virtual_gates.shape}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e6909d68",
+   "metadata": {},
+   "source": [
+    "You can view the contents of the end-state of a particular register. In the particular example below, the register has type {class}`~.PauliRegister`; see the API documentation for details about the storage format."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "225eb830",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(\"lhs_0:\", outputs.metadata[\"registers\"][\"lhs_0\"])\n",
+    "outputs.metadata[\"registers\"][\"lhs_0\"].virtual_gates"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mzjbvai206j",
+   "metadata": {},
+   "source": [
+    "## How samplex nodes map to template parameters\n",
+    "\n",
+    "The `outputs[\"parameter_values\"]` array returned by {meth}`~.Samplex.sample` has shape\n",
+    "`(num_randomizations, N)` where `N` matches `len(template.parameters)`. Each column corresponds\n",
+    "to one parameter in the template circuit — the i-th column fills in `template.parameters[i]`.\n",
+    "\n",
+    "The {class}`~.CollectTemplateValues` collection nodes are the link between virtual registers and\n",
+    "template parameters. Each such node holds index information that records which columns of the \n",
+    "output array itwrites to. This makes it possible to trace which virtual-gate subsystems drive \n",
+    "which template parameters.\n",
+    "\n",
+    "See the {doc}`samplex_io` guide for how to bind the sampled parameter values to the template\n",
+    "circuit and run experiments."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "hkehuc4k579",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from samplomatic.samplex.nodes import CollectTemplateValues\n",
+    "\n",
+    "template, samplex = build(circuit, debug=True)\n",
+    "for node in samplex.graph.nodes():\n",
+    "    if isinstance(node, CollectTemplateValues):\n",
+    "        tags = node.trace_info.trace_refs.get(\"tag\", set()) if node.trace_info else set()\n",
+    "        print(f\"tags={tags}  →  template param indices: {node.template_idxs.tolist()}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbtrc016",
+   "metadata": {},
+   "source": [
+    "## Automatic tagging via the transpiler\n",
+    "\n",
+    "When using {func}`~.generate_boxing_pass_manager`, the `add_tags` parameter automatically adds\n",
+    "{class}`~.Tag` annotations to all boxes. Three modes are available:\n",
+    "\n",
+    "- **`\"unique_instance\"`**: assigns sequential refs `t0`, `t1`, ... to boxes in circuit order.\n",
+    "  Every box gets a distinct ref regardless of its structure.\n",
+    "- **`\"unique_box\"`**: computes a structural hash of each box's content and assigns the same ref to\n",
+    "  all structurally equivalent boxes. Useful for grouping boxes by type rather than position.\n",
+    "- **`\"noise_ref\"`**: copies the `ref` from each box's {class}`~.InjectNoise` annotation, and only\n",
+    "  tags boxes that have one. Useful when meaningful noise refs already exist.\n",
+    "\n",
+    "The example below applies `\"unique_instance\"` and `\"unique_box\"` to a circuit whose two CX boxes\n",
+    "are structurally equivalent. With `\"unique_instance\"` each gets a distinct ref, while with\n",
+    "`\"unique_box\"` they share one."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dbtrc017",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from samplomatic.transpiler import generate_boxing_pass_manager\n",
+    "\n",
+    "base_circuit = QuantumCircuit(3)\n",
+    "base_circuit.cx(0, 1)\n",
+    "base_circuit.cx(1, 2)\n",
+    "base_circuit.measure_all()\n",
+    "\n",
+    "# unique_instance: every box gets a distinct tag ref\n",
+    "pm = generate_boxing_pass_manager(add_tags=\"unique_instance\")\n",
+    "boxed = pm.run(base_circuit)\n",
+    "template, _ = build(boxed)\n",
+    "\n",
+    "print(\"unique_instance barrier labels:\")\n",
+    "for instr in template:\n",
+    "    if instr.operation.name == \"barrier\" and instr.operation.label:\n",
+    "        print(f\"  {instr.operation.label}\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "samplomatic",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
