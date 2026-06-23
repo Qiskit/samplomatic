@@ -32,6 +32,8 @@ PreSamplex
       ~PreSamplex.add_measure_propagate_node
       ~PreSamplex.add_propagate
       ~PreSamplex.add_propagate_node
+      ~PreSamplex.add_reset_propagate
+      ~PreSamplex.add_reset_propagate_node
       ~PreSamplex.add_twirl_sampling_node
       ~PreSamplex.draw
       ~PreSamplex.enforce_no_propagation
@@ -41,6 +43,7 @@ PreSamplex
       ~PreSamplex.get_all_danglers
       ~PreSamplex.merge_parallel_nodes
       ~PreSamplex.prune_prenodes_unreachable_from_emission
+      ~PreSamplex.prune_uncollected_prenodes
       ~PreSamplex.qubits_to_indices
       ~PreSamplex.remap
       ~PreSamplex.remove_force_copy_nodes
@@ -72,6 +75,8 @@ PreSamplex
    .. automethod:: add_measure_propagate_node
    .. automethod:: add_propagate
    .. automethod:: add_propagate_node
+   .. automethod:: add_reset_propagate
+   .. automethod:: add_reset_propagate_node
    .. automethod:: add_twirl_sampling_node
    .. automethod:: draw
    .. automethod:: enforce_no_propagation
@@ -81,6 +86,7 @@ PreSamplex
    .. automethod:: get_all_danglers
    .. automethod:: merge_parallel_nodes
    .. automethod:: prune_prenodes_unreachable_from_emission
+   .. automethod:: prune_uncollected_prenodes
    .. automethod:: qubits_to_indices
    .. automethod:: remap
    .. automethod:: remove_force_copy_nodes
