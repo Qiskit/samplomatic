@@ -553,7 +553,7 @@ snippet shows an example where both gates and measurements are grouped.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/generate_boxing_pass_manager.py:251: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/passes/add_inject_noise.py:87: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
   warnings.warn(
 </pre></div>
 </div>
@@ -616,6 +616,12 @@ measurement boxes do not.</p>
     <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">&quot;gates&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/generate_boxing_pass_manager.py:251: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+  warnings.warn(
 </pre></div>
 </div>
 </div>
@@ -897,7 +903,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ed6563f998c8882f9b6fd6b0a32760f86787000075354177153bc86f230271db.png" src="../_images/ed6563f998c8882f9b6fd6b0a32760f86787000075354177153bc86f230271db.png" />
+<img alt="../_images/79282bb24589171bf338897769fa0c3a8a9245070a1a09ba1b5acb538f9a80db.png" src="../_images/79282bb24589171bf338897769fa0c3a8a9245070a1a09ba1b5acb538f9a80db.png" />
 </div>
 </div>
 <p>This pattern also combines naturally with the barrier-based ISA boxing workflow. The boxing pass manager runs as a post-scheduling step, after barriers from the original logical circuit have survived transpilation, so they guide stratification exactly as expected.</p>
