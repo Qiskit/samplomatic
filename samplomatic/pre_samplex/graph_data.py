@@ -215,6 +215,37 @@ class PreEmit(PreNode):
 
 
 @dataclass
+class PreReset(PreEmit):
+    """The emit node type used for resets during samplex building."""
+
+    direction: Direction = field(init=False, kw_only=True)
+    register_type: GroupMode = field(init=False, kw_only=True)
+
+    def __post_init__(self):
+        self.direction = Direction.RIGHT
+        self.register_type = GroupMode.PHASE
+
+    def to_key(self) -> Hashable:
+        return "reset"
+
+    @classmethod
+    def from_cluster(cls, nodes: list["PreReset"]) -> "PreReset":
+        combined_subsystems = QubitIndicesPartition.union(*(n.subsystems for n in nodes))
+        merged_trace_info = _merge_trace_info(nodes)
+        return cls(combined_subsystems, trace_info=merged_trace_info)
+
+    def get_style(self) -> NodeStyle:
+        style = super().get_style().append_data("Direction", self.direction.name)
+        style.marker = "hexagon2"
+        style.color = "orange"
+        style.size = 30
+        return style
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, PreReset) and self.subsystems == other.subsystems
+
+
+@dataclass
 class PrePropagate(PreNode):
     """The propagation node type used during samplex building."""
 

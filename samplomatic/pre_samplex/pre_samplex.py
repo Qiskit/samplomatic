@@ -117,6 +117,7 @@ from .graph_data import (
     PreMeasure,
     PreNode,
     PrePropagate,
+    PreReset,
 )
 from .utils import merge_pre_edges
 
@@ -657,6 +658,35 @@ class PreSamplex:
 
         return node_idx
 
+    def add_reset_propagate(self, instr: DAGOpNode, trace_info: TraceInfo | None = None):
+        """Add a node that propagates virtual Paulis through a reset.
+
+        Args:
+            instr: The reset instruction.
+            trace_info: Optional debug trace info to attach to the node.
+
+        Returns:
+            The index of the new node, or None if no rightward danglers were found.
+        """
+        subsystems = QubitIndicesPartition(1, [(self.qubit_map[qubit],) for qubit in instr.qargs])
+
+        match = DanglerMatch(
+            node_types=(PreEmit, PrePropagate, PreMeasure), direction=Direction.RIGHT
+        )
+        found_predecessors = list(self.find_then_remove_danglers(match, subsystems))
+
+        if not found_predecessors:
+            return None
+
+        # cannot propagate left through a reset
+        list(self.find_then_remove_danglers(DanglerMatch(direction=Direction.LEFT), subsystems))
+
+        pre_reset = PreReset(subsystems, trace_info=trace_info)
+        node_idx = self.graph.add_node(pre_reset)
+        self.add_dangler(pre_reset.subsystems.all_elements, node_idx, DanglerType.OPTIONAL)
+
+        return node_idx
+
     def add_emit_twirl(
         self,
         qubits: QubitPartition,
@@ -1040,7 +1070,9 @@ class PreSamplex:
         if leftward_node_candidate.is_added:
             self.add_dangler(subsystems.all_elements, leftward_node_candidate.node_idx)
 
-    def merge_parallel_nodes(self, node_type: type[PrePropagate] | type[PreMeasure]):
+    def merge_parallel_nodes(
+        self, node_type: type[PrePropagate] | type[PreMeasure] | type[PreReset]
+    ):
         """Merge parallel nodes of a given type acting on disjoint subsystems.
 
         Nodes are merged when they belong to the same topological generation, share at least one
@@ -1078,10 +1110,10 @@ class PreSamplex:
                 continue
             key = node.to_key()
             for cluster in clusters[key]:
-                if not cluster["subsystems"].overlaps_with(
-                    node.subsystems.all_elements
-                ) and not cluster["predecessors"].isdisjoint(
-                    self.graph.predecessor_indices(node_idx)
+                if not cluster["subsystems"].overlaps_with(node.subsystems.all_elements) and (
+                    not (pred_idxs := self.graph.predecessor_indices(node_idx))
+                    and node_type is PreReset
+                    or not cluster["predecessors"].isdisjoint(pred_idxs)
                 ):
                     cluster["nodes"].append(node_idx)
                     for subsystem in node.subsystems:
@@ -1142,6 +1174,23 @@ class PreSamplex:
         unreachable = find_unreachable_nodes(self.graph, emission_nodes)
 
         self.graph.remove_nodes_from(unreachable)
+
+    def prune_uncollected_prenodes(self):
+        """Prune all pre-nodes that are not collected by pre-measure or pre-collect nodes."""
+        if not self.graph.filter_nodes(lambda node: isinstance(node, PreReset)):
+            return
+
+        collected = set()
+        for node_idx in reversed(topological_sort(self.graph)):
+            node = self.graph[node_idx]
+            if isinstance(node, PreCollect | PreMeasure):
+                collected.add(node_idx)
+            elif any(s in collected for s in self.graph.successor_indices(node_idx)):
+                collected.add(node_idx)
+
+        uncollected = set(self.graph.node_indices()) - collected
+        if uncollected:
+            self.graph.remove_nodes_from(list(uncollected))
 
     def validate_no_rightward_danglers(self):
         """Validate that there are no nodes that require termination but are still dangling.
@@ -1204,8 +1253,9 @@ class PreSamplex:
 
         # Optimization
         self.prune_prenodes_unreachable_from_emission()
-        self.merge_parallel_nodes(PrePropagate)
-        self.merge_parallel_nodes(PreMeasure)
+        self.prune_uncollected_prenodes()
+        for mergeable_type in [PrePropagate, PreMeasure, PreReset]:
+            self.merge_parallel_nodes(mergeable_type)
 
         samplex = Samplex()
 
@@ -1234,6 +1284,10 @@ class PreSamplex:
                 )
             elif isinstance(pre_node, PreInjectNoise):
                 self.add_inject_noise_node(
+                    samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
+                )
+            elif isinstance(pre_node, PreReset):
+                self.add_reset_propagate_node(
                     samplex, pre_node_idx, pre_nodes_to_nodes, order, register_names
                 )
             elif isinstance(pre_node, PreEmit):
@@ -1846,6 +1900,37 @@ class PreSamplex:
         pre_nodes_to_nodes[pre_node_idx] = combine_out_idx
         for pre_successor_idx in self.graph.successor_indices(pre_node_idx):
             register_names[pre_successor_idx][pre_node_idx] = output_name
+
+    def add_reset_propagate_node(
+        self,
+        samplex: Samplex,
+        pre_reset_idx: NodeIndex,
+        pre_nodes_to_nodes: dict[NodeIndex, NodeIndex],
+        order: dict[NodeIndex, int],
+        register_names: dict[NodeIndex, dict[NodeIndex, RegisterName]],
+    ):
+        """Lower a :class:`~.PreReset` node to samplex nodes.
+
+        Args:
+            samplex: The samplex to add nodes to.
+            pre_node_idx: The index of the PreReset node.
+            pre_nodes_to_nodes: A map from pre-node indices to node indices.
+            order: A map from pre-node indices to topological order.
+            register_names: A map for register name tracking between nodes.
+        """
+        pre_reset = cast(PreReset, self.graph[pre_reset_idx])
+        reg_idx = order[pre_reset_idx]
+
+        node = DistributionSamplingNode(
+            reg_name := f"reset_prop_phase_{reg_idx}",
+            UniformPauliSubset.from_name(len(pre_reset.subsystems), "phase"),
+        )
+        node_idx = samplex.add_node(node)
+
+        pre_nodes_to_nodes[pre_reset_idx] = node_idx
+
+        for pre_successor_idx in self.graph.successor_indices(pre_reset_idx):
+            register_names[pre_successor_idx][pre_reset_idx] = reg_name
 
     def subgraphs(self) -> list[PyDiGraph[PreNode, PreEdge]]:
         """Return a list of disconnected components."""

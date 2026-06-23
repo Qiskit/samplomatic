@@ -188,6 +188,11 @@ class LeftBoxBuilder(BoxBuilder):
                 self.samplex_state.add_measure_propagate(instr, clbit_idx, self._trace_info)
             return
 
+        if name.startswith("reset"):
+            self.template_state.append_remapped_gate(instr)
+            self.samplex_state.add_reset_propagate(instr, trace_info=self._trace_info)
+            return
+
         commutant_twirl = False
         if (num_qubits := instr.num_qubits) == 1:
             if self._mode is InstructionMode.PROPAGATE:
@@ -286,7 +291,6 @@ class RightBoxBuilder(BoxBuilder):
             self.template_state.append_remapped_gate(instr)
             return
 
-        commutant_twirl = False
         if name.startswith("meas"):
             self._validate_twirl_supports_measurement()
             self.template_state.append_remapped_gate(instr)
@@ -295,7 +299,13 @@ class RightBoxBuilder(BoxBuilder):
                 self.samplex_state.add_measure_propagate(instr, clbit_idx, self._trace_info)
             return
 
-        elif (num_qubits := instr.num_qubits) == 1:
+        if name.startswith("reset"):
+            self.template_state.append_remapped_gate(instr)
+            self.samplex_state.add_reset_propagate(instr, trace_info=self._trace_info)
+            return
+
+        commutant_twirl = False
+        if (num_qubits := instr.num_qubits) == 1:
             # the action of this single-qubit gate will be absorbed into the dressing
             if self._mode is InstructionMode.PROPAGATE:
                 params = self.template_state.append_remapped_gate(instr)

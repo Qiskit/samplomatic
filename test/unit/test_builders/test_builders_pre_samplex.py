@@ -14,7 +14,7 @@
 
 import pytest
 from qiskit.circuit import ClassicalRegister, QuantumRegister
-from qiskit.circuit.library import Measure
+from qiskit.circuit.library import Measure, Reset
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 
 from samplomatic.builders.box_builder import LeftBoxBuilder
@@ -25,7 +25,7 @@ from samplomatic.constants import Direction
 from samplomatic.exceptions import BuildError
 from samplomatic.partition import QubitIndicesPartition, QubitPartition
 from samplomatic.pre_samplex import PreSamplex
-from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PreMeasure
+from samplomatic.pre_samplex.graph_data import PreCollect, PreEmit, PreMeasure, PreReset
 from samplomatic.synths.rzsx_synth import RzSxSynth
 from samplomatic.virtual_registers import VirtualType
 
@@ -50,21 +50,20 @@ class TestBoxBuilder:
         builder.set_samplex_state(pre_samplex).set_template_state(template_state)
         return builder
 
-    def test_parse_measurement(self):
-        """Test parsing of measurement records the qubit and creates PreMeasure."""
-        qreg = QuantumRegister(2)
-        creg = ClassicalRegister(2)
-        builder = self.get_builder(qreg, creg)
+    def test_parse_reset(self):
+        """Test parsing of reset creates PreReset and removes dangling wires."""
+        qreg = QuantumRegister(1)
+        builder = self.get_builder(qreg)
         builder.lhs()
         builder.parse(None)
-        builder.parse(DAGOpNode(Measure(), [qreg[0]], [creg[0]]))
+        builder.parse(DAGOpNode(Reset(), [qreg[0]]))
 
-        measure_nodes = [
-            n for n in builder.samplex_state.graph.nodes() if isinstance(n, PreMeasure)
-        ]
-        assert len(measure_nodes) == 1
+        graph = builder.samplex_state.graph
+        reset_node_indices = [n for n in graph.node_indices() if isinstance(graph[n], PreReset)]
+        assert len(reset_node_indices) == 1
+        assert len(graph.predecessor_indices(reset_node_indices[0])) == 0
 
-    def test_measurement_propagation(self):
+    def test_parse_measure(self):
         """Test left box with measurements creates PreMeasure nodes during parse."""
         qreg = QuantumRegister(2)
         creg = ClassicalRegister(3)
