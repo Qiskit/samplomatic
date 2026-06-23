@@ -2,7 +2,7 @@
 
 ### Deprecated
 
-- The default value for the inject noise site for the `generate_boxing_pass_manager`, `AddInjectNoise`, and `InjectNoise` has been updated from `'before'` to `None`, which will results in a future warning and sets the value to `'before'`. In a future release, the default will be updated to `'after'`. ([#372](https://github.com/Qiskit/samplomatic/issues/372))
+- The default value for the inject noise site for the `generate_boxing_pass_manager`, `AddInjectNoise`, and `InjectNoise` has been updated from `'before'` to `None`, which results in a future warning and sets the value to `'before'`. In a future release, the default will be updated to `'after'`. ([#372](https://github.com/Qiskit/samplomatic/issues/372))
 
 ### Added
 
