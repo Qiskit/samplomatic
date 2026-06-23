@@ -11,7 +11,9 @@ Samplex
    .. autosummary::
 
       ~Samplex.num_parameters
+      ~Samplex.param_table
       ~Samplex.parameters
+      ~Samplex.passthrough_params
 
    .. rubric:: Methods Summary
 
@@ -32,7 +34,9 @@ Samplex
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: num_parameters
+   .. autoattribute:: param_table
    .. autoattribute:: parameters
+   .. autoattribute:: passthrough_params
 
    .. rubric:: Methods Documentation
 

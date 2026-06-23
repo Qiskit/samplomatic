@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Samplex Inputs and Outputs" href="samplex_io.html" /><link rel="prev" title="Dressed boxes" href="dressed_boxes.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Transpiler - samplomatic 0.19.0</title>
+        <title>Transpiler - samplomatic 0.20.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -162,7 +162,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">samplomatic 0.19.0</div></a>
+      <a href="../index.html"><div class="brand">samplomatic 0.20.0</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -190,7 +190,7 @@
     <img class="sidebar-logo only-dark" src="../_static/img/qiskit-dark-logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">samplomatic 0.19.0</span>
+  <span class="sidebar-brand-text">samplomatic 0.20.0</span>
   
 </a>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
@@ -279,11 +279,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreEdge.html">PreEdge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreEmit.html">PreEmit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreInjectNoise.html">PreInjectNoise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreMeasure.html">PreMeasure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreNode.html">PreNode</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PrePropagate.html">PrePropagate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PrePropagateKey.html">PrePropagateKey</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreSamplex.html">PreSamplex</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/auto/samplomatic.pre_samplex.PreZ2Collect.html">PreZ2Collect</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/samplomatic.samplex.html">samplomatic.samplex</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of samplomatic.samplex</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -389,6 +389,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../release_notes/index.html">Release Notes</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Release Notes</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.20.0.html">Release notes for 0.20.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.19.0.html">Release notes for 0.19.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.18.0.html">Release notes for 0.18.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../release_notes/release_notes_0.17.1.html">Release notes for 0.17.1</a></li>
@@ -429,6 +430,8 @@
     </div>
     <div class="qiskit-previous-releases-list-container">
         <ul>
+        
+            <li><a href="/samplomatic/stable/0.19.0/index.html" rel="nofollow noindex">0.19.0</a></li>
         
             <li><a href="/samplomatic/stable/0.18.0/index.html" rel="nofollow noindex">0.18.0</a></li>
         
@@ -529,7 +532,7 @@ the circuit below.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1b43a74b026762eaa60929ccf7cf74cea4f3f113b2fd983029dfc296b75d49dc.png" src="../_images/1b43a74b026762eaa60929ccf7cf74cea4f3f113b2fd983029dfc296b75d49dc.png" />
+<img alt="../_images/409fc172cbcee2a2f08351d50bfe0b3cfea12252b9c902ae656dd9131cdcbb1c.png" src="../_images/409fc172cbcee2a2f08351d50bfe0b3cfea12252b9c902ae656dd9131cdcbb1c.png" />
 </div>
 </div>
 <section id="group-operations-into-boxes">
@@ -551,7 +554,11 @@ snippet shows an example where both gates and measurements are grouped.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2b1e8e666ad33c835949380f542b1a255b51dd1067361c15c17205f408c23905.png" src="../_images/2b1e8e666ad33c835949380f542b1a255b51dd1067361c15c17205f408c23905.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/passes/add_inject_noise.py:87: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+  warnings.warn(
+</pre></div>
+</div>
+<img alt="../_images/f035d53317c93aeac0dfe98d0d22db25e7c3d39a25b6d7d46626b09ca4d1a858.png" src="../_images/f035d53317c93aeac0dfe98d0d22db25e7c3d39a25b6d7d46626b09ca4d1a858.png" />
 </div>
 </div>
 <p>As can be seen in the figure, the pass manager creates boxes of two types: those that contain a single layer of
@@ -573,7 +580,7 @@ gates are not grouped into boxes, nor are the single-qubit gates that preceed th
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ad339d0ec89838647dad4e87f76700775d6440551be42f5480dddfd1b773a0db.png" src="../_images/ad339d0ec89838647dad4e87f76700775d6440551be42f5480dddfd1b773a0db.png" />
+<img alt="../_images/f7f28247735798969ec4e39abf60ad5cbe433c888913530e50912dfe9b1b0cc2.png" src="../_images/f7f28247735798969ec4e39abf60ad5cbe433c888913530e50912dfe9b1b0cc2.png" />
 </div>
 </div>
 </section>
@@ -610,6 +617,12 @@ measurement boxes do not.</p>
     <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">&quot;gates&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/generate_boxing_pass_manager.py:251: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+  warnings.warn(
 </pre></div>
 </div>
 </div>
@@ -672,7 +685,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/568ba0143d44826b05b2bd16eeeb0133364cac24bd11e0f452cea1a33b3af3c3.png" src="../_images/568ba0143d44826b05b2bd16eeeb0133364cac24bd11e0f452cea1a33b3af3c3.png" />
+<img alt="../_images/6b964a13a7c852e591f85cd43e764988afc27c411597608d63569bb146196b48.png" src="../_images/6b964a13a7c852e591f85cd43e764988afc27c411597608d63569bb146196b48.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -692,7 +705,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a51158cd07e8580e644ba0cc9790c2b61b1b810e57564d4ca85f8877845dec83.png" src="../_images/a51158cd07e8580e644ba0cc9790c2b61b1b810e57564d4ca85f8877845dec83.png" />
+<img alt="../_images/c53afcc483d6ef9bf91ebbdeb18f3bb15b13d79bf3bd6368402e29c857bb8a8d.png" src="../_images/c53afcc483d6ef9bf91ebbdeb18f3bb15b13d79bf3bd6368402e29c857bb8a8d.png" />
 </div>
 </div>
 </section>
@@ -714,7 +727,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2bec2674a2c6344cc2b5a4b1bcbb0e6149613ab23c7dce51f96b2ab92fe96ea1.png" src="../_images/2bec2674a2c6344cc2b5a4b1bcbb0e6149613ab23c7dce51f96b2ab92fe96ea1.png" />
+<img alt="../_images/22c62a2e2326513b010f9c9b74382e7e80980799b4be0e9118f29f9970813ef0.png" src="../_images/22c62a2e2326513b010f9c9b74382e7e80980799b4be0e9118f29f9970813ef0.png" />
 </div>
 </div>
 <p>Then the default behaviour will prevent the two entangling gates from ending up in the same box, though it will let the single-qubit gates be absorbed into the next available box despite the barrier.</p>
@@ -727,7 +740,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6d5d769c22ee53930a6fd9305dd5f3cf3d0963478cf5a5df9fb91da956cdf906.png" src="../_images/6d5d769c22ee53930a6fd9305dd5f3cf3d0963478cf5a5df9fb91da956cdf906.png" />
+<img alt="../_images/f10840488c399c4e9f610324f9032b946fe674557e801a6fb6b4f9699f445442.png" src="../_images/f10840488c399c4e9f610324f9032b946fe674557e801a6fb6b4f9699f445442.png" />
 </div>
 </div>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">'never'</span></code> preserves the barriers so that single-qubit gates are constrained.</p>
@@ -741,7 +754,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c0a325e73916e40b3ea228db360ef0d6c0b2689636e4cc5036fc7f0dadde0719.png" src="../_images/c0a325e73916e40b3ea228db360ef0d6c0b2689636e4cc5036fc7f0dadde0719.png" />
+<img alt="../_images/7e23eeca30544c04cf8dd0c1776a3ec926784add7c4a81d932d54233cb071ea5.png" src="../_images/7e23eeca30544c04cf8dd0c1776a3ec926784add7c4a81d932d54233cb071ea5.png" />
 </div>
 </div>
 <p>And finally, if we elect to remove the barriers immediately, then the entanglers are no longer constrained to end up in separate boxes.</p>
@@ -755,7 +768,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b46accf30f3da40cd92d73528d8b20aad2875e124a50f691b230a787e7d8d5d0.png" src="../_images/b46accf30f3da40cd92d73528d8b20aad2875e124a50f691b230a787e7d8d5d0.png" />
+<img alt="../_images/47b827a0f8c9922430260fc2c3b06feceb364352ab99d4fe003492c78b63f834.png" src="../_images/47b827a0f8c9922430260fc2c3b06feceb364352ab99d4fe003492c78b63f834.png" />
 </div>
 </div>
 <section id="how-stratification-works">
@@ -826,7 +839,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/44e6ea745f546c00bfd8c14381b4e1270117d2a65051463d98b52d6d7fdb2402.png" src="../_images/44e6ea745f546c00bfd8c14381b4e1270117d2a65051463d98b52d6d7fdb2402.png" />
+<img alt="../_images/20a1a6939faa637ac78b14729581d75acb92c9597b8f84815f8d020684b10bd6.png" src="../_images/20a1a6939faa637ac78b14729581d75acb92c9597b8f84815f8d020684b10bd6.png" />
 </div>
 </div>
 <p>We transpile to ISA form, assuming the underlying device has CX as the native entangler. Note that the barriers survive transpilation and remain visible in the output circuit.</p>
@@ -845,7 +858,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f3c7f0149b75bd340f5c4e6da5ea3a16e994428c0c8c71f30fb58af31947c910.png" src="../_images/f3c7f0149b75bd340f5c4e6da5ea3a16e994428c0c8c71f30fb58af31947c910.png" />
+<img alt="../_images/0e351028cbe154759125de8f4e194c107a2eeeb3d59c268c84b64dd30bf746c0.png" src="../_images/0e351028cbe154759125de8f4e194c107a2eeeb3d59c268c84b64dd30bf746c0.png" />
 </div>
 </div>
 <p>Now we apply the boxing pass manager to the ISA circuit. Each of the three bond layers becomes a separate box in each Trotter step.</p>
@@ -858,7 +871,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/84fd229cbab8a457da1f3d3770cd936db4dce8456c95d9d4e7fce41e58f983a0.png" src="../_images/84fd229cbab8a457da1f3d3770cd936db4dce8456c95d9d4e7fce41e58f983a0.png" />
+<img alt="../_images/f29aa22cc8b99624abfd5e62119223b92086cbbfcb57aefd1a38ae05429c01e3.png" src="../_images/f29aa22cc8b99624abfd5e62119223b92086cbbfcb57aefd1a38ae05429c01e3.png" />
 </div>
 </div>
 </section>
@@ -891,7 +904,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c61cad2937ee444b8cbbfe4b2f8f79a2179087bfb8e6d249719502b11fce54aa.png" src="../_images/c61cad2937ee444b8cbbfe4b2f8f79a2179087bfb8e6d249719502b11fce54aa.png" />
+<img alt="../_images/ed6563f998c8882f9b6fd6b0a32760f86787000075354177153bc86f230271db.png" src="../_images/ed6563f998c8882f9b6fd6b0a32760f86787000075354177153bc86f230271db.png" />
 </div>
 </div>
 <p>This pattern also combines naturally with the barrier-based ISA boxing workflow. The boxing pass manager runs as a post-scheduling step, after barriers from the original logical circuit have survived transpilation, so they guide stratification exactly as expected.</p>
@@ -910,7 +923,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/80a5bb93109dafa030624a7153d70e3aaf02ec37c5066e521eb3db8ed72f2038.png" src="../_images/80a5bb93109dafa030624a7153d70e3aaf02ec37c5066e521eb3db8ed72f2038.png" />
+<img alt="../_images/a353da5b3dd2d064f5a27443e403d0b5936847b09c210ec0030887913be58865.png" src="../_images/a353da5b3dd2d064f5a27443e403d0b5936847b09c210ec0030887913be58865.png" />
 </div>
 </div>
 </section>
@@ -932,7 +945,11 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6d5d769c22ee53930a6fd9305dd5f3cf3d0963478cf5a5df9fb91da956cdf906.png" src="../_images/6d5d769c22ee53930a6fd9305dd5f3cf3d0963478cf5a5df9fb91da956cdf906.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/annotations/inject_noise.py:63: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+  warnings.warn(
+</pre></div>
+</div>
+<img alt="../_images/f10840488c399c4e9f610324f9032b946fe674557e801a6fb6b4f9699f445442.png" src="../_images/f10840488c399c4e9f610324f9032b946fe674557e801a6fb6b4f9699f445442.png" />
 </div>
 </div>
 <p><a class="reference internal" href="../api/auto/samplomatic.utils.filter_annotations.html#samplomatic.utils.filter_annotations" title="samplomatic.utils.filter_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter_annotations()</span></code></a> keeps only annotations of specified types, removing the rest. <a class="reference internal" href="../api/auto/samplomatic.utils.replace_annotations.html#samplomatic.utils.replace_annotations" title="samplomatic.utils.replace_annotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">replace_annotations()</span></code></a> applies a callable to each annotation; the callable returns a list of annotations to substitute in its place (return <code class="docutils literal notranslate"><span class="pre">[]</span></code> to remove, a single-element list to replace, or a multi-element list to expand).</p>
@@ -994,7 +1011,7 @@ unmeasured qubit <code class="docutils literal notranslate"><span class="pre">0<
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9888748a8113843bc28642bb10ef5f96049086f943de0191705b23a5c358b400.png" src="../_images/9888748a8113843bc28642bb10ef5f96049086f943de0191705b23a5c358b400.png" />
+<img alt="../_images/d434f4f9322de731d1d646fcc7bfc09c773c6f16efab118ac57adc43618ad278.png" src="../_images/d434f4f9322de731d1d646fcc7bfc09c773c6f16efab118ac57adc43618ad278.png" />
 </div>
 </div>
 <p>Drawing left-dressed boxes around the gates and the measurements would result in a circuit that has uncollected
@@ -1015,7 +1032,7 @@ terminated by a right-dressed box that picks up the uncollected virtual gate. Th
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1f2197d29a99bbe04e4b17fcd53fdf523e1ccf86daa9daa954b4eb1ce117d548.png" src="../_images/1f2197d29a99bbe04e4b17fcd53fdf523e1ccf86daa9daa954b4eb1ce117d548.png" />
+<img alt="../_images/88620fdd2480fbd7ba37b809fdcfafce50bd3db6c63f9fd4460465c63ec9d394.png" src="../_images/88620fdd2480fbd7ba37b809fdcfafce50bd3db6c63f9fd4460465c63ec9d394.png" />
 </div>
 </div>
 <p>In another example, a right-dressed box is added to collect the virtual gates that would otherwise remain
@@ -1032,7 +1049,7 @@ uncollected due to the unboxed measurements.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/392092340a4dca274cb2ed43f4bcdb716ba2f4b21384e64d53e9db7a0d40eb3f.png" src="../_images/392092340a4dca274cb2ed43f4bcdb716ba2f4b21384e64d53e9db7a0d40eb3f.png" />
+<img alt="../_images/adc6709e575f644e3345e50d658843222141b60c2fcbef03d30112b55d1d13b6.png" src="../_images/adc6709e575f644e3345e50d658843222141b60c2fcbef03d30112b55d1d13b6.png" />
 </div>
 </div>
 </section>
@@ -1073,7 +1090,7 @@ uncollected due to the unboxed measurements.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/05/19</div>
+              Last updated on 2026/06/23</div>
           </div>
           <div class="right-details">
             
@@ -1119,7 +1136,7 @@ uncollected due to the unboxed measurements.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=cbfb3150"></script>
+</div><script src="../_static/documentation_options.js?v=b52c616d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

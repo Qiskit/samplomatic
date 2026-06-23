@@ -24,7 +24,9 @@ PrePropagate
 
    .. autosummary::
 
+      ~PrePropagate.from_cluster
       ~PrePropagate.get_style
+      ~PrePropagate.to_key
 
    .. rubric:: Attributes Documentation
 
@@ -40,4 +42,6 @@ PrePropagate
 
    .. rubric:: Methods Documentation
 
+   .. automethod:: from_cluster
    .. automethod:: get_style
+   .. automethod:: to_key
