@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -326,6 +326,11 @@ def pytest_generate_tests(metafunc):
         real_and_expected = [(test[0], test[1]) for test in circuits_to_compare]
         descriptions = [test[2] for test in circuits_to_compare]
         metafunc.parametrize("circuits_to_compare", real_and_expected, ids=descriptions)
+    if "alap_circuits_to_compare" in metafunc.fixturenames:
+        alap_circuits = [*make_alap_circuits()]
+        real_and_expected = [(test[0], test[1]) for test in alap_circuits]
+        descriptions = [test[2] for test in alap_circuits]
+        metafunc.parametrize("alap_circuits_to_compare", real_and_expected, ids=descriptions)
 
 
 def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
@@ -362,6 +367,48 @@ def test_annotations(annotations):
     assert transpiled_circuit == expected_circuit
 
 
+def make_alap_circuits():
+    """Yield (circuit, expected_alap_circuit, description) triples for ALAP-specific tests."""
+    theta = Parameter("theta")
+    phi = Parameter("phi")
+    lam = Parameter("lambda")
+
+    # In ASAP: cx(1,2)+cx(4,3) share no qubits → same box; ecr(0,1) follows in a second box.
+    # In ALAP: ecr(0,1) is latest → group 0; cx(1,2) shares q1 with ecr → pushed to group -1;
+    #          cx(4,3) shares no qubits with ecr → also lands in group 0 alongside ecr.
+    circuit = QuantumCircuit(6)
+    circuit.x(0)
+    circuit.rx(theta, 0)
+    circuit.rz(phi, 1)
+    circuit.z(0)
+    circuit.y(1)
+    circuit.cx(1, 2)
+    circuit.cx(4, 3)
+    circuit.ecr(0, 1)
+    circuit.y(1)
+    circuit.sx(3)
+    circuit.rz(lam, 5)
+    circuit.sx(5)
+
+    expected_circuit = QuantumCircuit(6)
+    expected_circuit.rz(phi, 1)
+    expected_circuit.y(1)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(1, 2)
+    expected_circuit.x(0)
+    expected_circuit.rx(theta, 0)
+    expected_circuit.z(0)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.ecr(0, 1)
+        expected_circuit.cx(4, 3)
+    expected_circuit.y(1)
+    expected_circuit.sx(3)
+    expected_circuit.rz(lam, 5)
+    expected_circuit.sx(5)
+
+    yield circuit, expected_circuit, "alap_groups_independent_gate_with_latest_box"
+
+
 def test_raises_for_unsupported_ops():
     """Test that `GroupGatesIntoBoxes` raises when the circuit contains unsupported ops."""
     pm = PassManager(passes=[GroupGatesIntoBoxes()])
@@ -381,3 +428,32 @@ def test_raises_for_unsupported_ops():
 
     with pytest.raises(TranspilerError, match="``'if_else'`` is not supported"):
         pm.run(circuit)
+
+
+def test_alap_transpiled_circuits_have_correct_boxops(alap_circuits_to_compare):
+    """Test ``GroupGatesIntoBoxes`` with ``alap=True``.
+
+    Args:
+        alap_circuits_to_compare: A tuple containing a ``(circuit, expected_circuit)`` pair where
+            the expected circuit reflects ALAP box grouping.
+    """
+    circuit, expected_circuit = alap_circuits_to_compare
+    pm = PassManager(passes=[GroupGatesIntoBoxes(alap=True)])
+    transpiled_circuit = pm.run(circuit)
+
+    assert transpiled_circuit == expected_circuit
+
+
+def test_alap_and_asap_agree_on_fully_constrained_circuits():
+    """Test that ALAP and ASAP produce the same result when gate order is uniquely determined."""
+    circuit = QuantumCircuit(6)
+    circuit.cx(0, 1)
+    circuit.cx(1, 2)
+    circuit.cx(2, 3)
+    circuit.cx(3, 4)
+    circuit.cx(4, 5)
+
+    pm_asap = PassManager(passes=[GroupGatesIntoBoxes()])
+    pm_alap = PassManager(passes=[GroupGatesIntoBoxes(alap=True)])
+
+    assert pm_asap.run(circuit) == pm_alap.run(circuit)

@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -35,6 +35,22 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
         Nodes from the dag circuit.
     """
     for layer in dag.multigraph_layers():
+        yield from (node for node in layer if isinstance(node, DAGOpNode))
+
+
+def alap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
+    """Yield operation nodes of the DAG circuit in "alap" topological order.
+
+    In this case, "alap" means that topological generations are filled greedily from the end, and
+    nodes are yielded out of these generations in reverse order.
+
+    Args:
+        dag: The dag circuit to yield nodes from.
+
+    Yields:
+        Nodes from the dag circuit.
+    """
+    for layer in reversed(list(dag.multigraph_layers())):
         yield from (node for node in layer if isinstance(node, DAGOpNode))
 
 
