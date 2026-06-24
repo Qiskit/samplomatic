@@ -256,9 +256,12 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
 
     class SSV1(DataSerializer[InjectNoiseNode]):
         MIN_SSV = 1
+        MAX_SSV = 4
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if obj._history_name:  # noqa: SLF001
+                raise SerializationError("")
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "sign_register_name": obj._sign_register_name,  # noqa: SLF001
@@ -275,6 +278,31 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
                 data["noise_ref"],
                 int(data["num_subsystems"]),
                 data["modifier_ref"],
+            )
+
+    class SSV5(DataSerializer[InjectNoiseNode]):
+        MIN_SSV = 5
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "sign_register_name": obj._sign_register_name,  # noqa: SLF001
+                "noise_ref": obj._noise_ref,  # noqa: SLF001
+                "modifier_ref": obj._modifier_ref,  # noqa: SLF001
+                "num_subsystems": str(obj._num_subsystems),  # noqa: SLF001
+                "history_name": obj._history_name,  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return InjectNoiseNode(
+                data["register_name"],
+                data["sign_register_name"],
+                data["noise_ref"],
+                int(data["num_subsystems"]),
+                data["modifier_ref"],
+                data["history_name"],
             )
 
 
