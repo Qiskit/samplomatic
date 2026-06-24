@@ -65,6 +65,7 @@ def generate_boxing_pass_manager(
         "no_modification", "uniform_modification", "individual_modification"
     ] = "no_modification",
     inject_noise_site: Literal["before", "after", None] = None,
+    inject_noise_history: bool = False,
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
@@ -288,7 +289,10 @@ def generate_boxing_pass_manager(
     passes.append(AbsorbSingleQubitGates())
     passes.append(
         AddInjectNoise(
-            strategy=inject_noise_strategy, site=inject_noise_site, targets=inject_noise_targets
+            strategy=inject_noise_strategy,
+            site=inject_noise_site,
+            targets=inject_noise_targets,
+            history=inject_noise_history,
         )
     )
 

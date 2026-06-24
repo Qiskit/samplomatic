@@ -85,6 +85,8 @@ class EmissionSpec:
     noise_site: InjectionSite | None = None
     """Whether to inject noise before or after the hard content."""
 
+    noise_history: bool = False
+
     trace_refs: dict[str, str] = field(default_factory=dict)
     """Hints about which box this is an emission for, mapping origins types to origins."""
 

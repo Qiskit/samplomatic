@@ -309,6 +309,7 @@ class PreSamplex:
         cregs: list[ClassicalRegister] | None = None,
         pauli_lindblad_map_count: count | None = None,
         pauli_lindblad_maps: dict[str, NumSubsystems] | None = None,
+        pauli_lindblad_history: dict[str, int] | None = None,
         noise_modifiers: dict[str, set[str]] | None = None,
         basis_changes: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
@@ -329,6 +330,9 @@ class PreSamplex:
             count() if pauli_lindblad_map_count is None else pauli_lindblad_map_count
         )
         self._pauli_lindblad_maps = {} if pauli_lindblad_maps is None else pauli_lindblad_maps
+        self._pauli_lindblad_history = (
+            defaultdict(count) if pauli_lindblad_history is None else pauli_lindblad_history
+        )
         self._noise_modifiers = defaultdict(set) if noise_modifiers is None else noise_modifiers
         self._basis_changes = {} if basis_changes is None else basis_changes
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
@@ -357,6 +361,7 @@ class PreSamplex:
             self._cregs,
             self._pauli_lindblad_map_count,
             self._pauli_lindblad_maps,
+            self._pauli_lindblad_history,
             self._noise_modifiers,
             self._basis_changes,
             self._twirled_clbits,
@@ -774,6 +779,7 @@ class PreSamplex:
         qubits: QubitPartition,
         noise_ref: StrRef,
         modifier_ref: StrRef = "",
+        history: bool = False,
         trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the left.
@@ -810,6 +816,7 @@ class PreSamplex:
             noise_ref,
             modifier_ref,
             next(self._pauli_lindblad_map_count),
+            None if not history else next(self._pauli_lindblad_history[noise_ref]),
             trace_info=trace_info,
         )
         return self._add_emit_left(node)
@@ -819,6 +826,7 @@ class PreSamplex:
         qubits: QubitPartition,
         noise_ref: StrRef,
         modifier_ref: StrRef = "",
+        history: bool = False,
         trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the right.
@@ -855,6 +863,7 @@ class PreSamplex:
             noise_ref,
             modifier_ref,
             next(self._pauli_lindblad_map_count),
+            None if not history else next(self._pauli_lindblad_history[noise_ref]),
             trace_info=trace_info,
         )
         return self._add_emit_right(node)
@@ -1432,6 +1441,17 @@ class PreSamplex:
                 )
             )
 
+        for noise_ref, num_histories in self._pauli_lindblad_history.items():
+            for i in range(next(num_histories)):
+                samplex.add_output(
+                    TensorSpecification(
+                        f"pauli_history.{noise_ref}.{i}",
+                        ("num_randomizations", f"num_terms_{noise_ref}"),
+                        np.dtype(np.bool_),
+                        "history",
+                    )
+                )
+
         return samplex
 
     def add_change_basis_node(
@@ -1498,6 +1518,7 @@ class PreSamplex:
             pre_inject.ref,
             len(pre_inject.subsystems),
             pre_inject.modifier_ref,
+            "" if pre_inject.history_idx is None else (history_name := f"pauli_history_{reg_idx}"),
         )
         node_idx = samplex.add_node(node)
 
@@ -1510,6 +1531,12 @@ class PreSamplex:
             sign_reg_name, [0], "pauli_signs", [pre_inject.sign_idx]
         )
         samplex.add_edge(node_idx, samplex.add_node(collect_signs_node))
+
+        if pre_inject.history_idx is not None:
+            collect_history_node = CollectZ2ToOutputNode(
+                history_name, [0], f"pauli_history.{pre_inject.ref}.{pre_inject.history_idx}", [0]
+            )
+            samplex.add_edge(node_idx, samplex.add_node(collect_history_node))
 
     def add_twirl_sampling_node(
         self,
