@@ -93,7 +93,7 @@ def graphviz_layout(
 
             edge_layout[edge_idx] = render_bezier_spline(coords)
 
-    return node_layout, edge_layout
+    return node_layout if spline == "line" else node_layout, edge_layout
 
 
 def render_bezier_spline(

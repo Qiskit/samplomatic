@@ -160,7 +160,7 @@ def test_sampling(circuit, expected, pauli_lindblad_maps, save_plot):
 
     template_state, samplex_state = pre_build(circuit)
     template = template_state.finalize()
-    save_plot(lambda: template.template.draw("mpl"), "Template Circuit", delayed=True)
+    save_plot(lambda: template.draw("mpl"), "Template Circuit", delayed=True)
     save_plot(lambda: samplex_state.draw(), "Unfinalized Pre-Samplex", delayed=True)
 
     samplex = samplex_state.finalize()
