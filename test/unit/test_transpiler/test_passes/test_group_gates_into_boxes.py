@@ -381,3 +381,21 @@ def test_raises_for_unsupported_ops():
 
     with pytest.raises(TranspilerError, match="``'if_else'`` is not supported"):
         pm.run(circuit)
+
+
+def test_reset_acts_as_delimiter():
+    """Test that reset instructions act as delimiters, flushing open groups on their qubit."""
+    circuit = QuantumCircuit(3)
+    circuit.cx(0, 1)
+    circuit.reset(1)
+    circuit.cx(1, 2)
+
+    expected_circuit = QuantumCircuit(3)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.reset(1)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(1, 2)
+
+    pm = PassManager(passes=[GroupGatesIntoBoxes()])
+    assert pm.run(circuit) == expected_circuit

@@ -40,7 +40,7 @@ class GroupGatesIntoBoxes(TransformationPass):
         placed outside of any boxes.
 
     .. note::
-        Measurements also act as delimiters.
+        Measurements and resets also act as delimiters.
 
     .. note::
         The circuits returned by this pass may not be buildable. To make them buildable, one can
@@ -86,6 +86,10 @@ class GroupGatesIntoBoxes(TransformationPass):
                 clbit = node.cargs[0]
 
                 group_indices[qubit] = group_indices[clbit] = group_idx
+            elif name == "reset":
+                group_indices[node.qargs[0]] = group_idx
+            elif name == "delay":
+                continue
             elif node.is_standard_gate() and node.op.num_qubits == 1:
                 # Leave single-qubit gates alone
                 continue
