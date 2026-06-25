@@ -143,9 +143,12 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
 
     class SSV1(DataSerializer[CollectZ2ToOutputNode]):
         MIN_SSV = 1
+        MAX_SSV = 4
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if obj._output_axis != 1:  # noqa: SLF001
+                raise SerializationError("")
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "output_name": obj._output_name,  # noqa: SLF001
@@ -160,6 +163,29 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
                 array_from_json(data["subsystem_indices"]),
                 data["output_name"],
                 array_from_json(data["output_indices"]),
+            )
+
+    class SSV5(DataSerializer[CollectZ2ToOutputNode]):
+        MIN_SSV = 5
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "output_name": obj._output_name,  # noqa: SLF001
+                "subsystem_indices": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
+                "output_indices": array_to_json(obj._output_idxs),  # noqa: SLF001
+                "output_axis": str(obj._output_axis),  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return CollectZ2ToOutputNode(
+                data["register_name"],
+                array_from_json(data["subsystem_indices"]),
+                data["output_name"],
+                array_from_json(data["output_indices"]),
+                int(data["output_axis"]),
             )
 
 

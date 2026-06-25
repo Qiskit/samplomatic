@@ -81,7 +81,7 @@ class InjectNoiseNode(SamplingNode):
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
         if self._history_name:
-            registers[self._history_name] = Z2Register(pauli_history.transpose())
+            registers[self._history_name] = Z2Register(pauli_history.reshape(1, -1))
 
     def __eq__(self, other):
         return (

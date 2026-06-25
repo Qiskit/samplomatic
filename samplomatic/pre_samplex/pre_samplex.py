@@ -1442,15 +1442,14 @@ class PreSamplex:
             )
 
         for noise_ref, num_histories in self._pauli_lindblad_history.items():
-            for i in range(next(num_histories)):
-                samplex.add_output(
-                    TensorSpecification(
-                        f"pauli_history.{noise_ref}.{i}",
-                        ("num_randomizations", f"num_terms_{noise_ref}"),
-                        np.dtype(np.bool_),
-                        "history",
-                    )
+            samplex.add_output(
+                TensorSpecification(
+                    f"pauli_history.{noise_ref}",
+                    ("num_randomizations", next(num_histories), f"num_terms_{noise_ref}"),
+                    np.dtype(np.bool_),
+                    "history",
                 )
+            )
 
         return samplex
 
@@ -1534,7 +1533,7 @@ class PreSamplex:
 
         if pre_inject.history_idx is not None:
             collect_history_node = CollectZ2ToOutputNode(
-                history_name, [0], f"pauli_history.{pre_inject.ref}.{pre_inject.history_idx}", [0]
+                history_name, [0], f"pauli_history.{pre_inject.ref}", [pre_inject.history_idx], 2
             )
             samplex.add_edge(node_idx, samplex.add_node(collect_history_node))
 
