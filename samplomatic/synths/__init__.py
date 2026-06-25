@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,6 +13,7 @@
 """Synths"""
 
 from .get_synth import get_synth
+from .randomized_rzrx_synth import RandomizedRzRxSynth
 from .rzrx_synth import RzRxSynth
 from .rzsx_synth import RzSxSynth
 from .synth import Synth

@@ -37,7 +37,7 @@ class RzRxSynth(Synth[Qubit, Parameter, CircuitInstruction]):
         except StopIteration as ex:
             raise SynthError(f"Not enough parameters provided to {self}.") from ex
 
-    def generate_template_values(self, register):
+    def generate_template_values(self, register, rng=None):
         if (register_type := type(register)) is U2Register:
             gates = register.virtual_gates
 

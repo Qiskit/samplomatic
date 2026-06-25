@@ -59,12 +59,13 @@ class Synth(Generic[QubitT, ParameterT, InstructionT]):
         """
 
     @abc.abstractmethod
-    def generate_template_values(self, register: VirtualRegister) -> np.ndarray:
+    def generate_template_values(self, register: VirtualRegister, rng=None) -> np.ndarray:
         """Generate parameter values for all gates of the register valid for this synth's template.
 
         Args:
             register: The data register containing the virtual gates to generate template parameter
                 values for.
+            rng: An optional random number generator for synths that require randomness.
 
         Returns:
             An array of shape ``(register.num_subsystems, register.num_samples, num_params)``.

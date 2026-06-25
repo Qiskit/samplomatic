@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,6 +14,7 @@
 
 from ..annotations import DecompositionMode
 from ..exceptions import SynthError
+from .randomized_rzrx_synth import RandomizedRzRxSynth
 from .rzrx_synth import RzRxSynth
 from .rzsx_synth import RzSxSynth
 from .synth import Synth
@@ -25,4 +26,6 @@ def get_synth(decomposition_mode: DecompositionMode) -> Synth:
         return RzSxSynth()
     if decomposition_mode is DecompositionMode.RZRX:
         return RzRxSynth()
+    if decomposition_mode is DecompositionMode.RANDOMIZED_RZRX:
+        return RandomizedRzRxSynth()
     raise SynthError(f"Could not get a synth for {decomposition_mode}.")

@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -14,7 +14,7 @@ import pytest
 
 from samplomatic.annotations import DecompositionMode
 from samplomatic.exceptions import SynthError
-from samplomatic.synths import RzRxSynth, RzSxSynth, get_synth
+from samplomatic.synths import RandomizedRzRxSynth, RzRxSynth, RzSxSynth, get_synth
 
 
 def test_error():
@@ -31,3 +31,8 @@ def test_rzrx():
 def test_rzsx():
     """Test getting RZSX mode."""
     assert isinstance(get_synth(DecompositionMode.RZSX), RzSxSynth)
+
+
+def test_randomized_rzrx():
+    """Test getting RANDOMIZED_RZRX mode."""
+    assert isinstance(get_synth(DecompositionMode.RANDOMIZED_RZRX), RandomizedRzRxSynth)

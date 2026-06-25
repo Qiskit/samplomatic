@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -27,11 +27,17 @@ class DecompositionMode(str, Enum):
     RZRX = "rzrx"
     """Decompose as rz-rx-rz."""
 
+    RANDOMIZED_RZRX = "randomized_rzrx"
+    """Decompose as rz-rx-rz-rx-rz with randomized rx angles."""
 
-DecompositionLiteral: TypeAlias = DecompositionMode | Literal["rzsx", "rzrx"]
+
+DecompositionLiteral: TypeAlias = DecompositionMode | Literal["rzsx", "rzrx", "randomized_rzrx"]
 """Allowed box decomposition modes.
 
  * ``rzsx``: Box dressings are of the form
    :math:`R_Z(\\dot) \\sqrt{X} R_Z(\\dot) \\sqrt{X} R_Z(\\dot)`.
  * ``rzrx``: Box dressings are of the form :math:`R_Z(\\dot) R_X(\\dot) R_Z(\\dot)`.
+ * ``randomized_rzrx``: Box dressings are of the form
+   :math:`R_Z(\\dot) R_X(\\dot) R_Z(\\dot) R_X(\\dot) R_Z(\\dot)` with randomized
+   :math:`R_X` angles.
 """
