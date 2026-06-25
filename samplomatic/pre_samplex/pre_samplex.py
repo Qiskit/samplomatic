@@ -1447,7 +1447,11 @@ class PreSamplex:
                     f"pauli_history.{noise_ref}",
                     ("num_randomizations", next(num_histories), f"num_terms_{noise_ref}"),
                     np.dtype(np.bool_),
-                    "history",
+                    "Generators from sampled Pauli Lindblad maps, where boolean values represent "
+                    "whether a given generator was sampled (``True``) or not (``False``). The "
+                    "order of the second axis matches the iteration order of boxes in the original "
+                    "circuit with noise injection annotations that have the specified noise "
+                    "reference.",
                 )
             )
 

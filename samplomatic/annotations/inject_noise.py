@@ -44,6 +44,7 @@ class InjectNoise(Annotation):
         modifier_ref: A unique identifier for modifiers to apply to the Pauli Lindblad map before
             injection.
         site: Whether to inject the noise before or after the hard content of the box.
+        history: Whether to include the history of the sampled generators in the ouput.
     """
 
     namespace = "samplomatic.inject_noise"
