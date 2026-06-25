@@ -69,6 +69,7 @@ def generate_boxing_pass_manager(
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
     add_tags: Literal["none", "unique_box", "unique_instance", "noise_ref"] = "none",
+    alap_boxing: bool = False,
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -214,6 +215,11 @@ def generate_boxing_pass_manager(
             Boolean values are deprecated such that ``True`` corresponds to ``'immediately'`` and
             ``False`` corresponds to ``'never'``.
 
+        alap_boxing: If ``True``, the :class:`~.GroupGatesIntoBoxes` pass groups gates using an
+            ALAP (as-late-as-possible) strategy instead of the default ASAP strategy. In ALAP mode,
+            each two-qubit gate is placed in the latest possible box that it can fit in, given the
+            circuit's dependency constraints and any barriers or existing boxes.
+
         add_tags: Whether and how to add a :class:`~.Tag` annotation to every box using the
             :class:`~.AddTags` pass. Boxes with pre-existing :class:`~.Tag` annotations are left
             unchanged. The supported values are:
@@ -262,7 +268,9 @@ def generate_boxing_pass_manager(
 
     if enable_gates:
         passes.append(
-            GroupGatesIntoBoxes([Twirl(group=twirling_group, decomposition=decomposition)])
+            GroupGatesIntoBoxes(
+                [Twirl(group=twirling_group, decomposition=decomposition)], alap=alap_boxing
+            )
         )
 
     if enable_measures:
