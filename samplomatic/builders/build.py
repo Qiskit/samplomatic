@@ -96,6 +96,11 @@ def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateSta
 def build(circuit: QuantumCircuit, debug: bool = False) -> tuple[QuantumCircuit, Samplex]:
     """Build a circuit template and samplex for the given boxed-up circuit.
 
+    .. note::
+
+        The template circuit does not preserve the ``global_phase`` of the input circuit, it is
+        always set to zero.
+
     Args:
         circuit: The circuit to build.
         debug: Whether to populate samplex nodes with information that traces them back to the boxes

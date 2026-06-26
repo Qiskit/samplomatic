@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -381,3 +381,28 @@ def test_raises_for_unsupported_ops():
 
     with pytest.raises(TranspilerError, match="``'if_else'`` is not supported"):
         pm.run(circuit)
+
+
+def test_global_phase_gate():
+    """Test that a GlobalPhaseGate passes through."""
+    from qiskit.circuit.library import GlobalPhaseGate
+
+    circuit = QuantumCircuit(2)
+    circuit.append(GlobalPhaseGate(0.1), [], [])
+    circuit.cx(0, 1)
+
+    pm = PassManager(passes=[GroupGatesIntoBoxes()])
+    assert any(op.name == "global_phase" for op in pm.run(circuit))
+
+
+def test_zero_width_barrier_passes_through():
+    """Test that a zero-width barrier does not crash and is left in place."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.barrier([])
+    circuit.cx(0, 1)
+
+    pm = PassManager(passes=[GroupGatesIntoBoxes()])
+    result = pm.run(circuit)
+    # Both CX gates should end up boxed; zero-width barrier does not cause a crash
+    assert any(instr.operation.name == "box" for instr in result.data)
