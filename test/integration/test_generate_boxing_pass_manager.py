@@ -207,3 +207,38 @@ def test_generate_boxing_pass_manager_buildable_rzz_circuits(enable_measures):
 
     # take samples to ensure no runtime errors from non-commuting Paulis
     samplex.sample(num_randomizations=100)
+
+
+@pytest.mark.parametrize(
+    "twirling_strategy,active_qubits",
+    [
+        ("active", [0, 1]),
+        ("active_circuit", [0, 1]),
+        ("all", [0, 1]),
+    ],
+    ids=["active+active_qubits", "active_circuit+active_qubits", "all+active_qubits"],
+)
+def test_active_qubits_makes_buildable_circuits(twirling_strategy, active_qubits):
+    """Test that ``active_qubits`` produces buildable circuits across different strategies."""
+    from samplomatic.annotations import Twirl
+    from samplomatic.utils import get_annotation
+
+    circuit = QuantumCircuit(4)
+    circuit.cz(2, 3)  # only qubits 2, 3 are active; active_qubits=[0, 1] should extend
+
+    pm = generate_boxing_pass_manager(
+        twirling_strategy=twirling_strategy, active_qubits=active_qubits
+    )
+    boxed_circuit = pm.run(circuit)
+
+    # ensure it's buildable
+    build(boxed_circuit)
+
+    # ensure every Twirl-annotated box contains the specified active_qubits
+    for instr in boxed_circuit:
+        if instr.operation.name != "box":
+            continue
+        if get_annotation(instr.operation, Twirl) is None:
+            continue
+        box_qubit_indices = {boxed_circuit.find_bit(q).index for q in instr.qubits}
+        assert set(active_qubits).issubset(box_qubit_indices)

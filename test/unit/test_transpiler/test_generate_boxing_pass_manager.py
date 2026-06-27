@@ -137,3 +137,104 @@ def test_add_tags_noise_ref():
             assert tag.ref == inject_noise.ref
         else:
             assert tag is None
+
+
+def test_active_qubits_none_is_no_op():
+    """Test that ``active_qubits=None`` produces the same result as not specifying it."""
+    circuit = QuantumCircuit(4)
+    circuit.cz(0, 1)
+
+    pm_default = generate_boxing_pass_manager(twirling_strategy="active")
+    pm_explicit_none = generate_boxing_pass_manager(twirling_strategy="active", active_qubits=None)
+
+    assert pm_default.run(circuit) == pm_explicit_none.run(circuit)
+
+
+def test_active_qubits_empty_is_no_op():
+    """Test that an empty ``active_qubits`` iterable is equivalent to ``None``."""
+    circuit = QuantumCircuit(4)
+    circuit.cz(0, 1)
+
+    pm_default = generate_boxing_pass_manager(twirling_strategy="active")
+    pm_empty = generate_boxing_pass_manager(twirling_strategy="active", active_qubits=[])
+
+    assert pm_default.run(circuit) == pm_empty.run(circuit)
+
+
+def test_active_qubits_rejects_non_int():
+    """Test that non-integer qubit values raise ``TranspilerError`` at PM construction."""
+    from qiskit.transpiler.exceptions import TranspilerError
+
+    with pytest.raises(TranspilerError):
+        generate_boxing_pass_manager(active_qubits=["q0"])
+
+
+def test_active_qubits_accepts_generator():
+    """Test that ``active_qubits`` can be a generator (is coerced to ``tuple`` defensively)."""
+    pm = generate_boxing_pass_manager(twirling_strategy="active", active_qubits=(q for q in [0, 1]))
+
+    circuit = QuantumCircuit(4)
+    circuit.cz(2, 3)
+    boxed = pm.run(circuit)
+
+    twirl_boxes = [
+        instr
+        for instr in boxed
+        if instr.operation.name == "box" and get_annotation(instr.operation, Twirl) is not None
+    ]
+    assert len(twirl_boxes) >= 1
+    for instr in twirl_boxes:
+        box_qubit_indices = {boxed.find_bit(q).index for q in instr.qubits}
+        assert {0, 1}.issubset(box_qubit_indices)
+
+
+def test_active_qubits_out_of_range_at_run_time():
+    """Test that an out-of-range active qubit raises ``TranspilerError`` at ``pm.run()`` time."""
+    from qiskit.transpiler.exceptions import TranspilerError
+
+    pm = generate_boxing_pass_manager(active_qubits=[99])
+    circuit = QuantumCircuit(3)
+    circuit.cz(0, 1)
+
+    with pytest.raises(TranspilerError):
+        pm.run(circuit)
+
+
+def test_active_qubits_boxes_include_qubits():
+    """Test that every Twirl-annotated box includes the specified ``active_qubits``."""
+    circuit = QuantumCircuit(4)
+    circuit.cz(0, 1)  # only qubits 0 and 1 are active here
+
+    pm = generate_boxing_pass_manager(twirling_strategy="active", active_qubits=[2, 3])
+    boxed = pm.run(circuit)
+
+    twirl_boxes = [
+        instr
+        for instr in boxed
+        if instr.operation.name == "box" and get_annotation(instr.operation, Twirl) is not None
+    ]
+    assert len(twirl_boxes) >= 1
+    for instr in twirl_boxes:
+        box_qubit_indices = {boxed.find_bit(q).index for q in instr.qubits}
+        assert {2, 3}.issubset(box_qubit_indices)
+
+
+def test_active_qubits_combined_with_active_circuit():
+    """Test that ``active_qubits`` is additive on top of the ``twirling_strategy``."""
+    circuit = QuantumCircuit(5)
+    circuit.cz(0, 1)
+    circuit.cz(2, 3)
+
+    # active_circuit will widen every box to {0, 1, 2, 3}; active_qubits adds qubit 4 on top.
+    pm = generate_boxing_pass_manager(twirling_strategy="active_circuit", active_qubits=[4])
+    boxed = pm.run(circuit)
+
+    twirl_boxes = [
+        instr
+        for instr in boxed
+        if instr.operation.name == "box" and get_annotation(instr.operation, Twirl) is not None
+    ]
+    assert len(twirl_boxes) >= 1
+    for instr in twirl_boxes:
+        box_qubit_indices = {boxed.find_bit(q).index for q in instr.qubits}
+        assert {0, 1, 2, 3, 4}.issubset(box_qubit_indices)

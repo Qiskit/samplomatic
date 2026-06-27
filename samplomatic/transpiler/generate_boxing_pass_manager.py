@@ -13,6 +13,7 @@
 """generate_boxing_pass_manager"""
 
 import warnings
+from collections.abc import Iterable
 from typing import Literal
 
 from qiskit.transpiler import PassManager
@@ -28,7 +29,7 @@ from .passes import (
     GroupGatesIntoBoxes,
     GroupMeasIntoBoxes,
 )
-from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
+from .passes.insert_noops import AddNoops, AddNoopsActiveAccum, AddNoopsActiveCircuit, AddNoopsAll
 
 
 @deprecate_arg(
@@ -69,6 +70,7 @@ def generate_boxing_pass_manager(
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
     add_tags: Literal["none", "unique_box", "unique_instance", "noise_ref"] = "none",
+    active_qubits: Iterable[int] | None = None,
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -106,6 +108,8 @@ def generate_boxing_pass_manager(
       on the value of ``measure_annotations``, they own a :class:`~.Twirl` annotation, a
       :class:`~.ChangeBasis` annotation, or both.
     * It adds idling qubits to the boxes following the given ``twirling_strategy``.
+    * If ``active_qubits`` is provided, it adds idling qubits so that every twirling box always
+      includes those qubits, in addition to any qubits added by the ``twirling_strategy``.
     * Using the :class:`~.AddTerminalRightDressedBoxes` pass, it adds empty right-dressed boxes
       to ensure that the resulting pass manager can produce circuits that can be successfully
       turned into a template/samplex pair by the :meth:`samplomatic.build` function.
@@ -235,6 +239,12 @@ def generate_boxing_pass_manager(
               skipped (no :class:`~.Tag` is added). Typically used together with a non-``'none'``
               ``inject_noise_targets`` value.
 
+        active_qubits: An optional iterable of qubit indices specifying qubits that
+            should always be included in every twirling box, regardless of the ``twirling_strategy``
+            setting. These qubits are added on top of any qubits already added by the strategy,
+            so the final qubits in each box are the union of the strategy-selected qubits and
+            ``active_qubits``.
+
     Returns:
         A pass manager that groups operations into boxes.
 
@@ -278,6 +288,11 @@ def generate_boxing_pass_manager(
         passes.append(AddNoopsActiveCircuit())
     elif twirling_strategy == "all":
         passes.append(AddNoopsAll())
+
+    if active_qubits is not None:
+        active_qubits = tuple(active_qubits)
+        if active_qubits:
+            passes.append(AddNoops(active_qubits))
 
     terminal_group = "phase" if twirling_group == "local_pauli" else "pauli"
     passes.append(AddTerminalRightDressedBoxes(group=terminal_group))
