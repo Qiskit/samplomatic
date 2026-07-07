@@ -13,6 +13,7 @@
 """Test BoxBuilder for Templates"""
 
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.classical.expr import Stretch
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
@@ -48,6 +49,21 @@ class TestTemplateState:
 
         stretch = next(state.template.iter_stretches())
         assert stretch != circuit.get_stretch("x")
+
+    def test_rescoped_stretch(self):
+        """Test that stretches with the same name in different scopes do not overlap."""
+        circuit = QuantumCircuit(1)
+        state = TemplateState.construct_for_circuit(circuit)
+
+        new_state = state.remap({state.template.qubits[0]: 0}, 0)
+        new_new_state = new_state.remap({0: 0}, 1)
+        new_new_state.add_stretches([Stretch.new("x")])
+        new_state.add_stretches([Stretch.new("x")])
+
+        new_state = state.remap({state.template.qubits[0]: 0}, 2)
+        new_state.add_stretches([Stretch.new("x")])
+
+        assert {s.name for s in state.stretch_map.values()} == {"0.x", "0.1.x", "2.x"}
 
 
 class TestTemplateBuilder:
@@ -155,6 +171,30 @@ class TestTemplateBuilder:
 
         for idx, (instr, name) in enumerate(zip(template, expected_names)):
             assert instr.name == name, f"Instruction {idx}"
+
+    def test_box_stretches(self):
+        """Test boxes with stretches."""
+        circuit = QuantumCircuit(2)
+        with circuit.box([Twirl()]):
+            x = circuit.add_stretch("x")
+            circuit.delay(x)
+            circuit.measure_all()
+
+        with circuit.box([Twirl()]):
+            x = circuit.add_stretch("x")
+            circuit.delay(x)
+            circuit.measure_all()
+
+        x = circuit.add_stretch("x")
+        circuit.delay(x)
+        circuit.measure_all()
+
+        template_state, _ = pre_build(circuit)
+        template = template_state.finalize()
+
+        assert template.num_stretches == 3
+        assert {s.name for s in template.iter_stretches()} == {"0.x", "1.x", "x"}
+        assert template.get_stretch("x") != x
 
     def test_box_decomposition(self):
         """Test decomposition modes of a box."""
