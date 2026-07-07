@@ -33,6 +33,22 @@ class TestTemplateState:
         assert len(new_state.qubits()) == 1
         assert new_state.qubits() == [state.template.qubits[2]]
 
+    def test_stretch(self):
+        """Test that stretches are added appropriately."""
+        circuit = QuantumCircuit(2)
+        x = circuit.add_stretch("x")
+        circuit.delay(x, 0)
+        circuit.x(0)
+        circuit.delay(x, 0)
+        circuit.measure_all()
+
+        state = TemplateState.construct_for_circuit(circuit)
+
+        assert state.template.num_stretches == 1
+
+        stretch = next(state.template.iter_stretches())
+        assert stretch != circuit.get_stretch("x")
+
 
 class TestTemplateBuilder:
     """Test strictly the template aspects of build."""

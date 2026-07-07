@@ -14,8 +14,9 @@
 
 from collections.abc import Iterable, Sequence
 
-from qiskit.circuit import ClassicalRegister, Clbit, QuantumCircuit, QuantumRegister, Qubit
+from qiskit.circuit import ClassicalRegister, Clbit, Delay, QuantumCircuit, QuantumRegister, Qubit
 from qiskit.circuit.classical import expr
+from qiskit.circuit.classical.expr import Stretch
 from qiskit.converters import dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 
@@ -84,6 +85,9 @@ class TemplateState:
 
         qubit_map = {q: idx for idx, q in enumerate(circuit.qubits)}
 
+        for stretch in circuit.iter_stretches():
+            template_circuit.add_declared_stretch(Stretch.new(stretch.name))
+
         # quick and dirty heuristic to get the max params roughly correct with a safety factor
         # TODO: This estimate might not hold for dynamic circuits, where the same qubit will be
         # collected twice - once in the if branch and another in the else branch.
@@ -118,6 +122,11 @@ class TemplateState:
                 param_mapping.append([self.param_iter.idx, param])
                 new_params.append(next(self.param_iter))
             new_operation = type(dag_op_node.op)(*new_params) if new_params else dag_op_node.op
+        elif isinstance(delay := dag_op_node.op, Delay) and isinstance(
+            duration := delay.duration, Stretch
+        ):
+            duration = next(s for s in self.template.iter_stretches() if duration.name == s.name)
+            new_operation = Delay(duration)
         else:
             new_operation = dag_op_node.op
 
