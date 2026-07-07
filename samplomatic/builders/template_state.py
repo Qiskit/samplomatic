@@ -123,7 +123,7 @@ class TemplateState:
         """Add stretches to the template circuit.
 
         This method adds new stretches to the template circuit with the same name as those in
-        ``stretches`` with the scope index prepended.
+        ``stretches`` with the scope index prepended if it has not already been added.
 
         Args:
             stretches: An iterable of stretches to add.

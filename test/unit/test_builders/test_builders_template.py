@@ -57,11 +57,14 @@ class TestTemplateState:
 
         new_state = state.remap({state.template.qubits[0]: 0}, 0)
         new_new_state = new_state.remap({0: 0}, 1)
-        new_new_state.add_stretches([Stretch.new("x")])
-        new_state.add_stretches([Stretch.new("x")])
+        new_new_state.add_stretches([Stretch.new("x")])  # scope 0.1
+        new_state.add_stretches([Stretch.new("x")])  # scope 0
 
-        new_state = state.remap({state.template.qubits[0]: 0}, 2)
-        new_state.add_stretches([Stretch.new("x")])
+        new_state = state.remap({state.template.qubits[0]: 0}, 2)  # scope 2
+        new_state.add_stretches([stretch := Stretch.new("x")])
+
+        new_state = new_state.remap({0: 0}, 0)
+        new_state.add_stretches([stretch])  # scope 2.0, but this stretch added in outer scope
 
         assert {s.name for s in state.stretch_map.values()} == {"0.x", "0.1.x", "2.x"}
 
