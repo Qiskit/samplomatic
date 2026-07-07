@@ -33,6 +33,8 @@ class TemplateState:
         qubit_map: A map from qubits in the source circuit to corresponding qubits in the template.
         param_iter: An iterator over parameters to use in the circuit being built.
         scope_idx: The nested index of the scope currently being built.
+        stretch_map: A map from stretches in the source circuit to corresponding stretches in the
+            template.
     """
 
     def __init__(
@@ -118,7 +120,14 @@ class TemplateState:
         return [self.template.qubits[i] for i in idxs]
 
     def add_stretches(self, stretches: Iterable[Stretch]):
-        """Add stretches using the current scope index."""
+        """Add stretches to the template circuit.
+
+        This method adds new stretches to the template circuit with the same name as those in
+        ``stretches`` with the scope index prepended.
+
+        Args:
+            stretches: An iterable of stretches to add.
+        """
         prefix = ".".join(str(i) for i in self.scope_idx)
         for stretch in stretches:
             if stretch in self.stretch_map:
