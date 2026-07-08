@@ -48,7 +48,7 @@ class TestTemplateState:
         assert state.template.num_stretches == 1
 
         stretch = next(state.template.iter_stretches())
-        assert stretch != circuit.get_stretch("x")
+        assert stretch == circuit.get_stretch("x")
 
     def test_rescoped_stretch(self):
         """Test that stretches with the same name in different scopes do not overlap."""
@@ -197,7 +197,7 @@ class TestTemplateBuilder:
 
         assert template.num_stretches == 3
         assert {s.name for s in template.iter_stretches()} == {"0.x", "1.x", "x"}
-        assert template.get_stretch("x") != x
+        assert template.get_stretch("x") == x
 
     def test_box_decomposition(self):
         """Test decomposition modes of a box."""

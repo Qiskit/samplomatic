@@ -92,9 +92,8 @@ class TemplateState:
         qubit_map = {q: idx for idx, q in enumerate(circuit.qubits)}
         stretch_map = {}
         for stretch in circuit.iter_stretches():
-            new_stretch = Stretch.new(stretch.name)
-            stretch_map[stretch] = new_stretch
-            template_circuit.add_declared_stretch(new_stretch)
+            stretch_map[stretch] = stretch
+            template_circuit.add_declared_stretch(stretch)
 
         # quick and dirty heuristic to get the max params roughly correct with a safety factor
         # TODO: This estimate might not hold for dynamic circuits, where the same qubit will be
