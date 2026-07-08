@@ -45,7 +45,7 @@ def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Ann
                 Twirl(group=annot.group, dressing=annot.dressing, decomposition=annot.decomposition)
             )
         elif isinstance(annot, InjectNoise):
-            normalized_annotations.append(InjectNoise(ref=annot.ref))
+            normalized_annotations.append(InjectNoise(ref=annot.ref, site="after"))
         elif isinstance(annot, Tag):
             normalized_annotations.append(Tag(ref=annot.ref))
     return normalized_annotations
