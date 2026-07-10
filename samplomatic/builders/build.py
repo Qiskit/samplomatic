@@ -18,7 +18,7 @@ from qiskit.circuit import QuantumCircuit
 from qiskit.converters import circuit_to_dag, dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 
-from ..aliases import DAGOpNode
+from ..aliases import DAGOpNode, OperationName
 from ..pre_samplex import PreSamplex
 from ..samplex import Samplex
 from .builder import Builder
@@ -68,7 +68,11 @@ def _build(stream: DAGCircuit, builder: Builder):
         _build(circuit_to_dag(nested_instr.op.body), inner_builder)
 
 
-def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateState, PreSamplex]:
+def pre_build(
+    circuit: QuantumCircuit,
+    debug: bool = False,
+    aliases: dict[OperationName, OperationName] | None = None,
+) -> tuple[TemplateState, PreSamplex]:
     """Build a template state and a pre-samplex for the given boxed-up circuit.
 
     This is a helper method to :func:`build` and is not intended to be useful in standard workflows.
@@ -78,13 +82,17 @@ def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateSta
         debug: Whether to populate pre-nodes with information that traces them back to the boxes
             that generated them. Tracing information is based on ``ref`` attributes of box
             annotations.
+        aliases: Gate aliases to use during the build stage.
 
     Returns:
         The built template state and the corresponding pre-samplex.
     """
     template_state = TemplateState.construct_for_circuit(circuit, debug=debug)
     pre_samplex = PreSamplex(
-        qubit_map=template_state.qubit_map, cregs=circuit.cregs, debug=template_state.debug
+        qubit_map=template_state.qubit_map,
+        cregs=circuit.cregs,
+        debug=template_state.debug,
+        aliases=aliases,
     )
     builder = get_builder(None, template_state.qubit_map.keys())
     builder.set_template_state(template_state).set_samplex_state(pre_samplex)
@@ -93,7 +101,11 @@ def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateSta
     return template_state, pre_samplex
 
 
-def build(circuit: QuantumCircuit, debug: bool = False) -> tuple[QuantumCircuit, Samplex]:
+def build(
+    circuit: QuantumCircuit,
+    debug: bool = False,
+    aliases: dict[OperationName, OperationName] | None = None,
+) -> tuple[QuantumCircuit, Samplex]:
     """Build a circuit template and samplex for the given boxed-up circuit.
 
     .. note::
@@ -106,9 +118,10 @@ def build(circuit: QuantumCircuit, debug: bool = False) -> tuple[QuantumCircuit,
         debug: Whether to populate samplex nodes with information that traces them back to the boxes
             that generated them. Tracing information is based on ``ref`` attributes of box
             annotations.
+        alises: Gate aliases to use during the build stage.
 
     Returns:
         The built template circuit and the corresponding samplex.
     """
-    template_state, pre_samplex = pre_build(circuit, debug=debug)
+    template_state, pre_samplex = pre_build(circuit, debug=debug, aliases=aliases)
     return dag_to_circuit(template_state.template), pre_samplex.finalize().finalize()

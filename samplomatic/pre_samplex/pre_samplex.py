@@ -298,6 +298,8 @@ class PreSamplex:
             The nodes behave differently for edges with left/right direction. For left direction,
             the incoming node is checked against `forced_copy_node_idxs`, while for right direction,
             the outgoing node is.
+        debug: Whether to include debug information.
+        aliases: Gate aliases.
     """
 
     def __init__(
@@ -315,6 +317,7 @@ class PreSamplex:
         passthrough_params: ParamSpec | None = None,
         forced_copy_node_idxs: set[NodeIndex] | None = None,
         debug: bool = False,
+        aliases: dict[OperationName, OperationName] | None = None,
     ):
         self.graph = PyDiGraph[PreNode, PreEdge](multigraph=True) if graph is None else graph
         self.qubit_map: dict[Qubit, QubitIndex] = {} if qubit_map is None else qubit_map
@@ -338,6 +341,7 @@ class PreSamplex:
         self._forced_copy_node_idxs: set[NodeIndex] = (
             set() if forced_copy_node_idxs is None else forced_copy_node_idxs
         )
+        self.aliases = {} if aliases is None else aliases
         self.debug = debug
 
     def remap(self, qubit_map: dict[Qubit, QubitIndex]) -> "PreSamplex":
@@ -363,6 +367,7 @@ class PreSamplex:
             self.passthrough_params,
             self._forced_copy_node_idxs,
             self.debug,
+            self.aliases,
         )
 
     def find_danglers(
@@ -1683,6 +1688,7 @@ class PreSamplex:
             combined_register_type = VirtualType.U2
             propagate_group = None
         elif mode is InstructionMode.PROPAGATE:
+            op_name = self.aliases.get(op_name, op_name)
             propagate_group = _match_propagate_group(op_name, mode, frozenset(incoming))
             combined_register_type = propagate_group.group_type
         else:
