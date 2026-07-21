@@ -65,9 +65,17 @@ class CollectZ2ToOutputNode(CollectionNode):
     def collect(self, registers, outputs, rng):
         register = registers[self._register_name]
         output = outputs[self._output_name]
-        output.reshape(-1, output.shape[-self._output_axis])[:, self._output_idxs] = (
-            register.virtual_gates[self._subsystem_idxs, :].transpose(1, 0)
-        )
+        if self._output_axis == 1:
+            output.reshape(-1, output.shape[-1])[:, self._output_idxs] = register.virtual_gates[
+                self._subsystem_idxs, :
+            ].transpose(1, 0)
+        else:
+            axis = output.ndim - self._output_axis
+            for sub_idx, out_idx in zip(self._subsystem_idxs, self._output_idxs):
+                idx = [slice(None)] * output.ndim
+                idx[axis] = int(out_idx)
+                target = output[tuple(idx)]
+                target[:] = register.virtual_gates[sub_idx].reshape(target.shape)
 
     def __eq__(self, other):
         return (
@@ -76,6 +84,7 @@ class CollectZ2ToOutputNode(CollectionNode):
             and self._output_name == other._output_name
             and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
             and np.array_equal(self._output_idxs, other._output_idxs)
+            and self._output_axis == other._output_axis
         )
 
     def get_style(self):

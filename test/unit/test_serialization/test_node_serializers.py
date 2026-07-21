@@ -121,6 +121,19 @@ def test_collect_z2_serializer_round_trip(ssv):
     assert node == TypeSerializer.deserialize(data)
 
 
+def test_collect_z2_serializer_round_trip_with_output_axis():
+    node = CollectZ2ToOutputNode("reg", [0], "hist", [1], output_axis=2)
+    data = CollectZ2ToOutputNodeSerializer.serialize(node, 5)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+def test_collect_z2_serializer_output_axis_fails_on_old_ssv():
+    node = CollectZ2ToOutputNode("reg", [0], "hist", [1], output_axis=2)
+    with pytest.raises(SerializationError):
+        CollectZ2ToOutputNodeSerializer.serialize(node, 4)
+
+
 @pytest.mark.parametrize("ssv", CombineRegistersNodeSerializer.SSVS)
 def test_combine_registers_serializer_round_trip(ssv):
     operands = {"reg": [(0, 1), (0, 2), VirtualType.PAULI], "other": [(2,), (1,), VirtualType.U2]}
