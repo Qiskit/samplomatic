@@ -199,6 +199,21 @@ class TestTemplateBuilder:
         assert {s.name for s in template.iter_stretches()} == {"0.x", "1.x", "x"}
         assert template.get_stretch("x") == x
 
+    def test_outer_stretch_used_in_box(self):
+        """Test that a stretch declared in the outer circuit is not rescoped."""
+        circuit = QuantumCircuit(2)
+        x = circuit.add_stretch("x")
+        with circuit.box([Twirl()]):
+            circuit.delay(x, 0)
+            circuit.cx(0, 1)
+        circuit.measure_all()
+
+        template_state, _ = pre_build(circuit)
+        template = template_state.finalize()
+
+        assert template.num_stretches == 1
+        assert template.get_stretch("x") == x
+
     def test_box_decomposition(self):
         """Test decomposition modes of a box."""
         circuit = QuantumCircuit(2)
