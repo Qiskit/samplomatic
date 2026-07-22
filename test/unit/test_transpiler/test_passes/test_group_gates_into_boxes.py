@@ -408,6 +408,71 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_groups_independent_gate_with_latest_box"
 
+    # Partial-width barrier: barrier(1,2) splits groups only on qubits 1 and 2.
+    # In ALAP: cx(2,3) is latest → group 0; barrier(1,2) pushes q1,q2 to group -1;
+    # cx(0,1) touches q1 which is now at -1 → group -1.
+    circuit = QuantumCircuit(4)
+    circuit.cx(0, 1)
+    circuit.x(0)
+    circuit.z(1)
+    circuit.y(2)
+    circuit.h(3)
+    circuit.barrier(1, 2)
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.x(0)
+    expected_circuit.z(1)
+    expected_circuit.y(2)
+    expected_circuit.barrier(1, 2)
+    expected_circuit.h(3)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(2, 3)
+
+    yield circuit, expected_circuit, "alap_circuit_with_partial_width_barrier"
+
+    # Full-width barrier: all qubits flushed. CX gates on either side cannot merge.
+    circuit = QuantumCircuit(4)
+    circuit.cx(0, 1)
+    circuit.barrier()
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.barrier()
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(2, 3)
+
+    yield circuit, expected_circuit, "alap_circuit_with_full_width_barrier"
+
+    # Measurements as delimiters in ALAP mode.
+    # In ALAP traversal (reverse): cx(2,3) after barrier → group 0, cx(0,1) after barrier →
+    # group 0 (shares no constrained bits). Barrier pushes all to -1. Before barrier: cx(2,3)
+    # → group -1; measure syncs q1/c0 at -1 (no further push); cx(0,1) touches q1 at -1 →
+    # also group -1. So both pre-barrier CX gates share a box.
+    circuit = QuantumCircuit(4, 1)
+    circuit.cx(0, 1)
+    circuit.measure(1, 0)
+    circuit.cx(2, 3)
+    circuit.barrier()
+    circuit.cx(0, 1)
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4, 1)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.cx(2, 3)
+    expected_circuit.measure(1, 0)
+    expected_circuit.barrier()
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.cx(2, 3)
+
+    yield circuit, expected_circuit, "alap_circuit_with_measurements"
+
 
 def test_raises_for_unsupported_ops():
     """Test that `GroupGatesIntoBoxes` raises when the circuit contains unsupported ops."""
@@ -438,7 +503,7 @@ def test_alap_transpiled_circuits_have_correct_boxops(alap_circuits_to_compare):
             the expected circuit reflects ALAP box grouping.
     """
     circuit, expected_circuit = alap_circuits_to_compare
-    pm = PassManager(passes=[GroupGatesIntoBoxes(alap=True)])
+    pm = PassManager(passes=[GroupGatesIntoBoxes(strategy="alap")])
     transpiled_circuit = pm.run(circuit)
 
     assert transpiled_circuit == expected_circuit
@@ -454,6 +519,6 @@ def test_alap_and_asap_agree_on_fully_constrained_circuits():
     circuit.cx(4, 5)
 
     pm_asap = PassManager(passes=[GroupGatesIntoBoxes()])
-    pm_alap = PassManager(passes=[GroupGatesIntoBoxes(alap=True)])
+    pm_alap = PassManager(passes=[GroupGatesIntoBoxes(strategy="alap")])
 
     assert pm_asap.run(circuit) == pm_alap.run(circuit)

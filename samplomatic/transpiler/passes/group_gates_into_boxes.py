@@ -14,6 +14,7 @@
 
 from collections import defaultdict
 from collections.abc import Iterable
+from typing import Literal
 
 from qiskit.circuit import Annotation, Bit
 from qiskit.dagcircuit import DAGCircuit
@@ -22,16 +23,22 @@ from qiskit.transpiler.exceptions import TranspilerError
 
 from ...aliases import DAGOpNode
 from ...annotations import Twirl
-from .utils import alap_topological_nodes, make_and_insert_box, validate_op_is_supported
+from ...utils import validate_literals
+from .utils import (
+    alap_topological_nodes,
+    asap_topological_nodes,
+    make_and_insert_box,
+    validate_op_is_supported,
+)
 
 
 class GroupGatesIntoBoxes(TransformationPass):
     """Collect the two-qubit gates in a circuit inside left-dressed boxes.
 
     This pass collects all 2-qubit gates in the input circuit into left-dressed boxes. To assign
-    the gates to these boxes, it uses a greedy collection strategy. By default (``alap=False``) it
-    uses an ASAP strategy that tries to collect gates in the earliest possible box that they can
-    fit. When ``alap=True`` it uses an ALAP strategy that collects gates as late as possible.
+    the gates to these boxes, it uses a greedy collection strategy. By default (``strategy="asap"``)
+    it places each gate in the earliest possible box. When ``strategy="alap"`` it places each gate
+    in the latest possible box.
 
     .. note::
         Barriers and boxes that are present in the input circuit act as delimiters. This means that
@@ -48,10 +55,15 @@ class GroupGatesIntoBoxes(TransformationPass):
         either use :class:`~.AddTerminalRightDressedBoxes` to add right-dressed "collector" boxes.
     """
 
-    def __init__(self, annotations: Iterable[Annotation] = (Twirl(),), alap: bool = False):
+    @validate_literals("strategy")
+    def __init__(
+        self,
+        annotations: Iterable[Annotation] = (Twirl(),),
+        strategy: Literal["asap", "alap"] = "asap",
+    ):
         super().__init__()
         self.annotations = list(annotations)
-        self.alap = alap
+        self.strategy = strategy
 
     def run(self, dag: DAGCircuit) -> DAGCircuit:
         """Collect the operations in the dag inside left-dressed boxes.
@@ -64,7 +76,7 @@ class GroupGatesIntoBoxes(TransformationPass):
                 possible group (ASAP) or the latest possible group (ALAP).
             *   When looping is complete, replace each group with a box.
         """
-        if self.alap:
+        if self.strategy == "alap":
             return self._run_alap(dag)
         return self._run_asap(dag)
 
@@ -78,7 +90,7 @@ class GroupGatesIntoBoxes(TransformationPass):
         # collect operations on those bits
         group_indices: dict[Bit, int] = defaultdict(int)
 
-        for node in dag.topological_op_nodes():
+        for node in asap_topological_nodes(dag):
             validate_op_is_supported(node)
 
             # The index of the earliest group able to collect ops on all the bits in this node
