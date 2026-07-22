@@ -106,9 +106,8 @@ class GroupMeasIntoBoxes(TransformationPass):
         for node in dag.topological_op_nodes():
             validate_op_is_supported(node)
 
-            # The index of the earliest group able to collect ops on all the bits in this node.
-            # default=0 protects against ops with no qargs and no cargs (e.g. a zero-width barrier).
-            group_idx: int = max((group_indices[bit] for bit in node.qargs + node.cargs), default=0)
+            # The index of the earliest group able to collect ops on all the bits in this node
+            group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
 
             if (name := node.op.name) in ["barrier", "box"] or (
                 node.is_standard_gate() and node.op.num_qubits == 2
@@ -123,8 +122,8 @@ class GroupMeasIntoBoxes(TransformationPass):
                 # Update trackers
                 for qubit in node.qargs:
                     group_indices[qubit] = group_idx + 1
-            elif node.is_standard_gate() and node.op.num_qubits <= 1:
-                # Leave zero- and single-qubit gates alone (global phase gate is 0 qubits)
+            elif node.is_standard_gate() and node.op.num_qubits == 1:
+                # Leave single-qubit gates alone
                 continue
             else:
                 raise TranspilerError(f"'{name}' operation is not supported.")

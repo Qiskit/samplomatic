@@ -60,7 +60,6 @@ def _build(stream: DAGCircuit, builder: Builder):
         qubit_remapping = dict(zip(nested_instr.qargs, nested_instr.op.body.qubits))
 
         remapped_template_state = builder.template_state.remap(qubit_remapping, idx)
-        remapped_template_state.add_stretches(nested_instr.op.body.iter_stretches())
         remapped_pre_samplex = builder.samplex_state.remap(remapped_template_state.qubit_map)
         inner_builder = inner_builder.set_template_state(remapped_template_state).set_samplex_state(
             remapped_pre_samplex
@@ -96,11 +95,6 @@ def pre_build(circuit: QuantumCircuit, debug: bool = False) -> tuple[TemplateSta
 
 def build(circuit: QuantumCircuit, debug: bool = False) -> tuple[QuantumCircuit, Samplex]:
     """Build a circuit template and samplex for the given boxed-up circuit.
-
-    .. note::
-
-        The template circuit does not preserve the ``global_phase`` of the input circuit, it is
-        always set to zero.
 
     Args:
         circuit: The circuit to build.

@@ -102,7 +102,3 @@ samples["measurement_flips.meas"] # boolean array
 # one can, for example, bind the template circuit against the 7th randomization.
 template.assign_parameters(samples["parameter_values"][7])
 ```
-
-## Citing this package
-
-If you use this package in your research, use the [CITATION.bib](CITATION.bib) file in this project’s repository to cite the appropriate reference(s).
