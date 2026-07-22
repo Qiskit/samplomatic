@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -216,6 +216,28 @@ def make_circuits():
         expected_circuit.noop([2, 3])
 
     yield (circuit, expected_circuit, "circuit_ghz_blocked_gates")
+
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(1, 2)
+    circuit.delay(100, 1, unit="dt")
+    with circuit.box([Twirl()]):
+        circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(0, 1)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(1, 2)
+    expected_circuit.delay(100, 1, unit="dt")
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.cx(2, 3)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop([0, 1, 2, 3])
+
+    yield (circuit, expected_circuit, "circuit_ghz_with_delay")
 
 
 def pytest_generate_tests(metafunc):
