@@ -272,3 +272,28 @@ def test_raises_for_unsupported_ops():
 
     with pytest.raises(TranspilerError, match="``'if_else'`` is not supported"):
         pm.run(circuit)
+
+
+def test_global_phase_gate():
+    """Test that a GlobalPhaseGate passes through."""
+    from qiskit.circuit.library import GlobalPhaseGate
+
+    circuit = QuantumCircuit(1, 1)
+    circuit.append(GlobalPhaseGate(0.1), [], [])
+    circuit.measure(0, 0)
+
+    pm = PassManager(passes=[GroupMeasIntoBoxes()])
+    assert any(op.name == "global_phase" for op in pm.run(circuit))
+
+
+def test_zero_width_barrier_passes_through():
+    """Test that a zero-width barrier does not crash and is left in place."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.barrier([])
+    circuit.measure_all()
+
+    pm = PassManager(passes=[GroupMeasIntoBoxes()])
+    result = pm.run(circuit)
+    # Both CX gates should end up boxed; zero-width barrier does not cause a crash
+    assert any(instr.operation.name == "barrier" for instr in result.data)

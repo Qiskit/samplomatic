@@ -93,8 +93,9 @@ class GroupGatesIntoBoxes(TransformationPass):
         for node in asap_topological_nodes(dag):
             validate_op_is_supported(node)
 
-            # The index of the earliest group able to collect ops on all the bits in this node
-            group_idx: int = max(group_indices[bit] for bit in node.qargs + node.cargs)
+            # The index of the earliest group able to collect ops on all the bits in this node.
+            # default=0 protects against ops with no qargs and no cargs (e.g. a zero-width barrier).
+            group_idx: int = max((group_indices[bit] for bit in node.qargs + node.cargs), default=0)
 
             if (name := node.op.name) in ["barrier", "box"]:
                 # Flush the single-qubit gate nodes and place them in a group
@@ -106,8 +107,8 @@ class GroupGatesIntoBoxes(TransformationPass):
                 clbit = node.cargs[0]
 
                 group_indices[qubit] = group_indices[clbit] = group_idx
-            elif node.is_standard_gate() and node.op.num_qubits == 1:
-                # Leave single-qubit gates alone
+            elif node.is_standard_gate() and node.op.num_qubits <= 1:
+                # Leave zero- and single-qubit gates alone (global phase gate is 0 qubits)
                 continue
             elif node.is_standard_gate() and node.op.num_qubits == 2:
                 # Flush the two-qubit gate nodes into a group
