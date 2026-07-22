@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -84,6 +84,6 @@ def validate_op_is_supported(node: DAGOpNode):
         TranspilerError: If node contains anything other than a box, a barrier, a measurement, or
         a gate.
     """
-    if node.is_standard_gate() or node.op.name in ["box", "barrier", "measure"]:
+    if node.is_standard_gate() or node.op.name in ["box", "barrier", "measure", "reset", "delay"]:
         return
     raise TranspilerError(f"``'{node.op.name}'`` is not supported.")

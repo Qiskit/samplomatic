@@ -406,3 +406,38 @@ def test_zero_width_barrier_passes_through():
     result = pm.run(circuit)
     # Both CX gates should end up boxed; zero-width barrier does not cause a crash
     assert any(instr.operation.name == "box" for instr in result.data)
+
+
+def test_reset_acts_as_delimiter():
+    """Test that reset instructions act as delimiters, flushing open groups on their qubit."""
+    circuit = QuantumCircuit(3)
+    circuit.cx(0, 1)
+    circuit.reset(1)
+    circuit.cx(1, 2)
+
+    expected_circuit = QuantumCircuit(3)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.reset(1)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(1, 2)
+
+    pm = PassManager(passes=[GroupGatesIntoBoxes()])
+    assert pm.run(circuit) == expected_circuit
+
+
+def test_delay_does_not_act_as_delimiter():
+    """Test that delay instructions are transparent and do not split groups."""
+    circuit = QuantumCircuit(4)
+    circuit.cx(0, 1)
+    circuit.delay(100, 2, unit="dt")
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    expected_circuit.delay(100, 2, unit="dt")
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.cx(2, 3)
+
+    pm = PassManager(passes=[GroupGatesIntoBoxes()])
+    assert pm.run(circuit) == expected_circuit
