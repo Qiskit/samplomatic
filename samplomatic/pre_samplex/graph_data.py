@@ -445,5 +445,7 @@ class PreInjectNoise(PreEmit):
     sign_idx: OutputIndex
     """The index of the output array to write the sign to."""
 
+    history_idx: OutputIndex | None
+
     def get_style(self) -> NodeStyle:
         return super().get_style().append_data("ref", self.ref)

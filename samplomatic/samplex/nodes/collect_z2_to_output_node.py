@@ -38,11 +38,13 @@ class CollectZ2ToOutputNode(CollectionNode):
         subsystem_idxs: Sequence[SubsystemIndex],
         output_name: InterfaceName,
         output_idxs: Sequence[OutputIndex],
+        output_axis: int = 1,
     ):
         self._register_name = register_name
         self._output_name = output_name
         self._subsystem_idxs = np.asarray(subsystem_idxs, dtype=np.uint32)
         self._output_idxs = np.asarray(output_idxs, dtype=np.uint32)
+        self._output_axis = output_axis
 
     def reads_from(self):
         return {self._register_name: (set(self._subsystem_idxs), VirtualType.Z2)}
@@ -63,9 +65,17 @@ class CollectZ2ToOutputNode(CollectionNode):
     def collect(self, registers, outputs, rng):
         register = registers[self._register_name]
         output = outputs[self._output_name]
-        output.reshape(-1, output.shape[-1])[:, self._output_idxs] = register.virtual_gates[
-            self._subsystem_idxs, :
-        ].transpose(1, 0)
+        if self._output_axis == 1:
+            output.reshape(-1, output.shape[-1])[:, self._output_idxs] = register.virtual_gates[
+                self._subsystem_idxs, :
+            ].transpose(1, 0)
+        else:
+            axis = output.ndim - self._output_axis
+            for sub_idx, out_idx in zip(self._subsystem_idxs, self._output_idxs):
+                idx = [slice(None)] * output.ndim
+                idx[axis] = int(out_idx)
+                target = output[tuple(idx)]
+                target[:] = register.virtual_gates[sub_idx].reshape(target.shape)
 
     def __eq__(self, other):
         return (
@@ -74,6 +84,7 @@ class CollectZ2ToOutputNode(CollectionNode):
             and self._output_name == other._output_name
             and np.array_equal(self._subsystem_idxs, other._subsystem_idxs)
             and np.array_equal(self._output_idxs, other._output_idxs)
+            and self._output_axis == other._output_axis
         )
 
     def get_style(self):

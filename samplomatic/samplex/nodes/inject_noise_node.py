@@ -46,22 +46,27 @@ class InjectNoiseNode(SamplingNode):
         noise_ref: StrRef,
         num_subsystems: int,
         modifier_ref: StrRef = "",
+        history_name: RegisterName = "",
     ):
         self._register_name = register_name
         self._sign_register_name = sign_register_name
         self._noise_ref = noise_ref
         self._modifier_ref = modifier_ref
         self._num_subsystems = num_subsystems
+        self._history_name = history_name
 
     @property
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
-        return {
+        instantiates = {
             self._register_name: (self._num_subsystems, VirtualType.PAULI),
             self._sign_register_name: (1, VirtualType.Z2),
         }
+        if self._history_name:
+            instantiates[self._history_name] = (1, VirtualType.Z2)
+        return instantiates
 
     def sample(self, registers, rng, inputs, num_randomizations):
         pauli_lindblad_map = inputs[f"pauli_lindblad_maps.{self._noise_ref}"]
@@ -70,11 +75,13 @@ class InjectNoiseNode(SamplingNode):
         if self._modifier_ref:
             scale = inputs.get(f"noise_scales.{self._modifier_ref}", None)
             local_scale = inputs.get(f"local_scales.{self._modifier_ref}", None)
-        signs, samples = pauli_lindblad_map.parity_sample(
+        signs, samples, pauli_history, _ = pauli_lindblad_map.parity_sample_with_history(
             num_randomizations, rng.bit_generator.random_raw(), scale=scale, local_scale=local_scale
         )
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
+        if self._history_name:
+            registers[self._history_name] = Z2Register(pauli_history.reshape(1, -1))
 
     def __eq__(self, other):
         return (
