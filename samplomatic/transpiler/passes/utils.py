@@ -38,6 +38,22 @@ def asap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
         yield from (node for node in layer if isinstance(node, DAGOpNode))
 
 
+def alap_topological_nodes(dag: DAGCircuit) -> Iterator[DAGOpNode]:
+    """Yield operation nodes of the DAG circuit in "alap" topological order.
+
+    In this case, "alap" means that topological generations are filled greedily from the end, and
+    nodes are yielded out of these generations in reverse order.
+
+    Args:
+        dag: The dag circuit to yield nodes from.
+
+    Yields:
+        Nodes from the dag circuit.
+    """
+    for layer in reversed(list(dag.multigraph_layers())):
+        yield from (node for node in layer if isinstance(node, DAGOpNode))
+
+
 def make_and_insert_box(
     dag: DAGCircuit,
     nodes: list[DAGOpNode],
