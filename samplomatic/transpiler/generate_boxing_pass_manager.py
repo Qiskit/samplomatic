@@ -49,6 +49,7 @@ from .passes.insert_noops import AddNoopsActiveAccum, AddNoopsActiveCircuit, Add
     "inject_noise_site",
     "remove_barriers",
     "add_tags",
+    "boxing_strategy",
 )
 def generate_boxing_pass_manager(
     *,
@@ -69,6 +70,7 @@ def generate_boxing_pass_manager(
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
     add_tags: Literal["none", "unique_box", "unique_instance", "noise_ref"] = "none",
+    boxing_strategy: Literal["asap", "alap"] = "asap",
 ) -> PassManager:
     """Construct a pass manager to group the operations in a circuit into boxes.
 
@@ -214,6 +216,14 @@ def generate_boxing_pass_manager(
             Boolean values are deprecated such that ``True`` corresponds to ``'immediately'`` and
             ``False`` corresponds to ``'never'``.
 
+        boxing_strategy: The strategy used by the :class:`~.GroupGatesIntoBoxes` pass to assign
+            two-qubit gates to boxes. The supported values are:
+
+            * ``'asap'``: Each two-qubit gate is placed in the earliest possible box, given the
+              circuit's dependency constraints and any barriers or existing boxes.
+            * ``'alap'``: Each two-qubit gate is placed in the latest possible box, given the
+              circuit's dependency constraints and any barriers or existing boxes.
+
         add_tags: Whether and how to add a :class:`~.Tag` annotation to every box using the
             :class:`~.AddTags` pass. Boxes with pre-existing :class:`~.Tag` annotations are left
             unchanged. The supported values are:
@@ -262,7 +272,10 @@ def generate_boxing_pass_manager(
 
     if enable_gates:
         passes.append(
-            GroupGatesIntoBoxes([Twirl(group=twirling_group, decomposition=decomposition)])
+            GroupGatesIntoBoxes(
+                [Twirl(group=twirling_group, decomposition=decomposition)],
+                strategy=boxing_strategy,
+            )
         )
 
     if enable_measures:
