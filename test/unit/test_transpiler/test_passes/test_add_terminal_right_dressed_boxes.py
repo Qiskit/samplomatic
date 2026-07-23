@@ -18,7 +18,7 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager
 from qiskit.transpiler.exceptions import TranspilerError
 
-from samplomatic.annotations import Twirl
+from samplomatic.annotations import DecompositionMode, GroupMode, Twirl
 from samplomatic.transpiler.passes import AddTerminalRightDressedBoxes
 
 
@@ -253,11 +253,20 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("circuits_to_compare", real_and_expected, ids=descriptions)
 
 
-def test_non_default_init():
-    """Test `AddTerminalRightDressedBoxes` initialization with non-defaults."""
+def test_non_default():
+    """Test `AddTerminalRightDressedBoxes` with non-defaults."""
     the_pass = AddTerminalRightDressedBoxes("local_c1", "rzrx")
     assert the_pass.decomposition == "rzrx"
     assert the_pass.group == "local_c1"
+
+    circuit = QuantumCircuit(1)
+    with circuit.box([Twirl()]):
+        circuit.noop(0)
+
+    boxed_circuit = PassManager(passes=[the_pass]).run(circuit)
+    twirl = boxed_circuit[-1].operation.annotations[0]
+    assert twirl.group is GroupMode.LOCAL_C1
+    assert twirl.decomposition is DecompositionMode.RZRX
 
 
 def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
