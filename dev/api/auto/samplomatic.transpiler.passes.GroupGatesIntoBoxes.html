@@ -502,7 +502,7 @@
 <h1>GroupGatesIntoBoxes<a class="headerlink" href="#groupgatesintoboxes" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="samplomatic.transpiler.passes.GroupGatesIntoBoxes">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.transpiler.passes.</span></span><span class="sig-name descname"><span class="pre">GroupGatesIntoBoxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/transpiler/passes/group_gates_into_boxes.py#L35-L166"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.transpiler.passes.GroupGatesIntoBoxes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.transpiler.passes.</span></span><span class="sig-name descname"><span class="pre">GroupGatesIntoBoxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/transpiler/passes/group_gates_into_boxes.py#L35-L170"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.transpiler.passes.GroupGatesIntoBoxes" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.transpiler.TransformationPass" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformationPass</span></code></a></p>
 <p>Collect the two-qubit gates in a circuit inside left-dressed boxes.</p>
 <p>This pass collects all 2-qubit gates in the input circuit into left-dressed boxes. To assign
@@ -519,7 +519,7 @@ placed outside of any boxes.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Measurements also act as delimiters.</p>
+<p>Measurements and resets also act as delimiters.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
