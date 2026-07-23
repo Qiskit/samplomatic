@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -229,6 +229,13 @@ def pytest_generate_tests(metafunc):
         real_and_expected = [(test[0], test[1]) for test in circuits_to_compare]
         descriptions = [test[2] for test in circuits_to_compare]
         metafunc.parametrize("circuits_to_compare", real_and_expected, ids=descriptions)
+
+
+def test_non_default_init():
+    """Test `AddTerminalRightDressedBoxes` initialization with non-defaults."""
+    the_pass = AddTerminalRightDressedBoxes("local_c1", "rzrx")
+    assert the_pass.decomposition == "rzrx"
+    assert the_pass.group == "local_c1"
 
 
 def test_transpiled_circuits_have_correct_boxops(circuits_to_compare):
