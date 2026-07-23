@@ -175,6 +175,33 @@ def make_circuits():
 
     yield circuit, expected_circuit, "circuit_with_2q_gates_as_delimiters"
 
+    circuit = QuantumCircuit(1, 2)
+    circuit.measure(0, 0)
+    circuit.reset(0)
+    circuit.measure(0, 1)
+
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 0)
+    expected_circuit.reset(0)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 1)
+
+    yield circuit, expected_circuit, "circuit_with_reset_as_delimiter"
+
+    circuit = QuantumCircuit(2, 2)
+    circuit.measure(0, 0)
+    circuit.delay(100, 0, unit="dt")
+    circuit.measure(1, 1)
+
+    expected_circuit = QuantumCircuit(2, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 0)
+        expected_circuit.measure(1, 1)
+    expected_circuit.delay(100, 0, unit="dt")
+
+    yield circuit, expected_circuit, "circuit_with_delay_is_transparent"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
