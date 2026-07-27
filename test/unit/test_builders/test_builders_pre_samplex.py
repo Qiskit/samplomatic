@@ -40,7 +40,7 @@ class TestBoxBuilder:
         circuit = DAGCircuit()
         circuit.add_qreg(qreg)
         circuit.add_creg(creg)
-        template_state = TemplateState(circuit, qubit_map, ParamIter(), [0])
+        template_state = TemplateState(circuit, qubit_map, ParamIter(), [0], {})
         pre_samplex = PreSamplex(qubit_map=qubit_map, cregs=[creg])
         qubits = QubitPartition.from_elements(qreg)
         builder = LeftBoxBuilder(

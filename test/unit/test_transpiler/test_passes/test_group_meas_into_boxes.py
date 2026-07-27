@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -175,6 +175,33 @@ def make_circuits():
 
     yield circuit, expected_circuit, "circuit_with_2q_gates_as_delimiters"
 
+    circuit = QuantumCircuit(1, 2)
+    circuit.measure(0, 0)
+    circuit.reset(0)
+    circuit.measure(0, 1)
+
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 0)
+    expected_circuit.reset(0)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 1)
+
+    yield circuit, expected_circuit, "circuit_with_reset_as_delimiter"
+
+    circuit = QuantumCircuit(2, 2)
+    circuit.measure(0, 0)
+    circuit.delay(100, 0, unit="dt")
+    circuit.measure(1, 1)
+
+    expected_circuit = QuantumCircuit(2, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 0)
+        expected_circuit.measure(1, 1)
+    expected_circuit.delay(100, 0, unit="dt")
+
+    yield circuit, expected_circuit, "circuit_with_delay_is_transparent"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
@@ -272,3 +299,28 @@ def test_raises_for_unsupported_ops():
 
     with pytest.raises(TranspilerError, match="``'if_else'`` is not supported"):
         pm.run(circuit)
+
+
+def test_global_phase_gate():
+    """Test that a GlobalPhaseGate passes through."""
+    from qiskit.circuit.library import GlobalPhaseGate
+
+    circuit = QuantumCircuit(1, 1)
+    circuit.append(GlobalPhaseGate(0.1), [], [])
+    circuit.measure(0, 0)
+
+    pm = PassManager(passes=[GroupMeasIntoBoxes()])
+    assert any(op.name == "global_phase" for op in pm.run(circuit))
+
+
+def test_zero_width_barrier_passes_through():
+    """Test that a zero-width barrier does not crash and is left in place."""
+    circuit = QuantumCircuit(2)
+    circuit.cx(0, 1)
+    circuit.barrier([])
+    circuit.measure_all()
+
+    pm = PassManager(passes=[GroupMeasIntoBoxes()])
+    result = pm.run(circuit)
+    # Both CX gates should end up boxed; zero-width barrier does not cause a crash
+    assert any(instr.operation.name == "barrier" for instr in result.data)

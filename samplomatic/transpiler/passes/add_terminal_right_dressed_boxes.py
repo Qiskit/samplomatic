@@ -138,8 +138,8 @@ class AddTerminalRightDressedBoxes(TransformationPass):
             # it to be less lazy and traverse the contents to find out.
             return set(node.qargs), _EMPTY_SET, _EMPTY_SET
 
-        if node.op.name == "barrier":
-            # it's always okay to postpone termination until after a barrier
+        if node.op.name in ("barrier", "delay"):
+            # it's always okay to postpone termination until after a barrier or delay
             return _EMPTY_SET, _EMPTY_SET, _EMPTY_SET
 
         # we treat every other kind of operation (multi-qubit gates, measurements, etc.) as "unsafe"

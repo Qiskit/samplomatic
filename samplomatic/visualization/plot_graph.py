@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025-2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -135,6 +135,7 @@ def plot_graph(
         nodes = subgraph.nodes()
 
         layout = layout_method(subgraph, ranker)
+        line_shape = "spline" if isinstance(layout, tuple) else "linear"
         node_layout, raw_edge_coords = _add_edge_layout(subgraph, layout)
 
         # Coordinates of nodes, shape (num_nodes, 2), last axis for (x, y)
@@ -180,7 +181,7 @@ def plot_graph(
                 go.Scatter(
                     x=edge_coords[:, 0],
                     y=edge_coords[:, 1],
-                    line=dict(color=COLOR_EDGES, shape="spline", smoothing=1.0),
+                    line=dict(color=COLOR_EDGES, shape=line_shape, smoothing=1.0),
                     hoverinfo="text",
                     hovertext=edge_hovertexts,
                     mode="lines+markers",

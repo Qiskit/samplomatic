@@ -34,7 +34,7 @@ def graphviz_layout(
     layout: Literal["dot", "neato"],
     rankdir: Literal["LR", "RL", "BT"] = "LR",
     spline: Literal["spline", "curved", "line", "polyline", "ortho"] = "spline",
-) -> tuple[NodeLayout, EdgeLayout]:
+) -> NodeLayout | tuple[NodeLayout, EdgeLayout]:
     """Compute layout coordinates using pygraphviz.
 
     Args:
@@ -93,7 +93,7 @@ def graphviz_layout(
 
             edge_layout[edge_idx] = render_bezier_spline(coords)
 
-    return node_layout, edge_layout
+    return node_layout if spline == "line" else (node_layout, edge_layout)
 
 
 def render_bezier_spline(
