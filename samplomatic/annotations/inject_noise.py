@@ -44,7 +44,7 @@ class InjectNoise(Annotation):
         modifier_ref: A unique identifier for modifiers to apply to the Pauli Lindblad map before
             injection.
         site: Whether to inject the noise before or after the hard content of the box.
-        history: Whether to include the history of the sampled generators in the ouput.
+        history: Whether to include the history of the sampled generators in the output.
     """
 
     namespace = "samplomatic.inject_noise"
@@ -87,5 +87,5 @@ class InjectNoise(Annotation):
     def __repr__(self):
         return (
             f"{type(self).__name__}(ref='{self.ref}', modifier_ref={self.modifier_ref!r}, "
-            f"site='{self.site.name.lower()}')"
+            f"site='{self.site.name.lower()}', history={self.history!r})"
         )

@@ -76,6 +76,7 @@ from ..samplex.nodes import (
     CombineRegistersNode,
     DistributionSamplingNode,
     InjectNoiseNode,
+    InjectNoiseWithHistoryNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
@@ -1515,14 +1516,24 @@ class PreSamplex:
         reg_idx = order[pre_inject_idx]
         reg_name = f"inject_noise_{reg_idx}"
         sign_reg_name = f"sign_{reg_idx}"
-        node = InjectNoiseNode(
-            reg_name,
-            sign_reg_name,
-            pre_inject.ref,
-            len(pre_inject.subsystems),
-            pre_inject.modifier_ref,
-            "" if pre_inject.history_idx is None else (history_name := f"pauli_history_{reg_idx}"),
-        )
+        if pre_inject.history_idx is None:
+            node = InjectNoiseNode(
+                reg_name,
+                sign_reg_name,
+                pre_inject.ref,
+                len(pre_inject.subsystems),
+                pre_inject.modifier_ref,
+            )
+        else:
+            history_name = f"pauli_history_{reg_idx}"
+            node = InjectNoiseWithHistoryNode(
+                reg_name,
+                sign_reg_name,
+                pre_inject.ref,
+                len(pre_inject.subsystems),
+                pre_inject.modifier_ref,
+                history_name,
+            )
         node_idx = samplex.add_node(node)
 
         pre_nodes_to_nodes[pre_inject_idx] = node_idx

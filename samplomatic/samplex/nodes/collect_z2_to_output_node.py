@@ -65,17 +65,13 @@ class CollectZ2ToOutputNode(CollectionNode):
     def collect(self, registers, outputs, rng):
         register = registers[self._register_name]
         output = outputs[self._output_name]
-        if self._output_axis == 1:
-            output.reshape(-1, output.shape[-1])[:, self._output_idxs] = register.virtual_gates[
-                self._subsystem_idxs, :
-            ].transpose(1, 0)
-        else:
-            axis = output.ndim - self._output_axis
-            for sub_idx, out_idx in zip(self._subsystem_idxs, self._output_idxs):
-                idx = [slice(None)] * output.ndim
-                idx[axis] = int(out_idx)
-                target = output[tuple(idx)]
-                target[:] = register.virtual_gates[sub_idx].reshape(target.shape)
+        # Move the target axis to the front so the output slots can be fancy-indexed directly.
+        axis = output.ndim - self._output_axis
+        moved = np.moveaxis(output, axis, 0)
+        data = register.virtual_gates[self._subsystem_idxs].reshape(
+            len(self._subsystem_idxs), *moved.shape[1:]
+        )
+        moved[self._output_idxs] = data
 
     def __eq__(self, other):
         return (

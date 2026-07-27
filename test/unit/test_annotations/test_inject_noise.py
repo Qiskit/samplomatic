@@ -34,6 +34,7 @@ def test_eq():
     assert InjectNoise("ref") != InjectNoise("another_ref")
     assert InjectNoise("ref") != InjectNoise("ref", "modifier_ref")
     assert InjectNoise("ref") != InjectNoise("ref", site="after")
+    assert InjectNoise("ref") != InjectNoise("ref", history=True)
 
 
 def test_hash():
@@ -43,8 +44,12 @@ def test_hash():
     assert hash(InjectNoise("ref")) != hash(InjectNoise("another_ref"))
     assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", "modifier_ref"))
     assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", site="after"))
+    assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", history=True))
 
 
 def test_repr():
     """Test repr."""
-    assert repr(InjectNoise("ref")) == "InjectNoise(ref='ref', modifier_ref='', site='before')"
+    assert (
+        repr(InjectNoise("ref"))
+        == "InjectNoise(ref='ref', modifier_ref='', site='before', history=False)"
+    )

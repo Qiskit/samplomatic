@@ -24,6 +24,7 @@ from samplomatic.samplex.nodes import (
     ConversionNode,
     DistributionSamplingNode,
     InjectNoiseNode,
+    InjectNoiseWithHistoryNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
@@ -50,6 +51,7 @@ from samplomatic.serialization.node_serializers import (
     ConversionNodeSerializer,
     DistributionSamplingNodeSerializer,
     InjectNoiseNodeSerializer,
+    InjectNoiseWithHistoryNodeSerializer,
     LeftMultiplicationNodeSerializer,
     LeftU2ParametricMultiplicationNodeSerializer,
     PauliPastCliffordNodeSerializer,
@@ -130,7 +132,7 @@ def test_collect_z2_serializer_round_trip_with_output_axis():
 
 def test_collect_z2_serializer_output_axis_fails_on_old_ssv():
     node = CollectZ2ToOutputNode("reg", [0], "hist", [1], output_axis=2)
-    with pytest.raises(SerializationError):
+    with pytest.raises(SerializationError, match="output_axis"):
         CollectZ2ToOutputNodeSerializer.serialize(node, 4)
 
 
@@ -155,6 +157,16 @@ def test_conversion_serializer_round_trip(ssv):
 def test_inject_noise_serializer_round_trip(ssv):
     node = InjectNoiseNode("injection", "the_sign", "my_noise", 3)
     data = InjectNoiseNodeSerializer.serialize(node, ssv)
+    orjson.dumps(data)
+    assert node == TypeSerializer.deserialize(data)
+
+
+@pytest.mark.parametrize("ssv", InjectNoiseWithHistoryNodeSerializer.SSVS)
+def test_inject_noise_with_history_serializer_round_trip(ssv):
+    node = InjectNoiseWithHistoryNode(
+        "injection", "the_sign", "my_noise", 3, "the_modifier", "the_history"
+    )
+    data = InjectNoiseWithHistoryNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)
     assert node == TypeSerializer.deserialize(data)
 

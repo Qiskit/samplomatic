@@ -24,6 +24,7 @@ from ..samplex.nodes import (
     ConversionNode,
     DistributionSamplingNode,
     InjectNoiseNode,
+    InjectNoiseWithHistoryNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
@@ -148,7 +149,10 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
         @classmethod
         def serialize(cls, obj, ssv):
             if obj._output_axis != 1:  # noqa: SLF001
-                raise SerializationError("")
+                raise SerializationError(
+                    f"Cannot serialize a CollectZ2ToOutputNode with output_axis="
+                    f"{obj._output_axis} in SSV {ssv}; require SSV at least 5."  # noqa: SLF001
+                )
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "output_name": obj._output_name,  # noqa: SLF001
@@ -282,12 +286,9 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
 
     class SSV1(DataSerializer[InjectNoiseNode]):
         MIN_SSV = 1
-        MAX_SSV = 4
 
         @classmethod
         def serialize(cls, obj, ssv):
-            if obj._history_name:  # noqa: SLF001
-                raise SerializationError("")
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "sign_register_name": obj._sign_register_name,  # noqa: SLF001
@@ -306,7 +307,14 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
                 data["modifier_ref"],
             )
 
-    class SSV5(DataSerializer[InjectNoiseNode]):
+
+class InjectNoiseWithHistoryNodeSerializer(TypeSerializer[InjectNoiseWithHistoryNode]):
+    """Serializer for :class:`~.InjectNoiseWithHistoryNode`."""
+
+    TYPE_ID = "N16"
+    TYPE = InjectNoiseWithHistoryNode
+
+    class SSV5(DataSerializer[InjectNoiseWithHistoryNode]):
         MIN_SSV = 5
 
         @classmethod
@@ -322,7 +330,7 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
 
         @classmethod
         def deserialize(cls, data):
-            return InjectNoiseNode(
+            return InjectNoiseWithHistoryNode(
                 data["register_name"],
                 data["sign_register_name"],
                 data["noise_ref"],

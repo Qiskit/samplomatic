@@ -46,24 +46,89 @@ class InjectNoiseNode(SamplingNode):
         noise_ref: StrRef,
         num_subsystems: int,
         modifier_ref: StrRef = "",
-        history_name: RegisterName = "",
     ):
         self._register_name = register_name
         self._sign_register_name = sign_register_name
         self._noise_ref = noise_ref
         self._modifier_ref = modifier_ref
         self._num_subsystems = num_subsystems
-        self._history_name = history_name
 
     @property
     def outgoing_register_type(self) -> VirtualType:
         return VirtualType.PAULI
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
-        instantiates = {
+        return {
             self._register_name: (self._num_subsystems, VirtualType.PAULI),
             self._sign_register_name: (1, VirtualType.Z2),
         }
+
+    def sample(self, registers, rng, inputs, num_randomizations):
+        pauli_lindblad_map = inputs[f"pauli_lindblad_maps.{self._noise_ref}"]
+        scale = None
+        local_scale = None
+        if self._modifier_ref:
+            scale = inputs.get(f"noise_scales.{self._modifier_ref}", None)
+            local_scale = inputs.get(f"local_scales.{self._modifier_ref}", None)
+        signs, samples = pauli_lindblad_map.parity_sample(
+            num_randomizations, rng.bit_generator.random_raw(), scale=scale, local_scale=local_scale
+        )
+        registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
+        registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
+
+    def __eq__(self, other):
+        return (
+            type(self) is type(other)
+            and self._register_name == other._register_name
+            and self._sign_register_name == other._sign_register_name
+            and self._noise_ref == other._noise_ref
+            and self._modifier_ref == other._modifier_ref
+            and self._num_subsystems == other._num_subsystems
+        )
+
+    def get_style(self):
+        return (
+            super()
+            .get_style()
+            .append_data("Register Name", repr(self._register_name))
+            .append_data("Subsystems", repr(self._num_subsystems))
+            .append_data("Noise Reference", repr(self._noise_ref))
+            .append_data("Modifier Reference", repr(self._modifier_ref))
+        )
+
+
+class InjectNoiseWithHistoryNode(InjectNoiseNode):
+    """A noise injection node that also records the history of sampled generators.
+
+    This behaves exactly like :class:`~.InjectNoiseNode`, but additionally samples and stores which
+    generators of the :class:`qiskit.quantum_info.PauliLindbladMap` were sampled, via
+    :meth:`qiskit.quantum_info.PauliLindbladMap.parity_sample_with_history`. The history is written
+    to a :class:`~.Z2Register` so it can be collected into a ``pauli_history`` output.
+
+    Args:
+        register_name: The name of the register to store the samples.
+        sign_register_name: The name of the register to store the signs.
+        noise_ref: Unique identifier of the Pauli Lindblad map to draw samples from.
+        num_subsystems: The number of subsystems this node generates gates for.
+        modifier_ref: Unique identifier for modifiers applied to the Pauli Lindblad map before
+            sampling.
+        history_name: The name of the register to store the sampled-generator history.
+    """
+
+    def __init__(
+        self,
+        register_name: RegisterName,
+        sign_register_name: RegisterName,
+        noise_ref: StrRef,
+        num_subsystems: int,
+        modifier_ref: StrRef = "",
+        history_name: RegisterName = "",
+    ):
+        super().__init__(register_name, sign_register_name, noise_ref, num_subsystems, modifier_ref)
+        self._history_name = history_name
+
+    def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
+        instantiates = super().instantiates()
         if self._history_name:
             instantiates[self._history_name] = (1, VirtualType.Z2)
         return instantiates
@@ -84,21 +149,7 @@ class InjectNoiseNode(SamplingNode):
             registers[self._history_name] = Z2Register(pauli_history.reshape(1, -1))
 
     def __eq__(self, other):
-        return (
-            isinstance(other, InjectNoiseNode)
-            and self._register_name == other._register_name
-            and self._sign_register_name == other._sign_register_name
-            and self._noise_ref == other._noise_ref
-            and self._modifier_ref == other._modifier_ref
-            and self._num_subsystems == other._num_subsystems
-        )
+        return super().__eq__(other) and self._history_name == other._history_name
 
     def get_style(self):
-        return (
-            super()
-            .get_style()
-            .append_data("Register Name", repr(self._register_name))
-            .append_data("Subsystems", repr(self._num_subsystems))
-            .append_data("Noise Reference", repr(self._noise_ref))
-            .append_data("Modifier Reference", repr(self._modifier_ref))
-        )
+        return super().get_style().append_data("History Register Name", repr(self._history_name))

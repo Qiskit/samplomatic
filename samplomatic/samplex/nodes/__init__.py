@@ -18,7 +18,7 @@ from .combine_registers_node import CombineRegistersNode
 from .conversion_node import ConversionNode
 from .distribution_sampling_node import DistributionSamplingNode
 from .evaluation_node import EvaluationNode
-from .inject_noise_node import InjectNoiseNode
+from .inject_noise_node import InjectNoiseNode, InjectNoiseWithHistoryNode
 from .multiplication_node import LeftMultiplicationNode, RightMultiplicationNode
 from .node import Node
 from .pauli_past_clifford_node import PauliPastCliffordNode
