@@ -1531,8 +1531,8 @@ class PreSamplex:
                 sign_reg_name,
                 pre_inject.ref,
                 len(pre_inject.subsystems),
-                pre_inject.modifier_ref,
                 history_name,
+                pre_inject.modifier_ref,
             )
         node_idx = samplex.add_node(node)
 

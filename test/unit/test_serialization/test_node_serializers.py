@@ -164,7 +164,7 @@ def test_inject_noise_serializer_round_trip(ssv):
 @pytest.mark.parametrize("ssv", InjectNoiseWithHistoryNodeSerializer.SSVS)
 def test_inject_noise_with_history_serializer_round_trip(ssv):
     node = InjectNoiseWithHistoryNode(
-        "injection", "the_sign", "my_noise", 3, "the_modifier", "the_history"
+        "injection", "the_sign", "my_noise", 3, "the_history", "the_modifier"
     )
     data = InjectNoiseWithHistoryNodeSerializer.serialize(node, ssv)
     orjson.dumps(data)

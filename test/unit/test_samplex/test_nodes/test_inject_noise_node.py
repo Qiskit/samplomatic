@@ -84,8 +84,8 @@ def test_sample(rng):
 
 
 def test_history_instantiates():
-    """Test that the history register is instantiated when a history name is given."""
-    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3, "", "the_history")
+    """Test that the history register is always instantiated by the history-tracking node."""
+    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3, "the_history")
     assert node.instantiates() == {
         "injection": (3, VirtualType.PAULI),
         "the_sign": (1, VirtualType.Z2),
@@ -93,22 +93,15 @@ def test_history_instantiates():
     }
     assert node.outgoing_register_type is VirtualType.PAULI
 
-    # No history register is instantiated when the history name is empty.
-    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3)
-    assert node.instantiates() == {
-        "injection": (3, VirtualType.PAULI),
-        "the_sign": (1, VirtualType.Z2),
-    }
-
 
 def test_history_equality(dummy_sampling_node):
     """Test equality for the history-tracking node."""
-    node = InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "modifier", "history")
+    node = InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "history", "modifier")
     assert node == node
-    assert node == InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "modifier", "history")
+    assert node == InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "history", "modifier")
     assert node != dummy_sampling_node()
-    assert node != InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "modifier", "other")
-    assert node != InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "modifier")
+    assert node != InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "other", "modifier")
+    assert node != InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "history", "other")
     # A base InjectNoiseNode with otherwise-identical fields is not equal to the history node.
     assert node != InjectNoiseNode("inject", "sign", "noise", 5, "modifier")
     assert InjectNoiseNode("inject", "sign", "noise", 5, "modifier") != node
@@ -117,7 +110,7 @@ def test_history_equality(dummy_sampling_node):
 def test_history_sample(rng):
     """Test that the history register is populated during sampling."""
     registers = {}
-    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3, "", "the_history")
+    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3, "the_history")
 
     # First generator has rate 0 (never sampled), the second has a large rate
     # (sampled with probability approaching 0.5).

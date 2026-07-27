@@ -105,14 +105,17 @@ class InjectNoiseWithHistoryNode(InjectNoiseNode):
     :meth:`qiskit.quantum_info.PauliLindbladMap.parity_sample_with_history`. The history is written
     to a :class:`~.Z2Register` so it can be collected into a ``pauli_history`` output.
 
+    When history is not requested, use the base :class:`~.InjectNoiseNode` instead; a
+    ``history_name`` is always required here.
+
     Args:
         register_name: The name of the register to store the samples.
         sign_register_name: The name of the register to store the signs.
         noise_ref: Unique identifier of the Pauli Lindblad map to draw samples from.
         num_subsystems: The number of subsystems this node generates gates for.
+        history_name: The name of the register to store the sampled-generator history.
         modifier_ref: Unique identifier for modifiers applied to the Pauli Lindblad map before
             sampling.
-        history_name: The name of the register to store the sampled-generator history.
     """
 
     def __init__(
@@ -121,16 +124,15 @@ class InjectNoiseWithHistoryNode(InjectNoiseNode):
         sign_register_name: RegisterName,
         noise_ref: StrRef,
         num_subsystems: int,
+        history_name: RegisterName,
         modifier_ref: StrRef = "",
-        history_name: RegisterName = "",
     ):
         super().__init__(register_name, sign_register_name, noise_ref, num_subsystems, modifier_ref)
         self._history_name = history_name
 
     def instantiates(self) -> dict[RegisterName, tuple[NumSubsystems, VirtualType]]:
         instantiates = super().instantiates()
-        if self._history_name:
-            instantiates[self._history_name] = (1, VirtualType.Z2)
+        instantiates[self._history_name] = (1, VirtualType.Z2)
         return instantiates
 
     def sample(self, registers, rng, inputs, num_randomizations):
@@ -145,8 +147,7 @@ class InjectNoiseWithHistoryNode(InjectNoiseNode):
         )
         registers[self._register_name] = PauliRegister(samples.to_dense_array().transpose())
         registers[self._sign_register_name] = Z2Register(signs.reshape(1, -1))
-        if self._history_name:
-            registers[self._history_name] = Z2Register(pauli_history.reshape(1, -1))
+        registers[self._history_name] = Z2Register(pauli_history.reshape(1, -1))
 
     def __eq__(self, other):
         return super().__eq__(other) and self._history_name == other._history_name

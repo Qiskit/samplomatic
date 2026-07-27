@@ -335,8 +335,8 @@ class InjectNoiseWithHistoryNodeSerializer(TypeSerializer[InjectNoiseWithHistory
                 data["sign_register_name"],
                 data["noise_ref"],
                 int(data["num_subsystems"]),
-                data["modifier_ref"],
                 data["history_name"],
+                data["modifier_ref"],
             )
 
 
