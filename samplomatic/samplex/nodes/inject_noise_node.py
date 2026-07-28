@@ -105,9 +105,6 @@ class InjectNoiseWithHistoryNode(InjectNoiseNode):
     :meth:`qiskit.quantum_info.PauliLindbladMap.parity_sample_with_history`. The history is written
     to a :class:`~.Z2Register` so it can be collected into a ``pauli_history`` output.
 
-    When history is not requested, use the base :class:`~.InjectNoiseNode` instead; a
-    ``history_name`` is always required here.
-
     Args:
         register_name: The name of the register to store the samples.
         sign_register_name: The name of the register to store the signs.
