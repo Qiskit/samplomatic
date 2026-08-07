@@ -473,6 +473,40 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_circuit_with_measurements"
 
+    # Reset acts as a delimiter in ALAP: it syncs the qubit's group index at the current position
+    # without pushing it further. In reverse traversal: cx(1,2) → group 0; reset(1) syncs q1 at
+    # group 0 (no push); cx(0,1) touches q1 at 0 → group 0, but since it also assigns q0/q1 to
+    # group -1, the two CX gates land in separate boxes.
+    circuit = QuantumCircuit(3)
+    circuit.cx(0, 1)
+    circuit.reset(1)
+    circuit.cx(1, 2)
+
+    expected_circuit = QuantumCircuit(3)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.reset(1)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(1, 2)
+
+    yield circuit, expected_circuit, "alap_circuit_with_reset"
+
+    # Delay is transparent in ALAP: it does not affect group assignment at all.
+    # In reverse traversal: cx(2,3) → group 0; delay on q2 is skipped; cx(0,1) shares no qubits
+    # with cx(2,3) → also group 0. Both land in the same box.
+    circuit = QuantumCircuit(4)
+    circuit.cx(0, 1)
+    circuit.delay(100, 2, unit="dt")
+    circuit.cx(2, 3)
+
+    expected_circuit = QuantumCircuit(4)
+    expected_circuit.delay(100, 2, unit="dt")
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+        expected_circuit.cx(2, 3)
+
+    yield circuit, expected_circuit, "alap_circuit_with_delay"
+
 
 def test_raises_for_unsupported_ops():
     """Test that `GroupGatesIntoBoxes` raises when the circuit contains unsupported ops."""

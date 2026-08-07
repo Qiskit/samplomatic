@@ -141,8 +141,11 @@ class GroupGatesIntoBoxes(TransformationPass):
         for node in alap_topological_nodes(dag):
             validate_op_is_supported(node)
 
-            # The index of the latest group able to collect ops on all the bits in this node
-            group_idx: int = min(group_indices[bit] for bit in node.qargs + node.cargs)
+            # The index of the latest group able to collect ops on all the bits in this node.
+            # default=0 protects against ops with no qargs and no cargs (e.g. a zero-width barrier).
+            group_idx: int = min(
+                (group_indices[bit] for bit in node.qargs + node.cargs), default=0
+            )
 
             if (name := node.op.name) in ["barrier", "box"]:
                 # Flush: push the boundary one step earlier for all affected qubits
@@ -153,7 +156,11 @@ class GroupGatesIntoBoxes(TransformationPass):
                 clbit = node.cargs[0]
 
                 group_indices[qubit] = group_indices[clbit] = group_idx
-            elif node.is_standard_gate() and node.op.num_qubits == 1:
+            elif name == "reset":
+                group_indices[node.qargs[0]] = group_idx
+            elif name == "delay":
+                continue
+            elif node.is_standard_gate() and node.op.num_qubits <= 1:
                 continue
             elif node.is_standard_gate() and node.op.num_qubits == 2:
                 groups[group_idx].append(node)
