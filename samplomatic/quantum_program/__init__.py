@@ -50,28 +50,6 @@ mirrors the program's structure: it holds one :class:`~.QuantumProgramItemResult
 item, in the same order. Each item result behaves like a mapping from output names to arrays,
 and carries per-item metadata alongside the shared, program-level metadata stored on the
 :class:`~.QuantumProgramResult`.
-
-
-Classes
-^^^^^^^
-
-.. autosummary::
-    :toctree: ../stubs/
-    :nosignatures:
-
-    QuantumProgram
-    QuantumProgramItem
-    CircuitItem
-    SamplexItem
-    QuantumProgramResult
-    QuantumProgramItemResult
-    ChunkTiming
-    ChunkSpan
-    ChunkPart
-    Metadata
-    ItemMetadata
-    SchedulerTiming
-    StretchValues
 """
 
 from .quantum_program import CircuitItem, QuantumProgram, QuantumProgramItem, SamplexItem
