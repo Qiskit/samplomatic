@@ -14,6 +14,7 @@
 
 from collections import defaultdict
 from collections.abc import Iterable
+from enum import IntEnum
 from typing import Literal
 
 from qiskit.circuit import Annotation, Bit
@@ -30,6 +31,17 @@ from .utils import (
     make_and_insert_box,
     validate_op_is_supported,
 )
+
+
+class _TraversalDirection(IntEnum):
+    """The direction the DAG is scanned in.
+
+    Expressed as the offset applied to a group index each time a boundary is pushed further along
+    the traversal.
+    """
+
+    FORWARD = 1
+    BACKWARD = -1
 
 
 class GroupGatesIntoBoxes(TransformationPass):
@@ -77,30 +89,33 @@ class GroupGatesIntoBoxes(TransformationPass):
             *   When looping is complete, replace each group with a box.
         """
         if self.strategy == "alap":
-            return self._run_alap(dag)
-        return self._run_asap(dag)
+            return self._run(dag, alap_topological_nodes(dag), _TraversalDirection.BACKWARD)
+        return self._run(dag, asap_topological_nodes(dag), _TraversalDirection.FORWARD)
 
-    def _run_asap(self, dag: DAGCircuit) -> DAGCircuit:
-        # A list of groups that need to be placed in the same box, expressed as a dict for fast
-        # access. Every node in each group either contains a single- or two-qubit gate--when
-        # constructing this dictionary, we explicitly leave out nodes that contain different ops
+    def _run(
+        self, dag: DAGCircuit, ordered_nodes: Iterable[DAGOpNode], direction: _TraversalDirection
+    ) -> DAGCircuit:
+        # A list of groups that need to be placed in the same box
         groups: dict[int, list[DAGOpNode]] = defaultdict(list)
 
-        # A map from bits (qubits and clbits) to the index of the earliest group that is able to
-        # collect operations on those bits
+        # A map from bits to the index of the group that is able to collect operations on those bits
         group_indices: dict[Bit, int] = defaultdict(int)
 
-        for node in asap_topological_nodes(dag):
+        # How to compare groups in different traversal directions
+        pick_group = max if direction == _TraversalDirection.FORWARD else min
+
+        for node in ordered_nodes:
             validate_op_is_supported(node)
 
-            # The index of the earliest group able to collect ops on all the bits in this node.
-            # default=0 protects against ops with no qargs and no cargs (e.g. a zero-width barrier).
-            group_idx: int = max((group_indices[bit] for bit in node.qargs + node.cargs), default=0)
+            # The index of the group able to collect ops on all the bits in this node
+            group_idx: int = pick_group(
+                (group_indices[bit] for bit in node.qargs + node.cargs), default=0
+            )
 
             if (name := node.op.name) in ["barrier", "box"]:
-                # Flush the single-qubit gate nodes and place them in a group
+                # Flush: push the boundary one step further in the traversal direction
                 for qubit in node.qargs:
-                    group_indices[qubit] = group_idx + 1
+                    group_indices[qubit] = group_idx + direction
             elif name == "measure":
                 # Flush the single-qubit gate nodes without placing them in a group
                 qubit = node.qargs[0]
@@ -120,46 +135,7 @@ class GroupGatesIntoBoxes(TransformationPass):
 
                 # Update trackers
                 for qubit in node.qargs:
-                    group_indices[qubit] = group_idx + 1
-            else:
-                raise TranspilerError(f"'{name}' operation is not supported.")
-
-        for nodes in groups.values():
-            make_and_insert_box(dag, nodes, annotations=self.annotations)
-
-        return dag
-
-    def _run_alap(self, dag: DAGCircuit) -> DAGCircuit:
-        # Same structure as _run_asap but traversal is reversed: we iterate from the end of the
-        # circuit backward, and each gate is assigned to the latest group it can fit in.
-        groups: dict[int, list[DAGOpNode]] = defaultdict(list)
-
-        # A map from bits to the index of the latest group that is able to collect ops on those
-        # bits (starts at 0 and decrements as gates are assigned)
-        group_indices: dict[Bit, int] = defaultdict(int)
-
-        for node in alap_topological_nodes(dag):
-            validate_op_is_supported(node)
-
-            # The index of the latest group able to collect ops on all the bits in this node
-            group_idx: int = min(group_indices[bit] for bit in node.qargs + node.cargs)
-
-            if (name := node.op.name) in ["barrier", "box"]:
-                # Flush: push the boundary one step earlier for all affected qubits
-                for qubit in node.qargs:
-                    group_indices[qubit] = group_idx - 1
-            elif name == "measure":
-                qubit = node.qargs[0]
-                clbit = node.cargs[0]
-
-                group_indices[qubit] = group_indices[clbit] = group_idx
-            elif node.is_standard_gate() and node.op.num_qubits == 1:
-                continue
-            elif node.is_standard_gate() and node.op.num_qubits == 2:
-                groups[group_idx].append(node)
-
-                for qubit in node.qargs:
-                    group_indices[qubit] = group_idx - 1
+                    group_indices[qubit] = group_idx + direction
             else:
                 raise TranspilerError(f"'{name}' operation is not supported.")
 
