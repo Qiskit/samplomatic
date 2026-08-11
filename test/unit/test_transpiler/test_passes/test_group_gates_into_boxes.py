@@ -373,9 +373,6 @@ def make_alap_circuits():
     phi = Parameter("phi")
     lam = Parameter("lambda")
 
-    # In ASAP: cx(1,2)+cx(4,3) share no qubits → same box; ecr(0,1) follows in a second box.
-    # In ALAP: ecr(0,1) is latest → group 0; cx(1,2) shares q1 with ecr → pushed to group -1;
-    #          cx(4,3) shares no qubits with ecr → also lands in group 0 alongside ecr.
     circuit = QuantumCircuit(6)
     circuit.x(0)
     circuit.rx(theta, 0)
@@ -408,9 +405,6 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_groups_independent_gate_with_latest_box"
 
-    # Partial-width barrier: barrier(1,2) splits groups only on qubits 1 and 2.
-    # In ALAP: cx(2,3) is latest → group 0; barrier(1,2) pushes q1,q2 to group -1;
-    # cx(0,1) touches q1 which is now at -1 → group -1.
     circuit = QuantumCircuit(4)
     circuit.cx(0, 1)
     circuit.x(0)
@@ -433,7 +427,6 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_circuit_with_partial_width_barrier"
 
-    # Full-width barrier: all qubits flushed. CX gates on either side cannot merge.
     circuit = QuantumCircuit(4)
     circuit.cx(0, 1)
     circuit.barrier()
@@ -448,11 +441,6 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_circuit_with_full_width_barrier"
 
-    # Measurements as delimiters in ALAP mode.
-    # In ALAP traversal (reverse): cx(2,3) after barrier → group 0, cx(0,1) after barrier →
-    # group 0 (shares no constrained bits). Barrier pushes all to -1. Before barrier: cx(2,3)
-    # → group -1; measure syncs q1/c0 at -1 (no further push); cx(0,1) touches q1 at -1 →
-    # also group -1. So both pre-barrier CX gates share a box.
     circuit = QuantumCircuit(4, 1)
     circuit.cx(0, 1)
     circuit.measure(1, 0)
@@ -473,10 +461,6 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_circuit_with_measurements"
 
-    # Reset acts as a delimiter in ALAP: it syncs the qubit's group index at the current position
-    # without pushing it further. In reverse traversal: cx(1,2) → group 0; reset(1) syncs q1 at
-    # group 0 (no push); cx(0,1) touches q1 at 0 → group 0, but since it also assigns q0/q1 to
-    # group -1, the two CX gates land in separate boxes.
     circuit = QuantumCircuit(3)
     circuit.cx(0, 1)
     circuit.reset(1)
@@ -491,9 +475,6 @@ def make_alap_circuits():
 
     yield circuit, expected_circuit, "alap_circuit_with_reset"
 
-    # Delay is transparent in ALAP: it does not affect group assignment at all.
-    # In reverse traversal: cx(2,3) → group 0; delay on q2 is skipped; cx(0,1) shares no qubits
-    # with cx(2,3) → also group 0. Both land in the same box.
     circuit = QuantumCircuit(4)
     circuit.cx(0, 1)
     circuit.delay(100, 2, unit="dt")
