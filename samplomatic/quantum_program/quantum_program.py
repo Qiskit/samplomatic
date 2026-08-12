@@ -47,7 +47,7 @@ class QuantumProgramItem(abc.ABC):
     parameters has intrinsic shape ``(n,)``, so an array of shape ``(5, 3, n)`` has extrinsic
     shape ``(5, 3)``.
 
-    Output arrays returned by the executor follow the same convention: extrinsic axes match
+    Output arrays should follow the same convention: extrinsic axes match
     the item's :attr:`shape`, and intrinsic axes are determined by the output type (e.g.,
     ``(num_shots, creg_size)`` for classical register data).
 
