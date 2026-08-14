@@ -15,7 +15,7 @@
 import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
-from samplomatic.samplex.nodes import InjectNoiseNode
+from samplomatic.samplex.nodes import InjectNoiseNode, InjectNoiseWithHistoryNode
 from samplomatic.tensor_interface import (
     PauliLindbladMapSpecification,
     TensorInterface,
@@ -81,3 +81,52 @@ def test_sample(rng):
     samplex_input.bind(noise_scales={"my_modifier": 1.0}, local_scales={"my_modifier": [0.0]})
     node.sample(registers, rng, samplex_input, 100)
     assert registers["the_sign"] == Z2Register(np.zeros((1, 100), dtype=np.uint8))
+
+
+def test_history_instantiates():
+    """Test that the history register is always instantiated by the history-tracking node."""
+    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3, "the_history")
+    assert node.instantiates() == {
+        "injection": (3, VirtualType.PAULI),
+        "the_sign": (1, VirtualType.Z2),
+        "the_history": (1, VirtualType.Z2),
+    }
+    assert node.outgoing_register_type is VirtualType.PAULI
+
+
+def test_history_equality(dummy_sampling_node):
+    """Test equality for the history-tracking node."""
+    node = InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "history", "modifier")
+    assert node == node
+    assert node == InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "history", "modifier")
+    assert node != dummy_sampling_node()
+    assert node != InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "other", "modifier")
+    assert node != InjectNoiseWithHistoryNode("inject", "sign", "noise", 5, "history", "other")
+    # A base InjectNoiseNode with otherwise-identical fields is not equal to the history node.
+    assert node != InjectNoiseNode("inject", "sign", "noise", 5, "modifier")
+    assert InjectNoiseNode("inject", "sign", "noise", 5, "modifier") != node
+
+
+def test_history_sample(rng):
+    """Test that the history register is populated during sampling."""
+    registers = {}
+    node = InjectNoiseWithHistoryNode("injection", "the_sign", "my_noise", 3, "the_history")
+
+    # First generator has rate 0 (never sampled), the second has a large rate
+    # (sampled with probability approaching 0.5).
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XXX", 0.0), ("ZZZ", 100.0)])}
+    samplex_input = TensorInterface(
+        [PauliLindbladMapSpecification("pauli_lindblad_maps.my_noise", 3, 2)]
+    ).bind(pauli_lindblad_maps=pauli_lindblad_maps)
+
+    node.sample(registers, rng, samplex_input, 100)
+    history = registers["the_history"].virtual_gates
+    # Two generators, 100 randomizations -> flattened to shape (1, 200).
+    assert history.shape == (1, 200)
+    # ``pauli_history`` has shape (num_randomizations, num_terms); reshape to recover the axes.
+    history = history.reshape(100, 2)
+    # The zero-rate generator is never sampled.
+    assert history[:, 0].sum() == 0
+    # The large-rate generator is sampled at least once (with p~0.5, all-zero is astronomically
+    # unlikely across 100 randomizations).
+    assert history[:, 1].sum() > 0

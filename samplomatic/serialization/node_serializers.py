@@ -24,6 +24,7 @@ from ..samplex.nodes import (
     ConversionNode,
     DistributionSamplingNode,
     InjectNoiseNode,
+    InjectNoiseWithHistoryNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
@@ -143,9 +144,15 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
 
     class SSV1(DataSerializer[CollectZ2ToOutputNode]):
         MIN_SSV = 1
+        MAX_SSV = 4
 
         @classmethod
         def serialize(cls, obj, ssv):
+            if obj._output_axis != 1:  # noqa: SLF001
+                raise SerializationError(
+                    f"Cannot serialize a CollectZ2ToOutputNode with output_axis="
+                    f"{obj._output_axis} in SSV {ssv}; require SSV at least 5."  # noqa: SLF001
+                )
             return {
                 "register_name": obj._register_name,  # noqa: SLF001
                 "output_name": obj._output_name,  # noqa: SLF001
@@ -160,6 +167,29 @@ class CollectZ2ToOutputNodeSerializer(TypeSerializer[CollectZ2ToOutputNode]):
                 array_from_json(data["subsystem_indices"]),
                 data["output_name"],
                 array_from_json(data["output_indices"]),
+            )
+
+    class SSV5(DataSerializer[CollectZ2ToOutputNode]):
+        MIN_SSV = 5
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "output_name": obj._output_name,  # noqa: SLF001
+                "subsystem_indices": array_to_json(obj._subsystem_idxs),  # noqa: SLF001
+                "output_indices": array_to_json(obj._output_idxs),  # noqa: SLF001
+                "output_axis": str(obj._output_axis),  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return CollectZ2ToOutputNode(
+                data["register_name"],
+                array_from_json(data["subsystem_indices"]),
+                data["output_name"],
+                array_from_json(data["output_indices"]),
+                int(data["output_axis"]),
             )
 
 
@@ -274,6 +304,38 @@ class InjectNoiseNodeSerializer(TypeSerializer[InjectNoiseNode]):
                 data["sign_register_name"],
                 data["noise_ref"],
                 int(data["num_subsystems"]),
+                data["modifier_ref"],
+            )
+
+
+class InjectNoiseWithHistoryNodeSerializer(TypeSerializer[InjectNoiseWithHistoryNode]):
+    """Serializer for :class:`~.InjectNoiseWithHistoryNode`."""
+
+    TYPE_ID = "N16"
+    TYPE = InjectNoiseWithHistoryNode
+
+    class SSV5(DataSerializer[InjectNoiseWithHistoryNode]):
+        MIN_SSV = 5
+
+        @classmethod
+        def serialize(cls, obj, ssv):
+            return {
+                "register_name": obj._register_name,  # noqa: SLF001
+                "sign_register_name": obj._sign_register_name,  # noqa: SLF001
+                "noise_ref": obj._noise_ref,  # noqa: SLF001
+                "modifier_ref": obj._modifier_ref,  # noqa: SLF001
+                "num_subsystems": str(obj._num_subsystems),  # noqa: SLF001
+                "history_name": obj._history_name,  # noqa: SLF001
+            }
+
+        @classmethod
+        def deserialize(cls, data):
+            return InjectNoiseWithHistoryNode(
+                data["register_name"],
+                data["sign_register_name"],
+                data["noise_ref"],
+                int(data["num_subsystems"]),
+                data["history_name"],
                 data["modifier_ref"],
             )
 

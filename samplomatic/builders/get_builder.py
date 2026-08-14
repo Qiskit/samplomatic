@@ -253,6 +253,7 @@ def inject_noise_parser(
     emission.noise_ref = inject_noise.ref
     emission.noise_modifier_ref = inject_noise.modifier_ref
     emission.noise_site = inject_noise.site
+    emission.noise_history = inject_noise.history
 
     emission.trace_refs["inject_noise"] = inject_noise.ref
 

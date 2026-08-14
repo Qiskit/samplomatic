@@ -169,6 +169,7 @@ class LeftBoxBuilder(BoxBuilder):
                     self.emission.qubits,
                     self.emission.noise_ref,
                     self.emission.noise_modifier_ref,
+                    history=self.emission.noise_history,
                     trace_info=trace_info,
                 )
             self._emit_twirl()
@@ -236,6 +237,7 @@ class LeftBoxBuilder(BoxBuilder):
                 self.emission.qubits,
                 self.emission.noise_ref,
                 self.emission.noise_modifier_ref,
+                history=self.emission.noise_history,
                 trace_info=trace_info,
             )
 
@@ -275,6 +277,7 @@ class RightBoxBuilder(BoxBuilder):
                     self.emission.qubits,
                     self.emission.noise_ref,
                     self.emission.noise_modifier_ref,
+                    history=self.emission.noise_history,
                     trace_info=trace_info,
                 )
             if self.emission.basis_ref:
@@ -337,6 +340,7 @@ class RightBoxBuilder(BoxBuilder):
                 self.emission.qubits,
                 self.emission.noise_ref,
                 self.emission.noise_modifier_ref,
+                history=self.emission.noise_history,
                 trace_info=trace_info,
             )
 

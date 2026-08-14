@@ -19,6 +19,7 @@ from qiskit.quantum_info import Operator, Pauli, PauliLindbladMap, average_gate_
 
 from samplomatic.annotations import InjectNoise, Twirl
 from samplomatic.builders import pre_build
+from samplomatic.samplex.nodes import InjectNoiseNode, InjectNoiseWithHistoryNode
 
 
 def make_circuits():
@@ -185,3 +186,64 @@ def test_sampling(circuit, expected, pauli_lindblad_maps, save_plot):
 
     assert len(counts) == len(expected)
     assert sum(counts.values()) == num_rand
+
+
+def _build_history_samplex(history):
+    """Build and finalize a two-box samplex whose first box injects noise with ``history``."""
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl(), InjectNoise("my_noise", site="before", history=history)]):
+        circuit.noop(0, 1)
+    with circuit.box([Twirl(dressing="right")]):
+        circuit.noop(0, 1)
+
+    template_state, samplex_state = pre_build(circuit)
+    template_state.finalize()
+    samplex = samplex_state.finalize()
+    samplex.finalize()
+    return samplex
+
+
+def test_history_output_shape_and_determinism():
+    """A ``history=True`` build exposes a deterministic boolean ``pauli_history.<ref>`` output."""
+    samplex = _build_history_samplex(history=True)
+    sampling_nodes = samplex._sampling_nodes  # noqa: SLF001
+
+    # The history-tracking node type is used for a history injection.
+    assert any(isinstance(node, InjectNoiseWithHistoryNode) for node in sampling_nodes)
+
+    # Two generators: one that is never sampled (rate 0) and one sampled ~half the time.
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 0.0), ("ZZ", 100.0)])}
+    num_rand, num_terms = 32, 2
+
+    samplex_input = samplex.inputs().bind(pauli_lindblad_maps=pauli_lindblad_maps)
+    output = samplex.sample(samplex_input, num_randomizations=num_rand, rng=1234)
+
+    assert "pauli_history.my_noise" in output
+    history = output["pauli_history.my_noise"]
+    # One history-emitting node for this ref -> middle axis of length 1.
+    assert history.shape == (num_rand, 1, num_terms)
+    assert history.dtype == np.bool_
+
+    # The zero-rate generator is never sampled; the large-rate one is sampled at least once.
+    assert not history[:, 0, 0].any()
+    assert history[:, 0, 1].any()
+
+    # Sampling is deterministic in the seed.
+    rerun = samplex.sample(samplex_input, num_randomizations=num_rand, rng=1234)
+    assert np.array_equal(rerun["pauli_history.my_noise"], history)
+
+
+def test_no_history_produces_no_history_output():
+    """A ``history=False`` build uses the base node and emits no ``pauli_history`` output."""
+    samplex = _build_history_samplex(history=False)
+    sampling_nodes = samplex._sampling_nodes  # noqa: SLF001
+
+    # The base node is used, and never the history-tracking subclass.
+    assert any(type(node) is InjectNoiseNode for node in sampling_nodes)
+    assert not any(isinstance(node, InjectNoiseWithHistoryNode) for node in sampling_nodes)
+
+    pauli_lindblad_maps = {"my_noise": PauliLindbladMap.from_list([("XX", 100.0)])}
+    samplex_input = samplex.inputs().bind(pauli_lindblad_maps=pauli_lindblad_maps)
+    output = samplex.sample(samplex_input, num_randomizations=8, rng=1234)
+
+    assert not any(key.startswith("pauli_history") for key in output)
