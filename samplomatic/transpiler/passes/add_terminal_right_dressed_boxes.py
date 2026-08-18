@@ -135,7 +135,7 @@ class AddTerminalRightDressedBoxes(TransformationPass):
                 measured_qubits = set()
                 qubit_map = None  # don't compute this unless necessary
                 for instr in node.op.body:
-                    if instr.operation.name.startswith("measure"):
+                    if instr.operation.name.startswith("meas"):
                         qubit_map = qubit_map or (qubit_map := _inverse_box_qubit_map(node))
                         measured_qubits.update(qubit_map[qubit] for qubit in instr.qubits)
 

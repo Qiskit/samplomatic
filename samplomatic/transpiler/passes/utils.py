@@ -102,7 +102,7 @@ def validate_op_is_supported(node: DAGOpNode):
     """
     if (
         node.is_standard_gate()
-        or node.op.name.startswith("measure")
+        or node.op.name.startswith("meas")
         or node.op.name in ["box", "barrier", "reset", "delay"]
     ):
         return
