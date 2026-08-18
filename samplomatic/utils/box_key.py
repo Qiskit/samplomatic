@@ -89,7 +89,11 @@ class BoxKey:
         """
         op = node.op
 
-        if not (node.is_standard_gate() or op.name in ["barrier", "measure", "delay"]):
+        if not (
+            node.is_standard_gate()
+            or op.name.startswith("measure")
+            or op.name in ["barrier", "delay"]
+        ):
             raise ValueError(f"Hashing of {op.name} is not supported.")
 
         op_hashable = (op.name, op.num_qubits, op.num_clbits)
