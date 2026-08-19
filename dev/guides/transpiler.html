@@ -524,12 +524,12 @@ the circuit below.</p>
 <span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-    <span class="n">circuit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;th_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
-    <span class="n">circuit</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;phi_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
-    <span class="n">circuit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lam_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
+    <span class="n">circuit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">"th_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
+    <span class="n">circuit</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">"phi_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
+    <span class="n">circuit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lam_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
 
-<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -551,12 +551,12 @@ snippet shows an example where both gates and measurements are grouped.</p>
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/passes/add_inject_noise.py:87: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/passes/add_inject_noise.py:87: FutureWarning: The default of the 'inject_noise_site' argument will be changed from 'before' to 'after' no sooner than version 0.21.0.
   warnings.warn(
 </pre></div>
 </div>
@@ -577,7 +577,7 @@ gates are not grouped into boxes, nor are the single-qubit gates that preceed th
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -598,7 +598,7 @@ generates a circuit where the all the boxes are twirled, and the measurement box
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
     <span class="n">enable_gates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">measure_annotations</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">measure_annotations</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
 </pre></div>
@@ -616,14 +616,14 @@ measurement boxes do not.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
     <span class="n">enable_gates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">&quot;gates&quot;</span><span class="p">,</span>
+    <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">"gates"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/generate_boxing_pass_manager.py:261: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/transpiler/generate_boxing_pass_manager.py:261: FutureWarning: The default of the 'inject_noise_site' argument will be changed from 'before' to 'after' no sooner than version 0.21.0.
   warnings.warn(
 </pre></div>
 </div>
@@ -646,8 +646,8 @@ values of <code class="docutils literal notranslate"><span class="pre">modifier_
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
     <span class="n">enable_gates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">&quot;gates&quot;</span><span class="p">,</span>
-    <span class="n">inject_noise_strategy</span><span class="o">=</span><span class="s2">&quot;individual_modification&quot;</span><span class="p">,</span>
+    <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">"gates"</span><span class="p">,</span>
+    <span class="n">inject_noise_strategy</span><span class="o">=</span><span class="s2">"individual_modification"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
 </pre></div>
@@ -682,7 +682,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <span class="n">circuit</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">measure</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
-<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -695,12 +695,12 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;active_accum&quot;</span><span class="p">,</span> <span class="s2">&quot;active_circuit&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">]):</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">"active"</span><span class="p">,</span> <span class="s2">"active_accum"</span><span class="p">,</span> <span class="s2">"active_circuit"</span><span class="p">,</span> <span class="s2">"all"</span><span class="p">]):</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">pm</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">twirling_strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">remove_barriers</span><span class="o">=</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">twirling_strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span> <span class="n">remove_barriers</span><span class="o">=</span><span class="s2">"never"</span><span class="p">)</span>
     <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;twirling_strategy=&#39;</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"twirling_strategy='</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
@@ -724,7 +724,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>
 
-<span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">circuit_with_barrier</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -737,7 +737,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -748,10 +748,10 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <p>Setting <code class="docutils literal notranslate"><span class="pre">remove_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">'never'</span></code> preserves the barriers so that single-qubit gates are constrained.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">remove_barriers</span><span class="o">=</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">remove_barriers</span><span class="o">=</span><span class="s2">"never"</span><span class="p">)</span>
 
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -762,10 +762,10 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <p>And finally, if we elect to remove the barriers immediately, then the entanglers are no longer constrained to end up in separate boxes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">remove_barriers</span><span class="o">=</span><span class="s2">&quot;immediately&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span><span class="n">remove_barriers</span><span class="o">=</span><span class="s2">"immediately"</span><span class="p">)</span>
 
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -817,7 +817,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">QuantumCircuit</span>
 
 <span class="n">n</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># 5-qubit ring: bonds (0,1), (1,2), (2,3), (3,4), (4,0)</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">"dt"</span><span class="p">)</span>
 <span class="n">heisenberg</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
@@ -836,7 +836,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 
 <span class="n">heisenberg</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>
 
-<span class="n">heisenberg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">heisenberg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -850,12 +850,12 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
 
 <span class="n">preset_pm</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span>
-    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rz&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">,</span> <span class="s2">&quot;cx&quot;</span><span class="p">],</span>
+    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">"rz"</span><span class="p">,</span> <span class="s2">"sx"</span><span class="p">,</span> <span class="s2">"cx"</span><span class="p">],</span>
     <span class="n">coupling_map</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
     <span class="n">optimization_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">isa_circuit</span> <span class="o">=</span> <span class="n">preset_pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">heisenberg</span><span class="p">)</span>
-<span class="n">isa_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">isa_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -868,7 +868,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pm</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
 <span class="n">boxed_isa</span> <span class="o">=</span> <span class="n">boxing_pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">isa_circuit</span><span class="p">)</span>
-<span class="n">boxed_isa</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">boxed_isa</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -885,7 +885,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
 
 <span class="n">preset_pass_manager</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span>
-    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rz&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">,</span> <span class="s2">&quot;cx&quot;</span><span class="p">],</span>
+    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">"rz"</span><span class="p">,</span> <span class="s2">"sx"</span><span class="p">,</span> <span class="s2">"cx"</span><span class="p">],</span>
     <span class="n">coupling_map</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span>
     <span class="n">optimization_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
@@ -901,7 +901,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <span class="n">circuit</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>
 
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">preset_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -913,14 +913,14 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">preset_pm</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span>
-    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;rz&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">,</span> <span class="s2">&quot;cx&quot;</span><span class="p">],</span>
+    <span class="n">basis_gates</span><span class="o">=</span><span class="p">[</span><span class="s2">"rz"</span><span class="p">,</span> <span class="s2">"sx"</span><span class="p">,</span> <span class="s2">"cx"</span><span class="p">],</span>
     <span class="n">coupling_map</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
     <span class="n">optimization_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">preset_pm</span><span class="o">.</span><span class="n">post_scheduling</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span>
 
 <span class="n">boxed_heisenberg</span> <span class="o">=</span> <span class="n">preset_pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">heisenberg</span><span class="p">)</span>
-<span class="n">boxed_heisenberg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">boxed_heisenberg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -941,13 +941,13 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 <span class="n">boxed</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_barrier</span><span class="p">)</span>
 
 <span class="c1"># Add InjectNoise to every box</span>
-<span class="n">with_noise</span> <span class="o">=</span> <span class="n">extend_annotations</span><span class="p">(</span><span class="n">boxed</span><span class="p">,</span> <span class="n">InjectNoise</span><span class="p">(</span><span class="s2">&quot;my_noise_ref&quot;</span><span class="p">))</span>
-<span class="n">with_noise</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">with_noise</span> <span class="o">=</span> <span class="n">extend_annotations</span><span class="p">(</span><span class="n">boxed</span><span class="p">,</span> <span class="n">InjectNoise</span><span class="p">(</span><span class="s2">"my_noise_ref"</span><span class="p">))</span>
+<span class="n">with_noise</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/annotations/inject_noise.py:63: FutureWarning: The default of the &#39;inject_noise_site&#39; argument will be changed from &#39;before&#39; to &#39;after&#39; no sooner than version 0.21.0.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/samplomatic/annotations/inject_noise.py:63: FutureWarning: The default of the 'inject_noise_site' argument will be changed from 'before' to 'after' no sooner than version 0.21.0.
   warnings.warn(
 </pre></div>
 </div>
@@ -964,7 +964,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 
 <span class="c1"># Replace the twirling group on every Twirl annotation</span>
 <span class="n">updated</span> <span class="o">=</span> <span class="n">replace_annotations</span><span class="p">(</span>
-    <span class="n">twirl_only</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">[</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;local_c1&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+    <span class="n">twirl_only</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">[</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">"local_c1"</span><span class="p">)]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1003,12 +1003,12 @@ unmeasured qubit <code class="docutils literal notranslate"><span class="pre">0<
 <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-    <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;th_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
-    <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;phi_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
-    <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lam_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
+    <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">"th_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
+    <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">"phi_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
+    <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lam_</span><span class="si">{</span><span class="n">qubit</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span> <span class="n">qubit</span><span class="p">)</span>
 <span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 
-<span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">circuit_with_unmeasured_qubit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1029,7 +1029,7 @@ terminated by a right-dressed box that picks up the uncollected virtual gate. Th
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_unmeasured_qubit</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1046,7 +1046,7 @@ uncollected due to the unboxed measurements.</p>
     <span class="n">enable_measures</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit_with_unmeasured_qubit</span><span class="p">)</span>
-<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">transpiled_circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1092,7 +1092,7 @@ uncollected due to the unboxed measurements.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/08/11</div>
+              Last updated on 2026/08/19</div>
           </div>
           <div class="right-details">
             

@@ -525,12 +525,12 @@ substitute in its place.</p></li>
 <span class="kn">from</span><span class="w"> </span><span class="nn">samplomatic.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">replace_annotations</span>
 
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="k">with</span> <span class="n">circuit</span><span class="o">.</span><span class="n">box</span><span class="p">([</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;pauli&quot;</span><span class="p">)]):</span>
+<span class="k">with</span> <span class="n">circuit</span><span class="o">.</span><span class="n">box</span><span class="p">([</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">"pauli"</span><span class="p">)]):</span>
     <span class="n">circuit</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Replace Twirl annotations, delete anything else</span>
 <span class="n">updated</span> <span class="o">=</span> <span class="n">replace_annotations</span><span class="p">(</span>
-    <span class="n">circuit</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">[</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;local_c1&quot;</span><span class="p">)]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">circuit</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">[</span><span class="n">Twirl</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">"local_c1"</span><span class="p">)]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Twirl</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -573,7 +573,7 @@ substitute in its place.</p></li>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/08/11</div>
+              Last updated on 2026/08/19</div>
           </div>
           <div class="right-details">
             

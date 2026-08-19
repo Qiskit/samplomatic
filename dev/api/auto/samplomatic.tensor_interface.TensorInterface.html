@@ -623,22 +623,22 @@ conform to constraints specifed by the <a class="reference internal" href="#samp
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span> <span class="o">=</span> <span class="n">TensorInterface</span><span class="p">([</span>
-<span class="gp">... </span>    <span class="n">TensorSpecification</span><span class="p">(</span><span class="s2">&quot;foo.bar&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">TensorSpecification</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">15</span><span class="p">,),</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">TensorSpecification</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">TensorSpecification</span><span class="p">(</span><span class="s2">"foo.bar"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">TensorSpecification</span><span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="p">(</span><span class="mi">15</span><span class="p">,),</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">TensorSpecification</span><span class="p">(</span><span class="s2">"y"</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 <span class="gp">... </span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># bind a single value</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">15</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="go">TensorInterface(...)</span>
 <span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># bind a value that has a &quot;.&quot;-separated name</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># bind a value that has a "."-separated name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="p">{</span><span class="s2">"bar"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))})</span>
 <span class="go">TensorInterface(...)</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># alternatively, items can be set directly</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;foo.bar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="p">[</span><span class="s2">"foo.bar"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">interface</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">]</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -759,7 +759,7 @@ dominated by sources like NumPy buffers.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/08/11</div>
+              Last updated on 2026/08/19</div>
           </div>
           <div class="right-details">
             
