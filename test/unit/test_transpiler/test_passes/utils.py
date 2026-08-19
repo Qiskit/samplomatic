@@ -16,7 +16,7 @@ from qiskit.circuit import Instruction
 
 
 class NamedMeasure(Instruction):
-    """Alternative 'named' measurement definition.
+    """Alternative named measurement definition.
 
     This instruction implements an alternative 'named' measurement definition
     (one classical bit, one quantum bit), whose name can be used to map to a corresponding
