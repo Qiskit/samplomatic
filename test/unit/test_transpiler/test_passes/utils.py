@@ -27,7 +27,7 @@ class NamedMeasure(Instruction):
         if not name.startswith("measure_"):
             raise ValueError(
                 "Invalid name for mid-circuit measure instruction. "
-                "The provided name must start with `measure_`"
+                "The provided name must start with `measure_`."
             )
 
         super().__init__(name, 1, 1, [], label=label)
