@@ -21,6 +21,8 @@ from qiskit.transpiler.exceptions import TranspilerError
 from samplomatic.annotations import Twirl
 from samplomatic.transpiler.passes import GroupGatesIntoBoxes
 
+from .utils import NamedMeasure
+
 
 def make_circuits():
     theta = Parameter("theta")
@@ -228,7 +230,7 @@ def make_circuits():
     circuit.cx(0, 1)
     circuit.x(0)
     circuit.t(1)
-    circuit.measure(1, 0)
+    circuit.append(NamedMeasure("measure_2"), [1], [0])
     circuit.measure(2, 0)
     circuit.cx(2, 3)
     circuit.barrier()
@@ -242,7 +244,7 @@ def make_circuits():
         expected_circuit.cx(0, 1)
     expected_circuit.x(0)
     expected_circuit.t(1)
-    expected_circuit.measure(1, 0)
+    expected_circuit.append(NamedMeasure("measure_2"), [1], [0])
     expected_circuit.measure(2, 0)
     with expected_circuit.box([Twirl(dressing="left")]):
         expected_circuit.cx(2, 3)

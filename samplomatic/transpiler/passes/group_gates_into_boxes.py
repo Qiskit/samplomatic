@@ -116,7 +116,7 @@ class GroupGatesIntoBoxes(TransformationPass):
                 # Flush: push the boundary one step further in the traversal direction
                 for qubit in node.qargs:
                     group_indices[qubit] = group_idx + direction
-            elif name == "measure":
+            elif name.startswith("meas"):
                 # Flush the single-qubit gate nodes without placing them in a group
                 qubit = node.qargs[0]
                 clbit = node.cargs[0]
