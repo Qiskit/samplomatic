@@ -12,15 +12,12 @@
 
 """QuantumProgramResult."""
 
-from collections.abc import MutableMapping
-from typing import TYPE_CHECKING, Any, overload
+from collections.abc import Iterator, MutableMapping, Sequence
+from typing import Any, overload
 
-if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+import numpy as np
 
-    import numpy as np
-
-    from .datatree import DataTree
+from .datatree import DataTree
 
 
 class QuantumProgramItemResult(MutableMapping):

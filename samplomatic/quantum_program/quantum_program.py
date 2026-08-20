@@ -14,19 +14,16 @@
 
 import abc
 import math
-from typing import TYPE_CHECKING, Any, Literal
+from collections.abc import Iterable
+from typing import Any, Literal
 
 import numpy as np
 from qiskit.circuit import QuantumCircuit
+from qiskit.quantum_info import PauliLindbladMap
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable
+from samplomatic.samplex import Samplex
 
-    from qiskit.quantum_info import PauliLindbladMap
-
-    from samplomatic.samplex import Samplex
-
-    from .datatree import DataTree
+from .datatree import DataTree
 
 
 def _desc_arr(arr: Any) -> str:
