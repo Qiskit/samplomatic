@@ -21,6 +21,8 @@ from qiskit.transpiler.exceptions import TranspilerError
 from samplomatic.annotations import DecompositionMode, GroupMode, Twirl
 from samplomatic.transpiler.passes import AddTerminalRightDressedBoxes
 
+from .utils import NamedMeasure
+
 
 def make_circuits():
     theta = Parameter("theta")
@@ -238,6 +240,22 @@ def make_circuits():
         expected_circuit.noop([0, 1, 2, 3])
 
     yield (circuit, expected_circuit, "circuit_ghz_with_delay")
+
+    circuit = QuantumCircuit(1, 2)
+    with circuit.box([Twirl()]):
+        circuit.x(0)
+    circuit.append(NamedMeasure("measure_2"), [0], [0])
+    circuit.append(NamedMeasure("measure_2"), [0], [1])
+
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.x(0)
+    with expected_circuit.box([Twirl(dressing="right")]):
+        expected_circuit.noop(0)
+    expected_circuit.append(NamedMeasure("measure_2"), [0], [0])
+    expected_circuit.append(NamedMeasure("measure_2"), [0], [1])
+
+    yield circuit, expected_circuit, "circuit_with_measure_2"
 
 
 def pytest_generate_tests(metafunc):

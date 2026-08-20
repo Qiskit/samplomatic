@@ -121,7 +121,7 @@ class GroupMeasIntoBoxes(TransformationPass):
                 # Update the trackers
                 for bit in node.qargs + node.cargs:
                     group_indices[bit] = group_idx
-            elif name == "measure":
+            elif name.startswith("meas"):
                 # Add this measurement to the group
                 groups[group_idx].append(node)
 
