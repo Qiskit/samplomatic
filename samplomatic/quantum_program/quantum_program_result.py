@@ -60,7 +60,7 @@ class QuantumProgramResult:
 
     Args:
         data: A list of dictionaries with array-valued data.
-        metadata: A dictionary of metadata.
+        metadata: The result metadata.
         passthrough_data: Arbitrary nested data passed through execution without modification.
     """
 
