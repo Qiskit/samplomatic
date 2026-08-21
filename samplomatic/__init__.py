@@ -12,6 +12,7 @@
 
 """Samplomatic"""
 
+from . import quantum_program
 from ._version import __version__
 from .annotations import ChangeBasis, InjectNoise, Tag, Twirl
 from .builders import build
