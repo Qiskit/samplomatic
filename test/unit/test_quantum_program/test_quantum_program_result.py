@@ -11,9 +11,74 @@
 # that they have been altered from the originals.
 
 
+from datetime import datetime, timedelta
+
 import numpy as np
 
-from samplomatic.quantum_program import QuantumProgramItemResult, QuantumProgramResult
+from samplomatic.quantum_program import (
+    ChunkPart,
+    ChunkSpan,
+    ChunkTiming,
+    QuantumProgramItemResult,
+    QuantumProgramResult,
+)
+
+
+def _make_chunk_timings(n: int = 5) -> ChunkTiming:
+    """Create a synthetic ChunkTiming with ``n`` chunks."""
+    t = datetime(year=2025, month=1, day=1)
+    spans = []
+    for i in range(n):
+        start = t + timedelta(seconds=i * 10)
+        stop = start + timedelta(seconds=5 + i)
+        parts = [ChunkPart(idx_item=i % 2, size=10 + i)]
+        spans.append(ChunkSpan(start=start, stop=stop, parts=parts))
+    return ChunkTiming(spans)
+
+
+class TestDrawChunkTiming:
+    """Tests for ``ChunkTiming``."""
+
+    def test_len(self):
+        """Assert ChunkTiming reports the number of spans it contains."""
+        assert len(_make_chunk_timings()) == 5
+
+    def test_getitem_int(self):
+        """Assert integer indexing returns a ChunkSpan."""
+        item = _make_chunk_timings()[0]
+        assert isinstance(item, ChunkSpan)
+
+    def test_getitem_slice(self):
+        """Assert slice indexing returns a new ChunkTiming with the selected spans."""
+        sliced = _make_chunk_timings()[1:3]
+        assert isinstance(sliced, ChunkTiming)
+        assert len(sliced) == 2
+
+    def test_iter(self):
+        """Assert iteration yields all ChunkSpan objects."""
+        items = list(_make_chunk_timings())
+        assert len(items) == 5
+        assert all(isinstance(s, ChunkSpan) for s in items)
+
+    def test_eq(self):
+        """Assert two ChunkTiming built from the same spans compare equal."""
+        other = _make_chunk_timings()
+        assert _make_chunk_timings() == other
+
+    def test_repr(self):
+        """Assert repr includes the class name."""
+        assert "ChunkTiming" in repr(_make_chunk_timings())
+
+    def test_start_stop_duration(self):
+        """Assert start and stop are datetimes and duration is positive."""
+        assert isinstance(_make_chunk_timings().start, datetime)
+        assert isinstance(_make_chunk_timings().stop, datetime)
+        assert _make_chunk_timings().duration > 0
+
+    def test_draw(self):
+        """Test the draw method."""
+        timings = _make_chunk_timings()
+        timings.draw()
 
 
 class TestQuantumProgramResult:
