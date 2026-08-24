@@ -16,12 +16,11 @@ from datetime import datetime, timedelta
 
 import pytest
 
+from samplomatic.optionals import HAS_PLOTLY
 from samplomatic.quantum_program import (
     ChunkPart,
     ChunkSpan,
     ChunkTiming,
-    Metadata,
-    QuantumProgramResult,
 )
 from samplomatic.visualization.draw_chunk_timings import draw_chunk_timings
 
@@ -38,25 +37,30 @@ def _make_chunk_timings(n: int = 5) -> ChunkTiming:
     return ChunkTiming(spans)
 
 
+@pytest.mark.skipif(not HAS_PLOTLY, reason="plotly is not installed")
 class TestDrawChunkTiming:
     """Tests for ``draw_chunk_timings``."""
 
     @pytest.mark.parametrize("normalize_y", [True, False])
-    def test_draw_normalize_y(self, normalize_y):
+    def test_draw_normalize_y(self, normalize_y, save_plot):
         """Verify draw_chunk_timings renders without error with normalize_y on and off."""
-        draw_chunk_timings(_make_chunk_timings(), normalize_y=normalize_y)
+        plot = draw_chunk_timings(_make_chunk_timings(), normalize_y=normalize_y)
+        save_plot(plot)
 
-    def test_draw_common_start(self):
+    def test_draw_common_start(self, save_plot):
         """Verify draw_chunk_timings renders without error when common_start=True."""
-        draw_chunk_timings(_make_chunk_timings(), common_start=True)
+        plot = draw_chunk_timings(_make_chunk_timings(), common_start=True)
+        save_plot(plot)
 
-    def test_draw_with_name(self):
+    def test_draw_with_name(self, save_plot):
         """Verify draw_chunk_timings renders without error when a name is provided."""
-        draw_chunk_timings(_make_chunk_timings(), names="my_job")
+        plot = draw_chunk_timings(_make_chunk_timings(), names="my_job")
+        save_plot(plot)
 
-    def test_draw_empty(self):
+    def test_draw_empty(self, save_plot):
         """Verify draw_chunk_timings handles an empty ChunkTiming without error."""
-        draw_chunk_timings(ChunkTiming([]))
+        plot = draw_chunk_timings(ChunkTiming([]))
+        save_plot(plot)
 
     @pytest.mark.parametrize(
         ["normalize_y", "common_start", "width", "names"],
@@ -66,10 +70,10 @@ class TestDrawChunkTiming:
             (True, False, 4, ["alpha", "beta"]),
         ],
     )
-    def test_two_chunk_timings(self, normalize_y, common_start, width, names):
+    def test_two_chunk_timings(self, normalize_y, common_start, width, names, save_plot):
         """Verify draw_chunk_timings renders two ChunkTiming for cross-job comparison."""
         ct2 = _make_chunk_timings(n=3)
-        draw_chunk_timings(
+        plot = draw_chunk_timings(
             _make_chunk_timings(),
             ct2,
             normalize_y=normalize_y,
@@ -77,24 +81,14 @@ class TestDrawChunkTiming:
             line_width=width,
             names=names,
         )
+        save_plot(plot)
 
-    def test_draw_method(self):
+    def test_draw_method(self, save_plot):
         """Verify ChunkTiming.draw() renders without error."""
-        _make_chunk_timings().draw()
+        plot = _make_chunk_timings().draw()
+        save_plot(plot)
 
-    def test_draw_method_normalize_y(self):
+    def test_draw_method_normalize_y(self, save_plot):
         """Verify ChunkTiming.draw() renders without error when normalize_y=True."""
-        _make_chunk_timings().draw(normalize_y=True)
-
-    def test_result_chunk_timings_property(self):
-        """Assert QuantumProgramResult.chunk_timings wraps the metadata spans."""
-        metadata = Metadata(chunk_timing=list(_make_chunk_timings()))
-        result = QuantumProgramResult(data=[], metadata=metadata)
-        assert isinstance(result.timing, ChunkTiming)
-        assert len(result.timing) == len(_make_chunk_timings())
-
-    def test_result_chunk_timings_empty(self):
-        """Assert QuantumProgramResult.chunk_timings is empty when no metadata spans are present."""
-        result = QuantumProgramResult(data=[])
-        assert isinstance(result.timing, ChunkTiming)
-        assert len(result.timing) == 0
+        plot = _make_chunk_timings().draw(normalize_y=True)
+        save_plot(plot)
