@@ -254,8 +254,8 @@ class QuantumProgram:
     def append_circuit_item(
         self,
         circuit: QuantumCircuit,
-        *,
         circuit_arguments: np.ndarray | None = None,
+        *,
         chunk_size: int | None = None,
     ) -> None:
         """Append a new :class:`CircuitItem` to this program.
