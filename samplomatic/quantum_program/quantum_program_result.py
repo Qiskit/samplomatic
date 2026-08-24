@@ -59,7 +59,7 @@ class ChunkSpan:
 
 @dataclass
 class Metadata:
-    """Metadata about the execution of a quantum program run through the runtime executor."""
+    """Metadata about the execution of a quantum program run through the executor."""
 
     chunk_timing: list[ChunkSpan] = field(default_factory=list)
     """Timing information about all executed chunks of a quantum program."""
