@@ -1,0 +1,7 @@
+QuantumProgramItemResult
+========================
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: QuantumProgramItemResult
+   :show-inheritance:

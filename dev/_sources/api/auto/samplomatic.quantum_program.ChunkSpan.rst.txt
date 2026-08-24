@@ -1,0 +1,21 @@
+ChunkSpan
+=========
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: ChunkSpan
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ChunkSpan.parts
+      ~ChunkSpan.start
+      ~ChunkSpan.stop
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: parts
+   .. autoattribute:: start
+   .. autoattribute:: stop
