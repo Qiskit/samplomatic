@@ -280,9 +280,9 @@ class QuantumProgram:
     def append_samplex_item(
         self,
         circuit: QuantumCircuit,
-        *,
         samplex: Samplex,
         samplex_arguments: dict[str, Any] | None = None,
+        *,
         shape: tuple[int, ...] | None = None,
         chunk_size: int | None = None,
     ) -> None:
