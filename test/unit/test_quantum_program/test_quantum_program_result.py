@@ -10,10 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-
 from datetime import datetime, timedelta
 
 import numpy as np
+import pytest
 
 from samplomatic.quantum_program import (
     ChunkPart,
@@ -101,13 +101,13 @@ class TestQuantumProgramResult:
         assert np.all(result[0]["beta"] == data[0]["beta"])
         assert np.all(result[1]["gamma"] == data[1]["gamma"])
 
-    def test_metadata(self):
-        """Test the metadata field."""
+    def test_timing(self):
+        """Test the ``timing`` property."""
         data = [{"alpha": np.random.random((1, 2, 3)).astype(bool)}]
-        metadata = "metadata"
-        result = QuantumProgramResult(data=data, metadata=metadata)
+        result = QuantumProgramResult(data=data)
 
-        assert result.metadata == metadata
+        with pytest.raises(NotImplementedError):
+            result.timing
 
     def test_passthrough_data(self):
         """Test the passthrough data field."""
@@ -132,11 +132,3 @@ class TestQuantumProgramItemResult:
         assert len(item) == 2
         assert np.all(item["alpha"] == result["alpha"])
         assert np.all(item["beta"] == result["beta"])
-
-    def test_metadata(self):
-        """Test initializing a ``QuantumProgramItemResult`` object."""
-        result = {"alpha": np.random.random((1, 2, 3)).astype(bool)}
-        metadata = "metadata"
-        item = QuantumProgramItemResult(result, metadata=metadata)
-
-        assert item.metadata == metadata

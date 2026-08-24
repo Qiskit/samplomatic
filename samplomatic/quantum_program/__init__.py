@@ -57,7 +57,6 @@ from .quantum_program_result import (
     ChunkPart,
     ChunkSpan,
     ChunkTiming,
-    Metadata,
     QuantumProgramItemResult,
     QuantumProgramResult,
 )

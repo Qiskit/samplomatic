@@ -13,9 +13,9 @@
 """QuantumProgramResult."""
 
 from collections.abc import Iterable, Iterator, MutableMapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, overload
+from typing import overload
 
 import numpy as np
 from plotly.graph_objects import Figure as PlotlyFigure
@@ -55,14 +55,6 @@ class ChunkSpan:
 
     parts: list[ChunkPart]
     """A description of which parts of a quantum program are contained in this chunk."""
-
-
-@dataclass
-class Metadata:
-    """Metadata about the execution of a quantum program run through the executor."""
-
-    chunk_timing: list[ChunkSpan] = field(default_factory=list)
-    """Timing information about all executed chunks of a quantum program."""
 
 
 class ChunkTiming:
@@ -177,16 +169,10 @@ class QuantumProgramItemResult(MutableMapping):
 
     Args:
         result: A dictionary with array-valued data.
-        metadata: The metadata produced for the individual item.
     """
 
-    def __init__(
-        self,
-        result: dict[str, np.ndarray],
-        metadata: Any = None,
-    ):
+    def __init__(self, result: dict[str, np.ndarray]):
         self._result = result
-        self.metadata = metadata
 
     def __getitem__(self, key: str) -> np.ndarray:
         return self._result[key]
@@ -204,7 +190,7 @@ class QuantumProgramItemResult(MutableMapping):
         return len(self._result)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self._result}, metadata={self.metadata})"
+        return f"{self.__class__.__name__}({self._result})"
 
 
 class QuantumProgramResult:
@@ -212,14 +198,12 @@ class QuantumProgramResult:
 
     Args:
         data: A list of dictionaries with array-valued data.
-        metadata: The result metadata.
         passthrough_data: Arbitrary nested data passed through execution without modification.
     """
 
     def __init__(
         self,
         data: Sequence[dict[str, np.ndarray] | QuantumProgramItemResult],
-        metadata: Metadata | None = None,
         passthrough_data: DataTree | None = None,
     ):
         self._data = [
@@ -228,7 +212,6 @@ class QuantumProgramResult:
             else QuantumProgramItemResult(datum)
             for datum in data
         ]
-        self.metadata = metadata or Metadata()
         self.passthrough_data = passthrough_data
 
     def __iter__(self) -> Iterator[QuantumProgramItemResult]:
@@ -282,4 +265,4 @@ class QuantumProgramResult:
         Returns:
             A :class:`~.ChunkTiming` collection.
         """
-        return ChunkTiming(self.metadata.chunk_timing)
+        raise NotImplementedError("Not implemented.")
