@@ -222,7 +222,8 @@ class QuantumProgram:
         meas_level: The level at which to return all classical register measurement results. This
             value sets the return type of all classical registers in all quantum program items and
             determines whether the raw complex data from low-level measurement devices is
-            discriminated into bits or not. The supported values are
+            discriminated into bits or not. The allowed values are listed below; a backend should
+            provide support for `"classified"`, but may choose not to support others.
 
                 * "classified": Classical register data is returned as boolean arrays with the
                     intrinsic shape ``(num_shots, creg_size)``.
