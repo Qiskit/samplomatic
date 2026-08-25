@@ -569,10 +569,6 @@ snippet shows an example where both gates and measurements are grouped.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/samplomatic/transpiler/passes/add_inject_noise.py:87: FutureWarning: The default of the 'inject_noise_site' argument will be changed from 'before' to 'after' no sooner than version 0.21.0.
-  warnings.warn(
-</pre></div>
-</div>
 <img alt="../_images/056c8d3cbd2c41f8b7d0415772853692ae9c42f4c4c35e6a4632576f6d9792af.png" src="../_images/056c8d3cbd2c41f8b7d0415772853692ae9c42f4c4c35e6a4632576f6d9792af.png" />
 </div>
 </div>
@@ -632,12 +628,6 @@ measurement boxes do not.</p>
     <span class="n">inject_noise_targets</span><span class="o">=</span><span class="s2">"gates"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">transpiled_circuit</span> <span class="o">=</span> <span class="n">boxing_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/samplomatic/transpiler/generate_boxing_pass_manager.py:261: FutureWarning: The default of the 'inject_noise_site' argument will be changed from 'before' to 'after' no sooner than version 0.21.0.
-  warnings.warn(
 </pre></div>
 </div>
 </div>
@@ -919,7 +909,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ee95a97f2b2ac760b68c265b175525d2011b4162a4c39b2dffafe160a378a95e.png" src="../_images/ee95a97f2b2ac760b68c265b175525d2011b4162a4c39b2dffafe160a378a95e.png" />
+<img alt="../_images/aff003a0db407c462493d32f31cbf53fa0252769fa1124c3fee2cabb5e4a8fda.png" src="../_images/aff003a0db407c462493d32f31cbf53fa0252769fa1124c3fee2cabb5e4a8fda.png" />
 </div>
 </div>
 <p>This pattern also combines naturally with the barrier-based ISA boxing workflow. The boxing pass manager runs as a post-scheduling step, after barriers from the original logical circuit have survived transpilation, so they guide stratification exactly as expected.</p>
@@ -960,10 +950,6 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.16/x64/lib/python3.11/site-packages/samplomatic/annotations/inject_noise.py:63: FutureWarning: The default of the 'inject_noise_site' argument will be changed from 'before' to 'after' no sooner than version 0.21.0.
-  warnings.warn(
-</pre></div>
-</div>
 <img alt="../_images/e30bc178766f85c2ec2872acfd76afe77eff55a123bd5555727b6dca5acc30b1.png" src="../_images/e30bc178766f85c2ec2872acfd76afe77eff55a123bd5555727b6dca5acc30b1.png" />
 </div>
 </div>
