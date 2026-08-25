@@ -465,6 +465,20 @@ def make_circuits():
 
     yield circuit, "rzz_non_clifford_bound_angle_and_cz"
 
+    circuit = QuantumCircuit(5)
+    with circuit.box([Twirl("local_pauli")]):
+        circuit.rzz(np.pi / 4, 0, 1)
+        circuit.cz(2, 3)
+        circuit.cz(3, 4)
+
+    with circuit.box([Twirl("phase", dressing="right")]):
+        circuit.noop(range(2))
+
+    with circuit.box([Twirl("pauli", dressing="right")]):
+        circuit.noop(range(2, 5))
+
+    yield circuit, "rzz_non_clifford_bound_angle_and_cz_overlap"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:
