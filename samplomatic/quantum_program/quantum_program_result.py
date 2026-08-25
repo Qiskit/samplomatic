@@ -15,10 +15,12 @@
 from collections.abc import Iterable, Iterator, MutableMapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import overload
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
-from plotly.graph_objects import Figure as PlotlyFigure
+
+if TYPE_CHECKING:
+    from plotly.graph_objects import Figure as PlotlyFigure
 
 from .datatree import DataTree
 
@@ -139,7 +141,7 @@ class ChunkTiming:
         normalize_y: bool = False,
         line_width: int = 4,
         tz: timezone | None = None,
-    ) -> PlotlyFigure:
+    ) -> "PlotlyFigure":
         """Draw timing information on a bar plot.
 
         To draw chunk timings with additional options like ``common_start``, or to draw
