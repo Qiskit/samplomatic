@@ -17,6 +17,7 @@ import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
 
 from samplomatic import Twirl
+from samplomatic.annotations import GroupMode
 from samplomatic.builders import pre_build
 from samplomatic.exceptions import BuildError
 from samplomatic.pre_samplex import PreEmit
@@ -111,7 +112,7 @@ class TestGateDependetTwirling:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1)
 
-        with pytest.raises(BuildError, match="Cannot use `GroupMode.LOCAL_C1`"):
+        with pytest.raises(BuildError, match=f"Cannot use `{GroupMode.LOCAL_C1}`"):
             pre_build(circuit)
 
     def test_overlapping_2q_gates_different_pairs(self):
@@ -124,7 +125,7 @@ class TestGateDependetTwirling:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1, 2)
 
-        with pytest.raises(BuildError, match="Cannot use `GroupMode.LOCAL_C1`"):
+        with pytest.raises(BuildError, match=f"Cannot use `{GroupMode.LOCAL_C1}`"):
             pre_build(circuit)
 
     def test_measurement_with_c1_twirl(self):
