@@ -1,0 +1,33 @@
+PreEdge
+=======
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreEdge
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreEdge.direction
+      ~PreEdge.force_register_copy
+      ~PreEdge.subsystems
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreEdge.add_subsystems
+      ~PreEdge.get_style
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: direction
+   .. autoattribute:: force_register_copy
+   .. autoattribute:: subsystems
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: add_subsystems
+   .. automethod:: get_style

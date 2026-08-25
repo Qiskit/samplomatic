@@ -1,0 +1,39 @@
+PreMeasure
+==========
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PreMeasure
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PreMeasure.creg_names
+      ~PreMeasure.creg_offsets
+      ~PreMeasure.direction
+      ~PreMeasure.subsystems
+      ~PreMeasure.trace_info
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PreMeasure.from_cluster
+      ~PreMeasure.get_style
+      ~PreMeasure.to_key
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: creg_names
+   .. autoattribute:: creg_offsets
+   .. autoattribute:: direction
+   .. autoattribute:: subsystems
+   .. autoattribute:: trace_info
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: from_cluster
+   .. automethod:: get_style
+   .. automethod:: to_key

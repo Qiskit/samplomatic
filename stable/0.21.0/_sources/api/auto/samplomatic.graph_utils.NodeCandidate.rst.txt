@@ -1,0 +1,19 @@
+NodeCandidate
+=============
+
+.. currentmodule:: samplomatic.graph_utils
+
+.. autoclass:: NodeCandidate
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~NodeCandidate.is_added
+      ~NodeCandidate.node_idx
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: is_added
+   .. autoattribute:: node_idx

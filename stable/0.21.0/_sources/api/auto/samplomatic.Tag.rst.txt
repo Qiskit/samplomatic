@@ -1,0 +1,29 @@
+﻿samplomatic.Tag
+===============
+
+.. currentmodule:: samplomatic
+
+.. autoclass:: Tag
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Tag.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Tag.namespace
+      ~Tag.ref
+   
+   

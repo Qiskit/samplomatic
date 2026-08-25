@@ -1,0 +1,6 @@
+ParameterError
+==============
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: ParameterError

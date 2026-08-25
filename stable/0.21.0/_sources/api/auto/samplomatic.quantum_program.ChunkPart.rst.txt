@@ -1,0 +1,19 @@
+ChunkPart
+=========
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: ChunkPart
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ChunkPart.idx_item
+      ~ChunkPart.size
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: idx_item
+   .. autoattribute:: size

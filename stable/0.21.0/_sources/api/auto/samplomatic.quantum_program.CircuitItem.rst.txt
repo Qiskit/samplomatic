@@ -1,0 +1,17 @@
+CircuitItem
+===========
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: CircuitItem
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~CircuitItem.shape
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: shape

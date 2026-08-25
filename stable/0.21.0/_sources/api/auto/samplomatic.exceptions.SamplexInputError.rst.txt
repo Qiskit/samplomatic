@@ -1,0 +1,6 @@
+SamplexInputError
+=================
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: SamplexInputError

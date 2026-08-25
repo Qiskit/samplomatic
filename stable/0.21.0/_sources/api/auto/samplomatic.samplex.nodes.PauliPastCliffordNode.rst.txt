@@ -1,0 +1,33 @@
+PauliPastCliffordNode
+=====================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: PauliPastCliffordNode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PauliPastCliffordNode.outgoing_register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PauliPastCliffordNode.evaluate
+      ~PauliPastCliffordNode.get_style
+      ~PauliPastCliffordNode.reads_from
+      ~PauliPastCliffordNode.writes_to
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: outgoing_register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate
+   .. automethod:: get_style
+   .. automethod:: reads_from
+   .. automethod:: writes_to

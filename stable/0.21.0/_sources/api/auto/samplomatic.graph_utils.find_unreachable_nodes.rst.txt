@@ -1,0 +1,6 @@
+find_unreachable_nodes
+======================
+
+.. currentmodule:: samplomatic.graph_utils
+
+.. autofunction:: find_unreachable_nodes

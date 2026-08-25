@@ -1,0 +1,27 @@
+QuantumProgramItem
+==================
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: QuantumProgramItem
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~QuantumProgramItem.shape
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~QuantumProgramItem.size
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: shape
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: size

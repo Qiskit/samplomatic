@@ -1,0 +1,47 @@
+PrePropagate
+============
+
+.. currentmodule:: samplomatic.pre_samplex
+
+.. autoclass:: PrePropagate
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~PrePropagate.bounded_params
+      ~PrePropagate.commutant_twirl
+      ~PrePropagate.direction
+      ~PrePropagate.mode
+      ~PrePropagate.operation
+      ~PrePropagate.params
+      ~PrePropagate.partition
+      ~PrePropagate.subsystems
+      ~PrePropagate.trace_info
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~PrePropagate.from_cluster
+      ~PrePropagate.get_style
+      ~PrePropagate.to_key
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: bounded_params
+   .. autoattribute:: commutant_twirl
+   .. autoattribute:: direction
+   .. autoattribute:: mode
+   .. autoattribute:: operation
+   .. autoattribute:: params
+   .. autoattribute:: partition
+   .. autoattribute:: subsystems
+   .. autoattribute:: trace_info
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: from_cluster
+   .. automethod:: get_style
+   .. automethod:: to_key

@@ -1,0 +1,6 @@
+strip_annotations
+=================
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: strip_annotations

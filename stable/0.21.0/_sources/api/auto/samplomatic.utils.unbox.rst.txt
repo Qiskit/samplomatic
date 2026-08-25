@@ -1,0 +1,6 @@
+unbox
+=====
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: unbox

@@ -1,0 +1,19 @@
+DressingMode
+============
+
+.. currentmodule:: samplomatic.annotations
+
+.. autoclass:: DressingMode
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~DressingMode.LEFT
+      ~DressingMode.RIGHT
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: LEFT
+   .. autoattribute:: RIGHT

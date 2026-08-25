@@ -1,0 +1,6 @@
+get_annotation
+==============
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: get_annotation

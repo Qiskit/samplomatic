@@ -1,0 +1,17 @@
+LeftMultiplicationNode
+======================
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: LeftMultiplicationNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~LeftMultiplicationNode.evaluate
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evaluate

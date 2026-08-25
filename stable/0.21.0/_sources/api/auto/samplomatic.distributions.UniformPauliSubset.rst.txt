@@ -1,0 +1,31 @@
+UniformPauliSubset
+==================
+
+.. currentmodule:: samplomatic.distributions
+
+.. autoclass:: UniformPauliSubset
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~UniformPauliSubset.paulis
+      ~UniformPauliSubset.register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~UniformPauliSubset.from_name
+      ~UniformPauliSubset.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: paulis
+   .. autoattribute:: register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: from_name
+   .. automethod:: sample

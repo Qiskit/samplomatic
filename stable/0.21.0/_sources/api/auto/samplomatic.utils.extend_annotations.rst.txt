@@ -1,0 +1,6 @@
+extend_annotations
+==================
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: extend_annotations

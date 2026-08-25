@@ -1,0 +1,19 @@
+SamplingNode
+============
+
+.. currentmodule:: samplomatic.samplex.nodes
+
+.. autoclass:: SamplingNode
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~SamplingNode.get_style
+      ~SamplingNode.sample
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: get_style
+   .. automethod:: sample

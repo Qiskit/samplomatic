@@ -1,0 +1,17 @@
+AddTags
+=======
+
+.. currentmodule:: samplomatic.transpiler.passes
+
+.. autoclass:: AddTags
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AddTags.run
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: run

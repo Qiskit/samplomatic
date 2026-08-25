@@ -1,0 +1,27 @@
+HaarU2
+======
+
+.. currentmodule:: samplomatic.distributions
+
+.. autoclass:: HaarU2
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~HaarU2.register_type
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~HaarU2.sample
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: register_type
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: sample

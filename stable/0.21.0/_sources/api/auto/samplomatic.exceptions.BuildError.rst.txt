@@ -1,0 +1,6 @@
+BuildError
+==========
+
+.. currentmodule:: samplomatic.exceptions
+
+.. autoexception:: BuildError
