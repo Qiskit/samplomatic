@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -107,11 +107,13 @@ def test_equal_boxes_produce_equal_keys():
 
     assert key1 == key2
 
-def test_boxes_with_delays_barriers_measures():
-    """Test that BoxKeys can contain measures, barriers, and delays."""
+
+def test_boxes_with_delays_barriers_measures_resets():
+    """Test that BoxKeys can contain measures, resets, barriers, and delays."""
     body = QuantumCircuit(1, 1)
     body.delay(42, 0)
     body.barrier()
+    body.reset(0)
     body.measure([0], [0])
     instr = CircuitInstruction(BoxOp(body), body.qubits, body.clbits)
 

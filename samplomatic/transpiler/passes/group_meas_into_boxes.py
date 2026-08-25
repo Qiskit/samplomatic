@@ -128,7 +128,7 @@ class GroupMeasIntoBoxes(TransformationPass):
                 # Update trackers
                 for qubit in node.qargs:
                     group_indices[qubit] = group_idx + 1
-            elif name == "reset":
+            elif name.startswith("reset"):
                 group_indices[node.qargs[0]] = group_idx
             elif name == "delay":
                 continue

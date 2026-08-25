@@ -90,7 +90,9 @@ class BoxKey:
         op = node.op
 
         if not (
-            node.is_standard_gate() or op.name.startswith("meas") or op.name in ["barrier", "delay"]
+            node.is_standard_gate()
+            or op.name.startswith(("meas", "reset"))
+            or op.name in ["barrier", "delay"]
         ):
             raise ValueError(f"Hashing of {op.name} is not supported.")
 

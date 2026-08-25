@@ -122,7 +122,7 @@ class GroupGatesIntoBoxes(TransformationPass):
                 clbit = node.cargs[0]
 
                 group_indices[qubit] = group_indices[clbit] = group_idx
-            elif name == "reset":
+            elif name.startswith("reset"):
                 group_indices[node.qargs[0]] = group_idx
             elif name == "delay":
                 continue

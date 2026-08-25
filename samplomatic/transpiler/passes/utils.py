@@ -102,8 +102,8 @@ def validate_op_is_supported(node: DAGOpNode):
     """
     if (
         node.is_standard_gate()
-        or node.op.name.startswith("meas")
-        or node.op.name in ["box", "barrier", "reset", "delay"]
+        or node.op.name.startswith(("meas", "reset"))
+        or node.op.name in ["box", "barrier", "delay"]
     ):
         return
     raise TranspilerError(f"``'{node.op.name}'`` is not supported.")
