@@ -20,4 +20,5 @@ Members of this module that were promoted to the namespace of the parent module.
 
    samplomatic.ChangeBasis
    samplomatic.InjectNoise
+   samplomatic.Tag
    samplomatic.Twirl
