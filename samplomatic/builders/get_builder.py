@@ -14,6 +14,7 @@
 
 from collections.abc import Callable, Sequence
 
+import numpy as np
 from qiskit.circuit import Annotation, Qubit
 from qiskit.converters import circuit_to_dag
 
@@ -39,12 +40,54 @@ from .passthrough_builder import PassthroughBuilder
 from .specs import CollectionSpec, EmissionSpec
 
 
-def _classify_node_local_pauli(node) -> bool:
-    return node.op.name in SUPPORTED_2Q_FRACTIONAL_GATES
+def _local_pauli_twirls(dag) -> tuple[dict[str, QubitPartition], set[Qubit]]:
+    seen_qubits = set()
+    other_qubits = set()
+    gate_pairs: dict[str, QubitPartition] = {}
+
+    for node in dag.topological_op_nodes():
+        if node.is_standard_gate() and node.op.num_qubits == 2:
+            pair = tuple(node.qargs)
+            if node.op.name in SUPPORTED_2Q_FRACTIONAL_GATES and not (
+                not node.op.is_parameterized() and np.allclose(np.abs(node.op.params), np.pi / 2)
+            ):
+                if seen_qubits.intersection(pair):
+                    raise BuildError(
+                        f"Cannot use `{GroupMode.LOCAL_PAULI}` twirling on a box with multiple "
+                        f"two-qubit gates from `{SUPPORTED_2Q_FRACTIONAL_GATES}` on one of qubits "
+                        f"{pair}."
+                    )
+                gate_pairs.setdefault(node.op.name, QubitPartition(2, [])).add(pair)
+                seen_qubits.update(pair)
+            else:
+                other_qubits.update(pair)
+
+    if seen_qubits.intersection(other_qubits):
+        raise BuildError(
+            f"Cannot use `{GroupMode.LOCAL_PAULI}` twirling on a box where gates from "
+            f"`{SUPPORTED_2Q_FRACTIONAL_GATES}` have overlapping support with other "
+            "entanglers."
+        )
+
+    return gate_pairs, seen_qubits
 
 
-def _classify_node_local_clifford(_) -> bool:
-    return True
+def _local_c1_twirls(dag) -> tuple[dict[str, QubitPartition], set[Qubit]]:
+    seen_qubits = set()
+    gate_pairs: dict[str, QubitPartition] = {}
+
+    for node in dag.topological_op_nodes():
+        if node.is_standard_gate() and node.op.num_qubits == 2:
+            pair = tuple(node.qargs)
+            if seen_qubits.intersection(pair):
+                raise BuildError(
+                    f"Cannot use `{GroupMode.LOCAL_C1}` twirling with multiple two-qubit gates on "
+                    f"one of qubits {pair}."
+                )
+            seen_qubits.update(pair)
+            gate_pairs.setdefault(node.op.name, QubitPartition(2, [])).add(pair)
+
+    return gate_pairs, seen_qubits
 
 
 def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
@@ -55,46 +98,26 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     and ``twirl_gate``. If no two-qubit gates are found, sets ``twirl_type`` to PAULI.
 
     Raises:
-        BuildError: If the same qubit pair has duplicate two-qubits gates.
-        BuildError: If two-qubits gates on partially overlapping qubits are found.
-        BuildError: If multiple distinct two-qubits gate types are used.
+        BuildError: If the same qubit pair has duplicate gate-dependent two-qubits gates.
+        BuildError: If gate-dependent two-qubits gates on partially overlapping qubits are found.
     """
     dag = circuit_to_dag(body)
-    seen_qubits = set()
-    gate_pairs: dict[str, QubitPartition] = {}
-
-    classify_node = (
-        _classify_node_local_pauli
-        if emission.twirl_type == GroupMode.LOCAL_PAULI
-        else _classify_node_local_clifford
+    local_twirls = (
+        _local_pauli_twirls if emission.twirl_type is GroupMode.LOCAL_PAULI else _local_c1_twirls
     )
-
-    for node in dag.topological_op_nodes():
-        if node.is_standard_gate() and node.op.num_qubits == 2:
-            pair = tuple(node.qargs)
-            if seen_qubits.intersection(pair):
-                raise BuildError(
-                    "Cannot use gate-dependent twirling with duplicate two-qubit gates on qubits "
-                    f"{pair}."
-                )
-            if classify_node(node):
-                seen_qubits.update(pair)
-                gate_pairs.setdefault(node.op.name, QubitPartition(2, [])).add(pair)
+    gate_pairs, seen_qubits = local_twirls(dag)
 
     if not gate_pairs:
         emission.twirl_type = GroupMode.PAULI
         return
 
     gate_dependent_twirls = {}
-    seen_qubits = set()
     for gate, pairs in gate_pairs.items():
         # Gate-dependent qubits: flatten pairs preserving operand order
         gate_dependent_qubit_list = []
         for pair in pairs:
             for q in pair:
-                if q not in seen_qubits:
-                    seen_qubits.add(q)
-                    gate_dependent_qubit_list.append((q,))
+                gate_dependent_qubit_list.append((q,))
         gate_dependent_twirls[gate] = QubitPartition(1, gate_dependent_qubit_list)
 
     emission.gate_dependent_twirls = gate_dependent_twirls
