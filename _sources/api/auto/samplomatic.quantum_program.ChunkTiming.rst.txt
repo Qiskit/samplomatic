@@ -1,0 +1,31 @@
+ChunkTiming
+===========
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: ChunkTiming
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~ChunkTiming.duration
+      ~ChunkTiming.start
+      ~ChunkTiming.stop
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~ChunkTiming.draw
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: duration
+   .. autoattribute:: start
+   .. autoattribute:: stop
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: draw

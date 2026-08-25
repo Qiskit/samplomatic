@@ -1,0 +1,17 @@
+SamplexItem
+===========
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: SamplexItem
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~SamplexItem.shape
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: shape

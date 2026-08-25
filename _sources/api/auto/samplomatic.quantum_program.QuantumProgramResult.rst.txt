@@ -1,0 +1,17 @@
+QuantumProgramResult
+====================
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: QuantumProgramResult
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~QuantumProgramResult.timing
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: timing

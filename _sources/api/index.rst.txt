@@ -21,6 +21,7 @@ Submodules
    samplomatic.graph_utils
    samplomatic.partition
    samplomatic.pre_samplex
+   samplomatic.quantum_program
    samplomatic.samplex
    samplomatic.serialization
    samplomatic.synths

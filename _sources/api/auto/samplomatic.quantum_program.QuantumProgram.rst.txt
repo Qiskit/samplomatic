@@ -1,0 +1,19 @@
+QuantumProgram
+==============
+
+.. currentmodule:: samplomatic.quantum_program
+
+.. autoclass:: QuantumProgram
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~QuantumProgram.append_circuit_item
+      ~QuantumProgram.append_samplex_item
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: append_circuit_item
+   .. automethod:: append_samplex_item

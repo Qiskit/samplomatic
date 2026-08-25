@@ -1,19 +1,29 @@
-Tag
-===
+﻿samplomatic.Tag
+===============
 
 .. currentmodule:: samplomatic
 
 .. autoclass:: Tag
-   :show-inheritance:
 
-   .. rubric:: Attributes Summary
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
 
    .. autosummary::
+   
+      ~Tag.__init__
+   
+   
 
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
       ~Tag.namespace
       ~Tag.ref
-
-   .. rubric:: Attributes Documentation
-
-   .. autoattribute:: namespace
-   .. autoattribute:: ref
+   
+   
