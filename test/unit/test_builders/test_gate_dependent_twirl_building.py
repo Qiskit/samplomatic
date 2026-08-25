@@ -79,7 +79,7 @@ class TestGateDependetTwirling:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1, 2)
 
-        with pytest.raises(BuildError, match="overlapping"):
+        with pytest.raises(BuildError, match="duplicate 2Q gates"):
             pre_build(circuit)
 
     def test_measurement_with_c1_twirl(self):

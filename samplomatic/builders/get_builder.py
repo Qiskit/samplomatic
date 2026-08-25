@@ -39,6 +39,14 @@ from .passthrough_builder import PassthroughBuilder
 from .specs import CollectionSpec, EmissionSpec
 
 
+def _classify_node_local_pauli(node) -> bool:
+    return node.op.name in SUPPORTED_2Q_FRACTIONAL_GATES
+
+
+def _classify_node_local_clifford(_) -> bool:
+    return True
+
+
 def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     """Classify qubits in a gate-dependent twirl box into entangling and fallback qubits.
 
@@ -52,22 +60,26 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
         BuildError: If multiple distinct 2Q gate types are used.
     """
     dag = circuit_to_dag(body)
-    seen_pairs = QubitPartition(2, [])
+    seen_qubits = set()
     gate_pairs: dict[str, QubitPartition] = {}
+
+    classify_node = (
+        _classify_node_local_pauli
+        if emission.twirl_type == GroupMode.LOCAL_PAULI
+        else _classify_node_local_clifford
+    )
 
     for node in dag.topological_op_nodes():
         if node.is_standard_gate() and node.op.num_qubits == 2:
             pair = tuple(node.qargs)
-            if pair in seen_pairs:
+            if seen_qubits.intersection(pair):
                 raise BuildError(
-                    f"Cannot use gate-dependent twirling with duplicate 2Q gates on qubits {pair}."
+                    "Cannot use gate-dependent twirling with duplicate two-qubit gates on qubits "
+                    f"{pair}."
                 )
-            # QubitPartition.add rejects partial overlaps automatically
-            gate_pairs.setdefault(node.op.name, QubitPartition(2, [])).add(pair)
-            seen_pairs.add(pair)
-
-    if emission.twirl_type == GroupMode.LOCAL_PAULI:
-        gate_pairs = {k: v for k, v in gate_pairs.items() if k in SUPPORTED_2Q_FRACTIONAL_GATES}
+            if classify_node(node):
+                seen_qubits.update(pair)
+                gate_pairs.setdefault(node.op.name, QubitPartition(2, [])).add(pair)
 
     if not gate_pairs:
         emission.twirl_type = GroupMode.PAULI
