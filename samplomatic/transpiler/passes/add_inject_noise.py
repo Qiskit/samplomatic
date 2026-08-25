@@ -75,6 +75,7 @@ class AddInjectNoise(TransformationPass):
         prefix_ref: str = "r",
         prefix_modifier_ref: str = "m",
         targets: Literal["none", "gates", "measures", "all"] = "none",
+        history: bool = False,
     ):
         super().__init__()
         self.strategy = strategy
@@ -82,6 +83,7 @@ class AddInjectNoise(TransformationPass):
         self.prefix_ref = prefix_ref
         self.prefix_modifier_ref = prefix_modifier_ref
         self.targets = targets
+        self.history = history
 
         if site is None:
             warnings.warn(
@@ -159,7 +161,7 @@ class AddInjectNoise(TransformationPass):
                         # individual modification
                         modifier_ref = f"{self.prefix_modifier_ref}{next(modifier_counter)}"
 
-                    return InjectNoise(ref, modifier_ref, self.site)
+                    return InjectNoise(ref, modifier_ref, self.site, self.history)
 
                 if inject_noise_annotation := get_annotation(node.op, InjectNoise):
                     if self.overwrite is True:

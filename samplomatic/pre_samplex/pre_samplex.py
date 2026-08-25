@@ -76,6 +76,7 @@ from ..samplex.nodes import (
     CombineRegistersNode,
     DistributionSamplingNode,
     InjectNoiseNode,
+    InjectNoiseWithHistoryNode,
     LeftMultiplicationNode,
     LeftU2ParametricMultiplicationNode,
     PauliPastCliffordNode,
@@ -309,6 +310,7 @@ class PreSamplex:
         cregs: list[ClassicalRegister] | None = None,
         pauli_lindblad_map_count: count | None = None,
         pauli_lindblad_maps: dict[str, NumSubsystems] | None = None,
+        pauli_lindblad_history: dict[str, int] | None = None,
         noise_modifiers: dict[str, set[str]] | None = None,
         basis_changes: dict[str, int] | None = None,
         twirled_clbits: set[ClbitIndex] | None = None,
@@ -329,6 +331,9 @@ class PreSamplex:
             count() if pauli_lindblad_map_count is None else pauli_lindblad_map_count
         )
         self._pauli_lindblad_maps = {} if pauli_lindblad_maps is None else pauli_lindblad_maps
+        self._pauli_lindblad_history = (
+            defaultdict(count) if pauli_lindblad_history is None else pauli_lindblad_history
+        )
         self._noise_modifiers = defaultdict(set) if noise_modifiers is None else noise_modifiers
         self._basis_changes = {} if basis_changes is None else basis_changes
         self._twirled_clbits = set() if twirled_clbits is None else twirled_clbits
@@ -357,6 +362,7 @@ class PreSamplex:
             self._cregs,
             self._pauli_lindblad_map_count,
             self._pauli_lindblad_maps,
+            self._pauli_lindblad_history,
             self._noise_modifiers,
             self._basis_changes,
             self._twirled_clbits,
@@ -774,6 +780,7 @@ class PreSamplex:
         qubits: QubitPartition,
         noise_ref: StrRef,
         modifier_ref: StrRef = "",
+        history: bool = False,
         trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the left.
@@ -810,6 +817,7 @@ class PreSamplex:
             noise_ref,
             modifier_ref,
             next(self._pauli_lindblad_map_count),
+            None if not history else next(self._pauli_lindblad_history[noise_ref]),
             trace_info=trace_info,
         )
         return self._add_emit_left(node)
@@ -819,6 +827,7 @@ class PreSamplex:
         qubits: QubitPartition,
         noise_ref: StrRef,
         modifier_ref: StrRef = "",
+        history: bool = False,
         trace_info: TraceInfo | None = None,
     ) -> NodeIndex:
         """Add a node that emits virtual gates for noise injection to the right.
@@ -855,6 +864,7 @@ class PreSamplex:
             noise_ref,
             modifier_ref,
             next(self._pauli_lindblad_map_count),
+            None if not history else next(self._pauli_lindblad_history[noise_ref]),
             trace_info=trace_info,
         )
         return self._add_emit_right(node)
@@ -1432,6 +1442,20 @@ class PreSamplex:
                 )
             )
 
+        for noise_ref, num_histories in self._pauli_lindblad_history.items():
+            samplex.add_output(
+                TensorSpecification(
+                    f"pauli_history.{noise_ref}",
+                    ("num_randomizations", next(num_histories), f"num_terms_{noise_ref}"),
+                    np.dtype(np.bool_),
+                    "Generators from sampled Pauli Lindblad maps, where boolean values represent "
+                    "whether a given generator was sampled (``True``) or not (``False``). The "
+                    "order of the second axis matches the iteration order of boxes in the original "
+                    "circuit with noise injection annotations that have the specified noise "
+                    "reference.",
+                )
+            )
+
         return samplex
 
     def add_change_basis_node(
@@ -1492,13 +1516,24 @@ class PreSamplex:
         reg_idx = order[pre_inject_idx]
         reg_name = f"inject_noise_{reg_idx}"
         sign_reg_name = f"sign_{reg_idx}"
-        node = InjectNoiseNode(
-            reg_name,
-            sign_reg_name,
-            pre_inject.ref,
-            len(pre_inject.subsystems),
-            pre_inject.modifier_ref,
-        )
+        if pre_inject.history_idx is None:
+            node = InjectNoiseNode(
+                reg_name,
+                sign_reg_name,
+                pre_inject.ref,
+                len(pre_inject.subsystems),
+                pre_inject.modifier_ref,
+            )
+        else:
+            history_name = f"pauli_history_{reg_idx}"
+            node = InjectNoiseWithHistoryNode(
+                reg_name,
+                sign_reg_name,
+                pre_inject.ref,
+                len(pre_inject.subsystems),
+                history_name,
+                pre_inject.modifier_ref,
+            )
         node_idx = samplex.add_node(node)
 
         pre_nodes_to_nodes[pre_inject_idx] = node_idx
@@ -1510,6 +1545,12 @@ class PreSamplex:
             sign_reg_name, [0], "pauli_signs", [pre_inject.sign_idx]
         )
         samplex.add_edge(node_idx, samplex.add_node(collect_signs_node))
+
+        if pre_inject.history_idx is not None:
+            collect_history_node = CollectZ2ToOutputNode(
+                history_name, [0], f"pauli_history.{pre_inject.ref}", [pre_inject.history_idx], 2
+            )
+            samplex.add_edge(node_idx, samplex.add_node(collect_history_node))
 
     def add_twirl_sampling_node(
         self,

@@ -432,6 +432,12 @@ class Samplex:
                 shape = tuple(
                     num_randomizations if dim == "num_randomizations" else dim for dim in spec.shape
                 )
+                if spec.name.startswith("pauli_history."):
+                    noise_ref = spec.name.split(".")[1]
+                    num_terms = samplex_input[f"pauli_lindblad_maps.{noise_ref}"].num_terms
+                    shape = tuple(
+                        num_terms if dim == f"num_terms_{noise_ref}" else dim for dim in shape
+                    )
                 outputs[spec.name] = np.empty(shape, dtype=spec.dtype)
 
         parameter_values = samplex_input.get("parameter_values", [])
