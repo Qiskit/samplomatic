@@ -9,22 +9,14 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-import pytest
-
 from samplomatic.annotations import InjectionSite, InjectNoise
-
-
-def test_site_future_warning():
-    """Test default value of the ``site`` argument raises a futures warning."""
-    with pytest.warns(FutureWarning):
-        InjectNoise("my_ref")
 
 
 def test_construction():
     """Test that we can construct a InjectNoise."""
     inject_noise = InjectNoise("its_name")
     assert inject_noise.ref == "its_name"
-    assert inject_noise.site is InjectionSite.BEFORE
+    assert inject_noise.site is InjectionSite.AFTER
 
 
 def test_eq():
@@ -33,7 +25,7 @@ def test_eq():
     assert InjectNoise("ref") != "hey"
     assert InjectNoise("ref") != InjectNoise("another_ref")
     assert InjectNoise("ref") != InjectNoise("ref", "modifier_ref")
-    assert InjectNoise("ref") != InjectNoise("ref", site="after")
+    assert InjectNoise("ref") != InjectNoise("ref", site="before")
 
 
 def test_hash():
@@ -42,9 +34,9 @@ def test_hash():
     assert hash(InjectNoise("ref")) != hash("hey")
     assert hash(InjectNoise("ref")) != hash(InjectNoise("another_ref"))
     assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", "modifier_ref"))
-    assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", site="after"))
+    assert hash(InjectNoise("ref")) != hash(InjectNoise("ref", site="before"))
 
 
 def test_repr():
     """Test repr."""
-    assert repr(InjectNoise("ref")) == "InjectNoise(ref='ref', modifier_ref='', site='before')"
+    assert repr(InjectNoise("ref")) == "InjectNoise(ref='ref', modifier_ref='', site='after')"
