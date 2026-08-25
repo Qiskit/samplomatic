@@ -21,6 +21,8 @@ from samplomatic import ChangeBasis, Twirl
 from samplomatic.transpiler.passes import GroupMeasIntoBoxes
 from samplomatic.utils import get_annotation
 
+from .utils import NamedReset
+
 
 def make_circuits():
     qreg_a = QuantumRegister(4, "qreg_a")
@@ -188,6 +190,20 @@ def make_circuits():
         expected_circuit.measure(0, 1)
 
     yield circuit, expected_circuit, "circuit_with_reset_as_delimiter"
+
+    circuit = QuantumCircuit(1, 2)
+    circuit.measure(0, 0)
+    circuit.append(NamedReset("reset_2"), [0], [])
+    circuit.measure(0, 1)
+
+    expected_circuit = QuantumCircuit(1, 2)
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 0)
+    expected_circuit.append(NamedReset("reset_2"), [0], [])
+    with expected_circuit.box([Twirl()]):
+        expected_circuit.measure(0, 1)
+
+    yield circuit, expected_circuit, "circuit_with_named_reset_as_delimiter"
 
     circuit = QuantumCircuit(2, 2)
     circuit.measure(0, 0)

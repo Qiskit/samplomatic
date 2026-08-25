@@ -21,7 +21,7 @@ from qiskit.transpiler.exceptions import TranspilerError
 from samplomatic.annotations import Twirl
 from samplomatic.transpiler.passes import GroupGatesIntoBoxes
 
-from .utils import NamedMeasure
+from .utils import NamedMeasure, NamedReset
 
 
 def make_circuits():
@@ -476,6 +476,20 @@ def make_alap_circuits():
         expected_circuit.cx(1, 2)
 
     yield circuit, expected_circuit, "alap_circuit_with_reset"
+
+    circuit = QuantumCircuit(3)
+    circuit.cx(0, 1)
+    circuit.append(NamedReset("reset_2"), [1], [])
+    circuit.cx(1, 2)
+
+    expected_circuit = QuantumCircuit(3)
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(0, 1)
+    expected_circuit.append(NamedReset("reset_2"), [1], [])
+    with expected_circuit.box([Twirl(dressing="left")]):
+        expected_circuit.cx(1, 2)
+
+    yield circuit, expected_circuit, "alap_circuit_with_named_reset"
 
     circuit = QuantumCircuit(4)
     circuit.cx(0, 1)
