@@ -60,7 +60,7 @@ def make_circuits():
     yield (circuit, expected, pauli_lindblad_maps), "two_body_noise"
 
     circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_noise")]):
+    with circuit.box([Twirl(), InjectNoise("my_noise", site="before")]):
         circuit.cx(0, 1)
 
     with circuit.box([Twirl(dressing="right")]):
@@ -73,7 +73,7 @@ def make_circuits():
     yield (circuit, expected, pauli_lindblad_maps), "xx_noise_permuted_before"
 
     circuit = QuantumCircuit(2)
-    with circuit.box([Twirl(), InjectNoise("my_noise", site="after")]):
+    with circuit.box([Twirl(), InjectNoise("my_noise")]):
         circuit.cx(0, 1)
 
     with circuit.box([Twirl(dressing="right")]):

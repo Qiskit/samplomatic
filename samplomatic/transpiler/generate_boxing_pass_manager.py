@@ -12,7 +12,6 @@
 
 """generate_boxing_pass_manager"""
 
-import warnings
 from typing import Literal
 
 from qiskit.transpiler import PassManager
@@ -65,7 +64,7 @@ def generate_boxing_pass_manager(
     inject_noise_strategy: Literal[
         "no_modification", "uniform_modification", "individual_modification"
     ] = "no_modification",
-    inject_noise_site: Literal["before", "after", None] = None,
+    inject_noise_site: Literal["before", "after"] = "after",
     remove_barriers: Literal[
         "immediately", "finally", "after_stratification", "never", True, False
     ] = "after_stratification",
@@ -256,15 +255,6 @@ def generate_boxing_pass_manager(
         remove_barriers = "immediately"
     elif remove_barriers is False:
         remove_barriers = "never"
-
-    if inject_noise_targets != "none" and inject_noise_site is None:
-        warnings.warn(
-            "The default of the 'inject_noise_site' argument will be changed from "
-            "'before' to 'after' no sooner than version 0.21.0.",
-            FutureWarning,
-            stacklevel=1,
-        )
-        inject_noise_site = "before"
 
     passes = []
     if remove_barriers == "immediately":
