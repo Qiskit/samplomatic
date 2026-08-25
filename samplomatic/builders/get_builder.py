@@ -55,9 +55,9 @@ def _classify_gate_dependent_twirl(body, emission: EmissionSpec) -> None:
     and ``twirl_gate``. If no two-qubit gates are found, sets ``twirl_type`` to PAULI.
 
     Raises:
-        BuildError: If the same qubit pair has duplicate 2Q gates.
-        BuildError: If 2Q gates on partially overlapping qubits are found.
-        BuildError: If multiple distinct 2Q gate types are used.
+        BuildError: If the same qubit pair has duplicate two-qubits gates.
+        BuildError: If two-qubits gates on partially overlapping qubits are found.
+        BuildError: If multiple distinct two-qubits gate types are used.
     """
     dag = circuit_to_dag(body)
     seen_qubits = set()

@@ -56,7 +56,7 @@ class TestGateDependetTwirling:
         assert any(n.twirl_gate is None and n.register_type == "pauli" for n in pre_emits)
 
     def test_overlapping_2q_gates_same_pair(self):
-        """Error when a local_c1 box has duplicate 2Q gates on the same qubits."""
+        """Error when a local_c1 box has duplicate two-qubit gates on the same qubits."""
         circuit = QuantumCircuit(2)
         with circuit.box([Twirl(group="local_c1", dressing="left")]):
             circuit.cx(0, 1)
@@ -66,11 +66,11 @@ class TestGateDependetTwirling:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1)
 
-        with pytest.raises(BuildError, match="duplicate 2Q gates"):
+        with pytest.raises(BuildError, match="duplicate two-qubit gates"):
             pre_build(circuit)
 
     def test_overlapping_2q_gates_different_pairs(self):
-        """Error when a local_c1 box has 2Q gates on partially overlapping qubits."""
+        """Error when a local_c1 box has two-qubit gates on partially overlapping qubits."""
         circuit = QuantumCircuit(3)
         with circuit.box([Twirl(group="local_c1", dressing="left")]):
             circuit.cx(0, 1)
@@ -79,7 +79,7 @@ class TestGateDependetTwirling:
         with circuit.box([Twirl(dressing="right")]):
             circuit.noop(0, 1, 2)
 
-        with pytest.raises(BuildError, match="duplicate 2Q gates"):
+        with pytest.raises(BuildError, match="duplicate two-qubit gates"):
             pre_build(circuit)
 
     def test_measurement_with_c1_twirl(self):
