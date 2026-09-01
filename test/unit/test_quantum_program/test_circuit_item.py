@@ -10,9 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-import pytest
 import numpy as np
+import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
+
 from samplomatic.quantum_program import CircuitItem
 
 
@@ -32,7 +33,7 @@ class TestCircuitItem:
             circuit, circuit_arguments=circuit_arguments, chunk_size=chunk_size
         )
         assert circuit_item.circuit == circuit
-        assert np.array_equal(circuit_item.circuit_arguments, circuit_arguments) == True
+        assert np.array_equal(circuit_item.circuit_arguments, circuit_arguments)
         assert circuit_item.chunk_size == chunk_size
         assert circuit_item.shape == expected_shape
 
@@ -45,8 +46,8 @@ class TestCircuitItem:
 
         circuit_item = CircuitItem(circuit)
         assert circuit_item.circuit == circuit
-        assert np.array_equal(circuit_item.circuit_arguments, expected_circuit_arguments) == True
-        assert circuit_item.chunk_size == None
+        assert np.array_equal(circuit_item.circuit_arguments, expected_circuit_arguments)
+        assert circuit_item.chunk_size is None
         assert circuit_item.shape == expected_shape
 
     def test_circuit_item_num_params_doesnt_match_circuit_arguments(self):
