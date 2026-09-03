@@ -14,7 +14,10 @@
 
 from .box_key import BoxKey
 from .deprecation import deprecate_arg
-from .find_unique_box_instructions import find_unique_box_instructions
+from .find_unique_box_instructions import (
+    count_unique_box_instructions,
+    find_unique_box_instructions,
+)
 from .frozen_dict import FrozenDict
 from .get_annotation import get_annotation
 from .map_annotations import (
