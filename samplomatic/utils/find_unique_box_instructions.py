@@ -52,11 +52,11 @@ def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Ann
 
 
 def count_unique_box_instructions(
-    instructions: list[CircuitInstruction],
+    instructions: Iterable[CircuitInstruction],
     undress_boxes: bool = True,
     normalize_annotations: Callable[[Iterable[Annotation]], list[Annotation]] | None = None,
 ) -> list[tuple[CircuitInstruction, int]]:
-    """Return counts of unique instructions.
+    """Return unique box instructions and their number of occurrences.
 
     This function iterates through the given ``instructions``, identifying those that contain a
     :class:`.~BoxOp` operation and comparing them based on their content and annotations. It
