@@ -51,6 +51,54 @@ def default_normalize_annotations(annotations: Iterable[Annotation]) -> list[Ann
     return normalized_annotations
 
 
+def count_unique_box_instructions(
+    instructions: list[CircuitInstruction],
+    undress_boxes: bool = True,
+    normalize_annotations: Callable[[Iterable[Annotation]], list[Annotation]] | None = None,
+) -> list[tuple[CircuitInstruction, int]]:
+    """Return counts of unique instructions.
+
+    This function iterates through the given ``instructions``, identifying those that contain a
+    :class:`.~BoxOp` operation and comparing them based on their content and annotations. It
+    returns a list of pairs of instructions that contains unique boxes and their counts.
+    Optionally, it allows undressing the boxes before comparison, as well as normalizing their
+    annotations to ignore irrelevant fields.
+
+    Args:
+        instructions: The instructions to iterate through.
+        undress_boxes: Whether to call the :meth:`~.undress_box` method on each box before
+            comparison.
+        normalize_annotations: A callable mapping annotations to annotations, which is applied to
+            the annotations of each box before comparison. If ``None``, it discards every
+            annotation that is not of type ``Twirl`` and ``InjectNoise``, and it resets the
+            ``modifier_ref`` field of ``InjectNoise`` annotations to the default value.
+
+    Returns:
+        A list of tuples of unique instructions and their counts.
+    """
+    normalize_annotations = normalize_annotations or default_normalize_annotations
+
+    instr_dict: dict[BoxKey, (CircuitInstruction, int)] = {}
+    for instr in instructions:
+        if instr.name != "box":
+            continue
+
+        box = (
+            undress_box(instr.operation)
+            if undress_boxes
+            else instr.operation.copy()  # Copy to avoid modifying the original box
+        )
+        box.annotations = normalize_annotations(instr.operation.annotations)
+
+        new_instr = CircuitInstruction(box, instr.qubits, instr.clbits)
+        box_key = BoxKey(new_instr)
+
+        (_, count) = instr_dict.get(box_key, (new_instr, 0))
+        instr_dict[box_key] = (new_instr, count + 1)
+
+    return list(instr_dict.values())
+
+
 def find_unique_box_instructions(
     instructions: Iterable[CircuitInstruction],
     undress_boxes: bool = True,
@@ -76,21 +124,9 @@ def find_unique_box_instructions(
     Returns:
         A list of unique instructions.
     """
-    normalize_annotations = normalize_annotations or default_normalize_annotations
-
-    instr_dict: dict[BoxKey, CircuitInstruction] = {}
-    for instr in instructions:
-        if instr.name != "box":
-            continue
-
-        box = (
-            undress_box(instr.operation)
-            if undress_boxes
-            else instr.operation.copy()  # Copy to avoid modifying the original box
+    return [
+        instr
+        for (instr, _) in count_unique_box_instructions(
+            instructions, undress_boxes, normalize_annotations
         )
-        box.annotations = normalize_annotations(instr.operation.annotations)
-
-        new_instr = CircuitInstruction(box, instr.qubits, instr.clbits)
-        instr_dict[BoxKey(new_instr)] = new_instr
-
-    return list(instr_dict.values())
+    ]
