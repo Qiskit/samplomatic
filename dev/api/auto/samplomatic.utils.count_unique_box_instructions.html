@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="VirtualGateError" href="samplomatic.exceptions.VirtualGateError.html" /><link rel="prev" title="SynthError" href="samplomatic.exceptions.SynthError.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="deprecate_arg" href="samplomatic.utils.deprecate_arg.html" /><link rel="prev" title="samplomatic.utils" href="../samplomatic.utils.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>TemplateBuildError - samplomatic 0.1.dev1</title>
+        <title>count_unique_box_instructions - samplomatic 0.1.dev1</title>
       <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/qiskit-sphinx-theme.css?v=8ff9dcb6" />
@@ -246,7 +246,7 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.distributions.UniformPauliSubset.html">UniformPauliSubset</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.exceptions.html">samplomatic.exceptions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of samplomatic.exceptions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.exceptions.html">samplomatic.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of samplomatic.exceptions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.BuildError.html">BuildError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.DeserializationError.html">DeserializationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.ParameterError.html">ParameterError</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SamplexRuntimeError.html">SamplexRuntimeError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SerializationError.html">SerializationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.SynthError.html">SynthError</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">TemplateBuildError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.TemplateBuildError.html">TemplateBuildError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.exceptions.VirtualGateError.html">VirtualGateError</a></li>
 </ul>
 </li>
@@ -369,8 +369,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.count_unique_box_instructions.html">count_unique_box_instructions</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../samplomatic.utils.html">samplomatic.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">count_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.extend_annotations.html">extend_annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="samplomatic.utils.filter_annotations.html">filter_annotations</a></li>
@@ -495,7 +495,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/auto/samplomatic.exceptions.TemplateBuildError.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/auto/samplomatic.utils.count_unique_box_instructions.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -515,12 +515,33 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="templatebuilderror">
-<h1>TemplateBuildError<a class="headerlink" href="#templatebuilderror" title="Link to this heading">¶</a></h1>
-<dl class="py exception">
-<dt class="sig sig-object py" id="samplomatic.exceptions.TemplateBuildError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">samplomatic.exceptions.</span></span><span class="sig-name descname"><span class="pre">TemplateBuildError</span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/exceptions.py#L48-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.exceptions.TemplateBuildError" title="Link to this definition">¶</a></dt>
-<dd><p>Error raised when building a template circuit.</p>
+          <section id="count-unique-box-instructions">
+<h1>count_unique_box_instructions<a class="headerlink" href="#count-unique-box-instructions" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="samplomatic.utils.count_unique_box_instructions">
+<span class="sig-prename descclassname"><span class="pre">samplomatic.utils.</span></span><span class="sig-name descname"><span class="pre">count_unique_box_instructions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.CircuitInstruction" title="(in Qiskit v2.5)"><span class="pre">CircuitInstruction</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undress_boxes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.Annotation" title="(in Qiskit v2.5)"><span class="pre">Annotation</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.Annotation" title="(in Qiskit v2.5)"><span class="pre">Annotation</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.CircuitInstruction" title="(in Qiskit v2.5)"><span class="pre">CircuitInstruction</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/Qiskit/samplomatic/tree/main/samplomatic/utils/find_unique_box_instructions.py#L54-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#samplomatic.utils.count_unique_box_instructions" title="Link to this definition">¶</a></dt>
+<dd><p>Return unique box instructions and their number of occurrences.</p>
+<p>This function iterates through the given <code class="docutils literal notranslate"><span class="pre">instructions</span></code>, identifying those that contain a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BoxOp</span></code> operation and comparing them based on their content and annotations. It
+returns a list of pairs of instructions that contains unique boxes and their counts.
+Optionally, it allows undressing the boxes before comparison, as well as normalizing their
+annotations to ignore irrelevant fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instructions</strong> – The instructions to iterate through.</p></li>
+<li><p><strong>undress_boxes</strong> – Whether to call the <code class="xref py py-meth docutils literal notranslate"><span class="pre">undress_box()</span></code> method on each box before
+comparison.</p></li>
+<li><p><strong>normalize_annotations</strong> – A callable mapping annotations to annotations, which is applied to
+the annotations of each box before comparison. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it discards every
+annotation that is not of type <code class="docutils literal notranslate"><span class="pre">Twirl</span></code> and <code class="docutils literal notranslate"><span class="pre">InjectNoise</span></code>, and it resets the
+<code class="docutils literal notranslate"><span class="pre">modifier_ref</span></code> field of <code class="docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotations to the default value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tuples of unique instructions and their counts.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -530,23 +551,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="samplomatic.exceptions.VirtualGateError.html">
+          <a class="next-page" href="samplomatic.utils.deprecate_arg.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">VirtualGateError</div>
+                <div class="title">deprecate_arg</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="samplomatic.exceptions.SynthError.html">
+          <a class="prev-page" href="../samplomatic.utils.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">SynthError</div>
+                <div class="title">samplomatic.utils</div>
                 
               </div>
             </a>
@@ -581,8 +602,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">TemplateBuildError</a><ul>
-<li><a class="reference internal" href="#samplomatic.exceptions.TemplateBuildError"><code class="docutils literal notranslate"><span class="pre">TemplateBuildError</span></code></a></li>
+<li><a class="reference internal" href="#">count_unique_box_instructions</a><ul>
+<li><a class="reference internal" href="#samplomatic.utils.count_unique_box_instructions"><code class="docutils literal notranslate"><span class="pre">count_unique_box_instructions()</span></code></a></li>
 </ul>
 </li>
 </ul>

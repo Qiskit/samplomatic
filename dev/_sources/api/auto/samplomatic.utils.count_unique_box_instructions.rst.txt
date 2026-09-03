@@ -1,0 +1,6 @@
+count_unique_box_instructions
+=============================
+
+.. currentmodule:: samplomatic.utils
+
+.. autofunction:: count_unique_box_instructions

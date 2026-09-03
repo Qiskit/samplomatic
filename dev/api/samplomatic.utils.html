@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="deprecate_arg" href="auto/samplomatic.utils.deprecate_arg.html" /><link rel="prev" title="AddNoopsAll" href="auto/samplomatic.transpiler.passes.insert_noops.AddNoopsAll.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="count_unique_box_instructions" href="auto/samplomatic.utils.count_unique_box_instructions.html" /><link rel="prev" title="AddNoopsAll" href="auto/samplomatic.transpiler.passes.insert_noops.AddNoopsAll.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>samplomatic.utils - samplomatic 0.1.dev1</title>
@@ -370,6 +370,7 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">samplomatic.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of samplomatic.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.count_unique_box_instructions.html">count_unique_box_instructions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.deprecate_arg.html">deprecate_arg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.extend_annotations.html">extend_annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="auto/samplomatic.utils.filter_annotations.html">filter_annotations</a></li>
@@ -522,37 +523,40 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.deprecate_arg.html#samplomatic.utils.deprecate_arg" title="samplomatic.utils.deprecate_arg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deprecate_arg</span></code></a>(name, *, since[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.count_unique_box_instructions.html#samplomatic.utils.count_unique_box_instructions" title="samplomatic.utils.count_unique_box_instructions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_unique_box_instructions</span></code></a>(instructions)</p></td>
+<td><p>Return unique box instructions and their number of occurrences.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.deprecate_arg.html#samplomatic.utils.deprecate_arg" title="samplomatic.utils.deprecate_arg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deprecate_arg</span></code></a>(name, *, since[, ...])</p></td>
 <td><p>Return a decorator to indicate an argument has been deprecated in some way.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.extend_annotations.html#samplomatic.utils.extend_annotations" title="samplomatic.utils.extend_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend_annotations</span></code></a>(circuit, *annotations)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.extend_annotations.html#samplomatic.utils.extend_annotations" title="samplomatic.utils.extend_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend_annotations</span></code></a>(circuit, *annotations)</p></td>
 <td><p>Return a new circuit with the given annotations appended to every box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.filter_annotations.html#samplomatic.utils.filter_annotations" title="samplomatic.utils.filter_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_annotations</span></code></a>(circuit, keep)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.filter_annotations.html#samplomatic.utils.filter_annotations" title="samplomatic.utils.filter_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_annotations</span></code></a>(circuit, keep)</p></td>
 <td><p>Return a new circuit keeping only annotations of the given type(s) on each box.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.find_unique_box_instructions.html#samplomatic.utils.find_unique_box_instructions" title="samplomatic.utils.find_unique_box_instructions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_unique_box_instructions</span></code></a>(instructions[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.find_unique_box_instructions.html#samplomatic.utils.find_unique_box_instructions" title="samplomatic.utils.find_unique_box_instructions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_unique_box_instructions</span></code></a>(instructions[, ...])</p></td>
 <td><p>Return instructions that contains unique boxes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.get_annotation.html#samplomatic.utils.get_annotation" title="samplomatic.utils.get_annotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_annotation</span></code></a>(box, annotation_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.get_annotation.html#samplomatic.utils.get_annotation" title="samplomatic.utils.get_annotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_annotation</span></code></a>(box, annotation_type)</p></td>
 <td><p>Return a box's first annotation of the given type(s).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.map_annotations.html#samplomatic.utils.map_annotations" title="samplomatic.utils.map_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_annotations</span></code></a>(circuit, fn)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.map_annotations.html#samplomatic.utils.map_annotations" title="samplomatic.utils.map_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_annotations</span></code></a>(circuit, fn)</p></td>
 <td><p>Return a new circuit where each box's annotations are replaced by <code class="docutils literal notranslate"><span class="pre">fn(annotations)</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.replace_annotations.html#samplomatic.utils.replace_annotations" title="samplomatic.utils.replace_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace_annotations</span></code></a>(circuit, fn)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.replace_annotations.html#samplomatic.utils.replace_annotations" title="samplomatic.utils.replace_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace_annotations</span></code></a>(circuit, fn)</p></td>
 <td><p>Return a new circuit with annotations replaced according to a callable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.strip_annotations.html#samplomatic.utils.strip_annotations" title="samplomatic.utils.strip_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strip_annotations</span></code></a>(circuit)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.strip_annotations.html#samplomatic.utils.strip_annotations" title="samplomatic.utils.strip_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strip_annotations</span></code></a>(circuit)</p></td>
 <td><p>Return a new circuit with all annotations removed from every box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.unbox.html#samplomatic.utils.unbox" title="samplomatic.utils.unbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unbox</span></code></a>(circuit)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.unbox.html#samplomatic.utils.unbox" title="samplomatic.utils.unbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unbox</span></code></a>(circuit)</p></td>
 <td><p>Return a circuit with all box operations inlined.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.undress_box.html#samplomatic.utils.undress_box" title="samplomatic.utils.undress_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">undress_box</span></code></a>(box)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.undress_box.html#samplomatic.utils.undress_box" title="samplomatic.utils.undress_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">undress_box</span></code></a>(box)</p></td>
 <td><p>Return a box equivalent to <code class="docutils literal notranslate"><span class="pre">box</span></code>, stripped of the single-qubit gates on the dressing side.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="auto/samplomatic.utils.validate_literals.html#samplomatic.utils.validate_literals" title="samplomatic.utils.validate_literals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_literals</span></code></a>(*arg_names)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="auto/samplomatic.utils.validate_literals.html#samplomatic.utils.validate_literals" title="samplomatic.utils.validate_literals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_literals</span></code></a>(*arg_names)</p></td>
 <td><p>Return a decorator to validate function arguments against literal type annotations.</p></td>
 </tr>
 </tbody>
@@ -581,12 +585,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="auto/samplomatic.utils.deprecate_arg.html">
+          <a class="next-page" href="auto/samplomatic.utils.count_unique_box_instructions.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">deprecate_arg</div>
+                <div class="title">count_unique_box_instructions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -611,7 +615,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/09/01</div>
+              Last updated on 2026/09/03</div>
           </div>
           <div class="right-details">
             
