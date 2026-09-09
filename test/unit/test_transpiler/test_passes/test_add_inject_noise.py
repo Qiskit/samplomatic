@@ -18,9 +18,11 @@ import pytest
 from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.transpiler import PassManager
 
-from samplomatic.annotations import InjectNoise, Twirl
+from samplomatic.annotations import InjectionSite, InjectNoise, Twirl
 from samplomatic.transpiler.passes import AddInjectNoise
 from samplomatic.utils import get_annotation
+
+from .utils import NamedMeasure, NamedReset
 
 
 def test_no_modification_strategy():
@@ -59,7 +61,7 @@ def test_no_modification_strategy():
     with expected_circuit.box([Twirl(), InjectNoise(ref1, "")]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(), InjectNoise(ref3, "")]):
+    with expected_circuit.box([Twirl(), InjectNoise(ref3, "", site="before")]):
         expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
@@ -139,7 +141,7 @@ def test_uniform_modification_strategy():
     with expected_circuit.box([Twirl(), InjectNoise(ref1, ref1)]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(), InjectNoise(ref3, ref3)]):
+    with expected_circuit.box([Twirl(), InjectNoise(ref3, ref3, site="before")]):
         expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
@@ -187,7 +189,7 @@ def test_individual_modification_strategy():
     with expected_circuit.box([Twirl(), InjectNoise(ref3, modifier_ref3)]):
         expected_circuit.rz(th, 0)
         expected_circuit.cx(0, 1)
-    with expected_circuit.box([Twirl(), InjectNoise(ref4, modifier_ref4)]):
+    with expected_circuit.box([Twirl(), InjectNoise(ref4, modifier_ref4, site="before")]):
         expected_circuit.measure_all()
 
     assert transpiled_circuit == expected_circuit
@@ -312,6 +314,90 @@ def test_targets(targets):
 
     measure_annotation = get_annotation(transpiled_circuit.data[1].operation, InjectNoise)
     assert (measure_annotation is None) == (targets in {"none", "gates"})
+
+
+@pytest.mark.parametrize("site", ["before", "after"])
+def test_site(site):
+    """Test the `site` input of `AddInjectNoise`."""
+    circuit = QuantumCircuit(3, 3)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+    with circuit.box([Twirl()]):
+        circuit.measure([0, 1, 2], [0, 1, 2])
+
+    pm = PassManager([AddInjectNoise("no_modification", site=site, targets="all")])
+    transpiled_circuit = pm.run(circuit)
+
+    gate_annotation = get_annotation(transpiled_circuit.data[0].operation, InjectNoise)
+    assert gate_annotation.site == InjectionSite(site)
+
+    measure_annotation = get_annotation(transpiled_circuit.data[1].operation, InjectNoise)
+    assert measure_annotation.site == InjectionSite.BEFORE
+
+
+@pytest.mark.parametrize("site", ["before", "after"])
+def test_site_of_partially_measured_box(site):
+    """Test that a box uses the 'before' site even if not all of its qubits are measured."""
+    circuit = QuantumCircuit(3, 3)
+    with circuit.box([Twirl()]):
+        circuit.measure(0, 0)
+
+    pm = PassManager([AddInjectNoise("no_modification", site=site, targets="measures")])
+    transpiled_circuit = pm.run(circuit)
+
+    annotation = get_annotation(transpiled_circuit.data[0].operation, InjectNoise)
+    assert annotation.site == InjectionSite.BEFORE
+
+
+@pytest.mark.parametrize("site", ["before", "after"])
+def test_site_of_reset_box(site):
+    """Test that a box containing a reset uses the 'before' site.
+
+    A reset discards leftward-travelling virtual gates just like a measurement does, but owns no
+    classical bits, so it cannot be detected by looking at the classical registers of the box.
+    """
+    circuit = QuantumCircuit(2)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+        circuit.reset(0)
+
+    pm = PassManager([AddInjectNoise("no_modification", site=site, targets="gates")])
+    transpiled_circuit = pm.run(circuit)
+
+    annotation = get_annotation(transpiled_circuit.data[0].operation, InjectNoise)
+    assert annotation.site == InjectionSite.BEFORE
+
+
+@pytest.mark.parametrize("instruction", [NamedMeasure(), NamedReset()])
+@pytest.mark.parametrize("site", ["before", "after"])
+def test_site_of_hardware_named_instructions(site, instruction):
+    """Test that hardware-named measurements and resets also force the 'before' site."""
+    circuit = QuantumCircuit(2, 1)
+    with circuit.box([Twirl()]):
+        circuit.cx(0, 1)
+        circuit.append(instruction, [0], [0] if instruction.num_clbits else [])
+
+    pm = PassManager([AddInjectNoise("no_modification", site=site, targets="all")])
+    transpiled_circuit = pm.run(circuit)
+
+    annotation = get_annotation(transpiled_circuit.data[0].operation, InjectNoise)
+    assert annotation.site == InjectionSite.BEFORE
+
+
+def test_ref_of_measure_box_is_independent_of_site():
+    """Test that a box containing measurements gets the same ref for either value of `site`."""
+    circuit = QuantumCircuit(2, 2)
+    with circuit.box([Twirl()]):
+        circuit.measure([0, 1], [0, 1])
+
+    refs = set()
+    for site in ["before", "after"]:
+        pm = PassManager([AddInjectNoise("no_modification", site=site, targets="measures")])
+        transpiled_circuit = pm.run(circuit)
+        refs.add(get_annotation(transpiled_circuit.data[0].operation, InjectNoise).ref)
+
+    assert len(refs) == 1
+    assert refs.pop().endswith("B")
 
 
 def test_annotation_persistence():
