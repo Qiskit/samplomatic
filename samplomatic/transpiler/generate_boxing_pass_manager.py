@@ -196,6 +196,10 @@ def generate_boxing_pass_manager(
             * ``'before'`` to inject noise before the hard content of the box.
             * ``'after'`` to inject noise after the content of the box.
 
+            Boxes containing a measurement or a reset always use the ``'before'`` site, regardless
+            of this value, because an injection placed after such an instruction cannot be
+            realized. See :class:`~.AddInjectNoise` for details.
+
         remove_barriers: When to apply the :class:`qiskit.transpiler.passes.RemoveBarriers` pass.
             All possible string values are:
 
