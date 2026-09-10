@@ -136,6 +136,24 @@ def make_circuits():
 
     yield circuit, "rzz_mix_bound_unbound_angles"
 
+    circuit = QuantumCircuit(4)
+    with circuit.box([Twirl(group="local_pauli")]):
+        circuit.rzz(np.pi / 2, 0, 1)
+        circuit.rzz(np.pi / 3, 2, 3)
+
+    with circuit.box([Twirl(group="local_pauli")]):
+        circuit.rzz(np.pi / 2, 0, 1)
+        circuit.rzz(Parameter("a"), 2, 3)
+
+    with circuit.box([Twirl(group="local_pauli")]):
+        circuit.rzz(np.pi / 3, 0, 1)
+        circuit.rzz(Parameter("b"), 2, 3)
+
+    with circuit.box([Twirl(group="phase", dressing="right")]):
+        circuit.noop(range(4))
+
+    yield circuit, "rzz_bound_clifford_mixed_with_unbound"
+
 
 def pytest_generate_tests(metafunc):
     if "circuit" in metafunc.fixturenames:

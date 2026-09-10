@@ -124,7 +124,7 @@ class BoxBuilder(Builder[TemplateState, PreSamplex, ParsableType]):
             return False
 
         if self.emission.twirl_type == GroupMode.LOCAL_PAULI:
-            return True
+            return not self.emission.fallback_twirl_qubits.all_elements.issuperset(instr.qargs)
 
         if instr.op.is_parameterized() or not np.allclose(np.abs(instr.op.params), np.pi / 2):
             raise BuildError(
