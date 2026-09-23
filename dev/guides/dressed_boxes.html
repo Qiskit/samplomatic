@@ -203,7 +203,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Dressed boxes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transpiler.html">Transpiler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="samplex_io.html">Samplex Inputs and Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplex_io.html">Samplex inputs and outputs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="debug_tracing.html">Debugging and Tracing</a></li>
 </ul>
 </li>
@@ -518,25 +518,25 @@
           <section id="dressed-boxes">
 <h1>Dressed boxes<a class="headerlink" href="#dressed-boxes" title="Link to this heading">¶</a></h1>
 <p>Physical noise mechanisms that occur during the execution of quantum circuits are contextual.
-When applying operations on disjoint qubits simultaneously, the noise profile of the overall operation may not be equal to that of the constituent parts, if those parts were to be applied in isolation.
-Similarly, for operations that ideally commute on the same qubits, the noise profile associated with the individual operations may not commute and could be different altogether if the order of the operations changed.
+When applying operations on disjoint sets of qubits simultaneously, the noise profile of the overall operation might differ from the noise profiles of the constituent parts if they were applied in isolation.
+Similarly, for operations that ideally commute on the same qubits, the noise profile associated with the individual operations might not commute and could be different altogether if the order of the operations changed.
 Therefore, protocols for suppressing, mitigating, and correcting noise need to know the context in which it arises.</p>
-<p>Samplomatic uses box instructions to reason about collections of circuit operations that should be treated as having a stable noise context, and uses annotations on boxes to allow users to declare and configure intent.
+<p>Samplomatic uses box instructions to reason about collections of circuit operations that should be treated as having a stable noise context, and uses annotations on boxes to allow users to declare and configure that intent.
 Every box is a scope that owns a set of qubits, operations that act on those qubits, and a list of annotations.
 Samplomatic annotations specify <em>directives</em> and <em>dressings</em>.
-Directives specify what to do with the box, e.g. twirl the box.
-Dressings are groups of parameterized gates to add to the left- or right-side of the box, e.g. a layer of single qubit gates.
-The gates in a dressing incorporate gates from the box, as well as operations required to enact directives:</p>
+Directives specify what to do with the box, for example, twirl the box.
+Dressings are groups of parameterized gates to add to the left- or right-side of the box, for example, a layer of single qubit gates.
+The gates in a dressing incorporate gates from the box and operations required to enact directives, such as the following:</p>
 <ul class="simple">
-<li><p>Gates in the box that are compatible with and on the same side as the parameterized gates.</p></li>
+<li><p>Gates in the box that are compatible with and are on the same side as the parameterized gates.</p></li>
 <li><p>Twirling gates sampled from a set to randomize the box.</p></li>
 <li><p>Noise injection gates sampled from a Pauli Lindblad map.</p></li>
 <li><p>User-specified basis changing gates.</p></li>
 </ul>
 <p>Note that directives can alter dressings of other boxes.</p>
-<section id="a-guiding-example">
-<h2>A guiding example<a class="headerlink" href="#a-guiding-example" title="Link to this heading">¶</a></h2>
-<p>Suppose we would like to twirl the following circuit, adding random Pauli gates before and after the parallel entangling gates that don’t change the logical content of the circuit, but that do change the effective noise model.</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
+<p>Suppose we want to twirl the following circuit, adding random Pauli gates before and after the parallel entangling gates that don’t change the logical content of the circuit, but that do change the effective noise model.</p>
 <figure class="align-default" id="id1">
 <img alt="../_images/undressed_pauli.drawio.png" src="../_images/undressed_pauli.drawio.png" />
 <figcaption>
@@ -548,12 +548,12 @@ The gates in a dressing incorporate gates from the box, as well as operations re
 <img alt="../_images/dressed_pauli_twirl.drawio.png" src="../_images/dressed_pauli_twirl.drawio.png" />
 <figcaption>
 <p><span class="caption-text">Circuit with Pauli twirling directives.
-The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> symbol is used to specify directives, dressing by default on the left.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> symbol is used to specify directives, dressing by default is on the left.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Each dressed box contains a layer of single-qubit gates and a layer of two-qubit entangling gates on disjoint pairs of qubits.
-The layer of entangling gates is surrounded by layers of random Pauli gates in such a way that the logical action of the box is unchanged.
-These random Pauli layers are <em>virtual</em> in the same spirit as a virtual Z gate–they do not add additional operations to the circuit, but instead act as a directive to alter how adjacent single-qubit gates are implemented.</p>
+The layer of entangling gates is surrounded by layers of random Pauli gates in such a way that the box’s logical action is unchanged.
+These random Pauli layers are <em>virtual</em> in the same way as a virtual Z gate. They do not add  operations to the circuit, but instead act as a directive to alter how adjacent single-qubit gates are implemented.</p>
 <figure class="align-default" id="id3">
 <img alt="../_images/pauli_twirl.drawio.png" src="../_images/pauli_twirl.drawio.png" />
 <figcaption>
@@ -563,9 +563,9 @@ Pauli layers attached by arrows cancel each other out.
 The final Pauli layer will be applied as bit flips to the measurement outcomes.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The random Pauli layer between the entangling gates and single-qubit gates is composed into the layer of single-qubit gates and implemented together in its dressing.
+<p>The random Pauli layer between the entangling gates and single-qubit gates is composed into the layer of single-qubit gates and is implemented in its dressing.
 The other random Pauli layer will be composed into the dressing of the next dressed box.</p>
-<p>To summarize, the left (right) twirl directive is to implement a random Pauli in this box’s dressing and apply the Pauli that undoes it in the next (previous) box’s dressing.
+<p>To summarize, the left (or right) twirl directive implements a random Pauli in this box’s dressing and applies the Pauli that undoes it in the next (or previous) box’s dressing.
 The inject noise and basis change directives are analogous.</p>
 </section>
 <section id="circuit-randomization-with-virtual-gates">
@@ -580,7 +580,7 @@ If all virtual gates can be composed into a dressing, randomizations of the circ
 <p><span class="caption-text">Circuit with twirl, basis change, and inject noise directives.</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>Gates on the side of the dressing compatible with its template parametrization can be composed into it, reducing the number of physical gates.
+<p>Gates on the side of the dressing that are compatible with the dressing’s template parametrization can be composed into it, reducing the number of physical gates.
 These are called <em>easy</em> gates.
 The remainder of the box is called <em>hard</em> and is implemented as is.</p>
 <figure class="align-default" id="id5">
@@ -643,7 +643,7 @@ Virtual gates generated by one box can be composed into different dressings.</sp
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/09/10</div>
+              Last updated on 2026/09/23</div>
           </div>
           <div class="right-details">
             
@@ -665,7 +665,7 @@ Virtual gates generated by one box can be composed into different dressings.</sp
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Dressed boxes</a><ul>
-<li><a class="reference internal" href="#a-guiding-example">A guiding example</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#circuit-randomization-with-virtual-gates">Circuit randomization with virtual gates</a></li>
 </ul>
 </li>
