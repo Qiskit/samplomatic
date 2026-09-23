@@ -2,7 +2,7 @@ Dressed boxes
 =============
 
 Physical noise mechanisms that occur during the execution of quantum circuits are contextual.
-When applying operations on disjointed qubits simultaneously, the noise profile of the overall operation might differ from the noise profiles of the constituent parts if they were applied in isolation.
+When applying operations on disjoint sets of qubits simultaneously, the noise profile of the overall operation might differ from the noise profiles of the constituent parts if they were applied in isolation.
 Similarly, for operations that ideally commute on the same qubits, the noise profile associated with the individual operations might not commute and could be different altogether if the order of the operations changed.
 Therefore, protocols for suppressing, mitigating, and correcting noise need to know the context in which it arises.
 
@@ -53,7 +53,7 @@ These random Pauli layers are *virtual* in the same way as a virtual Z gate. The
 The random Pauli layer between the entangling gates and single-qubit gates is composed into the layer of single-qubit gates and is implemented in its dressing.
 The other random Pauli layer will be composed into the dressing of the next dressed box.
 
-To summarize, the left (or right) twirl directive implements a random Pauli in this box's dressing and applies the Pauli that undoes it in the next (or xzprevious) box's dressing.
+To summarize, the left (or right) twirl directive implements a random Pauli in this box's dressing and applies the Pauli that undoes it in the next (or previous) box's dressing.
 The inject noise and basis change directives are analogous.
 
 Circuit randomization with virtual gates
@@ -69,7 +69,7 @@ If all virtual gates can be composed into a dressing, randomizations of the circ
     Circuit with twirl, basis change, and inject noise directives.
 
 
-Gates on the side of the dressing that are compatible with the dressin's template parametrization can be composed into it, reducing the number of physical gates.
+Gates on the side of the dressing that are compatible with the dressing's template parametrization can be composed into it, reducing the number of physical gates.
 These are called *easy* gates.
 The remainder of the box is called *hard* and is implemented as is.
 
@@ -82,7 +82,7 @@ The remainder of the box is called *hard* and is implemented as is.
 .. figure:: ../figs/dressed_box_collected.drawio.png
 
     Examples of circuits where all virtual gates are composed into dressings.
-    Measurements have Pauli gates added in by accounting for the bitflip they induce.
+    Measurements have Pauli gates composed in by accounting for the bitflip they induce.
 
 
 .. figure:: ../figs/dressed_box_mixed_collect.drawio.png
