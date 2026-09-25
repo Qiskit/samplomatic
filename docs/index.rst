@@ -6,7 +6,8 @@ Samplomatic Documentation
    :titlesonly:
 
    guides/index
-   api/index
+   apidocs/index
    release_notes/index
+   install
    GitHub <https://github.com/Qiskit/samplomatic>
    Benchmarks <https://qiskit.github.io/samplomatic/benchmarks/>

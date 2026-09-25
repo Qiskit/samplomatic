@@ -123,7 +123,7 @@ Optionally, paste these into your `.vscode/settings.json` to set up ruff (you al
 documentation:
 
 1. Install samplomatic with the [development requirements](#installation)
-2. Update the API documentation in `docs/api/` if you added or removed a module.
+2. Update the API documentation in `docs/apidocs/` if you added or removed a module.
 3. Build the documentation:
     ```bash
     docs$ make clean  # cleaning is usually unecessary

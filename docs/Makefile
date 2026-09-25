@@ -17,4 +17,4 @@ help:
 
 # Custom clean target
 clean:
-	rm -rf "$(BUILDDIR)" api/auto release_notes/
+	rm -rf "$(BUILDDIR)" apidocs/auto api/auto release_notes/
