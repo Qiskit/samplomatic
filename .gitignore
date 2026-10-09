@@ -87,7 +87,7 @@ instance/
 docs/_build/
 docs/api/auto/
 docs/apidocs/auto/
-docs/release_notes/
+docs/release_notes.md
 
 # PyBuilder
 .pybuilder/
