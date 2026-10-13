@@ -200,10 +200,9 @@ def linkcode_resolve(domain, info):
 
 
 def copy_changelog(app):
-    """Copy and split CHANGELOG.md into a bunch of files in ``release_notes/``."""
+    """Copy CHANGELOG.md into a single ``release_notes.md`` file."""
     source_path = Path(app.srcdir).parent / "CHANGELOG.md"
-    release_notes_dir = Path(app.srcdir) / "release_notes"
-    release_notes_dir.mkdir(exist_ok=True)
+    target_path = Path(app.srcdir) / "release_notes.md"
 
     if not source_path.exists():
         logger.warning("CHANGELOG.md not found in project root.")
@@ -216,36 +215,20 @@ def copy_changelog(app):
     headers = pattern.findall(content)
     bodies = pattern.split(content)[1:]
 
-    # grab versions and dates
+    # grab versions and dates, skipping any section without one (e.g. "## [Unreleased]")
     section_pattern = re.compile(r"##\s+\[([^\]]+)\]\([^)]*\)\s*-\s*([0-9]{4}-[0-9]{2}-[0-9]{2})")
-    sections = [section_pattern.search(h).groups() for h in headers]
-
-    # write a file release_notes_<version>.md for each section
-    for (version, date), body in zip(sections, bodies):
-        # prepend a title, and reduce all section levels by 1
-        file_content = f"# {version} - {date}\n\n{body.strip()}".replace("###", "##")
-
-        file_path = release_notes_dir / f"release_notes_{version}.md"
-        file_path.write_text(file_content, encoding="utf-8")
-        logger.info(f"Created release note: {file_path.name}")
-
-    # write an index file
-    index_lines = [
-        "Release Notes",
-        "=============",
-        "",
-        ".. toctree::",
-        "   :maxdepth: 1",
-        "   :titlesonly:",
-        "",
+    sections = [
+        (match.group(1), match.group(2), body)
+        for header, body in zip(headers, bodies)
+        if (match := section_pattern.search(header))
     ]
-    index_lines.extend(
-        f"   Release notes for {version} <release_notes_{version}>" for version, _ in sections
-    )
 
-    index_file = release_notes_dir / "index.rst"
-    index_file.write_text("\n".join(index_lines), encoding="utf-8")
-    logger.info(f"Created release index: {index_file.name}")
+    # one page, with a level-2 section per release, keeping the CHANGELOG's order
+    parts = ["# Release Notes"]
+    parts.extend(f"## {version} - {date}\n\n{body.strip()}" for version, date, body in sections)
+
+    target_path.write_text("\n\n".join(parts) + "\n", encoding="utf-8")
+    logger.info(f"Created release notes: {target_path.name}")
 
 
 def setup(app):
