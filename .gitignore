@@ -18,6 +18,9 @@ __pycache__/
 # uv
 uv.lock
 
+# AI
+.claude
+
 # Distribution / packaging
 .Python
 build/
