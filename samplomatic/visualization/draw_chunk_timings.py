@@ -13,7 +13,7 @@
 """draw_chunk_timings"""
 
 from collections.abc import Iterable
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from itertools import cycle
 from typing import TYPE_CHECKING
 
@@ -50,7 +50,7 @@ def _apply_tz(dt: datetime, tz: timezone | None) -> datetime:
         A timezone-naive datetime in the target timezone.
     """
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt.astimezone(tz=tz).replace(tzinfo=None)
 
 
