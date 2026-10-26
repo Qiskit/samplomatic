@@ -13,6 +13,7 @@
 """TemplateCircuitBuilder"""
 
 from collections.abc import Iterable, Sequence
+from typing import Self
 
 from qiskit.circuit import ClassicalRegister, Clbit, Delay, QuantumCircuit, QuantumRegister, Qubit
 from qiskit.circuit.classical import expr
@@ -20,7 +21,7 @@ from qiskit.circuit.classical.expr import Stretch
 from qiskit.converters import dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 
-from ..aliases import CircuitInstruction, ClbitIndex, DAGOpNode, ParamSpec, QubitIndex, Self
+from ..aliases import CircuitInstruction, ClbitIndex, DAGOpNode, ParamSpec, QubitIndex
 from ..exceptions import TemplateBuildError
 from .param_iter import ParamIter
 

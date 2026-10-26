@@ -13,7 +13,7 @@ name = "samplomatic"
 dynamic = ["version"]
 description = "Serving all of your circuit sampling needs since 2025."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE.txt"]
 authors = [
@@ -25,6 +25,10 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
 dependencies = [
     "qiskit>=2.3.0",
@@ -78,7 +82,7 @@ lint.select = [
     "UP",     # pyupgrade
 ]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [

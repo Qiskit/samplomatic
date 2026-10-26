@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,18 +12,12 @@
 
 """Type Aliases"""
 
-import sys as _sys
 from collections.abc import Hashable as _Hashable
 from collections.abc import Sequence as _Sequence
 from typing import Literal as _Literal
 from typing import Protocol as _Protocol
 from typing import TypeAlias
 from typing import TypeVar as _TypeVar
-
-if _sys.version_info >= (3, 11):
-    from typing import Self  # noqa: F401
-else:
-    from typing_extensions import Self  # noqa: F401
 
 import numpy as np
 from qiskit.circuit import CircuitInstruction as _CircuitInstruction

@@ -14,7 +14,7 @@
 
 from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed, wait
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 from numpy.random import Generator, SeedSequence, default_rng
@@ -33,7 +33,6 @@ from ..aliases import (
     ParamIndex,
     ParamSpec,
     RegisterName,
-    Self,
 )
 from ..exceptions import SamplexConstructionError, SamplexRuntimeError
 from ..tensor_interface import Specification, TensorInterface, TensorSpecification

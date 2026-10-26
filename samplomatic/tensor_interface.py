@@ -17,12 +17,12 @@ import abc
 import re
 import textwrap
 from collections.abc import Iterable, Mapping, MutableMapping
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Self, TypeVar
 
 import numpy as np
 from qiskit.quantum_info import PauliLindbladMap
 
-from .aliases import InterfaceName, Self
+from .aliases import InterfaceName
 from .serializable import Serializable
 
 __all__ = [

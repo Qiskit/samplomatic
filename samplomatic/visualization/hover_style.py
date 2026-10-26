@@ -13,9 +13,7 @@
 """Hover Styles for Graphs"""
 
 from dataclasses import dataclass, field
-from typing import Any, TypeVar
-
-from ..aliases import Self
+from typing import Any, Self, TypeVar
 
 T = TypeVar("T", bound="HoverStyle")
 

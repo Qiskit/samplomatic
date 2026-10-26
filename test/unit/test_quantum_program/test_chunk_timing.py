@@ -19,7 +19,7 @@ from samplomatic.quantum_program import ChunkPart, ChunkSpan, ChunkTiming
 
 def _make_span(start_s: float, stop_s: float, size: int = 1) -> ChunkSpan:
     """Build a ``ChunkSpan`` with a single ``ChunkPart``."""
-    epoch = datetime.datetime(2025, 1, 1, tzinfo=datetime.timezone.utc)
+    epoch = datetime.datetime(2025, 1, 1, tzinfo=datetime.UTC)
     return ChunkSpan(
         start=epoch + datetime.timedelta(seconds=start_s),
         stop=epoch + datetime.timedelta(seconds=stop_s),
@@ -55,7 +55,7 @@ class TestChunkTiming:
         """start, stop, and duration are derived from the spans."""
         spans = [_make_span(10, 20, size=3), _make_span(25, 40, size=7)]
         timing = ChunkTiming(spans)
-        epoch = datetime.datetime(2025, 1, 1, tzinfo=datetime.timezone.utc)
+        epoch = datetime.datetime(2025, 1, 1, tzinfo=datetime.UTC)
         assert timing.start, epoch + datetime.timedelta(seconds=10)
         assert timing.stop, epoch + datetime.timedelta(seconds=40)
         assert timing.duration, pytest.approx(30.0)
