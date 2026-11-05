@@ -17,7 +17,7 @@ from qiskit.circuit.classical.expr import Stretch
 
 from samplomatic.annotations import Twirl
 from samplomatic.builders import pre_build
-from samplomatic.builders.template_state import TemplateState
+from samplomatic.builders.template_state import TemplateState, param_counter
 
 
 class TestTemplateState:
@@ -96,7 +96,7 @@ class TestTemplateBuilder:
 
         assert template.num_qubits == 2
         assert template.num_clbits == 2
-        assert [p.name for p in template.parameters] == ["p00"]
+        assert [p.name for p in template.parameters] == ["p0"]
 
         for instr0, instr1 in zip(circuit, template):
             assert instr0.operation.name == instr1.operation.name
@@ -315,3 +315,31 @@ class TestTemplateBuilder:
         circuit.rzz(0.0, 0, 1)
         _, samplex = pre_build(circuit)
         samplex.finalize()
+
+
+class TestParamCounter:
+    """Test the estimate for maximum of parameters in a template circuit."""
+
+    def test_empty_circuit(self):
+        circuit = QuantumCircuit(1)
+        assert sum(param_counter(circuit)) == 0
+
+    def test_many_parameters_outside_boxes(self):
+        num_params = 6
+        circuit = QuantumCircuit(1)
+        parameter = Parameter("a")
+        for _ in range(num_params):
+            circuit.rx(parameter, 0)
+
+        assert sum(param_counter(circuit)) == 6 * 3
+
+    def test_boxes_and_parameters(self):
+        circuit = QuantumCircuit(2)
+        circuit.rx(Parameter("a"), 0)
+        with circuit.box():
+            circuit.rx(Parameter("b"), 0)
+            circuit.noop(1)
+        circuit.rx(Parameter("c"), 0)
+
+        # three each for the rxs at the end, 5 parameters * 2 qubits for the box
+        assert list(param_counter(circuit)) == [3, 10, 3]
