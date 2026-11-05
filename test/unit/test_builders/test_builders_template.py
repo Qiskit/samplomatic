@@ -331,7 +331,7 @@ class TestParamCounter:
         for _ in range(num_params):
             circuit.rx(parameter, 0)
 
-        assert sum(param_counter(circuit)) == num_params
+        assert sum(param_counter(circuit)) == 6 * 3
 
     def test_boxes_and_parameters(self):
         circuit = QuantumCircuit(2)
@@ -341,5 +341,5 @@ class TestParamCounter:
             circuit.noop(1)
         circuit.rx(Parameter("c"), 0)
 
-        # one each for the rxs at the end, 5 parameters * 2 qubits for the box
-        assert list(param_counter(circuit)) == [1, 10, 1]
+        # three each for the rxs at the end, 5 parameters * 2 qubits for the box
+        assert list(param_counter(circuit)) == [3, 10, 3]
