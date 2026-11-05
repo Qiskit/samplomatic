@@ -229,4 +229,4 @@ def param_counter(circuit: QuantumCircuit) -> Iterator[int]:
         if instr.operation.name == "box":
             yield 5 * len(instr.qubits)
         if instr.is_parameterized():
-            yield len(instr.operation.params)
+            yield 3
