@@ -12,7 +12,7 @@
 
 """TemplateCircuitBuilder"""
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from typing import Self
 
 from qiskit.circuit import ClassicalRegister, Clbit, Delay, QuantumCircuit, QuantumRegister, Qubit
@@ -95,15 +95,9 @@ class TemplateState:
         for stretch in circuit.iter_stretches():
             stretch_map[stretch] = stretch
             template_circuit.add_declared_stretch(stretch)
-
-        # quick and dirty heuristic to get the max params roughly correct with a safety factor
         # TODO: This estimate might not hold for dynamic circuits, where the same qubit will be
         # collected twice - once in the if branch and another in the else branch.
-        max_params = 3 * sum(
-            len(instr.qubits) for instr in circuit if instr.operation.name == "box"
-        )
-        max_params += circuit.num_parameters
-        param_iter = ParamIter(5 * max_params)
+        param_iter = ParamIter(sum(param_counter(circuit)))
 
         return cls(template_circuit, qubit_map, param_iter, [], stretch_map, debug)
 
@@ -216,3 +210,23 @@ class TemplateState:
     def finalize(self) -> QuantumCircuit:
         """Return the quantum circuit template."""
         return dag_to_circuit(self.template)
+
+
+def param_counter(circuit: QuantumCircuit) -> Iterator[int]:
+    """Yield the number of parameters required for each instruction.
+
+    Each annotated box will have 3 per qubit for the dressing, and potentially more from
+    other gates. As parameters are flattened in the template circuit, each parameterized
+    instruction contributes one rather than the number of parameters in a circuit.
+
+    Args:
+        circuit: The circuit to count the parameters of.
+
+    Yields:
+        The number of parameters of the circuit's instructions that require parameters.
+    """
+    for instr in circuit:
+        if instr.operation.name == "box":
+            yield 5 * len(instr.qubits)
+        if instr.is_parameterized():
+            yield 1
