@@ -553,9 +553,9 @@ snippet shows an example where both gates and measurements are grouped.</p>
 two-qubit gates, and those that contain a single layer of measurements. This separation reflects standard practices
 in noise learning and mitigation protocols, which usually target layers of homogeneous operations. The two-qubit gates
 and measurements are placed in the leftmost box that can accommodate them, and every single-qubit gates is placed in
-the same box as the two-qubit gate or measurement they preceed.</p>
+the same box as the two-qubit gate or measurement they precede.</p>
 <p>The following code shows an example where <code class="docutils literal notranslate"><span class="pre">enable_gates</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>. As can be seen, the two-qubit
-gates are not grouped into boxes, nor are the single-qubit gates that preceed them.</p>
+gates are not grouped into boxes, nor are the single-qubit gates that precede them.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
@@ -575,10 +575,10 @@ gates are not grouped into boxes, nor are the single-qubit gates that preceed th
 <section id="choose-how-to-annotate-the-boxes">
 <h2>Choose how to annotate the boxes<a class="headerlink" href="#choose-how-to-annotate-the-boxes" title="Link to this heading">¶</a></h2>
 <p>All the two-qubit gates and measurement boxes in the returned circuit own left-dressed annotations. In particular,
-all the boxes that contain two-qubit gates are annotated with a <code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code>. For measurement boxes, users can
-choose between <code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BasisTranform</span></code> (with <code class="docutils literal notranslate"><span class="pre">mode</span></code> set to <code class="docutils literal notranslate"><span class="pre">&quot;measure&quot;</span></code>), or both. The following code
+all the boxes that contain two-qubit gates are annotated with a <a class="reference internal" href="../apidocs/auto/samplomatic.Twirl.html#samplomatic.Twirl" title="samplomatic.Twirl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code></a>. For measurement boxes, users can
+choose between <a class="reference internal" href="../apidocs/auto/samplomatic.Twirl.html#samplomatic.Twirl" title="samplomatic.Twirl"><code class="xref py py-class docutils literal notranslate"><span class="pre">Twirl</span></code></a>, <a class="reference internal" href="../apidocs/auto/samplomatic.ChangeBasis.html#samplomatic.ChangeBasis" title="samplomatic.ChangeBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChangeBasis</span></code></a> (with <code class="docutils literal notranslate"><span class="pre">mode</span></code> set to <code class="docutils literal notranslate"><span class="pre">&quot;measure&quot;</span></code>), or both. The following code
 generates a circuit where all the boxes are twirled, and the measurement boxes are additionally annotated with
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BasisTranform</span></code>.</p>
+<a class="reference internal" href="../apidocs/auto/samplomatic.ChangeBasis.html#samplomatic.ChangeBasis" title="samplomatic.ChangeBasis"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChangeBasis</span></code></a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
@@ -594,8 +594,8 @@ generates a circuit where all the boxes are twirled, and the measurement boxes a
 </section>
 <section id="prepare-the-circuit-for-noise-injection">
 <h2>Prepare the circuit for noise injection<a class="headerlink" href="#prepare-the-circuit-for-noise-injection" title="Link to this heading">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">inject_noise_targets</span></code> lets you specify which boxes should receive an <code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotation. For example,
-the following code generates a circuit where the two-qubit gates boxes own an <code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotation but the
+<p>The <code class="docutils literal notranslate"><span class="pre">inject_noise_targets</span></code> lets you specify which boxes should receive an <a class="reference internal" href="../apidocs/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation. For example,
+the following code generates a circuit where the two-qubit gates boxes own an <a class="reference internal" href="../apidocs/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation but the
 measurement boxes don’t.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -610,15 +610,15 @@ measurement boxes don’t.</p>
 </div>
 </div>
 <p>If a circuit contains two or more boxes that are equivalent up to single-qubit gates, all of them are annotated with
-an <code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotation with the same <code class="docutils literal notranslate"><span class="pre">ref</span></code>. Thus, the number of unique <code class="docutils literal notranslate"><span class="pre">ref</span></code>s in the returned
+an <a class="reference internal" href="../apidocs/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation with the same <code class="docutils literal notranslate"><span class="pre">ref</span></code>. Thus, the number of unique <code class="docutils literal notranslate"><span class="pre">ref</span></code>s in the returned
 circuit is equal to the number of unique boxes.</p>
-<p>The value for <code class="docutils literal notranslate"><span class="pre">inject_noise_strategy</span></code> impacts the <code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotations.  The following values are possible:</p>
+<p>The value for <code class="docutils literal notranslate"><span class="pre">inject_noise_strategy</span></code> impacts the <a class="reference internal" href="../apidocs/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotations.  The following values are possible:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">modifier_ref=''</span></code>: Recommended when you don’t have to modify the noise maps before sampling from them.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">modifier_ref=ref</span></code>: Recommended when all the noise maps need to be scaled uniformly by the same factor.</p></li>
 <li><p>A unique value of <code class="docutils literal notranslate"><span class="pre">modifier_ref</span></code>: Recommended when every noise map needs to be scaled by a different factor.</p></li>
 </ul>
-<p>The following code generates a circuit where the two-qubit gates boxes own an <code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code> annotation with unique <code class="docutils literal notranslate"><span class="pre">modifier_ref</span></code> values.</p>
+<p>The following code generates a circuit where the two-qubit gates boxes own an <a class="reference internal" href="../apidocs/auto/samplomatic.InjectNoise.html#samplomatic.InjectNoise" title="samplomatic.InjectNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectNoise</span></code></a> annotation with unique <code class="docutils literal notranslate"><span class="pre">modifier_ref</span></code> values.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">boxing_pass_manager</span> <span class="o">=</span> <span class="n">generate_boxing_pass_manager</span><span class="p">(</span>
@@ -884,7 +884,7 @@ The <code class="docutils literal notranslate"><span class="pre">twirling_strate
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9f660ac3d0b132116b38624dbdbabfe0098cd6a3fdc16b056bb685825ba57981.png" src="../_images/9f660ac3d0b132116b38624dbdbabfe0098cd6a3fdc16b056bb685825ba57981.png" />
+<img alt="../_images/fe943b034588a5354a87abcf51b8d805c36f4f2b30a73a39c5886bce9e156b04.png" src="../_images/fe943b034588a5354a87abcf51b8d805c36f4f2b30a73a39c5886bce9e156b04.png" />
 </div>
 </div>
 <p>This pattern also combines naturally with the barrier-based ISA boxing workflow. The boxing pass manager runs as a post-scheduling step, after barriers from the original logical circuit have survived transpilation, so they guide stratification as expected.</p>
@@ -1065,7 +1065,7 @@ uncollected due to the unboxed measurements.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026/11/05</div>
+              Last updated on 2026/11/16</div>
           </div>
           <div class="right-details">
             
